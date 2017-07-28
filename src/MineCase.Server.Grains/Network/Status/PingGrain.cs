@@ -14,10 +14,8 @@ namespace MineCase.Server.Network.Status
     {
         public async Task DispatchPacket(Guid sessionId, Ping packet)
         {
-            await GrainFactory.GetGrain<IClientboundPaketSink>(sessionId).SendPacket(new Pong
-            {
-                Payload = packet.Payload
-            });
+            await GrainFactory.GetGrain<IClientboundPaketSink>(sessionId).SendPacket(new Pong { Payload = packet.Payload });
+            GrainFactory.GetGrain<IPacketRouter>(sessionId).Close().Ignore();
         }
     }
 }

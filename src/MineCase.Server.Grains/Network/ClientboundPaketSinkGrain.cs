@@ -62,5 +62,12 @@ namespace MineCase.Server.Network
             _subsManager.Notify(n => n.ReceivePacket(packet));
             return Task.CompletedTask;
         }
+
+        public Task Close()
+        {
+            _subsManager.Notify(n => n.OnClosed());
+            DeactivateOnIdle();
+            return Task.CompletedTask;
+        }
     }
 }

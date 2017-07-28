@@ -28,7 +28,7 @@ namespace MineCase.Gateway.Network
             _tcpClient = tcpClient;
             _grainFactory = grainFactory;
             _outcomingPacketObserver = new OutcomingPacketObserver(this);
-            _outcomingPacketDispatcher = new ActionBlock<UncompressedPacket>(SendOutcommingPacket);
+            _outcomingPacketDispatcher = new ActionBlock<UncompressedPacket>(SendOutcomingPacket);
         }
 
         public async Task Startup(CancellationToken cancellationToken)
@@ -42,7 +42,7 @@ namespace MineCase.Gateway.Network
                     while (!cancellationToken.IsCancellationRequested &&
                         !_outcomingPacketDispatcher.Completion.IsCompleted)
                     {
-                        await DispatchIncommingPacket();
+                        await DispatchIncomingPacket();
                     }
                 }
                 catch (EndOfStreamException)
@@ -52,7 +52,13 @@ namespace MineCase.Gateway.Network
             }
         }
 
-        private async Task DispatchIncommingPacket()
+        private void OnClosed()
+        {
+            _outcomingPacketDispatcher.Complete();
+            _tcpClient.Client.Shutdown(SocketShutdown.Send);
+        }
+
+        private async Task DispatchIncomingPacket()
         {
             UncompressedPacket packet;
             if (_useCompression)
@@ -64,10 +70,10 @@ namespace MineCase.Gateway.Network
             {
                 packet = await UncompressedPacket.DeserializeAsync(_remoteStream);
             }
-            await DispatchIncommingPacket(packet);
+            await DispatchIncomingPacket(packet);
         }
 
-        private async Task SendOutcommingPacket(UncompressedPacket packet)
+        private async Task SendOutcomingPacket(UncompressedPacket packet)
         {
             if (_useCompression)
             {
@@ -80,13 +86,13 @@ namespace MineCase.Gateway.Network
             }
         }
 
-        private async Task DispatchIncommingPacket(UncompressedPacket packet)
+        private async Task DispatchIncomingPacket(UncompressedPacket packet)
         {
             var router = _grainFactory.GetGrain<IPacketRouter>(_sessionId);
             await router.SendPacket(packet);
         }
 
-        private async void DispatchOutcommingPacket(UncompressedPacket packet)
+        private async void DispatchOutcomingPacket(UncompressedPacket packet)
         {
             try
             {
@@ -108,9 +114,14 @@ namespace MineCase.Gateway.Network
                 _session = session;
             }
 
+            public void OnClosed()
+            {
+                _session.OnClosed();
+            }
+
             public void ReceivePacket(UncompressedPacket packet)
             {
-                _session.DispatchOutcommingPacket(packet);
+                _session.DispatchOutcomingPacket(packet);
             }
         }
 

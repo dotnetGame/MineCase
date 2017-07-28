@@ -10,5 +10,7 @@ namespace MineCase.Server.Network
     public interface IPacketRouter : IGrainWithGuidKey
     {
         Task SendPacket(UncompressedPacket packet);
+        Task Close();
+        Task Play();
     }
 }

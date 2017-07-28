@@ -26,6 +26,7 @@ namespace MineCase.Server.Network
                     innerPacket = DeserializeStatusPacket(ref packet);
                     break;
                 case SessionState.Login:
+                    innerPacket = DeserializeLoginPacket(ref packet);
                     break;
                 case SessionState.Play:
                     break;
@@ -37,9 +38,22 @@ namespace MineCase.Server.Network
             await DispatchPacket(innerPacket);
         }
 
+        public async Task Close()
+        {
+            _state = SessionState.Closed;
+            await GrainFactory.GetGrain<IClientboundPaketSink>(this.GetPrimaryKey()).Close();
+            DeactivateOnIdle();
+        }
+
         private Task DispatchPacket(object packet)
         {
             throw new NotImplementedException();
+        }
+
+        public Task Play()
+        {
+            _state = SessionState.Play;
+            return Task.CompletedTask;
         }
 
         public enum SessionState

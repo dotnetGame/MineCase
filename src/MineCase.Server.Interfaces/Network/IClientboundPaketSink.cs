@@ -14,5 +14,6 @@ namespace MineCase.Server.Network
         Task UnSubscribe(IClientboundPacketObserver observer);
         
         Task SendPacket(ISerializablePacket packet);
+        Task Close();
     }
 }
