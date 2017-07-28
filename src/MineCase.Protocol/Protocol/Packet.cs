@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace MineCase.Protocol
 {
-    [Packet]
     public struct UncompressedPacket
     {
         [SerializeAs(DataType.VarInt)]
@@ -25,8 +24,8 @@ namespace MineCase.Protocol
 
             using (var bw = new BinaryWriter(stream, Encoding.UTF8, true))
             {
-                bw.WriteAsVarInt(Length);
-                bw.WriteAsVarInt(PacketId);
+                bw.WriteAsVarInt(Length, out _);
+                bw.WriteAsVarInt(PacketId, out _);
                 bw.Flush();
             }
             await stream.WriteAsync(Data, 0, Data.Length);
@@ -46,8 +45,7 @@ namespace MineCase.Protocol
             return packet;
         }
     }
-
-    [Packet]
+    
     public struct CompressedPacket
     {
         [SerializeAs(DataType.VarInt)]
@@ -65,8 +63,8 @@ namespace MineCase.Protocol
 
             using (var bw = new BinaryWriter(stream, Encoding.UTF8, true))
             {
-                bw.WriteAsVarInt(PacketLength);
-                bw.WriteAsVarInt(DataLength);
+                bw.WriteAsVarInt(PacketLength, out _);
+                bw.WriteAsVarInt(DataLength, out _);
                 bw.Flush();
             }
             await stream.WriteAsync(CompressedData, 0, CompressedData.Length);
@@ -90,8 +88,16 @@ namespace MineCase.Protocol
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false, AllowMultiple = false)]
     public sealed class PacketAttribute : Attribute
     {
-        public PacketAttribute()
+        public uint PacketId { get; }
+
+        public PacketAttribute(uint packetId)
         {
+            PacketId = packetId;
         }
+    }
+
+    public interface ISerializablePacket
+    {
+        void Serialize(BinaryWriter bw);
     }
 }

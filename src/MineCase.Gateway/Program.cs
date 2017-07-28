@@ -33,6 +33,7 @@ namespace MineCase.Gateway
         {
             services.AddSingleton(ConfigureLogging());
             services.AddLogging();
+            services.AddSingleton<ConnectionRouter>();
         }
 
         private static ILoggerFactory ConfigureLogging()
@@ -53,14 +54,14 @@ namespace MineCase.Gateway
 
         private static async void Startup()
         {
-            //var logger = _clusterClient.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
+            var serviceProvider = _clusterClient.ServiceProvider;
+            var logger = _clusterClient.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
 
-            //logger.LogInformation("Connecting to cluster...");
-            //await _clusterClient.Connect();
-            //logger.LogInformation("Connected to cluster.");
+            logger.LogInformation("Connecting to cluster...");
+            await _clusterClient.Connect();
+            logger.LogInformation("Connected to cluster.");
 
-            var connectionRouter = new ConnectionRouter();
-            Console.WriteLine("Press Ctrl+C to terminate...");
+            var connectionRouter = serviceProvider.GetRequiredService<ConnectionRouter>();
             await connectionRouter.Startup(default(CancellationToken));
         }
     }

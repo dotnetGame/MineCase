@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MineCase.Protocol\MineCase.Protocol.csproj" />
+    <ProjectReference Include="..\MineCase.Server.Interfaces\MineCase.Server.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>

@@ -27,4 +27,8 @@
     <None Remove="*.log;*.txt" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MineCase.Server.Grains\MineCase.Server.Grains.csproj" />
+  </ItemGroup>
+
 </Project>

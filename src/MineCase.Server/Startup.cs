@@ -34,6 +34,7 @@ namespace MineCase.Server
 
             var container = new ContainerBuilder();
             container.Populate(services);
+            container.AddGrains();
             return new AutofacServiceProvider(container.Build());
         }
 

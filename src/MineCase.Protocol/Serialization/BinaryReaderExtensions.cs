@@ -31,6 +31,25 @@ namespace MineCase.Serialization
             bytesRead = numRead;
             return result;
         }
+
+        public static string ReadAsString(this BinaryReader br)
+        {
+            var len = br.ReadAsVarInt(out _);
+            var bytes = br.ReadBytes((int)len);
+            return Encoding.UTF8.GetString(bytes);
+        }
+
+        public static ushort ReadAsUnsignedShort(this BinaryReader br)
+        {
+            var value = br.ReadUInt16();
+            return value.ToBigEndian();
+        }
+
+        public static long ReadAsLong(this BinaryReader br)
+        {
+            var value = br.ReadUInt64();
+            return (long)value.ToBigEndian();
+        }
     }
 
     internal static class StreamExtensions
@@ -41,7 +60,7 @@ namespace MineCase.Serialization
             {
                 var numRead = await stream.ReadAsync(buffer, offset, count);
                 if (numRead == 0)
-                    throw new InvalidDataException("Unexpected end of stream.");
+                    throw new EndOfStreamException();
                 offset += numRead;
                 count -= numRead;
             }

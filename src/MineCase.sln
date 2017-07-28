@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Protocol", "MineCa
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Private", "Private", "{59A25C6F-3315-4CE8-9016-B088C9AF3A86}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Server.Interfaces", "MineCase.Server.Interfaces\MineCase.Server.Interfaces.csproj", "{98454B69-800A-4DEB-8D13-1E244BF15507}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Server.Grains", "MineCase.Server.Grains\MineCase.Server.Grains.csproj", "{3F83DE42-121D-4E7A-AB27-825AD8179D3C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +33,14 @@ Global
 		{0842DE6C-4270-440E-9666-255A0B2EC1D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0842DE6C-4270-440E-9666-255A0B2EC1D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0842DE6C-4270-440E-9666-255A0B2EC1D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98454B69-800A-4DEB-8D13-1E244BF15507}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98454B69-800A-4DEB-8D13-1E244BF15507}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98454B69-800A-4DEB-8D13-1E244BF15507}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98454B69-800A-4DEB-8D13-1E244BF15507}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F83DE42-121D-4E7A-AB27-825AD8179D3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F83DE42-121D-4E7A-AB27-825AD8179D3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F83DE42-121D-4E7A-AB27-825AD8179D3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F83DE42-121D-4E7A-AB27-825AD8179D3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
