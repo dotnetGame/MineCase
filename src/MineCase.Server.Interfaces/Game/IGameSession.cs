@@ -10,5 +10,6 @@ namespace MineCase.Server.Game
     public interface IGameSession : IGrainWithStringKey
     {
         Task JoinGame(IPlayer player);
+        Task LeaveGame(IPlayer player);
     }
 }

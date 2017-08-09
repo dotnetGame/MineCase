@@ -16,14 +16,19 @@ namespace MineCase.Server.Network
         {
             using (var br = new BinaryReader(new MemoryStream(packet.Data)))
             {
+                object innerPacket;
                 switch (packet.PacketId)
                 {
                     // Login Start
                     case 0x00:
-                        return LoginStart.Deserialize(br);
+                        innerPacket = LoginStart.Deserialize(br);
+                        break;
                     default:
                         throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X}.");
                 }
+                if (br.BaseStream.Position != br.BaseStream.Length)
+                    throw new InvalidDataException($"Packet data is not fully consumed.");
+                return innerPacket;
             }
         }
 

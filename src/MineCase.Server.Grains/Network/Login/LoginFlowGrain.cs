@@ -24,6 +24,7 @@ namespace MineCase.Server.Network.Login
 
                 var player = GrainFactory.GetGrain<IPlayer>(uuid);
                 await player.SetClientPacketSink(GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey()));
+                await GrainFactory.GetGrain<IPacketRouter>(this.GetPrimaryKey()).BindToPlayer(player);
 
                 var world = await player.GetWorld();
                 var game = GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());

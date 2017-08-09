@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,6 +9,9 @@ namespace MineCase.Serialization
 {
     internal static class BinaryReaderExtensions
     {
+        public static byte ReadAsByte(this BinaryReader br) =>
+            br.ReadByte();
+
         public static bool ReadAsBoolean(this BinaryReader br) =>
             br.ReadBoolean();
 
@@ -39,16 +43,34 @@ namespace MineCase.Serialization
             return Encoding.UTF8.GetString(bytes);
         }
 
+        public static short ReadAsShort(this BinaryReader br) =>
+            (short)br.ReadAsUnsignedShort();
+
         public static ushort ReadAsUnsignedShort(this BinaryReader br)
         {
             var value = br.ReadUInt16();
             return value.ToBigEndian();
         }
 
+        public static uint ReadAsUnsignedInt(this BinaryReader br)
+        {
+            var value = br.ReadUInt32();
+            return value.ToBigEndian();
+        }
+
+        public static int ReadAsInt(this BinaryReader br) =>
+            (int)br.ReadAsUnsignedInt();
+
         public static long ReadAsLong(this BinaryReader br)
         {
             var value = br.ReadUInt64();
             return (long)value.ToBigEndian();
+        }
+
+        public static float ReadAsFloat(this BinaryReader br)
+        {
+            var value = br.ReadAsUnsignedInt();
+            return Unsafe.As<uint, float>(ref value);
         }
     }
 

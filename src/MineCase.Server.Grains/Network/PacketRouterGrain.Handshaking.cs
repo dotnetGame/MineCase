@@ -22,7 +22,7 @@ namespace MineCase.Server.Network
                     case 0x00:
                         return Handshake.Deserialize(br);
                     default:
-                        throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId: X}.");
+                        throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X}.");
                 }
             }
         }
