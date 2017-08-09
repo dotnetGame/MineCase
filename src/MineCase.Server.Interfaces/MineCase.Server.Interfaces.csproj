@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Folder Include="Network\Handshaking\" />
+    <Folder Include="Play\" />
   </ItemGroup>
 
 </Project>

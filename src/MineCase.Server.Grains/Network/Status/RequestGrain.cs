@@ -41,7 +41,7 @@ namespace MineCase.Server.Network.Status
             {
                 JsonResponse = JsonConvert.SerializeObject(serverInfo, Formatting.Indented, _jsonSettings)
             };
-            await GrainFactory.GetGrain<IClientboundPaketSink>(sessionId).SendPacket(response);
+            await GrainFactory.GetGrain<IClientboundPacketSink>(sessionId).SendPacket(response);
         }
 
         class ServerInfo

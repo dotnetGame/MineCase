@@ -15,9 +15,9 @@ namespace MineCase.Server.World
             return Task.FromResult(GrainFactory.GetGrain<IWorld>(_defaultWorldName));
         }
 
-        public async Task<IWorld> GetWorld(string name)
+        public Task<IWorld> GetWorld(string name)
         {
-            return null;
+            return Task.FromResult(GrainFactory.GetGrain<IWorld>(name));
         }
     }
 }

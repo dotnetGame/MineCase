@@ -36,7 +36,7 @@ namespace MineCase.Gateway.Network
             using (_remoteStream = _tcpClient.GetStream())
             {
                 var observerRef = await _grainFactory.CreateObjectReference<IClientboundPacketObserver>(_outcomingPacketObserver);
-                await _grainFactory.GetGrain<IClientboundPaketSink>(_sessionId).Subscribe(observerRef);
+                await _grainFactory.GetGrain<IClientboundPacketSink>(_sessionId).Subscribe(observerRef);
                 try
                 {
                     while (!cancellationToken.IsCancellationRequested &&

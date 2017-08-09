@@ -10,7 +10,7 @@ namespace MineCase.Server.Network
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<PacketRouterGrain>();
-            builder.RegisterType<ClientboundPaketSinkGrain>();
+            builder.RegisterType<ClientboundPacketSinkGrain>();
         }
     }
 }

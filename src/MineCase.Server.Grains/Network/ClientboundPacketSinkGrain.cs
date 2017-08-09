@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace MineCase.Server.Network
 {
-    class ClientboundPaketSinkGrain : Grain, IClientboundPaketSink
+    class ClientboundPacketSinkGrain : Grain, IClientboundPacketSink
     {
         private ObserverSubscriptionManager<IClientboundPacketObserver> _subsManager;
 

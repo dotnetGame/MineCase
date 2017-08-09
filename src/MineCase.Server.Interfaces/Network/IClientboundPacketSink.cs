@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MineCase.Server.Network
 {
-    public interface IClientboundPaketSink : IGrainWithGuidKey
+    public interface IClientboundPacketSink : IGrainWithGuidKey
     {
         Task Subscribe(IClientboundPacketObserver observer);
         Task UnSubscribe(IClientboundPacketObserver observer);
