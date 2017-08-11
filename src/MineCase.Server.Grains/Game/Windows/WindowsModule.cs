@@ -3,13 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase.Server.Player
+namespace MineCase.Server.Game.Windows
 {
-    class PlayerModule : Module
+    class WindowsModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<NonAuthenticatedPlayerGrain>();
+            builder.RegisterType<InventoryWindowGrain>();
         }
     }
 }

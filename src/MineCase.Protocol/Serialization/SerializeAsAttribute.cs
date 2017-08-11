@@ -25,7 +25,8 @@ namespace MineCase.Serialization
         Position,
         Angle,
         UUID,
-        ByteArray
+        ByteArray,
+        Array
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]

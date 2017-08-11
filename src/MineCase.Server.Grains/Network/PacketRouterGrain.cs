@@ -7,14 +7,14 @@ using Orleans.Concurrency;
 using Orleans;
 using MineCase.Protocol.Handshaking;
 using System.IO;
-using MineCase.Server.Player;
+using MineCase.Server.User;
 
 namespace MineCase.Server.Network
 {
     partial class PacketRouterGrain : Grain, IPacketRouter
     {
         private SessionState _state;
-        private IPlayer _player;
+        private IUser _user;
 
         public async Task SendPacket(UncompressedPacket packet)
         {
@@ -59,9 +59,9 @@ namespace MineCase.Server.Network
             return Task.CompletedTask;
         }
 
-        public Task BindToPlayer(IPlayer player)
+        public Task BindToUser(IUser user)
         {
-            _player = player;
+            _user = user;
             return Task.CompletedTask;
         }
 

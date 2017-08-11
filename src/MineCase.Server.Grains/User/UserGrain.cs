@@ -8,21 +8,35 @@ using System.Threading.Tasks;
 using MineCase.Server.Network;
 using System.Numerics;
 using MineCase.Server.Network.Play;
+using MineCase.Server.Game.Entities;
 
-namespace MineCase.Server.Player
+namespace MineCase.Server.User
 {
-    class PlayerGrain : Grain, IPlayer
+    class UserGrain : Grain, IUser
     {
         private string _worldId;
-        private uint _eid;
+        private IWorld _world;
         private IClientboundPacketSink _sink;
         private ClientPlayPacketGenerator _generator;
-        private IDisposable _sendKeepAliveTimer;
+        private IDisposable _sendKeepAliveTimer, _worldTimeSyncTimer;
         public HashSet<uint> _keepAliveWaiters;
 
         private readonly Random _keepAliveIdRand = new Random();
         private const int ClientKeepInterval = 6;
         private bool _isOnline = false;
+
+        private IPlayer _player;
+
+        public override async Task OnActivateAsync()
+        {
+            if (string.IsNullOrEmpty(_worldId))
+            {
+                var world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetDefaultWorld();
+                _worldId = world.GetPrimaryKeyString();
+                _world = world;
+            }
+            _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(_worldId);
+        }
 
         public Task<IClientboundPacketSink> GetClientPacketSink()
         {
@@ -35,32 +49,27 @@ namespace MineCase.Server.Player
             return GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());
         }
 
-        public async Task<IWorld> GetWorld()
-        {
-            if (string.IsNullOrEmpty(_worldId))
-            {
-                var world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetDefaultWorld();
-                _worldId = world.GetPrimaryKeyString();
-                return world;
-            }
-            return await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(_worldId);
-        }
+        public Task<IWorld> GetWorld() => Task.FromResult(_world);
 
         public Task SetClientPacketSink(IClientboundPacketSink sink)
         {
             _sink = sink;
             _generator = new ClientPlayPacketGenerator(sink);
-
-            _isOnline = true;
-            _keepAliveWaiters = new HashSet<uint>();
-            _sendKeepAliveTimer = RegisterTimer(OnSendKeepAliveRequests, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
             return Task.CompletedTask;
         }
 
-        public Task SetEntityId(uint eid)
+        public async Task JoinGame()
         {
-            _eid = eid;
-            return Task.CompletedTask;
+            var playerEid = await _world.NewEntityId();
+            _player = GrainFactory.GetGrain<IPlayer>(_world.MakeEntityKey(playerEid));
+            await _player.SetClientSink(_sink);
+            await _world.AttachEntity(_player);
+        }
+
+        private async Task SendTimeUpdate()
+        {
+            var time = await (await GetWorld()).GetTime();
+            await _generator.TimeUpdate(time.age, time.timeOfDay);
         }
 
         public Task UseEntity(uint targetEid, EntityUsage type, Vector3? targetPosition, EntityInteractHand? hand)
@@ -73,9 +82,6 @@ namespace MineCase.Server.Player
             if (_isOnline && _keepAliveWaiters.Count >= ClientKeepInterval)
             {
                 _isOnline = false;
-                _sendKeepAliveTimer.Dispose();
-                _sendKeepAliveTimer = null;
-
                 KickPlayer().Ignore();
             }
             else
@@ -94,10 +100,30 @@ namespace MineCase.Server.Player
 
         private async Task KickPlayer()
         {
+            _sendKeepAliveTimer?.Dispose();
+            _sendKeepAliveTimer = null;
+            _worldTimeSyncTimer?.Dispose();
+            _worldTimeSyncTimer = null;
+
             var game = await GetGameSession();
             await game.LeaveGame(this);
             await _sink.Close();
             DeactivateOnIdle();
+        }
+
+        public Task<IPlayer> GetPlayer() => Task.FromResult(_player);
+
+        public async Task NotifyLoggedIn()
+        {
+            _isOnline = true;
+            _keepAliveWaiters = new HashSet<uint>();
+            
+            await SendTimeUpdate();
+            await _player.SendWholeInventory();
+            await _player.SendExperience();
+
+            _sendKeepAliveTimer = RegisterTimer(OnSendKeepAliveRequests, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
+            //_worldTimeSyncTimer = RegisterTimer(OnSyncWorldTime, null, TimeSpan.Zero, )
         }
     }
 }

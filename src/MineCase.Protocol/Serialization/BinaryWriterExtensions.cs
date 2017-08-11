@@ -1,6 +1,8 @@
-﻿using System;
+﻿using MineCase.Protocol;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace MineCase.Serialization
@@ -39,6 +41,11 @@ namespace MineCase.Serialization
             bw.Write(bytes);
         }
 
+        public static void WriteAsShort(this BinaryWriter bw, short value)
+        {
+            bw.Write(((ushort)value).ToBigEndian());
+        }
+
         public static void WriteAsInt(this BinaryWriter bw, int value)
         {
             bw.Write(((uint)value).ToBigEndian());
@@ -47,6 +54,18 @@ namespace MineCase.Serialization
         public static void WriteAsLong(this BinaryWriter bw, long value)
         {
             bw.Write(((ulong)value).ToBigEndian());
+        }
+
+        public static void WriteAsFloat(this BinaryWriter bw, float value)
+        {
+            var uintValue = Unsafe.As<float, uint>(ref value);
+            bw.Write(uintValue.ToBigEndian());
+        }
+
+        public static void WriteAsArray<T>(this BinaryWriter bw, IReadOnlyList<T> array) where T : ISerializablePacket
+        {
+            foreach (var item in array)
+                item.Serialize(bw);
         }
     }
 

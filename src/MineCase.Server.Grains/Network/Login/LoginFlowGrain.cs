@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using MineCase.Protocol.Login;
 using System.Threading.Tasks;
-using MineCase.Server.Player;
+using MineCase.Server.User;
 using MineCase.Server.Game;
 
 namespace MineCase.Server.Network.Login
@@ -19,12 +19,12 @@ namespace MineCase.Server.Network.Login
                 throw new NotImplementedException();
             else
             {
-                var uuid = await GrainFactory.GetGrain<INonAuthenticatedPlayer>(packet.Name).GetUUID();
+                var uuid = await GrainFactory.GetGrain<INonAuthenticatedUser>(packet.Name).GetUUID();
                 await SendLoginSuccess(packet.Name, uuid);
 
-                var player = GrainFactory.GetGrain<IPlayer>(uuid);
+                var player = GrainFactory.GetGrain<IUser>(uuid);
                 await player.SetClientPacketSink(GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey()));
-                await GrainFactory.GetGrain<IPacketRouter>(this.GetPrimaryKey()).BindToPlayer(player);
+                await GrainFactory.GetGrain<IPacketRouter>(this.GetPrimaryKey()).BindToUser(player);
 
                 var world = await player.GetWorld();
                 var game = GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());

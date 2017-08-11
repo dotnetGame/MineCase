@@ -53,15 +53,15 @@ namespace MineCase.Server.Network
 
         private Task DispatchPacket(ServerboundKeepAlive packet)
         {
-            _player.KeepAlive(packet.KeepAliveId).Ignore();
+            _user.KeepAlive(packet.KeepAliveId).Ignore();
             return Task.CompletedTask;
         }
 
         private Task DispatchPacket(UseEntity packet)
         {
-            var player = _player;
-            player.UseEntity((uint)packet.Target, (EntityUsage)packet.Type, packet.TargetX.HasValue ?
-                new Vector3?(new Vector3(packet.TargetX.Value, packet.TargetY.Value, packet.TargetZ.Value)) : null, (EntityInteractHand?)packet.Hand).Ignore();
+            var player = _user;
+            //player.UseEntity((uint)packet.Target, (EntityUsage)packet.Type, packet.TargetX.HasValue ?
+            //    new Vector3?(new Vector3(packet.TargetX.Value, packet.TargetY.Value, packet.TargetZ.Value)) : null, (EntityInteractHand?)packet.Hand).Ignore();
             return Task.CompletedTask;
         }
     }

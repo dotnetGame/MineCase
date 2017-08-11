@@ -1,4 +1,4 @@
-﻿using MineCase.Server.Player;
+﻿using MineCase.Server.User;
 using Orleans;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ namespace MineCase.Server.Game
 {
     public interface IGameSession : IGrainWithStringKey
     {
-        Task JoinGame(IPlayer player);
-        Task LeaveGame(IPlayer player);
+        Task JoinGame(IUser player);
+        Task LeaveGame(IUser player);
     }
 }

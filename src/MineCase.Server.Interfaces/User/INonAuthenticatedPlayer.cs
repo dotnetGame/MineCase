@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MineCase.Server.Player
+namespace MineCase.Server.User
 {
-    public interface INonAuthenticatedPlayer : IGrainWithStringKey
+    public interface INonAuthenticatedUser : IGrainWithStringKey
     {
         Task<Guid> GetUUID();
     }

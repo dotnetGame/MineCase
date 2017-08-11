@@ -1,4 +1,5 @@
 ﻿using MineCase.Server.Game;
+using MineCase.Server.Game.Entities;
 using MineCase.Server.Network;
 using MineCase.Server.World;
 using Orleans;
@@ -8,16 +9,18 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MineCase.Server.Player
+namespace MineCase.Server.User
 {
-    public interface IPlayer : IGrainWithGuidKey, IEntity
+    public interface IUser : IGrainWithGuidKey
     {
         Task<IWorld> GetWorld();
         Task<IGameSession> GetGameSession();
+        Task<IPlayer> GetPlayer();
         Task SetClientPacketSink(IClientboundPacketSink sink);
         Task<IClientboundPacketSink> GetClientPacketSink();
 
+        Task JoinGame();
+        Task NotifyLoggedIn();
         Task KeepAlive(uint keepAliveId);
-        Task UseEntity(uint targetEid, EntityUsage type, Vector3? targetPosition, EntityInteractHand? hand);
     }
 }

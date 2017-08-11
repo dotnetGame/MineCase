@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MineCase.Server.Player
+namespace MineCase.Server.User
 {
-    class NonAuthenticatedPlayerGrain : Grain, INonAuthenticatedPlayer
+    class NonAuthenticatedUserGrain : Grain, INonAuthenticatedUser
     {
         private Guid _uuid;
 
