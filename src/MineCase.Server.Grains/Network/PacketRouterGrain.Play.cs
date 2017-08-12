@@ -20,6 +20,10 @@ namespace MineCase.Server.Network
                 object innerPacket;
                 switch (packet.PacketId)
                 {
+                    // Teleport Confirm
+                    case 0x00:
+                        innerPacket = TeleportConfirm.Deserialize(br);
+                        break;
                     // Client Settings
                     case 0x05:
                         innerPacket = ClientSettings.Deserialize(br);
@@ -39,6 +43,12 @@ namespace MineCase.Server.Network
                     throw new InvalidDataException($"Packet data is not fully consumed.");
                 return innerPacket;
             }
+        }
+
+        private async Task DispatchPacket(TeleportConfirm packet)
+        {
+            var player = await _user.GetPlayer();
+            player.OnTeleportConfirm(packet.TeleportId).Ignore();
         }
 
         private Task DispatchPacket(ClientSettings packet)

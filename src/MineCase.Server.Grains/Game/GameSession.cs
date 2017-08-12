@@ -6,17 +6,23 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.User;
 using MineCase.Server.Network.Play;
+using System.Linq;
 
 namespace MineCase.Server.Game
 {
     class GameSession : Grain, IGameSession
     {
         private IWorld _world;
-        private readonly Dictionary<IUser, PlayerContext> _players = new Dictionary<IUser, PlayerContext>();
+        private readonly Dictionary<IUser, UserContext> _users = new Dictionary<IUser, UserContext>();
+
+        private IDisposable _gameTick;
+        private DateTime _lastGameTickTime;
 
         public override async Task OnActivateAsync()
         {
             _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(this.GetPrimaryKeyString());
+            _lastGameTickTime = DateTime.UtcNow;
+            _gameTick = RegisterTimer(OnGameTick, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(50));
         }
 
         public async Task JoinGame(IUser user)
@@ -24,7 +30,7 @@ namespace MineCase.Server.Game
             var sink = await user.GetClientPacketSink();
             var generator = new ClientPlayPacketGenerator(sink);
 
-            _players[user] = new PlayerContext
+            _users[user] = new UserContext
             {
                 Generator = generator
             };
@@ -37,11 +43,20 @@ namespace MineCase.Server.Game
 
         public Task LeaveGame(IUser player)
         {
-            _players.Remove(player);
+            _users.Remove(player);
             return Task.CompletedTask;
         }
 
-        class PlayerContext
+        private async Task OnGameTick(object state)
+        {
+            var now = DateTime.UtcNow;
+            var deltaTime = now - _lastGameTickTime;
+            _lastGameTickTime = now;
+
+            await Task.WhenAll(_users.Keys.Select(o => o.OnGameTick(deltaTime)));
+        }
+
+        class UserContext
         {
             public ClientPlayPacketGenerator Generator { get; set; }
         }

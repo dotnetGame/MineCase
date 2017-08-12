@@ -62,6 +62,17 @@ namespace MineCase.Serialization
             bw.Write(uintValue.ToBigEndian());
         }
 
+        public static void WriteAsDouble(this BinaryWriter bw, double value)
+        {
+            var ulongValue = Unsafe.As<double, ulong>(ref value);
+            bw.Write(ulongValue.ToBigEndian());
+        }
+
+        public static void WriteAsUUID(this BinaryWriter bw, Guid value)
+        {
+            bw.Write(value.ToByteArray());
+        }
+
         public static void WriteAsArray<T>(this BinaryWriter bw, IReadOnlyList<T> array) where T : ISerializablePacket
         {
             foreach (var item in array)

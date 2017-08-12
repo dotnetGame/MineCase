@@ -14,6 +14,7 @@ namespace MineCase.Server.User
 {
     class UserGrain : Grain, IUser
     {
+        private string _name;
         private string _worldId;
         private IWorld _world;
         private IClientboundPacketSink _sink;
@@ -24,6 +25,8 @@ namespace MineCase.Server.User
         private readonly Random _keepAliveIdRand = new Random();
         private const int ClientKeepInterval = 6;
         private bool _isOnline = false;
+        private DateTime _keepAliveRequestTime, _keepAliveResponseTime;
+        private UserState _state;
 
         private IPlayer _player;
 
@@ -62,8 +65,14 @@ namespace MineCase.Server.User
         {
             var playerEid = await _world.NewEntityId();
             _player = GrainFactory.GetGrain<IPlayer>(_world.MakeEntityKey(playerEid));
-            await _player.SetClientSink(_sink);
+            await _player.SetName(_name);
+            await _player.BindToUser(this, _sink);
             await _world.AttachEntity(_player);
+
+            _state = UserState.JoinedGame;
+            _keepAliveWaiters = new HashSet<uint>();
+            _sendKeepAliveTimer = RegisterTimer(OnSendKeepAliveRequests, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
+            //_worldTimeSyncTimer = RegisterTimer(OnSyncWorldTime, null, TimeSpan.Zero, )
         }
 
         private async Task SendTimeUpdate()
@@ -88,6 +97,7 @@ namespace MineCase.Server.User
             {
                 var id = (uint)_keepAliveIdRand.Next();
                 _keepAliveWaiters.Add(id);
+                _keepAliveRequestTime = DateTime.UtcNow;
                 await _generator.KeepAlive(id);
             }
         }
@@ -95,6 +105,8 @@ namespace MineCase.Server.User
         public Task KeepAlive(uint keepAliveId)
         {
             _keepAliveWaiters.Remove(keepAliveId);
+            if (_keepAliveWaiters.Count == 0)
+                _keepAliveResponseTime = DateTime.UtcNow;
             return Task.CompletedTask;
         }
 
@@ -117,13 +129,60 @@ namespace MineCase.Server.User
         {
             _isOnline = true;
             _keepAliveWaiters = new HashSet<uint>();
-            
-            await SendTimeUpdate();
-            await _player.SendWholeInventory();
-            await _player.SendExperience();
 
-            _sendKeepAliveTimer = RegisterTimer(OnSendKeepAliveRequests, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
-            //_worldTimeSyncTimer = RegisterTimer(OnSyncWorldTime, null, TimeSpan.Zero, )
+            await SendTimeUpdate();
+            await _player.NotifyLoggedIn();
+            _state = UserState.DownloadingWorld;
+        }
+
+        public Task SetName(string name)
+        {
+            _name = name;
+            return Task.CompletedTask;
+        }
+
+        public Task<uint> GetPing()
+        {
+            uint ping;
+            var diff = DateTime.UtcNow - _keepAliveRequestTime;
+            if (diff.Ticks < 0)
+                ping = int.MaxValue;
+            else
+                ping = (uint)diff.TotalMilliseconds;
+            return Task.FromResult(ping);
+        }
+
+        public async Task OnGameTick(TimeSpan deltaTime)
+        {
+            await _player.SetPing(await GetPing());
+            if(_state == UserState.DownloadingWorld)
+            {
+                await _player.SendPositionAndLook();
+                _state = UserState.Playing;
+            }
+
+            if(_state >= UserState.JoinedGame && _state < UserState.Destroying)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    if (!await StreamNextChunk())
+                        break;
+                }
+            }
+        }
+
+        private async Task<bool> StreamNextChunk()
+        {
+            return true;
+        }
+
+        enum UserState : uint
+        {
+            None,
+            JoinedGame,
+            DownloadingWorld,
+            Playing,
+            Destroying
         }
     }
 }

@@ -20,5 +20,12 @@ namespace MineCase.Server.User
         {
             return Task.FromResult(_uuid);
         }
+
+        public async Task<IUser> GetUser()
+        {
+            var user = GrainFactory.GetGrain<IUser>(_uuid);
+            await user.SetName(this.GetPrimaryKeyString());
+            return user;
+        }
     }
 }

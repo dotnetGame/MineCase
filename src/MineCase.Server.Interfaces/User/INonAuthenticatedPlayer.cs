@@ -8,6 +8,6 @@ namespace MineCase.Server.User
 {
     public interface INonAuthenticatedUser : IGrainWithStringKey
     {
-        Task<Guid> GetUUID();
+        Task<IUser> GetUser();
     }
 }

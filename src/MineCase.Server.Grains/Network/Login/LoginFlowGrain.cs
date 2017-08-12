@@ -19,16 +19,16 @@ namespace MineCase.Server.Network.Login
                 throw new NotImplementedException();
             else
             {
-                var uuid = await GrainFactory.GetGrain<INonAuthenticatedUser>(packet.Name).GetUUID();
+                var user = await GrainFactory.GetGrain<INonAuthenticatedUser>(packet.Name).GetUser();
+                var uuid = user.GetPrimaryKey();
                 await SendLoginSuccess(packet.Name, uuid);
+                
+                await user.SetClientPacketSink(GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey()));
+                await GrainFactory.GetGrain<IPacketRouter>(this.GetPrimaryKey()).BindToUser(user);
 
-                var player = GrainFactory.GetGrain<IUser>(uuid);
-                await player.SetClientPacketSink(GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey()));
-                await GrainFactory.GetGrain<IPacketRouter>(this.GetPrimaryKey()).BindToUser(player);
-
-                var world = await player.GetWorld();
+                var world = await user.GetWorld();
                 var game = GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());
-                await game.JoinGame(player);
+                await game.JoinGame(user);
             }
         }
 

@@ -13,6 +13,7 @@ namespace MineCase.Server.User
 {
     public interface IUser : IGrainWithGuidKey
     {
+        Task SetName(string name);
         Task<IWorld> GetWorld();
         Task<IGameSession> GetGameSession();
         Task<IPlayer> GetPlayer();
@@ -22,5 +23,8 @@ namespace MineCase.Server.User
         Task JoinGame();
         Task NotifyLoggedIn();
         Task KeepAlive(uint keepAliveId);
+
+        Task<uint> GetPing();
+        Task OnGameTick(TimeSpan deltaTime);
     }
 }

@@ -10,10 +10,18 @@ namespace MineCase.Server.Game.Entities
 {
     public interface IPlayer : IEntity
     {
-        Task SetClientSink(IClientboundPacketSink sink);
-
+        Task<string> GetName();
+        Task SetName(string name);
+        Task BindToUser(IUser user, IClientboundPacketSink sink);
+        Task SetPing(uint ping);
+        
+        Task<PlayerDescription> GetDescription();
         Task<IInventoryWindow> GetInventory();
         Task SendWholeInventory();
         Task SendExperience();
+        Task SendPlayerListAddPlayer(IReadOnlyList<IPlayer> player);
+        Task NotifyLoggedIn();
+        Task SendPositionAndLook();
+        Task OnTeleportConfirm(uint teleportId);
     }
 }
