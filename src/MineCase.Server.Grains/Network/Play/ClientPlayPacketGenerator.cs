@@ -100,7 +100,7 @@ namespace MineCase.Server.Network.Play
 
         public Task PositionAndLook(double x, double y, double z, float yaw, float pitch, RelativeFlags relative, uint teleportId)
         {
-            return Sink.SendPacket(new PositionAndLook
+            return Sink.SendPacket(new ClientboundPositionAndLook
             {
                 X = x,
                 Y = y,

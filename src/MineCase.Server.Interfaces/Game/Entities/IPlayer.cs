@@ -12,8 +12,7 @@ namespace MineCase.Server.Game.Entities
     {
         Task<string> GetName();
         Task SetName(string name);
-        Task BindToUser(IUser user, IClientboundPacketSink sink);
-        Task SetPing(uint ping);
+        Task BindToUser(IUser user);
         
         Task<PlayerDescription> GetDescription();
         Task<IInventoryWindow> GetInventory();

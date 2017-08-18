@@ -16,7 +16,6 @@ namespace MineCase.Server.Game.Entities
     {
         private IUser _user;
         private ClientPlayPacketGenerator _generator;
-        private uint _ping;
 
         private string _name;
         private IInventoryWindow _inventory;
@@ -47,12 +46,11 @@ namespace MineCase.Server.Game.Entities
             await _generator.WindowItems(0, slots);
         }
 
-        public Task BindToUser(IUser user, IClientboundPacketSink sink)
+        public async Task BindToUser(IUser user)
         {
-            _generator = new ClientPlayPacketGenerator(sink);
+            _generator = new ClientPlayPacketGenerator(await user.GetClientPacketSink());
             _user = user;
             _health = MaxHealth;
-            return Task.CompletedTask;
         }
 
         public async Task SendHealth()
@@ -80,15 +78,15 @@ namespace MineCase.Server.Game.Entities
             await _generator.PlayerListItemAddPlayer(desc);
         }
 
-        public Task<PlayerDescription> GetDescription()
+        public async Task<PlayerDescription> GetDescription()
         {
-            return Task.FromResult(new PlayerDescription
+            return new PlayerDescription
             {
                 UUID = _user.GetPrimaryKey(),
                 Name = _name,
                 GameMode = new GameMode { ModeClass = GameMode.Class.Survival },
-                Ping = _ping
-            });
+                Ping = await _user.GetPing()
+            };
         }
 
         public async Task NotifyLoggedIn()
@@ -102,12 +100,6 @@ namespace MineCase.Server.Game.Entities
         {
             await _generator.PositionAndLook(_position.X, _position.Y, _position.Z, _yaw, _pitch, 0, _teleportId);
             _teleportConfirmed = false;
-        }
-
-        public Task SetPing(uint ping)
-        {
-            _pitch = ping;
-            return Task.CompletedTask;
         }
 
         public Task OnTeleportConfirm(uint teleportId)

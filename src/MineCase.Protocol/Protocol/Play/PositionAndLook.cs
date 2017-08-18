@@ -7,7 +7,7 @@ using System.IO;
 namespace MineCase.Protocol.Play
 {
     [Packet(0x2E)]
-    public sealed class PositionAndLook : ISerializablePacket
+    public sealed class ClientboundPositionAndLook : ISerializablePacket
     {
         [SerializeAs(DataType.Double)]
         public double X;

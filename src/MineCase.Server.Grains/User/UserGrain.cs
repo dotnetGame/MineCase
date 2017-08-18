@@ -9,9 +9,11 @@ using MineCase.Server.Network;
 using System.Numerics;
 using MineCase.Server.Network.Play;
 using MineCase.Server.Game.Entities;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.User
 {
+    [Reentrant]
     class UserGrain : Grain, IUser
     {
         private string _name;
@@ -66,7 +68,7 @@ namespace MineCase.Server.User
             var playerEid = await _world.NewEntityId();
             _player = GrainFactory.GetGrain<IPlayer>(_world.MakeEntityKey(playerEid));
             await _player.SetName(_name);
-            await _player.BindToUser(this, _sink);
+            await _player.BindToUser(this);
             await _world.AttachEntity(_player);
 
             _state = UserState.JoinedGame;
@@ -154,7 +156,6 @@ namespace MineCase.Server.User
 
         public async Task OnGameTick(TimeSpan deltaTime)
         {
-            await _player.SetPing(await GetPing());
             if(_state == UserState.DownloadingWorld)
             {
                 await _player.SendPositionAndLook();
