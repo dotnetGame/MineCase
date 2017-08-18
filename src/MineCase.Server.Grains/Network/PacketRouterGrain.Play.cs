@@ -36,6 +36,10 @@ namespace MineCase.Server.Network
                     case 0x0C:
                         innerPacket = ServerboundKeepAlive.Deserialize(br);
                         break;
+                    // Position And Look
+                    case 0x0F:
+                        innerPacket = ServerboundPositionAndLook.Deserialize(br);
+                        break;
                     default:
                         throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X}.");
                 }
@@ -65,6 +69,12 @@ namespace MineCase.Server.Network
         {
             _user.KeepAlive(packet.KeepAliveId).Ignore();
             return Task.CompletedTask;
+        }
+
+        private async Task DispatchPacket(ServerboundPositionAndLook packet)
+        {
+            var player = await _user.GetPlayer();
+            player.SetPositionAndLook(packet.X, packet.FeetY, packet.Z, packet.Yaw, packet.Pitch, packet.OnGround).Ignore();
         }
 
         private Task DispatchPacket(UseEntity packet)

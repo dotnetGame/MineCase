@@ -41,4 +41,39 @@ namespace MineCase.Protocol.Play
             bw.WriteAsVarInt(TeleportId, out _);
         }
     }
+
+    [Packet(0x0F)]
+    public sealed class ServerboundPositionAndLook
+    {
+        [SerializeAs(DataType.Double)]
+        public double X;
+
+        [SerializeAs(DataType.Double)]
+        public double FeetY;
+
+        [SerializeAs(DataType.Double)]
+        public double Z;
+
+        [SerializeAs(DataType.Float)]
+        public float Yaw;
+
+        [SerializeAs(DataType.Float)]
+        public float Pitch;
+
+        [SerializeAs(DataType.Boolean)]
+        public bool OnGround;
+
+        public static ServerboundPositionAndLook Deserialize(BinaryReader br)
+        {
+            return new ServerboundPositionAndLook
+            {
+                X = br.ReadAsDouble(),
+                FeetY = br.ReadAsDouble(),
+                Z = br.ReadAsDouble(),
+                Yaw = br.ReadAsFloat(),
+                Pitch = br.ReadAsFloat(),
+                OnGround = br.ReadAsBoolean()
+            };
+        }
+    }
 }

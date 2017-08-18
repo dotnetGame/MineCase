@@ -107,5 +107,10 @@ namespace MineCase.Server.Game.Entities
             _teleportConfirmed = true;
             return Task.CompletedTask;
         }
+
+        public Task SetPositionAndLook(double x, double feetY, double z, float yaw, float pitch, bool onGround)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

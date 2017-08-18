@@ -22,5 +22,6 @@ namespace MineCase.Server.Game.Entities
         Task NotifyLoggedIn();
         Task SendPositionAndLook();
         Task OnTeleportConfirm(uint teleportId);
+        Task SetPositionAndLook(double x, double feetY, double z, float yaw, float pitch, bool onGround);
     }
 }

@@ -67,10 +67,22 @@ namespace MineCase.Serialization
             return (long)value.ToBigEndian();
         }
 
+        public static ulong ReadAsUnsignedLong(this BinaryReader br)
+        {
+            var value = br.ReadUInt64();
+            return value.ToBigEndian();
+        }
+
         public static float ReadAsFloat(this BinaryReader br)
         {
             var value = br.ReadAsUnsignedInt();
             return Unsafe.As<uint, float>(ref value);
+        }
+
+        public static double ReadAsDouble(this BinaryReader br)
+        {
+            var value = br.ReadAsUnsignedLong();
+            return Unsafe.As<ulong, double>(ref value);
         }
     }
 
