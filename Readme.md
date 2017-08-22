@@ -1,5 +1,5 @@
 MineCase
-[![Build status](https://ci.appveyor.com/api/projects/status/w9h243k1lqee2ke5?svg=true)](https://ci.appveyor.com/project/sunnycase/minecase)
+[![Build status](https://ci.appveyor.com/api/projects/status/w9h243k1lqee2ke5/branch/master?svg=true)](https://ci.appveyor.com/project/sunnycase/minecase/branch/master)
 ===
 
 ## 介绍
