@@ -1,16 +1,16 @@
-﻿using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using MineCase.Protocol.Handshaking;
-using System.Threading.Tasks;
 using System.IO;
-using MineCase.Protocol;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using MineCase.Protocol;
+using MineCase.Protocol.Handshaking;
+using Orleans;
 
 namespace MineCase.Server.Network
 {
-    class ClientboundPacketSinkGrain : Grain, IClientboundPacketSink
+    internal class ClientboundPacketSinkGrain : Grain, IClientboundPacketSink
     {
         private ObserverSubscriptionManager<IClientboundPacketObserver> _subsManager;
 
@@ -27,7 +27,7 @@ namespace MineCase.Server.Network
             return Task.CompletedTask;
         }
 
-        //Also clients use this to unsubscribe themselves to no longer receive the messages.
+        // Also clients use this to unsubscribe themselves to no longer receive the messages.
         public Task UnSubscribe(IClientboundPacketObserver observer)
         {
             _subsManager.Unsubscribe(observer);

@@ -1,15 +1,14 @@
-﻿using MineCase.Server.World;
-using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.World;
+using Orleans;
 
 namespace MineCase.Server.Game
 {
     public interface IEntity : IGrainWithStringKey
     {
-
     }
 
     public static class EntityExtensions

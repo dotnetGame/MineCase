@@ -1,8 +1,8 @@
-﻿using MineCase.Serialization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using MineCase.Serialization;
 
 namespace MineCase.Protocol.Login
 {
@@ -37,6 +37,26 @@ namespace MineCase.Protocol.Login
         public void Serialize(BinaryWriter bw)
         {
             bw.Write(reason);
+        }
+    }
+
+    [Packet(0x00)]
+    public sealed class LoginDisconnect : ISerializablePacket
+    {
+        [SerializeAs(DataType.Chat)]
+        public string Reason;
+
+        public static LoginDisconnect Deserialize(BinaryReader br)
+        {
+            return new LoginDisconnect
+            {
+                Reason = br.ReadAsString()
+            };
+        }
+
+        public void Serialize(BinaryWriter bw)
+        {
+            bw.Write(Reason);
         }
     }
 

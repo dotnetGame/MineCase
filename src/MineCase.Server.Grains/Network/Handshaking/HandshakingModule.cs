@@ -1,15 +1,14 @@
-﻿using Autofac;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Autofac;
 
 namespace MineCase.Server.Network.Handshaking
 {
-    class HandshakingModule : Module
+    internal class HandshakingModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {
-
         }
     }
 }

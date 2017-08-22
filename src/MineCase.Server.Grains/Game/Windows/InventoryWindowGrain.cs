@@ -1,11 +1,11 @@
-﻿using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Orleans;
 
 namespace MineCase.Server.Game.Windows
 {
-    class InventoryWindowGrain : WindowGrain, IInventoryWindow
+    internal class InventoryWindowGrain : WindowGrain, IInventoryWindow
     {
     }
 }

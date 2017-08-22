@@ -1,16 +1,16 @@
-﻿using MineCase.Server.World;
-using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Server.User;
 using MineCase.Server.Network.Play;
-using System.Linq;
+using MineCase.Server.User;
+using MineCase.Server.World;
+using Orleans;
 
 namespace MineCase.Server.Game
 {
-    class GameSession : Grain, IGameSession
+    internal class GameSession : Grain, IGameSession
     {
         private IWorld _world;
         private readonly Dictionary<IUser, UserContext> _users = new Dictionary<IUser, UserContext>();
@@ -36,8 +36,14 @@ namespace MineCase.Server.Game
             };
 
             await user.JoinGame();
-            await generator.JoinGame((await user.GetPlayer()).GetEntityId(), new GameMode { ModeClass = GameMode.Class.Survival },
-                 Dimension.Overworld, Difficulty.Easy, 10, LevelTypes.Default, false);
+            await generator.JoinGame(
+                (await user.GetPlayer()).GetEntityId(),
+                new GameMode { ModeClass = GameMode.Class.Survival },
+                Dimension.Overworld,
+                Difficulty.Easy,
+                10,
+                LevelTypes.Default,
+                false);
             await user.NotifyLoggedIn();
         }
 
@@ -56,7 +62,7 @@ namespace MineCase.Server.Game
             await Task.WhenAll(_users.Keys.Select(o => o.OnGameTick(deltaTime)));
         }
 
-        class UserContext
+        private class UserContext
         {
             public ClientPlayPacketGenerator Generator { get; set; }
         }

@@ -1,8 +1,8 @@
-﻿using MineCase.Serialization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
@@ -34,6 +34,7 @@ namespace MineCase.Protocol.Play
                 Target = (int)br.ReadAsVarInt(out _),
                 Type = (int)br.ReadAsVarInt(out _)
             };
+
             // Only if Type is interact at
             if (packet.Type == 2)
             {
@@ -41,6 +42,7 @@ namespace MineCase.Protocol.Play
                 packet.TargetY = br.ReadAsFloat();
                 packet.TargetZ = br.ReadAsFloat();
             }
+
             // Only if Type is interact or interact at
             if (packet.Type == 0 || packet.Type == 2)
                 packet.Hand = (int)br.ReadAsVarInt(out _);

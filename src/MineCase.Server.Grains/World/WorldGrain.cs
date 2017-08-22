@@ -1,13 +1,13 @@
-﻿using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MineCase.Server.Game;
 using System.Threading.Tasks;
+using MineCase.Server.Game;
+using Orleans;
 
 namespace MineCase.Server.World
 {
-    class WorldGrain : Grain, IWorld
+    internal class WorldGrain : Grain, IWorld
     {
         private Dictionary<uint, IEntity> _entities;
         private uint _nextAvailEId;

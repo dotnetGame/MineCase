@@ -1,15 +1,16 @@
-﻿using MineCase.Server.World;
-using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.World;
+using Orleans;
 
 namespace MineCase.Server.Game.Entities
 {
     internal abstract class EntityGrain : Grain, IEntity
     {
         protected IWorld World { get; private set; }
+
         protected uint EntityId { get; private set; }
 
         public override Task OnActivateAsync()

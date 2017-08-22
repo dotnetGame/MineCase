@@ -1,11 +1,11 @@
-﻿using Autofac;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Autofac;
 
 namespace MineCase.Server.Game.Windows
 {
-    class WindowsModule : Module
+    internal class WindowsModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {

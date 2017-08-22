@@ -1,12 +1,12 @@
-﻿using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Orleans;
 
 namespace MineCase.Server.World
 {
-    class WorldAccessorGrain : Grain, IWorldAccessor
+    internal class WorldAccessorGrain : Grain, IWorldAccessor
     {
         private const string _defaultWorldName = "defaultWorld";
 

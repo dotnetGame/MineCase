@@ -1,19 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.14
+VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Server", "MineCase.Server\MineCase.Server.csproj", "{8E71CBEC-5804-4125-B651-C78426E57C8C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Gateway", "MineCase.Gateway\MineCase.Gateway.csproj", "{08B3641D-29F1-4E2B-BA88-84B2FFB436FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Protocol", "MineCase.Protocol\MineCase.Protocol.csproj", "{0842DE6C-4270-440E-9666-255A0B2EC1D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Protocol", "MineCase.Protocol\MineCase.Protocol.csproj", "{0842DE6C-4270-440E-9666-255A0B2EC1D9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Private", "Private", "{59A25C6F-3315-4CE8-9016-B088C9AF3A86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Server.Interfaces", "MineCase.Server.Interfaces\MineCase.Server.Interfaces.csproj", "{98454B69-800A-4DEB-8D13-1E244BF15507}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Server.Interfaces", "MineCase.Server.Interfaces\MineCase.Server.Interfaces.csproj", "{98454B69-800A-4DEB-8D13-1E244BF15507}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Server.Grains", "MineCase.Server.Grains\MineCase.Server.Grains.csproj", "{3F83DE42-121D-4E7A-AB27-825AD8179D3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Server.Grains", "MineCase.Server.Grains\MineCase.Server.Grains.csproj", "{3F83DE42-121D-4E7A-AB27-825AD8179D3C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A0B013BF-4BEB-4044-AA59-A9ED3AFBF99D}"
+	ProjectSection(SolutionItems) = preProject
+		..\build\Analyzers.ruleset = ..\build\Analyzers.ruleset
+		..\build\stylecop.json = ..\build\stylecop.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,5 +50,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2D4B0007-DDBF-40BF-A86A-CAB222FD4ABA}
 	EndGlobalSection
 EndGlobal
