@@ -10,11 +10,11 @@ MineCase
 * 分布式
 
 ## 要求
-运行这个服务器之前，请保证你满足：
+运行这个服务器之前，请保证你的环境满足：
 
-* `.net` core sdk 1.1
+* `.net core` sdk 1.1
 
-目前支持的 `minecraft` 的版本：
+目前支持的 `minecraft` 版本：
 
 * 1.12
 
@@ -61,9 +61,9 @@ Press Ctrl+C to terminate...
 * distributed
 
 ## Required
-Before running this server, please make sure you meet:
+Before running this server, please make sure your environment meet:
 
-* `.net` core sdk 1.1
+* `.net core` sdk 1.1
 
 Currently supported version of `minecraft`:
 
@@ -93,7 +93,7 @@ run `run_gateway.bat` .
 |:----:|:----:|
 |handshake|:white_check_mark:|
 |log in|:white_check_mark:|
-|entry world|:white_check_mark:|
+|entry the world|:white_check_mark:|
 |map generation|:x:|
 |monster generation|:x:|
 |AI|:x:|
