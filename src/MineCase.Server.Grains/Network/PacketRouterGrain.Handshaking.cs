@@ -35,6 +35,8 @@ namespace MineCase.Server.Network
                 _state = SessionState.Login;
             else
                 throw new InvalidOperationException();
+
+            _protocolVersion = packet.ProtocolVersion;
             return Task.CompletedTask;
         }
     }
