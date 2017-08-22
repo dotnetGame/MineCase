@@ -20,6 +20,25 @@ namespace MineCase.Protocol.Login
             };
         }
     }
+    [Packet(0x00)]
+    public sealed class LoginDisconnect : ISerializablePacket
+    {
+        [SerializeAs(DataType.Chat)]
+        public string reason;
+
+        public static LoginDisconnect Deserialize(BinaryReader br)
+        {
+            return new LoginDisconnect
+            {
+                reason = br.ReadAsString()
+            };
+        }
+
+        public void Serialize(BinaryWriter bw)
+        {
+            bw.Write(reason);
+        }
+    }
 
     [Packet(0x02)]
     public sealed class LoginSuccess : ISerializablePacket

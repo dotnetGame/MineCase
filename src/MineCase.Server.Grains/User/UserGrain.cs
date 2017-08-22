@@ -17,6 +17,7 @@ namespace MineCase.Server.User
     class UserGrain : Grain, IUser
     {
         private string _name;
+        private uint _protocolVersion;
         private string _worldId;
         private IWorld _world;
         private IClientboundPacketSink _sink;
@@ -142,7 +143,18 @@ namespace MineCase.Server.User
             _name = name;
             return Task.CompletedTask;
         }
-
+        
+        public Task<uint> GetProtocolVersion()
+        {
+            return Task.FromResult(_protocolVersion);
+        }
+        
+        public Task SetProtocolVersion(uint version)
+        {
+            _protocolVersion = version;
+            return Task.CompletedTask;
+        }
+        
         public Task<uint> GetPing()
         {
             uint ping;
