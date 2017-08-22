@@ -147,18 +147,18 @@ namespace MineCase.Server.User
             _name = name;
             return Task.CompletedTask;
         }
-        
+
         public Task<uint> GetProtocolVersion()
         {
             return Task.FromResult(_protocolVersion);
         }
-        
+
         public Task SetProtocolVersion(uint version)
         {
             _protocolVersion = version;
             return Task.CompletedTask;
         }
-        
+
         public Task<uint> GetProtocolVersion()
         {
             return Task.FromResult(_protocolVersion);

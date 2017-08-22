@@ -25,6 +25,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.UnitTest", "..\tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Nbt", "MineCase.NBT\MineCase.Nbt.csproj", "{199335D6-9726-42E1-94F2-7D95932D4DDC}"
 EndProject
+
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A0B013BF-4BEB-4044-AA59-A9ED3AFBF99D}"
+	ProjectSection(SolutionItems) = preProject
+		..\build\Analyzers.ruleset = ..\build\Analyzers.ruleset
+		..\build\stylecop.json = ..\build\stylecop.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +67,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {7AB995C3-E961-463C-8A55-3149C51761B5}
+		SolutionGuid = {2D4B0007-DDBF-40BF-A86A-CAB222FD4ABA}
 	EndGlobalSection
 EndGlobal
