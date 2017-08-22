@@ -1,22 +1,24 @@
-﻿using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MineCase.Protocol.Login;
 using System.Threading.Tasks;
-using MineCase.Server.User;
+using MineCase.Protocol.Login;
 using MineCase.Server.Game;
+using MineCase.Server.User;
+using Orleans;
 
 namespace MineCase.Server.Network.Login
 {
-    class LoginFlowGrain : Grain, ILoginFlow
+    internal class LoginFlowGrain : Grain, ILoginFlow
     {
         private bool _useAuthentication = false;
-        
+
         public async Task DispatchPacket(LoginStart packet)
         {
             if (_useAuthentication)
+            {
                 throw new NotImplementedException();
+            }
             else
             {
                 var user = await GrainFactory.GetGrain<INonAuthenticatedUser>(packet.Name).GetUser();
@@ -24,7 +26,7 @@ namespace MineCase.Server.Network.Login
                 {
                     await SendLoginDisconnect("{\"text\":\"Outdated server!I'm still on 1.12\"}");
                 }
-                else if(await user.GetProtocolVersion() < MineCase.Protocol.Protocol.Version)
+                else if (await user.GetProtocolVersion() < MineCase.Protocol.Protocol.Version)
                 {
                     await SendLoginDisconnect("{\"text\":\"Outdated client!Please use 1.12\"}");
                 }
@@ -53,12 +55,13 @@ namespace MineCase.Server.Network.Login
                 UUID = uuid.ToString()
             });
         }
+
         private async Task SendLoginDisconnect(string reason)
         {
             var sink = GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey());
             await sink.SendPacket(new LoginDisconnect
             {
-                reason = reason
+                Reason = reason
             });
         }
     }

@@ -1,13 +1,14 @@
-﻿using MineCase.Serialization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
     [Packet(0x2D)]
-    public sealed class PlayerListItem<TAction> : ISerializablePacket where TAction : PlayerListItemAction
+    public sealed class PlayerListItem<TAction> : ISerializablePacket
+        where TAction : PlayerListItemAction
     {
         [SerializeAs(DataType.VarInt)]
         public uint Action;

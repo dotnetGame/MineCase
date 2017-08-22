@@ -3,11 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.5</TargetFramework>
     <RootNamespace>MineCase.Server</RootNamespace>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.6.1" />
     <PackageReference Include="Microsoft.Orleans.Core" Version="2.0.0-preview2-20170724" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" PrivateAssets="All" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
 
@@ -18,6 +21,8 @@
 
   <ItemGroup>
     <Folder Include="World\Generation\" />
+
+    <AdditionalFiles Include="..\..\build\stylecop.json" />
   </ItemGroup>
 
 </Project>

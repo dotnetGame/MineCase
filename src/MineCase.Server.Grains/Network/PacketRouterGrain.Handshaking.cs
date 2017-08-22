@@ -1,16 +1,16 @@
-﻿using MineCase.Protocol;
-using MineCase.Protocol.Handshaking;
-using MineCase.Server.Network.Handshaking;
-using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Protocol;
+using MineCase.Protocol.Handshaking;
+using MineCase.Server.Network.Handshaking;
+using Orleans;
 
 namespace MineCase.Server.Network
 {
-    partial class PacketRouterGrain
+    internal partial class PacketRouterGrain
     {
         private object DeserializeHandshakingPacket(ref UncompressedPacket packet)
         {

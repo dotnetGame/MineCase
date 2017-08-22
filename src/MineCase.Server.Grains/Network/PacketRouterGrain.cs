@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Protocol;
-using Orleans.Concurrency;
-using Orleans;
 using MineCase.Protocol.Handshaking;
-using System.IO;
 using MineCase.Server.User;
+using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Network
 {
-    partial class PacketRouterGrain : Grain, IPacketRouter
+    internal partial class PacketRouterGrain : Grain, IPacketRouter
     {
         private SessionState _state;
         private uint _protocolVersion;
@@ -39,6 +39,7 @@ namespace MineCase.Server.Network
                 default:
                     break;
             }
+
             await DispatchPacket(innerPacket);
         }
 

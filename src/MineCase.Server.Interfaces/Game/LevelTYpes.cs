@@ -10,6 +10,6 @@ namespace MineCase.Server.Game
         public const string Flat = "flat";
         public const string LargeBiomes = "largeBiomes";
         public const string Amplified = "amplified";
-        public const string Default_1_1 = "default_1_1";
+        public const string Default11 = "default_1_1";
     }
 }

@@ -1,16 +1,16 @@
-﻿using MineCase.Protocol;
-using MineCase.Protocol.Status;
-using MineCase.Server.Network.Status;
-using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Protocol;
+using MineCase.Protocol.Status;
+using MineCase.Server.Network.Status;
+using Orleans;
 
 namespace MineCase.Server.Network
 {
-    partial class PacketRouterGrain
+    internal partial class PacketRouterGrain
     {
         private object DeserializeStatusPacket(ref UncompressedPacket packet)
         {
@@ -21,6 +21,7 @@ namespace MineCase.Server.Network
                     // Request
                     case 0x00:
                         return Request.Deserialize(br);
+
                     // Ping
                     case 0x01:
                         return Ping.Deserialize(br);
