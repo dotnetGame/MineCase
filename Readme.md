@@ -98,5 +98,5 @@ run `run_gateway.bat` .
 |monster generation|:x:|
 |AI|:x:|
 
-## Contribute
+## Feedback
 If you encounter any problems with the use of `MineCase`, please point out that in [Issues](https://github.com/dotnetGame/MineCase/issues).
