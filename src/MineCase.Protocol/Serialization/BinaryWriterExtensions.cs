@@ -1,9 +1,9 @@
-﻿using MineCase.Protocol;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using MineCase.Protocol;
 
 namespace MineCase.Serialization
 {
@@ -15,7 +15,7 @@ namespace MineCase.Serialization
         public static void WriteAsByte(this BinaryWriter bw, byte value) =>
             bw.Write(value);
 
-        /// <see cref="http://wiki.vg/Protocol#VarInt_and_VarLong"/>
+        // http://wiki.vg/Protocol#VarInt_and_VarLong
         public static void WriteAsVarInt(this BinaryWriter bw, uint value, out uint bytesWrite)
         {
             uint numWrite = 0;
@@ -27,7 +27,8 @@ namespace MineCase.Serialization
                     temp |= 0b10000000;
                 bw.Write(temp);
                 numWrite++;
-            } while (value != 0);
+            }
+            while (value != 0);
             bytesWrite = numWrite;
         }
 
@@ -73,7 +74,8 @@ namespace MineCase.Serialization
             bw.Write(value.ToByteArray());
         }
 
-        public static void WriteAsArray<T>(this BinaryWriter bw, IReadOnlyList<T> array) where T : ISerializablePacket
+        public static void WriteAsArray<T>(this BinaryWriter bw, IReadOnlyList<T> array)
+            where T : ISerializablePacket
         {
             foreach (var item in array)
                 item.Serialize(bw);
@@ -89,7 +91,8 @@ namespace MineCase.Serialization
             {
                 value >>= 7;
                 numWrite++;
-            } while (value != 0);
+            }
+            while (value != 0);
             return numWrite;
         }
 

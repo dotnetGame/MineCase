@@ -12,7 +12,7 @@ namespace MineCase.Server.Network.Login
     class LoginFlowGrain : Grain, ILoginFlow
     {
         private bool _useAuthentication = false;
-
+        
         public async Task DispatchPacket(LoginStart packet)
         {
             if (_useAuthentication)
@@ -20,15 +20,26 @@ namespace MineCase.Server.Network.Login
             else
             {
                 var user = await GrainFactory.GetGrain<INonAuthenticatedUser>(packet.Name).GetUser();
-                var uuid = user.GetPrimaryKey();
-                await SendLoginSuccess(packet.Name, uuid);
-                
-                await user.SetClientPacketSink(GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey()));
-                await GrainFactory.GetGrain<IPacketRouter>(this.GetPrimaryKey()).BindToUser(user);
+                if (await user.GetProtocolVersion() > MineCase.Protocol.Protocol.Version)
+                {
+                    await SendLoginDisconnect("{\"text\":\"Outdated server!I'm still on 1.12\"}");
+                }
+                else if(await user.GetProtocolVersion() < MineCase.Protocol.Protocol.Version)
+                {
+                    await SendLoginDisconnect("{\"text\":\"Outdated client!Please use 1.12\"}");
+                }
+                else
+                {
+                    var uuid = user.GetPrimaryKey();
+                    await SendLoginSuccess(packet.Name, uuid);
 
-                var world = await user.GetWorld();
-                var game = GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());
-                await game.JoinGame(user);
+                    await user.SetClientPacketSink(GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey()));
+                    await GrainFactory.GetGrain<IPacketRouter>(this.GetPrimaryKey()).BindToUser(user);
+
+                    var world = await user.GetWorld();
+                    var game = GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());
+                    await game.JoinGame(user);
+                }
             }
         }
 
@@ -40,6 +51,14 @@ namespace MineCase.Server.Network.Login
             {
                 Username = userName,
                 UUID = uuid.ToString()
+            });
+        }
+        private async Task SendLoginDisconnect(string reason)
+        {
+            var sink = GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey());
+            await sink.SendPacket(new LoginDisconnect
+            {
+                Reason = reason
             });
         }
     }

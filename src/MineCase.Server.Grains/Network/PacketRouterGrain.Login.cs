@@ -1,6 +1,7 @@
 ﻿using MineCase.Protocol;
 using MineCase.Protocol.Login;
 using MineCase.Server.Network.Login;
+using MineCase.Server.User;
 using Orleans;
 using System;
 using System.Collections.Generic;
@@ -32,11 +33,13 @@ namespace MineCase.Server.Network
             }
         }
 
-        private Task DispatchPacket(LoginStart packet)
+        private async Task DispatchPacket(LoginStart packet)
         {
+            var user = await GrainFactory.GetGrain<INonAuthenticatedUser>(packet.Name).GetUser();
+            await user.SetProtocolVersion(_protocolVersion);
+
             var requestGrain = GrainFactory.GetGrain<ILoginFlow>(this.GetPrimaryKey());
             requestGrain.DispatchPacket(packet).Ignore();
-            return Task.CompletedTask;
         }
     }
 }

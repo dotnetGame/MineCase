@@ -14,6 +14,7 @@ namespace MineCase.Server.Network
     partial class PacketRouterGrain : Grain, IPacketRouter
     {
         private SessionState _state;
+        private uint _protocolVersion;
         private IUser _user;
 
         public async Task SendPacket(UncompressedPacket packet)

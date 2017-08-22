@@ -1,8 +1,8 @@
-﻿using MineCase.Serialization;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using System.Text;
+using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
@@ -20,7 +20,7 @@ namespace MineCase.Protocol.Play
         public void Serialize(BinaryWriter bw)
         {
             bw.WriteAsShort(BlockId);
-            if(BlockId != -1)
+            if (BlockId != -1)
             {
                 bw.WriteAsByte(ItemCount.Value);
                 bw.WriteAsShort(ItemDamage.Value);
