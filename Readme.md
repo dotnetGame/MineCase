@@ -96,7 +96,7 @@ run `run_gateway.bat` .
 |entry world|:white_check_mark:|
 |map generation|:x:|
 |monster generation|:x:|
-|AI|:x|
+|AI|:x:|
 
 ## Contribute
 If you encounter any problems with the use of `MineCase`, please point out that in [Issues](https://github.com/dotnetGame/MineCase/issues).
