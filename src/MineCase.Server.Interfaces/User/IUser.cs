@@ -15,7 +15,7 @@ namespace MineCase.Server.User
     {
         Task SetName(string name);
         Task<uint> GetProtocolVersion();
-        Task SetProtocolVersion(uint ver);
+        Task SetProtocolVersion(uint version);
         Task<IWorld> GetWorld();
         Task<IGameSession> GetGameSession();
         Task<IPlayer> GetPlayer();
