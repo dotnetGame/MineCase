@@ -1,15 +1,15 @@
-﻿using MineCase.Protocol.Play;
-using MineCase.Server.Game;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Protocol.Play;
+using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 
 namespace MineCase.Server.Network.Play
 {
-    class ClientPlayPacketGenerator
+    internal class ClientPlayPacketGenerator
     {
         public IClientboundPacketSink Sink { get; }
 

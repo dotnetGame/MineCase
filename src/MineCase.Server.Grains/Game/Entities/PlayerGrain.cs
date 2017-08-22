@@ -1,18 +1,18 @@
-﻿using MineCase.Server.Game.Windows;
-using MineCase.Server.Network.Play;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Server.User;
+using MineCase.Server.Game.Windows;
 using MineCase.Server.Network;
-using System.Linq;
+using MineCase.Server.Network.Play;
+using MineCase.Server.User;
 using Orleans;
-using System.Numerics;
 
 namespace MineCase.Server.Game.Entities
 {
-    class PlayerGrain : EntityGrain, IPlayer
+    internal class PlayerGrain : EntityGrain, IPlayer
     {
         private IUser _user;
         private ClientPlayPacketGenerator _generator;
@@ -25,18 +25,27 @@ namespace MineCase.Server.Game.Entities
         private uint _health;
         private const uint MaxHealth = 20;
         public const uint MaxFood = 20;
-        private uint _currentExp, _levelMaxExp, _totalExp;
+        private uint _currentExp;
+        private uint _levelMaxExp;
+        private uint _totalExp;
         private uint _level;
         private uint _teleportId;
-        private bool _teleportConfirmed;
 
         private Vector3 _position;
-        private float _pitch, _yaw;
+        private float _pitch;
+        private float _yaw;
 
         public override Task OnActivateAsync()
         {
             _inventory = GrainFactory.GetGrain<IInventoryWindow>(Guid.NewGuid());
+            _currentExp = 0;
+            _totalExp = 0;
+            _level = 0;
+            _teleportId = 0;
             _levelMaxExp = 7;
+            _position = default(Vector3);
+            _pitch = 0;
+            _yaw = 0;
             return base.OnActivateAsync();
         }
 
@@ -99,12 +108,10 @@ namespace MineCase.Server.Game.Entities
         public async Task SendPositionAndLook()
         {
             await _generator.PositionAndLook(_position.X, _position.Y, _position.Z, _yaw, _pitch, 0, _teleportId);
-            _teleportConfirmed = false;
         }
 
         public Task OnTeleportConfirm(uint teleportId)
         {
-            _teleportConfirmed = true;
             return Task.CompletedTask;
         }
 

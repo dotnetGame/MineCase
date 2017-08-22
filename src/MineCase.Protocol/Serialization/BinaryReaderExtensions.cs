@@ -15,7 +15,7 @@ namespace MineCase.Serialization
         public static bool ReadAsBoolean(this BinaryReader br) =>
             br.ReadBoolean();
 
-        /// <see cref="http://wiki.vg/Protocol#VarInt_and_VarLong"/>
+        // http://wiki.vg/Protocol#VarInt_and_VarLong"
         public static uint ReadAsVarInt(this BinaryReader br, out int bytesRead)
         {
             int numRead = 0;
@@ -25,12 +25,13 @@ namespace MineCase.Serialization
             {
                 read = br.ReadByte();
                 uint value = (uint)(read & 0b01111111);
-                result |= (value << (7 * numRead));
+                result |= value << (7 * numRead);
 
                 numRead++;
                 if (numRead > 5)
                     throw new InvalidDataException("VarInt is too big");
-            } while ((read & 0b10000000) != 0);
+            }
+            while ((read & 0b10000000) != 0);
 
             bytesRead = numRead;
             return result;

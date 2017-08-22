@@ -1,9 +1,9 @@
-﻿using MineCase.Serialization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using MineCase.Serialization;
 
 namespace MineCase.Protocol
 {
@@ -11,19 +11,20 @@ namespace MineCase.Protocol
     {
         public static UncompressedPacket Decompress(ref CompressedPacket packet)
         {
-            var targetPacket = new UncompressedPacket();
+            var targetPacket = default(UncompressedPacket);
             using (var br = new BinaryReader(new DeflateStream(new MemoryStream(packet.CompressedData), CompressionMode.Decompress)))
             {
                 targetPacket.PacketId = br.ReadAsVarInt(out var packetIdLen);
                 targetPacket.Data = br.ReadBytes((int)packet.DataLength - packetIdLen);
             }
+
             targetPacket.Length = packet.DataLength;
             return targetPacket;
         }
 
         public static CompressedPacket Compress(ref UncompressedPacket packet)
         {
-            var targetPacket = new CompressedPacket();
+            var targetPacket = default(CompressedPacket);
             using (var stream = new MemoryStream())
             using (var bw = new BinaryWriter(new DeflateStream(stream, CompressionMode.Compress)))
             {
@@ -34,6 +35,7 @@ namespace MineCase.Protocol
                 targetPacket.DataLength = packetIdLen + (uint)packet.Data.Length;
                 targetPacket.CompressedData = stream.ToArray();
             }
+
             return targetPacket;
         }
     }

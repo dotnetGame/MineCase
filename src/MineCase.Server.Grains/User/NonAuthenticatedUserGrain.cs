@@ -1,12 +1,12 @@
-﻿using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Orleans;
 
 namespace MineCase.Server.User
 {
-    class NonAuthenticatedUserGrain : Grain, INonAuthenticatedUser
+    internal class NonAuthenticatedUserGrain : Grain, INonAuthenticatedUser
     {
         private Guid _uuid;
 

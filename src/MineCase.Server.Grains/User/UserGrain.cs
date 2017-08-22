@@ -1,20 +1,20 @@
-﻿using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using MineCase.Server.Game;
-using MineCase.Server.World;
-using System.Threading.Tasks;
-using MineCase.Server.Network;
 using System.Numerics;
-using MineCase.Server.Network.Play;
+using System.Text;
+using System.Threading.Tasks;
+using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Network;
+using MineCase.Server.Network.Play;
+using MineCase.Server.World;
+using Orleans;
 using Orleans.Concurrency;
 
 namespace MineCase.Server.User
 {
     [Reentrant]
-    class UserGrain : Grain, IUser
+    internal class UserGrain : Grain, IUser
     {
         private string _name;
         private uint _protocolVersion;
@@ -22,13 +22,15 @@ namespace MineCase.Server.User
         private IWorld _world;
         private IClientboundPacketSink _sink;
         private ClientPlayPacketGenerator _generator;
-        private IDisposable _sendKeepAliveTimer, _worldTimeSyncTimer;
+        private IDisposable _sendKeepAliveTimer;
+        private IDisposable _worldTimeSyncTimer;
         public HashSet<uint> _keepAliveWaiters;
 
         private readonly Random _keepAliveIdRand = new Random();
         private const int ClientKeepInterval = 6;
         private bool _isOnline = false;
-        private DateTime _keepAliveRequestTime, _keepAliveResponseTime;
+        private DateTime _keepAliveRequestTime;
+        private DateTime _keepAliveResponseTime;
         private UserState _state;
 
         private IPlayer _player;
@@ -41,6 +43,7 @@ namespace MineCase.Server.User
                 _worldId = world.GetPrimaryKeyString();
                 _world = world;
             }
+
             _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(_worldId);
         }
 
@@ -75,7 +78,8 @@ namespace MineCase.Server.User
             _state = UserState.JoinedGame;
             _keepAliveWaiters = new HashSet<uint>();
             _sendKeepAliveTimer = RegisterTimer(OnSendKeepAliveRequests, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
-            //_worldTimeSyncTimer = RegisterTimer(OnSyncWorldTime, null, TimeSpan.Zero, )
+
+            // _worldTimeSyncTimer = RegisterTimer(OnSyncWorldTime, null, TimeSpan.Zero, )
         }
 
         private async Task SendTimeUpdate()
@@ -143,18 +147,18 @@ namespace MineCase.Server.User
             _name = name;
             return Task.CompletedTask;
         }
-        
+
         public Task<uint> GetProtocolVersion()
         {
             return Task.FromResult(_protocolVersion);
         }
-        
+
         public Task SetProtocolVersion(uint version)
         {
             _protocolVersion = version;
             return Task.CompletedTask;
         }
-        
+
         public Task<uint> GetPing()
         {
             uint ping;
@@ -168,13 +172,13 @@ namespace MineCase.Server.User
 
         public async Task OnGameTick(TimeSpan deltaTime)
         {
-            if(_state == UserState.DownloadingWorld)
+            if (_state == UserState.DownloadingWorld)
             {
                 await _player.SendPositionAndLook();
                 _state = UserState.Playing;
             }
 
-            if(_state >= UserState.JoinedGame && _state < UserState.Destroying)
+            if (_state >= UserState.JoinedGame && _state < UserState.Destroying)
             {
                 for (int i = 0; i < 4; i++)
                 {
@@ -184,12 +188,12 @@ namespace MineCase.Server.User
             }
         }
 
-        private async Task<bool> StreamNextChunk()
+        private Task<bool> StreamNextChunk()
         {
-            return true;
+            return Task.FromResult(true);
         }
 
-        enum UserState : uint
+        private enum UserState : uint
         {
             None,
             JoinedGame,
