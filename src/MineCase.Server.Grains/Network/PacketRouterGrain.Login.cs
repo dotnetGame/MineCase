@@ -1,17 +1,17 @@
-﻿using MineCase.Protocol;
-using MineCase.Protocol.Login;
-using MineCase.Server.Network.Login;
-using MineCase.Server.User;
-using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Protocol;
+using MineCase.Protocol.Login;
+using MineCase.Server.Network.Login;
+using MineCase.Server.User;
+using Orleans;
 
 namespace MineCase.Server.Network
 {
-    partial class PacketRouterGrain
+    internal partial class PacketRouterGrain
     {
         private object DeserializeLoginPacket(ref UncompressedPacket packet)
         {
@@ -27,6 +27,7 @@ namespace MineCase.Server.Network
                     default:
                         throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X}.");
                 }
+
                 if (br.BaseStream.Position != br.BaseStream.Length)
                     throw new InvalidDataException($"Packet data is not fully consumed.");
                 return innerPacket;

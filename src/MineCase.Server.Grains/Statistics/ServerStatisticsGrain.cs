@@ -1,14 +1,14 @@
-﻿using Orleans;
-using Orleans.Concurrency;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Statistics
 {
     [Reentrant]
-    class ServerStatisticsGrain : Grain, IServerStatistics
+    internal class ServerStatisticsGrain : Grain, IServerStatistics
     {
         private readonly ServerVersion _version = new ServerVersion
         {

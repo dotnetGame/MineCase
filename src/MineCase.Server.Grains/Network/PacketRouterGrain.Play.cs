@@ -1,17 +1,17 @@
-﻿using MineCase.Protocol;
-using MineCase.Protocol.Play;
-using MineCase.Server.Game;
-using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Protocol;
+using MineCase.Protocol.Play;
+using MineCase.Server.Game;
+using Orleans;
 
 namespace MineCase.Server.Network
 {
-    partial class PacketRouterGrain
+    internal partial class PacketRouterGrain
     {
         private object DeserializePlayPacket(ref UncompressedPacket packet)
         {
@@ -24,18 +24,22 @@ namespace MineCase.Server.Network
                     case 0x00:
                         innerPacket = TeleportConfirm.Deserialize(br);
                         break;
+
                     // Client Settings
                     case 0x05:
                         innerPacket = ClientSettings.Deserialize(br);
                         break;
+
                     // Plugin Message
                     case 0x0A:
                         innerPacket = ServerboundPluginMessage.Deserialize(br);
                         break;
+
                     // Keep Alive
                     case 0x0C:
                         innerPacket = ServerboundKeepAlive.Deserialize(br);
                         break;
+
                     // Position And Look
                     case 0x0F:
                         innerPacket = ServerboundPositionAndLook.Deserialize(br);
@@ -43,6 +47,7 @@ namespace MineCase.Server.Network
                     default:
                         throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X}.");
                 }
+
                 if (br.BaseStream.Position != br.BaseStream.Length)
                     throw new InvalidDataException($"Packet data is not fully consumed.");
                 return innerPacket;
@@ -80,7 +85,8 @@ namespace MineCase.Server.Network
         private Task DispatchPacket(UseEntity packet)
         {
             var player = _user;
-            //player.UseEntity((uint)packet.Target, (EntityUsage)packet.Type, packet.TargetX.HasValue ?
+
+            // player.UseEntity((uint)packet.Target, (EntityUsage)packet.Type, packet.TargetX.HasValue ?
             //    new Vector3?(new Vector3(packet.TargetX.Value, packet.TargetY.Value, packet.TargetZ.Value)) : null, (EntityInteractHand?)packet.Hand).Ignore();
             return Task.CompletedTask;
         }

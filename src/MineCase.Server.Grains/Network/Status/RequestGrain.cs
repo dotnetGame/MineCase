@@ -1,18 +1,18 @@
-﻿using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MineCase.Protocol.Status;
 using System.Threading.Tasks;
-using Orleans.Concurrency;
+using MineCase.Protocol.Status;
 using MineCase.Server.Statistics;
 using Newtonsoft.Json;
+using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Network.Status
 {
     [StatelessWorker]
     [Reentrant]
-    class RequestGrain : Grain, IRequest
+    internal class RequestGrain : Grain, IRequest
     {
         private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
         {
@@ -35,7 +35,8 @@ namespace MineCase.Server.Network.Status
                 {
                     Text = await serverStatGrain.GetDescription()
                 },
-                //Favicon = "data:image/png;base64," + Convert.ToBase64String(await serverStatGrain.GetFavicon())
+
+                // Favicon = "data:image/png;base64," + Convert.ToBase64String(await serverStatGrain.GetFavicon())
             };
             var response = new Response
             {
@@ -44,23 +45,28 @@ namespace MineCase.Server.Network.Status
             await GrainFactory.GetGrain<IClientboundPacketSink>(sessionId).SendPacket(response);
         }
 
-        class ServerInfo
+        private class ServerInfo
         {
             public ServerVersion Version { get; set; }
-            public PlayersInfo Players { get; set; }
-            public DescriptionInfo Description { get; set; }
-            //public string Favicon { get; set; }
 
+            public PlayersInfo Players { get; set; }
+
+            public DescriptionInfo Description { get; set; }
+
+            // public string Favicon { get; set; }
             public class PlayerInfo
             {
                 public string Name { get; set; }
+
                 public Guid Id { get; set; }
             }
 
             public class PlayersInfo
             {
                 public uint Max { get; set; }
+
                 public uint Online { get; set; }
+
                 public PlayerInfo[] Samples { get; set; }
             }
 

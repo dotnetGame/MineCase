@@ -1,11 +1,11 @@
-﻿using Autofac;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Autofac;
 
 namespace MineCase.Server.User
 {
-    class UserModule : Module
+    internal class UserModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {
