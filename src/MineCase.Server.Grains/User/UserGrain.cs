@@ -143,15 +143,18 @@ namespace MineCase.Server.User
             _name = name;
             return Task.CompletedTask;
         }
+        
         public Task<uint> GetProtocolVersion()
         {
             return Task.FromResult(_protocolVersion);
         }
+        
         public Task SetProtocolVersion(uint ver)
         {
             _protocolVersion = ver;
             return Task.CompletedTask;
         }
+        
         public Task<uint> GetPing()
         {
             uint ping;
