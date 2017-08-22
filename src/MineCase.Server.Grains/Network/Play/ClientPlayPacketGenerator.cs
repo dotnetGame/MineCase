@@ -10,11 +10,11 @@ using MineCase.Server.Game.Entities;
 
 namespace MineCase.Server.Network.Play
 {
-    internal class ClientPlayPacketGenerator
+    internal struct ClientPlayPacketGenerator
     {
-        public IClientboundPacketSink Sink { get; }
+        public IPacketSink Sink { get; }
 
-        public ClientPlayPacketGenerator(IClientboundPacketSink sink)
+        public ClientPlayPacketGenerator(IPacketSink sink)
         {
             Sink = sink;
         }
@@ -122,7 +122,20 @@ namespace MineCase.Server.Network.Play
             });
         }
 
-        private Protocol.Play.Slot TransformSlotData(Game.Slot o)
+        public Task ChunkData()
+        {
+            return Sink.SendPacket(new ChunkData
+            {
+
+            });
+        }
+
+        public Task SendPacket(uint packetId, byte[] data)
+        {
+            return Sink.SendPacket(packetId, data);
+        }
+
+        private static Protocol.Play.Slot TransformSlotData(Game.Slot o)
         {
             return new Protocol.Play.Slot
             {

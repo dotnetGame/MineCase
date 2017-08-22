@@ -34,15 +34,10 @@ namespace MineCase.Server.Network
             return Task.CompletedTask;
         }
 
-        public Task SendPacket(ISerializablePacket packet)
+        public async Task SendPacket(ISerializablePacket packet)
         {
-            using (var stream = new MemoryStream())
-            using (var bw = new BinaryWriter(stream))
-            {
-                packet.Serialize(bw);
-                bw.Flush();
-                return SendPacket(GetPacketId(packet), stream.ToArray());
-            }
+            var prepared = await PreparePacket(packet);
+            await SendPacket(prepared.packetId, prepared.data);
         }
 
         private uint GetPacketId(ISerializablePacket packet)
@@ -52,7 +47,7 @@ namespace MineCase.Server.Network
             return attr.PacketId;
         }
 
-        private Task SendPacket(uint packetId, byte[] data)
+        public Task SendPacket(uint packetId, byte[] data)
         {
             var packet = new UncompressedPacket
             {
@@ -68,6 +63,17 @@ namespace MineCase.Server.Network
             _subsManager.Notify(n => n.OnClosed());
             DeactivateOnIdle();
             return Task.CompletedTask;
+        }
+
+        public async Task<(uint packetId, byte[] data)> PreparePacket(ISerializablePacket packet)
+        {
+            using (var stream = new MemoryStream())
+            using (var bw = new BinaryWriter(stream))
+            {
+                packet.Serialize(bw);
+                bw.Flush();
+                return (GetPacketId(packet), stream.ToArray());
+            }
         }
     }
 }

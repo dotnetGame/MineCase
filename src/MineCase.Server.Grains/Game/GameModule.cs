@@ -10,6 +10,7 @@ namespace MineCase.Server.Game
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<GameSession>();
+            builder.RegisterType<ChunkSenderGrain>();
         }
     }
 }

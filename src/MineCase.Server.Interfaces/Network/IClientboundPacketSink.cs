@@ -8,12 +8,12 @@ using Orleans;
 
 namespace MineCase.Server.Network
 {
-    public interface IClientboundPacketSink : IGrainWithGuidKey
+    public interface IClientboundPacketSink : IPacketSink, IGrainWithGuidKey
     {
         Task Subscribe(IClientboundPacketObserver observer);
 
         Task UnSubscribe(IClientboundPacketObserver observer);
-
+        
         Task SendPacket(ISerializablePacket packet);
 
         Task Close();
