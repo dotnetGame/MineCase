@@ -12,14 +12,7 @@ namespace MineCase.Server.Network.Login
     class LoginFlowGrain : Grain, ILoginFlow
     {
         private bool _useAuthentication = false;
-        /*
-        public Task SetUser(IUser user)
-        {
-            _user = user;
-            return Task.CompletedTask;
-        }
-        */
-
+        
         public async Task DispatchPacket(LoginStart packet)
         {
             if (_useAuthentication)
