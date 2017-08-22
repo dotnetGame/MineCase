@@ -23,7 +23,7 @@ namespace MineCase.Protocol.Login
     [Packet(0x00)]
     public sealed class LoginDisconnect : ISerializablePacket
     {
-        [SerializeAs(DataType.String)]
+        [SerializeAs(DataType.Chat)]
         public string reason;
 
         public static LoginDisconnect Deserialize(BinaryReader br)
