@@ -12,7 +12,7 @@ namespace MineCase.Server.Network.Login
     internal class LoginFlowGrain : Grain, ILoginFlow
     {
         private bool _useAuthentication = false;
-        
+
         public async Task DispatchPacket(LoginStart packet)
         {
             if (_useAuthentication)
@@ -55,7 +55,7 @@ namespace MineCase.Server.Network.Login
                 UUID = uuid.ToString()
             });
         }
-        
+
         private async Task SendLoginDisconnect(string reason)
         {
             var sink = GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey());
