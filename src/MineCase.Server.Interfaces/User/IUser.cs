@@ -14,6 +14,8 @@ namespace MineCase.Server.User
     public interface IUser : IGrainWithGuidKey
     {
         Task SetName(string name);
+        Task<uint> GetProtocolVersion();
+        Task SetProtocolVersion(uint version);
         Task<IWorld> GetWorld();
         Task<IGameSession> GetGameSession();
         Task<IPlayer> GetPlayer();
