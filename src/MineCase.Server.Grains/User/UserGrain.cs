@@ -149,9 +149,9 @@ namespace MineCase.Server.User
             return Task.FromResult(_protocolVersion);
         }
         
-        public Task SetProtocolVersion(uint ver)
+        public Task SetProtocolVersion(uint version)
         {
-            _protocolVersion = ver;
+            _protocolVersion = version;
             return Task.CompletedTask;
         }
         
