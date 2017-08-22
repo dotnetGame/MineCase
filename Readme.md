@@ -12,7 +12,7 @@ MineCase
 ## 要求
 运行这个服务器之前，请保证你满足：
 
-* .net core sdk >= 1.1
+* `.net` core sdk 1.1
 
 目前支持的 `minecraft` 的版本：
 
@@ -63,7 +63,7 @@ Press Ctrl+C to terminate...
 ## Required
 Before running this server, please make sure you meet:
 
-* .net core sdk >= 1.1
+* `.net` core sdk 1.1
 
 Currently supported version of `minecraft`:
 
