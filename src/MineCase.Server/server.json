@@ -3,10 +3,16 @@
 {
     //server
     "motd": "A Minecraft Server",
-    "server-port": 3388,
     "server-ip": "127.0.0.1",
+    "server-port": 3388,
     "max-tick-time": 60000,
     "online-mode": false,
+    "enable-rcon": false,
+    "network-compression-threshold": 256,
+    "resource-pack": "",
+    "resource-pack-hash": "",
+    "snooper-enabled": true,
+    "enable-query": false,
 
     //spawn
     "spawn-protection": 16,
@@ -18,34 +24,26 @@
     "max-world-size": 29999984,
     "allow-nether": true,
     "generate-structures": true,
+    "generator-settings": "",
     "max-build-height": 256,
     "level-seed": "",
     "level-type": "DEFAULT",
+    "enable-command-block": false,
+    "hardcore": false,
 
     //user
     "max-players": 20,
     "view-distance": 10,
     "allow-flight": false,
-    "level-name": "world",
+    //"level-name": "world",
     "player-idle-timeout": 0,
     "difficulty": 1,
+    "force-gamemode": false,
     "gamemode": 0,
     "pvp": true,
     "announce-player-achievements": true,
 
     //op
     "white-list": false,
-    "op-permission-level": 4,
-
-    //other
-    "generator-settings": "",
-    "force-gamemode": false,
-    "enable-query": false,
-    "resource-pack-hash": 0,
-    "snooper-enabled": true,
-    "hardcore": false,
-    "enable-command-block": false,
-    "network-compression-threshold": 256,
-    "resource-pack": "",
-    "enable-rcon": false
+    "op-permission-level": 4
 }
