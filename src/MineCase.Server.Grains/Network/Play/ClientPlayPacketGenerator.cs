@@ -125,6 +125,42 @@ namespace MineCase.Server.Network.Play
 
         public Task ChunkData(Dimension dimension, int chunkX, int chunkZ, ChunkColumn chunkColumn)
         {
+            ulong[] CompactBlockIds(Block[] blocks)
+            {
+                var result = new ulong[16 * 16 * 16 * 13 / 64];
+                int byteIndex = 0;
+                int bitIndex = 0;
+                foreach (var block in blocks)
+                {
+                    ulong id = (block.Id << 4) | (block.MetaValue & 0b1111);
+                    var availBits = 64 - bitIndex;
+                    var bitsToWrite = Math.Min(13, availBits);
+                    var shiftBits = 13 - bitsToWrite;
+                    result[byteIndex] |= id << bitIndex;
+                    bitIndex += bitsToWrite;
+                    if (bitIndex == 64)
+                    {
+                        byteIndex++;
+                        bitIndex = 0;
+                    }
+
+                    if (shiftBits > 0)
+                    {
+                        bitsToWrite = shiftBits;
+                        result[byteIndex] = id >> (13 - shiftBits);
+                        bitIndex += bitsToWrite;
+                    }
+
+                    if (bitIndex == 64)
+                    {
+                        byteIndex++;
+                        bitIndex = 0;
+                    }
+                }
+
+                return result;
+            }
+
             Protocol.Play.ChunkSection ToChunkSection(World.ChunkSection chunkSection)
             {
                 return new Protocol.Play.ChunkSection
@@ -133,7 +169,7 @@ namespace MineCase.Server.Network.Play
                     PaletteLength = 0,
                     BlockLight = CompactBy2(chunkSection.Blocks.Select(o => o.BlockLight).ToArray()),
                     SkyLight = dimension == Dimension.Overworld ? CompactBy2(chunkSection.Blocks.Select(o => o.SkyLight).ToArray()) : null,
-                    DataArray = Enumerable.Repeat(0b0000_0000_1000_0L, 16 * 16 * 16 * 13 / 64).ToArray()
+                    DataArray = CompactBlockIds(chunkSection.Blocks)
                 };
             }
 

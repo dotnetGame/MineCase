@@ -15,19 +15,40 @@ namespace MineCase.Server.World
 
         public Task<ChunkColumn> GetState()
         {
+            var blocks = new Block[16 * 16 * 16];
+            var index = 0;
+            for (int y = 0; y < 16; y++)
+            {
+                for (int x = 0; x < 16; x++)
+                {
+                    for (int z = 0; z < 16; z++)
+                    {
+                        if (y == 0)
+                            blocks[index] = new Block { Id = 1, SkyLight = 0xF };
+                        else
+                            blocks[index] = new Block { Id = 0, SkyLight = 0xF };
+                        index++;
+                    }
+                }
+            }
+
             return Task.FromResult(new ChunkColumn
             {
                 Biomes = Enumerable.Repeat<byte>(0, 256).ToArray(),
                 SectionBitMask = 0b1111_1111_1111_1111,
-                Sections = Enumerable.Repeat(
+                Sections = new[]
+                {
                     new ChunkSection
                     {
                         BitsPerBlock = 13,
-                        Blocks = Enumerable.Repeat(
-                            new Block
-                            {
-                            }, 16 * 16 * 16).ToArray()
-                    }, 16).ToArray()
+                        Blocks = blocks
+                    }
+                }.Concat(Enumerable.Repeat(
+                    new ChunkSection
+                    {
+                        BitsPerBlock = 13,
+                        Blocks = Enumerable.Repeat(new Block { Id = 0, SkyLight = 0xF }, 16 * 16 * 16).ToArray()
+                    }, 15)).ToArray()
             });
         }
 

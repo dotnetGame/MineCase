@@ -211,8 +211,17 @@ namespace MineCase.Server.User
             if (_lastStreamedChunk.HasValue && _lastStreamedChunk.Value.Equals((currentChunk.x, currentChunk.z))) return true;
 
             var trunkSender = GrainFactory.GetGrain<IChunkSender>(_world.GetPrimaryKeyString());
-            await trunkSender.PostChunk(currentChunk.x, currentChunk.z, new[] { _sink });
+
+            // await trunkSender.PostChunk(currentChunk.x, currentChunk.z, new[] { _sink });
             _lastStreamedChunk = (currentChunk.x, currentChunk.z);
+
+            for (int x = 0; x < 11; x++)
+            {
+                for (int z = 0; z < 11; z++)
+                {
+                    await trunkSender.PostChunk(x, z, new[] { _sink });
+                }
+            }
 
             return true;
         }

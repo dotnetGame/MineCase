@@ -74,7 +74,7 @@ namespace MineCase.Protocol.Play
         public uint DataArrayLength;
 
         [SerializeAs(DataType.Array)]
-        public long[] DataArray;
+        public ulong[] DataArray;
 
         [SerializeAs(DataType.Array)]
         public byte[] BlockLight;
@@ -111,7 +111,7 @@ namespace MineCase.Protocol.Play
 
             bw.WriteAsVarInt(DataArrayLength, out _);
             foreach (var item in DataArray)
-                bw.WriteAsLong(item);
+                bw.WriteAsUnsignedLong(item);
             bw.WriteAsByteArray(BlockLight);
             if (SkyLight != null)
                 bw.WriteAsByteArray(SkyLight);

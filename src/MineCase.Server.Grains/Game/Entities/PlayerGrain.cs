@@ -43,7 +43,7 @@ namespace MineCase.Server.Game.Entities
             _level = 0;
             _teleportId = 0;
             _levelMaxExp = 7;
-            _position = default(Vector3);
+            _position = new Vector3(5, 20, 5);
             _pitch = 0;
             _yaw = 0;
             return base.OnActivateAsync();
