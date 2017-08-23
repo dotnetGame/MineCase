@@ -132,16 +132,16 @@ namespace MineCase.Server.Settings
         public uint PlayerIdleTimeout { get; set; } // If non-zero, players are kicked from the server if they are idle for more than that many minutes.
 
         [JsonProperty(PropertyName = "difficulty")]
-        [DefaultValue(Difficulty.Easy)]
-        public Difficulty Difficulty { get; set; }
+        [DefaultValue(1)]
+        public uint Difficulty { get; set; }
 
         [JsonProperty(PropertyName = "force-gamemode")]
         [DefaultValue(false)]
         public bool ForceGamemode { get; set; }
 
         [JsonProperty(PropertyName = "gamemode")]
-        [DefaultValue(GameMode.Class.Survival)]
-        public GameMode Gamemode { get; set; }
+        [DefaultValue(0)]
+        public uint Gamemode { get; set; }
 
         [JsonProperty(PropertyName = "pvp")]
         [DefaultValue(true)]
@@ -157,7 +157,7 @@ namespace MineCase.Server.Settings
         public bool WhiteList { get; set; }
 
         [JsonProperty(PropertyName = "op-permission-level")]
-        [DefaultValue(OpPermissionLevel.AllCommands)]
-        public OpPermissionLevel OpPermissionLevel { get; set; }
+        [DefaultValue(4)]
+        public uint OpPermissionLevel { get; set; }
     }
 }

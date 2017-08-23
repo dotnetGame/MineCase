@@ -2,7 +2,7 @@
 //ed Jun 28 22:27:08 CST 2017
 {
     //server
-    "motd": "A Minecraft Server",
+    "motd": "A Minecase Server",
     "server-ip": "127.0.0.1",
     "server-port": 3388,
     "max-tick-time": 60000,

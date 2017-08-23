@@ -6,9 +6,9 @@ namespace MineCase.Server.Settings
     public interface IServerSettings : IGrainWithIntegerKey
     {
         // get settings
-        Task<ServerSettings> GetSettigns();
+        Task<ServerSettings> GetSettings();
 
         // set settings
-        Task SetSettigns(ServerSettings settings);
+        Task SetSettings(ServerSettings settings);
     }
 }

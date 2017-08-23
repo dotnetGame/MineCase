@@ -20,10 +20,10 @@ namespace MineCase.Server.Settings
         }
 
         // get settings
-        public Task<ServerSettings> GetSettigns() => Task.FromResult(_settings);
+        public Task<ServerSettings> GetSettings() => Task.FromResult(_settings);
 
         // set settings
-        public Task SetSettigns(ServerSettings settings)
+        public Task SetSettings(ServerSettings settings)
         {
             _settings = settings;
             return Task.CompletedTask;
@@ -36,9 +36,11 @@ namespace MineCase.Server.Settings
             {
                 result = File.ReadAllText(path);
             }
-            catch (IOException e)
+            catch (IOException /*e*/)
             {
-                Console.WriteLine("io异常" + e.ToString());
+                // TODO
+                // 创建包含默认配置的配置文件
+                // Console.WriteLine("io异常" + e.ToString());
             }
 
             return Task.FromResult(result);
