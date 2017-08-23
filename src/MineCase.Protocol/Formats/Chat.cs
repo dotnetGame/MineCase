@@ -45,14 +45,6 @@ namespace MineCase.Formats
             jObject.Add("value", Value);
             return jObject;
         }
-
-        public override string ToString()
-        {
-            JObject jObject = new JObject();
-            jObject.Add("action", _map[Action.GetHashCode()]);
-            jObject.Add("value", Value);
-            return jObject.ToString();
-        }
     }
 
     /// <summary>
@@ -63,7 +55,7 @@ namespace MineCase.Formats
         private static string[] _map = new string[3]
         { "show_text", "show_item", "show_entity" };
 
-        public string Action { get; set; }
+        public HoverEventType Action { get; set; }
 
         public JToken Value { get; set; }
 
@@ -73,14 +65,6 @@ namespace MineCase.Formats
             jObject.Add("action", _map[Action.GetHashCode()]);
             jObject.Add("value", Value);
             return jObject;
-        }
-
-        public override string ToString()
-        {
-            JObject jObject = new JObject();
-            jObject.Add("action", _map[Action.GetHashCode()]);
-            jObject.Add("value", Value);
-            return jObject.ToString();
         }
     }
 
