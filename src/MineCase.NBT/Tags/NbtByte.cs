@@ -11,6 +11,12 @@ namespace MineCase.Nbt.Tags
         public override bool HasValue => true;
         public sbyte Value { get; set; }
 
-
+        /// <summary>默认构造函数</summary>
+        /// <param name="value">要初始化的值</param>
+        /// <param name="name">该 Tag 的名称</param>
+        public NbtByte(sbyte value, string name = null) : base(name)
+        {
+            Value = value;
+        }
     }
 }

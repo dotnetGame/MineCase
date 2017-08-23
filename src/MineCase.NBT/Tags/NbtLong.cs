@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using MineCase.Nbt.Serialization;
 
 namespace MineCase.Nbt.Tags
 {
@@ -11,6 +13,39 @@ namespace MineCase.Nbt.Tags
         public override bool HasValue => true;
         public long Value { get; set; }
 
+        /// <summary>默认构造函数</summary>
+        /// <param name="value">要初始化的值</param>
+        /// <param name="name">该 Tag 的名称</param>
+        public NbtLong(long value, string name = null) : base(name)
+        {
+            Value = value;
+        }
 
+        private class Serializer : ITagSerializer
+        {
+            public NbtTag Deserialize(BinaryReader br, bool requireName)
+            {
+                string name = null;
+                if (requireName)
+                {
+                    name = br.ReadTagString();
+                }
+
+                var value = br.ReadInt64();
+                return new NbtLong(value, name);
+            }
+
+            public void Serialize(NbtTag tag, BinaryWriter bw)
+            {
+                var nbtLong = (NbtLong) tag;
+                bw.WriteTagString(nbtLong.Name);
+                bw.Write(nbtLong.Value);
+            }
+        }
+
+        static NbtLong()
+        {
+            NbtTagSerializer.RegisterTag(NbtTagType.Long, new Serializer());
+        }
     }
 }

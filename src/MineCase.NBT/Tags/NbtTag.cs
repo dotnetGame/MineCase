@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace MineCase.Nbt.Tags
@@ -26,9 +27,11 @@ namespace MineCase.Nbt.Tags
         /// <remarks>该属性指示本 Tag 是否具有 Value 属性</remarks>
         public abstract bool HasValue { get; }
 
+        private string _name;
         /// <summary>
         /// 该 Tag 的名称
         /// </summary>
+        /// <remarks>可为 null</remarks>
         public string Name
         {
             get => _name;
@@ -43,7 +46,18 @@ namespace MineCase.Nbt.Tags
                 _name = value;
             }
         }
-        private string _name;
+
+        /// <summary>
+        /// 默认构造方法
+        /// </summary>
+        /// <param name="name">该 Tag 的名称</param>
+        /// <param name="parent">该 Tag 所从属于的 Tag</param>
+        /// <remarks>一般不需要手动指定 <paramref name="parent"/>，因为将 Tag 加入其它 Tag 时会自动设置，更加安全</remarks>
+        protected NbtTag(string name = null, NbtTag parent = null)
+        {
+            _name = name;
+            Parent = parent;
+        }
 
         /// <summary>
         /// 当子 Tag 被重命名之时通知该 Tag 从属于的 Tag 以完成相关的变动

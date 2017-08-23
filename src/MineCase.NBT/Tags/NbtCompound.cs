@@ -13,7 +13,28 @@ namespace MineCase.Nbt.Tags
         public override NbtTagType TagType => NbtTagType.Compound;
         public override bool HasValue => false;
 
-        private readonly Dictionary<string, NbtTag> _childTags = new Dictionary<string, NbtTag>();
+        private readonly Dictionary<string, NbtTag> _childTags;
+
+        /// <summary>默认构造方法</summary>
+        /// <param name="name">该 Tag 的名称</param>
+        public NbtCompound(string name = null) : this(null, name)
+        {
+        }
+
+        /// <summary>从 <paramref name="tags"/> 初始化子 Tag 的构造方法</summary>
+        /// <param name="tags">要用于提供子 Tag 的范围</param>
+        /// <param name="name">该 Tag 的名称</param>
+        /// <remarks><paramref name="tags"/> 为 null 时将子 Tag 初始化为空集合</remarks>
+        /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了不具有名称的 Tag</exception>
+        /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了 null</exception>
+        public NbtCompound(IEnumerable<NbtTag> tags, string name = null) : base(name)
+        {
+            _childTags =
+                tags?.ToDictionary(
+                    tag => tag?.Name ?? throw new ArgumentException($"{nameof(tags)} 中包含了不具有名称的 Tag", nameof(tags)),
+                    tag => tag ?? throw new ArgumentException($"{nameof(tags)} 中包含了 null", nameof(tags))) ??
+                new Dictionary<string, NbtTag>();
+        }
 
         /// <see cref="Get(string)"/>
         public NbtTag this[string tagName] => Get(tagName);

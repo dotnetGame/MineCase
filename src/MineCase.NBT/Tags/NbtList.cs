@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 namespace MineCase.Nbt.Tags
@@ -12,9 +13,39 @@ namespace MineCase.Nbt.Tags
         public override NbtTagType TagType => NbtTagType.List;
         public override bool HasValue => false;
 
-        private readonly List<NbtTag> _childTags = new List<NbtTag>();
+        private readonly List<NbtTag> _childTags;
 
         public int Count => _childTags.Count;
+
+        /// <summary>
+        /// 默认构造方法
+        /// </summary>
+        /// <param name="name">该 Tag 的名称</param>
+        public NbtList(string name = null) : this(null, name)
+        {
+        }
+
+        /// <summary>从 <paramref name="tags"/> 初始化子 Tag 的构造方法</summary>
+        /// <param name="tags">要用于提供子 Tag 的范围</param>
+        /// <param name="name">该 Tag 的名称</param>
+        /// <remarks><paramref name="tags"/> 为 null 时将子 Tag 初始化为空集合</remarks>
+        /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了 null</exception>
+        public NbtList(IEnumerable<NbtTag> tags, string name = null) : base(name)
+        {
+            if (tags == null)
+            {
+                _childTags = new List<NbtTag>();
+            }
+
+            // TODO: 此处隐藏了重复元素的问题，是否需要检查？
+            var tmpTags = new List<NbtTag>(tags.Distinct());
+            if (tmpTags.FindIndex(tag => tag == null || tag.Name != null) != -1)
+            {
+                throw new ArgumentException($"{nameof(tags)} 中包含了 null 或者具有名称的子 Tag", nameof(tags));
+            }
+            
+            _childTags = tmpTags;
+        }
 
         /// <see cref="Get(int)"/>
         public NbtTag this[int index] => Get(index);
@@ -52,6 +83,11 @@ namespace MineCase.Nbt.Tags
                 throw new ArgumentNullException(nameof(tag));
             }
 
+            if (tag.Name != null)
+            {
+                throw new ArgumentException("子 Tag 不会具有名称，查找将总是失败的", nameof(tag));
+            }
+
             return _childTags.Contains(tag);
         }
 
@@ -66,6 +102,11 @@ namespace MineCase.Nbt.Tags
                 throw new ArgumentNullException(nameof(tag));
             }
 
+            if (tag.Name != null)
+            {
+                throw new ArgumentException("子 Tag 不会具有名称，查找将总是失败的", nameof(tag));
+            }
+
             return _childTags.FindIndex(curTag => curTag == tag);
         }
 
@@ -77,6 +118,11 @@ namespace MineCase.Nbt.Tags
             if (tag == null)
             {
                 throw new ArgumentNullException(nameof(tag));
+            }
+
+            if (tag.Name != null)
+            {
+                throw new ArgumentException("子 Tag 不能具有名称", nameof(tag));
             }
             
             // TODO: 这个检查是否必要？
@@ -103,6 +149,11 @@ namespace MineCase.Nbt.Tags
             if (tag == null)
             {
                 throw new ArgumentNullException(nameof(tag));
+            }
+
+            if (tag.Name != null)
+            {
+                throw new ArgumentException("子 Tag 不能具有名称", nameof(tag));
             }
 
             // TODO: 这个检查是否必要？
@@ -151,7 +202,11 @@ namespace MineCase.Nbt.Tags
 
         protected override void OnChildTagRenamed(NbtTag tag, string newName)
         {
-            // No op
+            // 子 Tag 不能具有名称
+            if (tag.Name != null || newName != null)
+            {
+                throw new Exception("NbtList 的子 Tag 不能具有名称");
+            }
         }
 
         public override void Accept(INbtTagVisitor visitor)
