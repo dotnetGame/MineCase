@@ -149,6 +149,22 @@ namespace MineCase.Nbt.Tags
             tag.Parent = null;
         }
 
+        protected override void OnChildTagRenamed(NbtTag tag, string newName)
+        {
+            // No op
+        }
+
+        public override void Accept(INbtTagVisitor visitor)
+        {
+            base.Accept(visitor);
+            visitor.StartChild();
+            foreach (var tag in _childTags)
+            {
+                tag.Accept(visitor);
+            }
+            visitor.EndChild();
+        }
+
         public IEnumerator<NbtTag> GetEnumerator()
         {
             return _childTags.GetEnumerator();
