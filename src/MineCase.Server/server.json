@@ -20,6 +20,7 @@
     "generate-structures": true,
     "max-build-height": 256,
     "level-seed": "",
+    "level-type": "DEFAULT",
 
     //user
     "max-players": 20,
@@ -42,7 +43,6 @@
     "enable-query": false,
     "resource-pack-hash": 0,
     "snooper-enabled": true,
-    "level-type": "DEFAULT",
     "hardcore": false,
     "enable-command-block": false,
     "network-compression-threshold": 256,
