@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Xunit;
 using MineCase.Formats;
 using Newtonsoft.Json.Linq;
+using Xunit;
 
 namespace MineCase.UnitTest
 {

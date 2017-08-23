@@ -23,7 +23,7 @@ namespace MineCase.Formats
     {
         ShowText = 0,
         ShowItem = 1,
-        ShowEntity = 2,
+        ShowEntity = 2
     }
 
     /// <summary>
@@ -31,7 +31,7 @@ namespace MineCase.Formats
     /// </summary>
     public class ChatClickEvent
     {
-        private static string[] _map = new string[4]
+        private static readonly string[] _map = new string[4]
         { "open_rul", "run_command", "suggest_command", "change_page" };
 
         public ClickEventType Action { get; set; }
@@ -52,7 +52,7 @@ namespace MineCase.Formats
     /// </summary>
     public class ChatHoverEvent
     {
-        private static string[] _map = new string[3]
+        private static readonly string[] _map = new string[3]
         { "show_text", "show_item", "show_entity" };
 
         public HoverEventType Action { get; set; }
@@ -73,15 +73,15 @@ namespace MineCase.Formats
     /// </summary>
     public abstract class ChatComponent
     {
-        public bool Bold { get; set; }
+        public bool? Bold { get; set; }
 
-        public bool Itatic { get; set; }
+        public bool? Itatic { get; set; }
 
-        public bool Underlined { get; set; }
+        public bool? Underlined { get; set; }
 
-        public bool Strikethrough { get; set; }
+        public bool? Strikethrough { get; set; }
 
-        public bool Obfuscated { get; set; }
+        public bool? Obfuscated { get; set; }
 
         public string Color { get; set; }
 
@@ -96,6 +96,7 @@ namespace MineCase.Formats
         public virtual JObject ToJObject()
         {
             JObject jObject = new JObject();
+
             AddBoolValue(jObject, "bold", Bold);
             AddBoolValue(jObject, "itatic", Itatic);
             AddBoolValue(jObject, "underlined", Underlined);
@@ -117,7 +118,7 @@ namespace MineCase.Formats
             if (Extra != null && Extra.Count != 0)
             {
                 JArray jArray = new JArray();
-                foreach (ChatComponent comp in Extra)
+                foreach (var comp in Extra)
                 {
                     jArray.Add(comp.ToJObject());
                 }
@@ -126,17 +127,20 @@ namespace MineCase.Formats
             return jObject;
         }
 
-        private void AddBoolValue(JObject jObject, string key, bool value)
+        private void AddBoolValue(JObject jObject, string key, bool? value)
         {
-            if (value)
+            if (value.HasValue)
             {
-                jObject.Add(key, value);
+                if ((bool)value)
+                {
+                    jObject.Add(key, (bool)value);
+                }
             }
         }
 
         private void AddStringValue(JObject jObject, string key, string value)
         {
-            if (value != null && value.Length != 0)
+            if (!string.IsNullOrEmpty(value))
             {
                 jObject.Add(key, value);
             }
@@ -154,7 +158,7 @@ namespace MineCase.Formats
         {
             JObject jObject = base.ToJObject();
 
-            if (Text != null && Text.Length != 0)
+            if (!string.IsNullOrEmpty(Text))
             {
                 jObject.Add("text", Text);
             }
@@ -176,7 +180,7 @@ namespace MineCase.Formats
         {
             JObject jObject = base.ToJObject();
 
-            if (Translate != null && Translate.Length != 0)
+            if (!string.IsNullOrEmpty(Translate))
             {
                 jObject.Add("translate", Translate);
             }
@@ -184,10 +188,12 @@ namespace MineCase.Formats
             if (With != null && With.Count != 0)
             {
                 JArray jArray = new JArray();
-                foreach (ChatComponent comp in With)
+                foreach (var comp in With)
                 {
                     jArray.Add(comp.ToJObject());
                 }
+
+                jObject.Add("with", jArray);
             }
 
             return jObject;
@@ -216,6 +222,7 @@ namespace MineCase.Formats
         public override JObject ToJObject()
         {
             JObject jObject = base.ToJObject();
+            jObject.Add("score", Score);
             return jObject;
         }
     }
