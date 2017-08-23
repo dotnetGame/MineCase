@@ -30,5 +30,45 @@ namespace MineCase.UnitTest
             Assert.Equal("#FFFFFF", o.GetValue("color").Value<string>());
             Assert.Equal(JToken.Parse(chatClickEvent.ToJObject().ToString()), o.GetValue("clickEvent"));
         }
+
+        [Fact]
+        public void Test2()
+        {
+            StringComponent stringComponent = new StringComponent();
+            stringComponent.Text = "hello";
+            stringComponent.Bold = true;
+            stringComponent.Itatic = false;
+            stringComponent.Color = "#FFFFFF";
+            ChatClickEvent chatClickEvent = new ChatClickEvent();
+            chatClickEvent.Action = ClickEventType.ChangePage;
+            chatClickEvent.Value = 1;
+            stringComponent.ClickEvent = chatClickEvent;
+
+            Chat chat = new Chat(stringComponent);
+            Assert.Equal("{\"text\":\"hello\",\"bold\":true,\"color\":\"#FFFFFF\",\"clickEvent\":{\"action\":\"change_page\",\"value\":1}}", chat.ToString());
+        }
+
+        [Fact]
+        public void Test3()
+        {
+            string json = @"{
+                ""text"":""case"",
+                ""bold"":true,
+                ""itatic"":true,
+                ""color"":""#FFFFFF"",
+                ""clickEvent"":{
+                    ""action"":""change_page"",
+                    ""value"":1
+                }
+            }";
+            Chat chat = Chat.Parse(json);
+            StringComponent sc = (StringComponent)chat.Component;
+            Assert.Equal("case", sc.Text);
+            Assert.True(sc.Bold);
+            Assert.True(sc.Itatic);
+            Assert.Equal("#FFFFFF", sc.Color);
+            Assert.Equal(ClickEventType.ChangePage, sc.ClickEvent.Action);
+            Assert.Equal(1, sc.ClickEvent.Value.Value<int>());
+        }
     }
 }
