@@ -65,14 +65,14 @@ namespace MineCase.Server.Network
             return Task.CompletedTask;
         }
 
-        public async Task<(uint packetId, byte[] data)> PreparePacket(ISerializablePacket packet)
+        public Task<(uint packetId, byte[] data)> PreparePacket(ISerializablePacket packet)
         {
             using (var stream = new MemoryStream())
             using (var bw = new BinaryWriter(stream))
             {
                 packet.Serialize(bw);
                 bw.Flush();
-                return (GetPacketId(packet), stream.ToArray());
+                return Task.FromResult((GetPacketId(packet), stream.ToArray()));
             }
         }
     }

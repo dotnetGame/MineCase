@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MineCase.Server
 {
-    class StreamProviders
+    internal class StreamProviders
     {
         public const string JobsProvider = "JobsProvider";
 

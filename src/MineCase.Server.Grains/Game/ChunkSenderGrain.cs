@@ -1,13 +1,13 @@
-﻿using MineCase.Server.Network;
-using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using MineCase.Protocol;
-using System.Threading.Tasks;
 using System.Linq;
-using Orleans.Streams;
+using System.Text;
+using System.Threading.Tasks;
+using MineCase.Protocol;
+using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
+using Orleans;
+using Orleans.Streams;
 
 namespace MineCase.Server.Game
 {
@@ -17,7 +17,7 @@ namespace MineCase.Server.Game
     }
 
     [ImplicitStreamSubscription(StreamProviders.Namespaces.ChunkSender)]
-    class ChunkSenderGrain : Grain, IChunkSender
+    internal class ChunkSenderGrain : Grain, IChunkSender
     {
         public override async Task OnActivateAsync()
         {
@@ -31,7 +31,7 @@ namespace MineCase.Server.Game
             await generator.ChunkData();
         }
 
-        class BroadcastPacketSink : IPacketSink
+        private class BroadcastPacketSink : IPacketSink
         {
             private IReadOnlyCollection<IPacketSink> _sinks;
 

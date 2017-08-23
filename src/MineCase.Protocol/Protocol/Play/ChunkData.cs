@@ -1,8 +1,8 @@
-﻿using MineCase.Serialization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
@@ -51,6 +51,7 @@ namespace MineCase.Protocol.Play
                 bw.WriteAsVarInt(Size, out _);
                 bw.WriteAsByteArray(dataBytes);
             }
+
             bw.WriteAsVarInt(NumberOfBlockEntities, out _);
         }
     }
@@ -92,6 +93,7 @@ namespace MineCase.Protocol.Play
                         foreach (var item in Palette)
                             pbw.WriteAsVarInt(item, out _);
                     }
+
                     var paletteBytes = mem.ToArray();
                     PaletteLength = (uint)paletteBytes.Length;
                     bw.WriteAsVarInt(PaletteLength, out _);
@@ -103,6 +105,7 @@ namespace MineCase.Protocol.Play
                 PaletteLength = 0;
                 bw.WriteAsVarInt(PaletteLength, out _);
             }
+
             bw.WriteAsVarInt(DataArrayLength, out _);
             foreach (var item in DataArray)
                 bw.WriteAsLong(item);

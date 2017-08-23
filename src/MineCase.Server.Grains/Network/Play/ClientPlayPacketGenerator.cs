@@ -126,7 +126,6 @@ namespace MineCase.Server.Network.Play
         {
             return Sink.SendPacket(new ChunkData
             {
-
             });
         }
 

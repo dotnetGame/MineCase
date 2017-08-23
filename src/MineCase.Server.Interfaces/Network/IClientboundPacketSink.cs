@@ -13,8 +13,6 @@ namespace MineCase.Server.Network
         Task Subscribe(IClientboundPacketObserver observer);
 
         Task UnSubscribe(IClientboundPacketObserver observer);
-        
-        Task SendPacket(ISerializablePacket packet);
 
         Task Close();
     }
