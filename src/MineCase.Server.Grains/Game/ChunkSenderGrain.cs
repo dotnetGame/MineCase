@@ -1,66 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Protocol;
 using MineCase.Server.Network;
-using MineCase.Server.Network.Play;
+using MineCase.Server.World;
 using Orleans;
-using Orleans.Streams;
 
 namespace MineCase.Server.Game
 {
-    public sealed class SendChunkJob
-    {
-       public IReadOnlyCollection<IClientboundPacketSink> Clients { get; set; }
-    }
-
-    [ImplicitStreamSubscription(StreamProviders.Namespaces.ChunkSender)]
     internal class ChunkSenderGrain : Grain, IChunkSender
     {
-        public override async Task OnActivateAsync()
+        private Guid _jobWorkerId;
+
+        public override Task OnActivateAsync()
         {
-            var stream = GetStreamProvider(StreamProviders.JobsProvider).GetStream<SendChunkJob>(this.GetPrimaryKey(), StreamProviders.Namespaces.ChunkSender);
-            await stream.SubscribeAsync(OnNextAsync);
+            _jobWorkerId = Guid.NewGuid();
+            return base.OnActivateAsync();
         }
 
-        private async Task OnNextAsync(SendChunkJob job, StreamSequenceToken token)
+        public Task PostChunk(int x, int z, IReadOnlyCollection<IClientboundPacketSink> clients)
         {
-            var generator = new ClientPlayPacketGenerator(new BroadcastPacketSink(job.Clients));
-            await generator.ChunkData();
-        }
-
-        private class BroadcastPacketSink : IPacketSink
-        {
-            private IReadOnlyCollection<IPacketSink> _sinks;
-
-            public BroadcastPacketSink(IReadOnlyCollection<IPacketSink> sinks)
+            var stream = GetStreamProvider(StreamProviders.JobsProvider).GetStream<SendChunkJob>(_jobWorkerId, StreamProviders.Namespaces.ChunkSender);
+            stream.OnNextAsync(new SendChunkJob
             {
-                _sinks = sinks ?? Array.Empty<IPacketSink>();
-            }
-
-            public Task<(uint packetId, byte[] data)> PreparePacket(ISerializablePacket packet)
-            {
-                if (_sinks.Any())
-                    return _sinks.First().PreparePacket(packet);
-                throw new InvalidOperationException("No sinks avaliable.");
-            }
-
-            public async Task SendPacket(ISerializablePacket packet)
-            {
-                if (_sinks.Any())
-                {
-                    var preparedPacket = await PreparePacket(packet);
-                    await SendPacket(preparedPacket.packetId, preparedPacket.data);
-                }
-            }
-
-            public Task SendPacket(uint packetId, byte[] data)
-            {
-                return Task.WhenAll(from sink in _sinks
-                                    select sink.SendPacket(packetId, data));
-            }
+                World = GrainFactory.GetGrain<IWorld>(this.GetPrimaryKeyString()),
+                ChunkX = x,
+                ChunkZ = z,
+                Clients = clients
+            }).Ignore();
+            return Task.CompletedTask;
         }
     }
 }

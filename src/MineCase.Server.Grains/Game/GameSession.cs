@@ -24,7 +24,7 @@ namespace MineCase.Server.Game
         public override async Task OnActivateAsync()
         {
             _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(this.GetPrimaryKeyString());
-            _chunkSender = GrainFactory.GetGrain<IChunkSender>(Guid.NewGuid());
+            _chunkSender = GrainFactory.GetGrain<IChunkSender>(this.GetPrimaryKeyString());
             _lastGameTickTime = DateTime.UtcNow;
             _gameTick = RegisterTimer(OnGameTick, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(50));
         }

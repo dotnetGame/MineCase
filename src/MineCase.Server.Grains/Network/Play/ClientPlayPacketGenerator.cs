@@ -7,6 +7,7 @@ using MineCase.Formats;
 using MineCase.Protocol.Play;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.World;
 
 namespace MineCase.Server.Network.Play
 {
@@ -122,11 +123,39 @@ namespace MineCase.Server.Network.Play
             });
         }
 
-        public Task ChunkData()
+        public Task ChunkData(Dimension dimension, int chunkX, int chunkZ, ChunkColumn chunkColumn)
         {
+            Protocol.Play.ChunkSection ToChunkSection(World.ChunkSection chunkSection)
+            {
+                return new Protocol.Play.ChunkSection
+                {
+                    BitsPerBlock = chunkSection.BitsPerBlock,
+                    PaletteLength = 0,
+                    BlockLight = CompactBy2(chunkSection.Blocks.Select(o => o.BlockLight).ToArray()),
+                    SkyLight = dimension == Dimension.Overworld ? CompactBy2(chunkSection.Blocks.Select(o => o.SkyLight).ToArray()) : null,
+                    DataArray = Enumerable.Repeat(0b0000_0000_1000_0L, 16 * 16 * 16 * 13 / 64).ToArray()
+                };
+            }
+
             return Sink.SendPacket(new ChunkData
             {
+                ChunkX = chunkX,
+                ChunkZ = chunkZ,
+                GroundUpContinuous = chunkColumn.Biomes != null,
+                Biomes = chunkColumn.Biomes,
+                PrimaryBitMask = chunkColumn.SectionBitMask,
+                NumberOfBlockEntities = 0,
+                Data = (from s in chunkColumn.Sections select ToChunkSection(s)).ToArray()
             });
+        }
+
+        private static byte[] CompactBy2(byte[] source)
+        {
+            if (source.Length % 2 != 0) throw new ArgumentException("source array's length must be even.");
+            var result = new byte[source.Length / 2];
+            for (int i = 0; i < result.Length; i++)
+                result[i] = (byte)(source[i * 2] | (source[i * 2 + 1] << 4));
+            return result;
         }
 
         public Task SendPacket(uint packetId, byte[] data)

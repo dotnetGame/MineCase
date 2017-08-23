@@ -52,6 +52,9 @@ namespace MineCase.Protocol.Play
                 bw.WriteAsByteArray(dataBytes);
             }
 
+            if (Biomes != null)
+                bw.WriteAsByteArray(Biomes);
+
             bw.WriteAsVarInt(NumberOfBlockEntities, out _);
         }
     }
@@ -59,7 +62,7 @@ namespace MineCase.Protocol.Play
     public sealed class ChunkSection : ISerializablePacket
     {
         [SerializeAs(DataType.Byte)]
-        public byte BitPerBlock;
+        public byte BitsPerBlock;
 
         [SerializeAs(DataType.VarInt)]
         public uint PaletteLength;
@@ -82,7 +85,7 @@ namespace MineCase.Protocol.Play
         public void Serialize(BinaryWriter bw)
         {
             DataArrayLength = (uint)DataArray.Length;
-            bw.WriteAsByte(BitPerBlock);
+            bw.WriteAsByte(BitsPerBlock);
 
             if (Palette != null)
             {

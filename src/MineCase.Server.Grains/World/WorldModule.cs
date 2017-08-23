@@ -11,6 +11,7 @@ namespace MineCase.Server.World
         {
             builder.RegisterType<WorldGrain>();
             builder.RegisterType<WorldAccessorGrain>();
+            builder.RegisterType<ChunkColumnGrain>();
         }
     }
 }

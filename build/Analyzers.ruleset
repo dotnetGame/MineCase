@@ -14,6 +14,8 @@
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA0001" Action="None" />
+    <Rule Id="SA1008" Action="None" />
+    <Rule Id="SA1009" Action="None" />
     <!-- Prefix local calls with this -->
     <Rule Id="SA1101" Action="None" />
     <!-- Use built-in type alias -->
@@ -38,6 +40,7 @@
     <Rule Id="SA1402" Action="None" />
     <!-- Suppressions must have a justification -->
     <Rule Id="SA1404" Action="None" />
+    <Rule Id="SA1407" Action="None" />
     <!-- Use trailing comma in initializers - lots of false positives for enums in StyleCop 1.1.0-beta004 -->
     <Rule Id="SA1413" Action="None" />
     <!-- No single-line statements involving braces -->

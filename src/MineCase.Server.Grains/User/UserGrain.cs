@@ -22,6 +22,7 @@ namespace MineCase.Server.User
         private string _worldId;
         private IWorld _world;
         private IClientboundPacketSink _sink;
+        private IPacketRouter _packetRouter;
         private ClientPlayPacketGenerator _generator;
         private IDisposable _sendKeepAliveTimer;
         private IDisposable _worldTimeSyncTimer;
@@ -35,6 +36,8 @@ namespace MineCase.Server.User
         private UserState _state;
 
         private IPlayer _player;
+
+        private (int x, int z)? _lastStreamedChunk;
 
         public override async Task OnActivateAsync()
         {
@@ -76,6 +79,7 @@ namespace MineCase.Server.User
             await _player.BindToUser(this);
             await _world.AttachEntity(_player);
 
+            _lastStreamedChunk = null;
             _state = UserState.JoinedGame;
             _keepAliveWaiters = new HashSet<uint>();
             _sendKeepAliveTimer = RegisterTimer(OnSendKeepAliveRequests, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
@@ -184,6 +188,7 @@ namespace MineCase.Server.User
 
         public async Task OnGameTick(TimeSpan deltaTime)
         {
+            _packetRouter?.OnGameTick();
             if (_state == UserState.DownloadingWorld)
             {
                 await _player.SendPositionAndLook();
@@ -200,9 +205,22 @@ namespace MineCase.Server.User
             }
         }
 
-        private Task<bool> StreamNextChunk()
+        private async Task<bool> StreamNextChunk()
         {
-            return Task.FromResult(true);
+            var currentChunk = await _player.GetChunkPosition();
+            if (_lastStreamedChunk.HasValue && _lastStreamedChunk.Value.Equals((currentChunk.x, currentChunk.z))) return true;
+
+            var trunkSender = GrainFactory.GetGrain<IChunkSender>(_world.GetPrimaryKeyString());
+            await trunkSender.PostChunk(currentChunk.x, currentChunk.z, new[] { _sink });
+            _lastStreamedChunk = (currentChunk.x, currentChunk.z);
+
+            return true;
+        }
+
+        public Task SetPacketRouter(IPacketRouter packetRouter)
+        {
+            _packetRouter = packetRouter;
+            return Task.CompletedTask;
         }
 
         private enum UserState : uint

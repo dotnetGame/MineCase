@@ -115,7 +115,17 @@ namespace MineCase.Server.Game.Entities
             return Task.CompletedTask;
         }
 
-        public Task SetPositionAndLook(double x, double feetY, double z, float yaw, float pitch, bool onGround)
+        public Task<(int x, int y, int z)> GetChunkPosition()
+        {
+            return Task.FromResult((0, 0, 0));
+        }
+
+        public Task SetPosition(double x, double feetY, double z, bool onGround)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task SetLook(float yaw, float pitch, bool onGround)
         {
             return Task.CompletedTask;
         }
