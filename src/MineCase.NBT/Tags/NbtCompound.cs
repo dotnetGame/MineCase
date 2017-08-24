@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
+using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
+using MineCase.Nbt.Serialization;
 
 namespace MineCase.Nbt.Tags
 {
@@ -11,23 +13,32 @@ namespace MineCase.Nbt.Tags
     public sealed class NbtCompound : NbtTag, IEnumerable<NbtTag>
     {
         public override NbtTagType TagType => NbtTagType.Compound;
+
         public override bool HasValue => false;
 
         private readonly Dictionary<string, NbtTag> _childTags;
 
-        /// <summary>默认构造方法</summary>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NbtCompound"/> class.<para />
+        /// 默认构造方法
+        /// </summary>
         /// <param name="name">该 Tag 的名称</param>
-        public NbtCompound(string name = null) : this(null, name)
+        public NbtCompound(string name = null)
+            : this(null, name)
         {
         }
 
-        /// <summary>从 <paramref name="tags"/> 初始化子 Tag 的构造方法</summary>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NbtCompound"/> class.<para />
+        /// 从 <paramref name="tags"/> 初始化子 Tag 的构造方法
+        /// </summary>
         /// <param name="tags">要用于提供子 Tag 的范围</param>
         /// <param name="name">该 Tag 的名称</param>
         /// <remarks><paramref name="tags"/> 为 null 时将子 Tag 初始化为空集合</remarks>
         /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了不具有名称的 Tag</exception>
         /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了 null</exception>
-        public NbtCompound(IEnumerable<NbtTag> tags, string name = null) : base(name)
+        public NbtCompound(IEnumerable<NbtTag> tags, string name = null)
+            : base(name)
         {
             _childTags =
                 tags?.ToDictionary(
@@ -50,6 +61,8 @@ namespace MineCase.Nbt.Tags
                 throw new ArgumentNullException(nameof(tagName));
             }
 
+            Contract.EndContractBlock();
+
             return _childTags[tagName];
         }
 
@@ -59,9 +72,10 @@ namespace MineCase.Nbt.Tags
         /// <exception cref="ArgumentNullException"><paramref name="tagName"/> 为 null</exception>
         /// <exception cref="KeyNotFoundException">未能自子 Tag 中寻找到具有指定名称的 Tag</exception>
         /// <exception cref="InvalidCastException">未能将获得的 Tag 转换为 <typeparamref name="T"/></exception>
-        public T Get<T>(string tagName) where T : NbtTag
+        public T Get<T>(string tagName)
+            where T : NbtTag
         {
-            return (T) Get(tagName);
+            return (T)Get(tagName);
         }
 
         /// <summary>是否包含指定名称的子 Tag</summary>
@@ -89,14 +103,18 @@ namespace MineCase.Nbt.Tags
             {
                 throw new ArgumentNullException(nameof(tag));
             }
+
             if (tag.Name == null)
             {
                 throw new ArgumentException("NbtCompound 的子 Tag 必须具有名称", nameof(tag));
             }
+
             if (_childTags.ContainsKey(tag.Name))
             {
                 throw new ArgumentException($"试图加入具有名称{tag.Name}的 Tag，但因已有重名的子 Tag 而失败", nameof(tag));
             }
+
+            Contract.EndContractBlock();
 
             _childTags.Add(tag.Name, tag);
             tag.Parent = this;
@@ -115,8 +133,10 @@ namespace MineCase.Nbt.Tags
 
             if (!_childTags.TryGetValue(tagName, out var tag))
             {
-                throw new ArgumentException($"此 NbtCompound 没有具有名称 \"{tagName}\" 的子 Tag" ,nameof(tagName));
+                throw new ArgumentException($"此 NbtCompound 没有具有名称 \"{tagName}\" 的子 Tag", nameof(tagName));
             }
+
+            Contract.EndContractBlock();
 
             _childTags.Remove(tagName);
             tag.Parent = null;
@@ -138,6 +158,8 @@ namespace MineCase.Nbt.Tags
                 throw new ArgumentException($"{nameof(tag)} 不属于此 NbtCompound", nameof(tag));
             }
 
+            Contract.EndContractBlock();
+
             _childTags.Remove(tag.Name);
             tag.Parent = null;
         }
@@ -155,11 +177,14 @@ namespace MineCase.Nbt.Tags
         public override void Accept(INbtTagVisitor visitor)
         {
             base.Accept(visitor);
+
             visitor.StartChild();
+
             foreach (var tag in _childTags)
             {
                 tag.Value.Accept(visitor);
             }
+
             visitor.EndChild();
         }
 
@@ -171,6 +196,54 @@ namespace MineCase.Nbt.Tags
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        private class Serializer : ITagSerializer
+        {
+            public NbtTag Deserialize(BinaryReader br, bool requireName)
+            {
+                string name = null;
+                if (requireName)
+                {
+                    name = br.ReadTagString();
+                }
+
+                var elements = new List<NbtTag>();
+                while (true)
+                {
+                    var curElement = NbtTagSerializer.DeserializeTag(br, true);
+                    if (curElement.TagType == NbtTagType.End)
+                    {
+                        break;
+                    }
+
+                    elements.Add(curElement);
+                }
+
+                return new NbtCompound(elements, name);
+            }
+
+            public void Serialize(NbtTag tag, BinaryWriter bw)
+            {
+                var nbtCompound = (NbtCompound)tag;
+
+                if (nbtCompound.Name != null)
+                {
+                    bw.WriteTagValue(nbtCompound.Name);
+                }
+
+                foreach (var elem in nbtCompound._childTags)
+                {
+                    NbtTagSerializer.SerializeTag(elem.Value, bw);
+                }
+
+                NbtTagSerializer.SerializeTag(new NbtEnd(), bw);
+            }
+        }
+
+        static NbtCompound()
+        {
+            NbtTagSerializer.RegisterTag(NbtTagType.Compound, new Serializer());
         }
     }
 }

@@ -10,13 +10,19 @@ namespace MineCase.Nbt.Tags
     public sealed class NbtLong : NbtTag
     {
         public override NbtTagType TagType => NbtTagType.Long;
+
         public override bool HasValue => true;
+
         public long Value { get; set; }
 
-        /// <summary>默认构造函数</summary>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NbtLong"/> class.<para />
+        /// 默认构造函数
+        /// </summary>
         /// <param name="value">要初始化的值</param>
         /// <param name="name">该 Tag 的名称</param>
-        public NbtLong(long value, string name = null) : base(name)
+        public NbtLong(long value, string name = null)
+            : base(name)
         {
             Value = value;
         }
@@ -31,15 +37,20 @@ namespace MineCase.Nbt.Tags
                     name = br.ReadTagString();
                 }
 
-                var value = br.ReadInt64();
+                var value = br.ReadInt64().ToggleEndian();
                 return new NbtLong(value, name);
             }
 
             public void Serialize(NbtTag tag, BinaryWriter bw)
             {
-                var nbtLong = (NbtLong) tag;
-                bw.WriteTagString(nbtLong.Name);
-                bw.Write(nbtLong.Value);
+                var nbtLong = (NbtLong)tag;
+
+                if (nbtLong.Name != null)
+                {
+                    bw.WriteTagValue(nbtLong.Name);
+                }
+
+                bw.Write(nbtLong.Value.ToggleEndian());
             }
         }
 

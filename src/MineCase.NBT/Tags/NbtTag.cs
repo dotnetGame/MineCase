@@ -11,25 +11,27 @@ namespace MineCase.Nbt.Tags
     public abstract class NbtTag
     {
         /// <summary>
-        /// 该 Tag 从属于的 Tag
+        /// Gets 该 Tag 从属于的 Tag
         /// </summary>
         public NbtTag Parent { get; internal set; }
 
         /// <summary>
-        /// 该 Tag 的类型
+        /// Gets 该 Tag 的类型
         /// </summary>
         /// <remarks>不会在运行时改变，同一类 <see cref="NbtTag"/> 永远返回该类型关联的 <see cref="NbtTagType"/></remarks>
         public abstract NbtTagType TagType { get; }
 
         /// <summary>
+        /// Gets a value indicating whether <para />
         /// 指示该 Tag 是否具有值
         /// </summary>
         /// <remarks>该属性指示本 Tag 是否具有 Value 属性</remarks>
         public abstract bool HasValue { get; }
 
         private string _name;
+
         /// <summary>
-        /// 该 Tag 的名称
+        /// Gets or sets 该 Tag 的名称
         /// </summary>
         /// <remarks>可为 null</remarks>
         public string Name
@@ -48,6 +50,7 @@ namespace MineCase.Nbt.Tags
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="NbtTag"/> class.<para />
         /// 默认构造方法
         /// </summary>
         /// <param name="name">该 Tag 的名称</param>

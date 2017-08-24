@@ -10,20 +10,26 @@ namespace MineCase.Nbt.Tags
     public sealed class NbtString : NbtTag
     {
         public override NbtTagType TagType => NbtTagType.String;
+
         public override bool HasValue => true;
 
         private string _value;
+
         public string Value
         {
             get => _value;
             set => _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-        /// <summary>默认构造函数</summary>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NbtString"/> class.<para />
+        /// 默认构造函数
+        /// </summary>
         /// <param name="value">要初始化的值</param>
         /// <param name="name">该 Tag 的名称</param>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> 为 null</exception>
-        public NbtString(string value, string name = null) : base(name)
+        public NbtString(string value, string name = null)
+            : base(name)
         {
             Value = value;
         }
@@ -44,9 +50,14 @@ namespace MineCase.Nbt.Tags
 
             public void Serialize(NbtTag tag, BinaryWriter bw)
             {
-                var nbtString = (NbtString) tag;
-                bw.WriteTagString(nbtString.Name);
-                bw.WriteTagString(nbtString.Value);
+                var nbtString = (NbtString)tag;
+
+                if (nbtString.Name != null)
+                {
+                    bw.WriteTagValue(nbtString.Name);
+                }
+
+                bw.WriteTagValue(nbtString.Value);
             }
         }
 

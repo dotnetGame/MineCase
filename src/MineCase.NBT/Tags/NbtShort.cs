@@ -10,13 +10,19 @@ namespace MineCase.Nbt.Tags
     public sealed class NbtShort : NbtTag
     {
         public override NbtTagType TagType => NbtTagType.Short;
+
         public override bool HasValue => true;
+
         public short Value { get; set; }
-        
-        /// <summary>默认构造函数</summary>
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NbtShort"/> class.<para />
+        /// 默认构造函数
+        /// </summary>
         /// <param name="value">要初始化的值</param>
         /// <param name="name">该 Tag 的名称</param>
-        public NbtShort(short value, string name = null) : base(name)
+        public NbtShort(short value, string name = null)
+            : base(name)
         {
             Value = value;
         }
@@ -31,15 +37,20 @@ namespace MineCase.Nbt.Tags
                     name = br.ReadTagString();
                 }
 
-                var value = br.ReadInt16();
+                var value = br.ReadInt16().ToggleEndian();
                 return new NbtShort(value, name);
             }
 
             public void Serialize(NbtTag tag, BinaryWriter bw)
             {
-                var nbtShort = (NbtShort) tag;
-                bw.WriteTagString(nbtShort.Name);
-                bw.Write(nbtShort.Value);
+                var nbtShort = (NbtShort)tag;
+
+                if (nbtShort.Name != null)
+                {
+                    bw.WriteTagValue(nbtShort.Name);
+                }
+
+                bw.Write(nbtShort.Value.ToggleEndian());
             }
         }
 

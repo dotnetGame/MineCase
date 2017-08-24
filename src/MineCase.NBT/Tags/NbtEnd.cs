@@ -10,6 +10,7 @@ namespace MineCase.Nbt.Tags
     public sealed class NbtEnd : NbtTag
     {
         public override NbtTagType TagType => NbtTagType.End;
+
         public override bool HasValue => false;
 
         private class Serializer : ITagSerializer

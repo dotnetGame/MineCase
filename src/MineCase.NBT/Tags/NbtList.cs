@@ -2,8 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
 using System.Text;
+using MineCase.Nbt.Serialization;
 
 namespace MineCase.Nbt.Tags
 {
@@ -11,39 +14,59 @@ namespace MineCase.Nbt.Tags
     public sealed class NbtList : NbtTag, IEnumerable<NbtTag>
     {
         public override NbtTagType TagType => NbtTagType.List;
+
         public override bool HasValue => false;
+
+        public NbtTagType ElementType { get; private set; }
 
         private readonly List<NbtTag> _childTags;
 
         public int Count => _childTags.Count;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="NbtList"/> class.<para />
         /// 默认构造方法
         /// </summary>
+        /// <param name="elementType">指定该 <see cref="NbtList"/> 的元素类型</param>
         /// <param name="name">该 Tag 的名称</param>
-        public NbtList(string name = null) : this(null, name)
+        public NbtList(NbtTagType elementType, string name = null)
+            : base(name)
         {
+            ElementType = elementType;
+            _childTags = new List<NbtTag>();
         }
 
-        /// <summary>从 <paramref name="tags"/> 初始化子 Tag 的构造方法</summary>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NbtList"/> class.<para />
+        /// 从 <paramref name="tags"/> 初始化子 Tag 的构造方法
+        /// </summary>
         /// <param name="tags">要用于提供子 Tag 的范围</param>
         /// <param name="name">该 Tag 的名称</param>
-        /// <remarks><paramref name="tags"/> 为 null 时将子 Tag 初始化为空集合</remarks>
-        /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了 null</exception>
-        public NbtList(IEnumerable<NbtTag> tags, string name = null) : base(name)
+        /// <exception cref="ArgumentNullException"><paramref name="tags"/> 为 null</exception>
+        /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了不合法的 Tag</exception>
+        public NbtList(IEnumerable<NbtTag> tags, string name = null)
+            : base(name)
         {
             if (tags == null)
             {
-                _childTags = new List<NbtTag>();
+                throw new ArgumentNullException(nameof(tags));
             }
 
             // TODO: 此处隐藏了重复元素的问题，是否需要检查？
             var tmpTags = new List<NbtTag>(tags.Distinct());
-            if (tmpTags.FindIndex(tag => tag == null || tag.Name != null) != -1)
+
+            if (tmpTags.Count == 0)
             {
-                throw new ArgumentException($"{nameof(tags)} 中包含了 null 或者具有名称的子 Tag", nameof(tags));
+                throw new ArgumentException($"{nameof(tags)} 是空集合", nameof(tags));
             }
-            
+
+            ElementType = tmpTags[0]?.TagType ?? throw new ArgumentException($"{nameof(tags)} 中包含了 null", nameof(tags));
+
+            if (tmpTags.FindIndex(tag => tag == null || tag.Name != null || tag.TagType != ElementType) != -1)
+            {
+                throw new ArgumentException($"{nameof(tags)} 中包含了 null 或者具有名称的 Tag 或者具有不同类型的 Tag", nameof(tags));
+            }
+
             _childTags = tmpTags;
         }
 
@@ -60,6 +83,8 @@ namespace MineCase.Nbt.Tags
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
 
+            Contract.EndContractBlock();
+
             return _childTags[index];
         }
 
@@ -68,9 +93,10 @@ namespace MineCase.Nbt.Tags
         /// <param name="index">指定的索引值</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> 超出边界</exception>
         /// <exception cref="InvalidCastException">未能将获得的 Tag 转换为 <typeparamref name="T"/></exception>
-        public T Get<T>(int index) where T : NbtTag
+        public T Get<T>(int index)
+            where T : NbtTag
         {
-            return (T) Get(index);
+            return (T)Get(index);
         }
 
         /// <summary>判断指定的 Tag 是否为本 NbtList 的子 Tag</summary>
@@ -83,12 +109,9 @@ namespace MineCase.Nbt.Tags
                 throw new ArgumentNullException(nameof(tag));
             }
 
-            if (tag.Name != null)
-            {
-                throw new ArgumentException("子 Tag 不会具有名称，查找将总是失败的", nameof(tag));
-            }
+            Contract.EndContractBlock();
 
-            return _childTags.Contains(tag);
+            return tag.Name != null && tag.TagType != ElementType && _childTags.Contains(tag);
         }
 
         /// <summary>在本 NbtList 的子 Tag 中寻找指定的 Tag</summary>
@@ -102,9 +125,11 @@ namespace MineCase.Nbt.Tags
                 throw new ArgumentNullException(nameof(tag));
             }
 
+            Contract.EndContractBlock();
+
             if (tag.Name != null)
             {
-                throw new ArgumentException("子 Tag 不会具有名称，查找将总是失败的", nameof(tag));
+                return -1;
             }
 
             return _childTags.FindIndex(curTag => curTag == tag);
@@ -112,6 +137,7 @@ namespace MineCase.Nbt.Tags
 
         /// <summary>添加子 Tag</summary>
         /// <param name="tag">要添加的 Tag</param>
+        /// <exception cref="ArgumentException"><paramref name="tag"/> 不符合要求</exception>
         /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null</exception>
         public void Add(NbtTag tag)
         {
@@ -124,12 +150,27 @@ namespace MineCase.Nbt.Tags
             {
                 throw new ArgumentException("子 Tag 不能具有名称", nameof(tag));
             }
-            
+
+            Contract.EndContractBlock();
+
+            if (tag.TagType != ElementType)
+            {
+                if (ElementType == NbtTagType.End && tag.TagType != NbtTagType.End)
+                {
+                    ElementType = tag.TagType;
+                }
+                else
+                {
+                    throw new ArgumentException(
+                        $"{nameof(tag)} 具有不同的类型（需要 {ElementType}，但获得的是{tag.TagType}）或者具有类型 {NbtTagType.End}",
+                        nameof(tag));
+                }
+            }
+
             // TODO: 这个检查是否必要？
-            Debug.Assert(!_childTags.Contains(tag));
+            Contract.Assert(!_childTags.Contains(tag));
 
             // TODO: 是否需要检查 tag 是否已经关联到其他 tag ？
-
             _childTags.Add(tag);
             tag.Parent = this;
         }
@@ -137,6 +178,7 @@ namespace MineCase.Nbt.Tags
         /// <summary>于指定的索引处添加子 Tag</summary>
         /// <param name="index">指定的索引</param>
         /// <param name="tag">要添加的 Tag</param>
+        /// <exception cref="ArgumentException"><paramref name="tag"/> 不符合要求</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> 不在合法范围内</exception>
         /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null</exception>
         public void Add(int index, NbtTag tag)
@@ -156,8 +198,24 @@ namespace MineCase.Nbt.Tags
                 throw new ArgumentException("子 Tag 不能具有名称", nameof(tag));
             }
 
+            Contract.EndContractBlock();
+
+            if (tag.TagType != ElementType)
+            {
+                if (ElementType == NbtTagType.End && tag.TagType != NbtTagType.End)
+                {
+                    ElementType = tag.TagType;
+                }
+                else
+                {
+                    throw new ArgumentException(
+                        $"{nameof(tag)} 具有不同的类型（需要 {ElementType}，但获得的是{tag.TagType}）或者具有类型 {NbtTagType.End}",
+                        nameof(tag));
+                }
+            }
+
             // TODO: 这个检查是否必要？
-            Debug.Assert(!_childTags.Contains(tag));
+            Contract.Assert(!_childTags.Contains(tag));
 
             _childTags.Insert(index, tag);
             tag.Parent = this;
@@ -179,6 +237,8 @@ namespace MineCase.Nbt.Tags
                 throw new ArgumentException($"{nameof(tag)} 不是该 NbtList 的子 Tag");
             }
 
+            Contract.EndContractBlock();
+
             // TODO: 是否需要对这个方法判断是否成功？
             _childTags.Remove(tag);
             tag.Parent = null;
@@ -194,8 +254,10 @@ namespace MineCase.Nbt.Tags
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
 
+            Contract.EndContractBlock();
+
             var tag = _childTags[index];
-            Debug.Assert(tag.Parent == this);
+            Contract.Assert(tag.Parent == this);
             _childTags.RemoveAt(index);
             tag.Parent = null;
         }
@@ -212,11 +274,14 @@ namespace MineCase.Nbt.Tags
         public override void Accept(INbtTagVisitor visitor)
         {
             base.Accept(visitor);
+
             visitor.StartChild();
+
             foreach (var tag in _childTags)
             {
                 tag.Accept(visitor);
             }
+
             visitor.EndChild();
         }
 
@@ -228,6 +293,54 @@ namespace MineCase.Nbt.Tags
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        private class Serializer : ITagSerializer
+        {
+            public NbtTag Deserialize(BinaryReader br, bool requireName)
+            {
+                string name = null;
+                if (requireName)
+                {
+                    name = br.ReadTagString();
+                }
+
+                var elementType = br.ReadTagType();
+                var count = br.ReadInt32().ToggleEndian();
+
+                if (count <= 0)
+                {
+                    return new NbtList(elementType, name);
+                }
+
+                var elements = new NbtTag[count];
+                for (var i = 0; i < count; ++i)
+                {
+                    elements[i] = NbtTagSerializer.DeserializeTag(br, elementType, false);
+                }
+
+                return new NbtList(elements, name);
+            }
+
+            public void Serialize(NbtTag tag, BinaryWriter bw)
+            {
+                var nbtList = (NbtList)tag;
+
+                if (nbtList.Name != null)
+                {
+                    bw.WriteTagValue(nbtList.Name);
+                }
+
+                foreach (var elem in nbtList._childTags)
+                {
+                    NbtTagSerializer.SerializeTag(elem, bw, false);
+                }
+            }
+        }
+
+        static NbtList()
+        {
+            NbtTagSerializer.RegisterTag(NbtTagType.List, new Serializer());
         }
     }
 }
