@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Formats;
 
 namespace MineCase.Serialization
 {
@@ -42,6 +43,12 @@ namespace MineCase.Serialization
             var len = br.ReadAsVarInt(out _);
             var bytes = br.ReadBytes((int)len);
             return Encoding.UTF8.GetString(bytes);
+        }
+
+        public static Chat ReadAsChat(this BinaryReader br)
+        {
+            string str = br.ReadAsString();
+            return Chat.Parse(str);
         }
 
         public static short ReadAsShort(this BinaryReader br) =>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using MineCase.Formats;
 using MineCase.Protocol;
 
 namespace MineCase.Serialization
@@ -40,6 +41,11 @@ namespace MineCase.Serialization
             var bytes = Encoding.UTF8.GetBytes(value);
             bw.WriteAsVarInt((uint)bytes.Length, out _);
             bw.Write(bytes);
+        }
+
+        public static void WriteAsChat(this BinaryWriter bw, Chat value)
+        {
+            bw.Write(value.ToString());
         }
 
         public static void WriteAsShort(this BinaryWriter bw, short value)

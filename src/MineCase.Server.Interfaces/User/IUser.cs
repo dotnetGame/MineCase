@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Formats;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Network;
@@ -13,6 +14,8 @@ namespace MineCase.Server.User
 {
     public interface IUser : IGrainWithGuidKey
     {
+        Task<String> GetName();
+
         Task SetName(string name);
 
         Task<uint> GetProtocolVersion();
@@ -34,6 +37,8 @@ namespace MineCase.Server.User
         Task NotifyLoggedIn();
 
         Task KeepAlive(uint keepAliveId);
+
+        Task SendChatMessage(Chat jsonData, Byte position);
 
         Task<uint> GetPing();
 

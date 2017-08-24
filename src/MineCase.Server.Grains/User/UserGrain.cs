@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Formats;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Network;
@@ -140,6 +141,17 @@ namespace MineCase.Server.User
             await SendTimeUpdate();
             await _player.NotifyLoggedIn();
             _state = UserState.DownloadingWorld;
+        }
+
+        public Task SendChatMessage(Chat jsonData, byte position)
+        {
+            _generator.SendChatMessage(jsonData, position);
+            return Task.CompletedTask;
+        }
+
+        public Task<String> GetName()
+        {
+            return Task.FromResult(_name);
         }
 
         public Task SetName(string name)

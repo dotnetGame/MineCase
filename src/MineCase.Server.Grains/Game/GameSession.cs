@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Formats;
 using MineCase.Server.Network.Play;
 using MineCase.Server.User;
 using MineCase.Server.World;
@@ -51,6 +52,23 @@ namespace MineCase.Server.Game
         {
             _users.Remove(player);
             return Task.CompletedTask;
+        }
+
+        public async Task SendChatMessageToAll(string senderName, Chat jsonData, byte position)
+        {
+            foreach (var item in _users.Keys)
+            {
+                await item.SendChatMessage(jsonData, position);
+            }
+        }
+
+        public async Task SendChatMessage(string receiverName, Chat jsonData, byte position)
+        {
+            foreach (var item in _users.Keys)
+            {
+                if (await item.GetName() == receiverName)
+                    await item.SendChatMessage(jsonData, position);
+            }
         }
 
         private async Task OnGameTick(object state)
