@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MineCase.Server.Settings;
 using Orleans;
 using System;
 using System.Collections.Generic;

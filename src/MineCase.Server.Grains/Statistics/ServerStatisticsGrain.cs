@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.Settings;
 using Orleans;
 using Orleans.Concurrency;
 
@@ -16,9 +17,10 @@ namespace MineCase.Server.Statistics
             Name = "1.12"
         };
 
-        public Task<string> GetDescription()
+        public async Task<string> GetDescription()
         {
-            return Task.FromResult("Hello Minecase");
+            var serverSettings = GrainFactory.GetGrain<IServerSettings>(0);
+            return (await serverSettings.GetSettings()).Motd;
         }
 
         public Task<byte[]> GetFavicon()
@@ -26,9 +28,10 @@ namespace MineCase.Server.Statistics
             return Task.FromResult(Array.Empty<byte>());
         }
 
-        public Task<uint> GetMaxPlayersCount()
+        public async Task<uint> GetMaxPlayersCount()
         {
-            return Task.FromResult(100u);
+            var serverSettings = GrainFactory.GetGrain<IServerSettings>(0);
+            return (await serverSettings.GetSettings()).MaxPlayers;
         }
 
         public Task<uint> GetOnlinePlayersCount()
