@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.8
+VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Server", "MineCase.Server\MineCase.Server.csproj", "{8E71CBEC-5804-4125-B651-C78426E57C8C}"
 EndProject
@@ -15,18 +15,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Server.Interfaces"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Server.Grains", "MineCase.Server.Grains\MineCase.Server.Grains.csproj", "{3F83DE42-121D-4E7A-AB27-825AD8179D3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.UnitTest", "..\tests\UnitTest\MineCase.UnitTest.csproj", "{35618D69-85F0-4C38-8224-04A2D75825B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.UnitTest", "..\tests\UnitTest\MineCase.UnitTest.csproj", "{35618D69-85F0-4C38-8224-04A2D75825B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Nbt", "MineCase.NBT\MineCase.Nbt.csproj", "{199335D6-9726-42E1-94F2-7D95932D4DDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Nbt", "MineCase.NBT\MineCase.Nbt.csproj", "{199335D6-9726-42E1-94F2-7D95932D4DDC}"
 EndProject
-
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A0B013BF-4BEB-4044-AA59-A9ED3AFBF99D}"
 	ProjectSection(SolutionItems) = preProject
 		..\build\Analyzers.ruleset = ..\build\Analyzers.ruleset
 		..\build\stylecop.json = ..\build\stylecop.json
 	EndProjectSection
 EndProject
-
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +51,10 @@ Global
 		{3F83DE42-121D-4E7A-AB27-825AD8179D3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F83DE42-121D-4E7A-AB27-825AD8179D3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F83DE42-121D-4E7A-AB27-825AD8179D3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35618D69-85F0-4C38-8224-04A2D75825B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35618D69-85F0-4C38-8224-04A2D75825B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35618D69-85F0-4C38-8224-04A2D75825B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35618D69-85F0-4C38-8224-04A2D75825B6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{199335D6-9726-42E1-94F2-7D95932D4DDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{199335D6-9726-42E1-94F2-7D95932D4DDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{199335D6-9726-42E1-94F2-7D95932D4DDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
