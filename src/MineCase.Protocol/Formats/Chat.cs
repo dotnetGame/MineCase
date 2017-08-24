@@ -13,13 +13,9 @@ namespace MineCase.Formats
     /// </summary>
     public enum ClickEventType
     {
-        [JsonProperty(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
         OpenUrl = 0,
-        [JsonProperty(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
         RunCommand = 1,
-        [JsonProperty(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
         SuggestCommand = 2,
-        [JsonProperty(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
         ChangePage = 3
     }
 
@@ -36,21 +32,20 @@ namespace MineCase.Formats
     /// <summary>
     /// One of the fields of the component.
     /// </summary>
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class ChatClickEvent
     {
         private static readonly string[] _map = new string[4]
         { "open_url", "run_command", "suggest_command", "change_page" };
 
-        [JsonProperty("action")]
         public ClickEventType Action { get; set; }
 
-        [JsonProperty("value")]
         public JToken Value { get; set; }
 
         public JObject ToJObject()
         {
             JObject jObject = new JObject();
-            jObject.Add("action", _map[Action.GetHashCode()]);
+            jObject.Add("action", _map[(int)Action]);
             jObject.Add("value", Value);
             return jObject;
         }
@@ -59,21 +54,20 @@ namespace MineCase.Formats
     /// <summary>
     /// One of the fields of the component.
     /// </summary>
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class ChatHoverEvent
     {
         private static readonly string[] _map = new string[3]
         { "show_text", "show_item", "show_entity" };
 
-        [JsonProperty("action")]
         public HoverEventType Action { get; set; }
 
-        [JsonProperty("value")]
         public JToken Value { get; set; }
 
         public JObject ToJObject()
         {
             JObject jObject = new JObject();
-            jObject.Add("action", _map[Action.GetHashCode()]);
+            jObject.Add("action", _map[(int)Action]);
             jObject.Add("value", Value);
             return jObject;
         }
@@ -82,36 +76,27 @@ namespace MineCase.Formats
     /// <summary>
     /// An abstract base class that contains the fields common to all components.
     /// </summary>
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public abstract class ChatComponent
     {
-        [JsonProperty("bold")]
         public bool? Bold { get; set; }
 
-        [JsonProperty("itatic")]
         public bool? Itatic { get; set; }
 
-        [JsonProperty("underlined")]
         public bool? Underlined { get; set; }
 
-        [JsonProperty("strikethrough")]
         public bool? Strikethrough { get; set; }
 
-        [JsonProperty("obfuscated")]
         public bool? Obfuscated { get; set; }
 
-        [JsonProperty("color")]
         public string Color { get; set; }
 
-        [JsonProperty("insertion")]
         public string Insertion { get; set; }
 
-        [JsonProperty("clickEvent")]
         public ChatClickEvent ClickEvent { get; set; }
 
-        [JsonProperty("hoverEvent")]
         public ChatHoverEvent HoverEvent { get; set; }
 
-        [JsonProperty("extra")]
         public List<ChatComponent> Extra { get; set; }
 
         public virtual JObject ToJObject()
@@ -150,7 +135,7 @@ namespace MineCase.Formats
 
         private void AddBoolValue(JObject jObject, string key, bool? value)
         {
-            if (value.HasValue)
+            if (value != null)
             {
                 if ((bool)value)
                 {
@@ -171,6 +156,7 @@ namespace MineCase.Formats
     /// <summary>
     /// String component, which  contains only text.
     /// </summary>
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class StringComponent : ChatComponent
     {
         [JsonProperty("text")]
@@ -192,6 +178,7 @@ namespace MineCase.Formats
     /// <summary>
     /// Translation component. Translates text into the current language
     /// </summary>
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class TranslationComponent : ChatComponent
     {
         public string Translate { get; set; }
@@ -225,22 +212,22 @@ namespace MineCase.Formats
     /// <summary>
     /// Keybind component. Displays the client's current keybind for the specified key.
     /// </summary>
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class KeybindComponent : ChatComponent
     {
         // TODO: Implements this component.
         public override JObject ToJObject()
         {
-            JObject jObject = base.ToJObject();
-            return jObject;
+            throw new NotImplementedException("This component is not supported yet.");
         }
     }
 
     /// <summary>
     /// Score component. Displays a score.
     /// </summary>
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class ScoreComponent : ChatComponent
     {
-        // TODO: Implements this component.
         public JObject Score { get; set; }
 
         public override JObject ToJObject()
@@ -254,13 +241,13 @@ namespace MineCase.Formats
     /// <summary>
     /// Selector component. Displays the results of an entity selector.
     /// </summary>
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class SelectorComponent : ChatComponent
     {
         // TODO: Implements this component.
         public override JObject ToJObject()
         {
-            JObject jObject = base.ToJObject();
-            return jObject;
+            throw new NotImplementedException("This component is not supported yet.");
         }
     }
 
@@ -311,23 +298,23 @@ namespace MineCase.Formats
             json = jsonObject.ToString();
             ChatComponent component = null;
 
-            if (json.Contains("text"))
+            if (jsonObject.SelectToken("text") != null)
             {
                 component = JsonConvert.DeserializeObject<StringComponent>(json);
             }
-            else if (json.Contains("translate"))
+            else if (jsonObject.SelectToken("translate") != null)
             {
                 component = JsonConvert.DeserializeObject<TranslationComponent>(json);
             }
-            else if (json.Contains("keybind"))
+            else if (jsonObject.SelectToken("keybind") != null)
             {
                 component = JsonConvert.DeserializeObject<KeybindComponent>(json);
             }
-            else if (json.Contains("score"))
+            else if (jsonObject.SelectToken("score") != null)
             {
                 component = JsonConvert.DeserializeObject<ScoreComponent>(json);
             }
-            else if (json.Contains("selector"))
+            else if (jsonObject.SelectToken("selector") != null)
             {
                 component = JsonConvert.DeserializeObject<SelectorComponent>(json);
             }
@@ -337,7 +324,7 @@ namespace MineCase.Formats
                 return new Chat(component);
             }
 
-            return null;
+            throw new JsonException("Invalid JSON string.");
         }
 
         /// <summary>
