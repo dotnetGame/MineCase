@@ -27,9 +27,9 @@ namespace MineCase.UnitTest
 
             JObject o = chat.ToJObject();
             JObject o2 = JObject.Parse(chat.ToString());
-            Assert.Equal("hello case!", o.GetValue("text").Value<string>());
+            Assert.Equal("hello case!", o.GetValue("text"));
             Assert.True(o.GetValue("bold").Value<bool>());
-            Assert.Equal("blue", o.GetValue("color").Value<string>());
+            Assert.Equal("blue", o.GetValue("color"));
             Assert.Equal("open_url", (string)o.SelectToken("clickEvent.action"));
             Assert.Equal(@"http://case.orz", (string)o.SelectToken("clickEvent.value"));
             Assert.True(JToken.DeepEquals(o, o2));
@@ -125,7 +125,7 @@ namespace MineCase.UnitTest
             Assert.Equal("green", json.SelectToken("extra[0].color"));
             Assert.Equal("insert", json.SelectToken("insertion"));
             Assert.Equal("change_page", json.SelectToken("clickEvent.action"));
-            Assert.True((int)json.SelectToken("clickEvent.value") == 1);
+            Assert.Equal(1, json.SelectToken("clickEvent.value").Value<int>());
             Assert.Equal("show_text", json.SelectToken("hoverEvent.action"));
             Assert.Equal("show", json.SelectToken("hoverEvent.value"));
         }
@@ -166,8 +166,102 @@ namespace MineCase.UnitTest
                 ]
             }";
             var chat2 = Chat.Parse(json);
-            var jObject2 = chat2.ToJObject();
-            Assert.True(JToken.DeepEquals(jObject, jObject2));
+            Assert.True(JToken.DeepEquals(jObject, chat2.ToJObject()));
+        }
+
+        /// <summary>
+        /// Tests KeybindComponent.
+        /// </summary>
+        [Fact]
+        public void Test6()
+        {
+            KeybindComponent keybind = new KeybindComponent(KeyBindType.Attack);
+            keybind.Extra = new List<ChatComponent>()
+            {
+                new StringComponent("text1"),
+                new StringComponent("text2")
+            };
+
+            Chat chat = new Chat(keybind);
+            var j = chat.ToJObject();
+            Assert.Equal("key.attack", j.SelectToken("keybind"));
+            Assert.Equal("text1", j.SelectToken("extra[0].text"));
+            Assert.Equal("text2", j.SelectToken("extra[1].text"));
+
+            string json = @"{
+                ""keybind"":""key.attack"",
+                ""extra"":[
+                    { ""text"":""text1"" },
+                    { ""text"":""text2"" }
+                ]
+            }";
+            var chat2 = Chat.Parse(json);
+            Assert.True(JToken.DeepEquals(j, chat2.ToJObject()));
+        }
+
+        /// <summary>
+        /// Tests ScoreComponent.
+        /// </summary>
+        [Fact]
+        public void Test7()
+        {
+            ScoreComponent score = new ScoreComponent(new ChatScore("case", "ball", 100));
+            score.Extra = new List<ChatComponent>()
+            {
+                new StringComponent("text1"),
+                new StringComponent("text2")
+            };
+
+            Chat chat = new Chat(score);
+            var j = chat.ToJObject();
+            Assert.Equal("case", j.SelectToken("score.name"));
+            Assert.Equal("ball", j.SelectToken("score.objective"));
+            Assert.Equal(100, j.SelectToken("score.value").Value<int>());
+            Assert.Equal("text1", j.SelectToken("extra[0].text"));
+            Assert.Equal("text2", j.SelectToken("extra[1].text"));
+
+            string json = @"{
+                ""score"":{
+                    ""name"":""case"",
+                    ""objective"":""ball"",
+                    ""value"":100
+                },
+                ""extra"":[
+                    { ""text"":""text1"" },
+                    { ""text"":""text2"" }
+                ]
+            }";
+            var chat2 = Chat.Parse(json);
+            Assert.True(JToken.DeepEquals(j, chat2.ToJObject()));
+        }
+
+        /// <summary>
+        /// Tests SelectorComponent.
+        /// </summary>
+        [Fact]
+        public void Test8()
+        {
+            Chat chat = new Chat(new SelectorComponent("@p"));
+            chat.Component.Extra = new List<ChatComponent>()
+            {
+                new StringComponent("text1"),
+                new StringComponent("text2")
+            };
+
+            var j = chat.ToJObject();
+            Assert.Equal("@p", j.SelectToken("selector"));
+            Assert.Equal("text1", j.SelectToken("extra[0].text"));
+            Assert.Equal("text2", j.SelectToken("extra[1].text"));
+
+            string json = @"{
+                ""selector"":""@p"",
+                ""extra"":[
+                    { ""text"":""text1"" },
+                    { ""text"":""text2"" }
+                ]
+            }";
+            var chat2 = Chat.Parse(json);
+            Assert.True(JToken.DeepEquals(j, chat2.ToJObject()));
         }
     }
 }
