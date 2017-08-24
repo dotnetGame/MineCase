@@ -66,6 +66,7 @@ namespace MineCase.Gateway
             {
                 logger.LogError("Cluster connection failed.\n" + "Exception stack trace:" + e.StackTrace);
                 _exitEvent.Set();
+                return;
             }
             var connectionRouter = serviceProvider.GetRequiredService<ConnectionRouter>();
             await connectionRouter.Startup(default(CancellationToken));

@@ -16,7 +16,14 @@ namespace MineCase.Server.Settings
         public override async Task OnActivateAsync()
         {
             string settingsFile = await ReadSettingsAsString("server.json");
-            _settings = JsonConvert.DeserializeObject<ServerSettings>(settingsFile);
+            try
+            {
+                _settings = JsonConvert.DeserializeObject<ServerSettings>(settingsFile);
+            }
+            catch (Exception e)
+            {
+                System.Console.WriteLine("Json deserialization failed\n" + e.StackTrace);
+            }
         }
 
         // get settings
