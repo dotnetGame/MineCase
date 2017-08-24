@@ -23,7 +23,7 @@ namespace MineCase.Protocol.Play
     }
 
     // TODO
-    [Packet(0x03)]
+    [Packet(0x0F)]
     public sealed class ClientboundChatMessage : ISerializablePacket
     {
         [SerializeAs(DataType.Chat)]
