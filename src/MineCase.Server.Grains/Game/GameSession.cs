@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Formats;
+using MineCase.Protocol.Play;
 using MineCase.Server.Network.Play;
 using MineCase.Server.User;
 using MineCase.Server.World;
@@ -54,19 +55,25 @@ namespace MineCase.Server.Game
             return Task.CompletedTask;
         }
 
-        public async Task SendChatMessageToAll(string senderName, Chat jsonData, byte position)
+        public async Task SendChatMessage(string senderName, ServerboundChatMessage packet)
         {
+            // TODO command parser
+            Chat jsonData = Chat.Parse("{\"translate\":\"chat.type.text\",\"with\":[\"" + senderName + "\",\"" + packet.Message + "\"]}");
+            byte position = 0; // It represents user message in chat box
             foreach (var item in _users.Keys)
             {
                 await item.SendChatMessage(jsonData, position);
             }
         }
 
-        public async Task SendChatMessage(string receiverName, Chat jsonData, byte position)
+        public async Task SendChatMessage(string senderName, string receiverName, ServerboundChatMessage packet)
         {
+            Chat jsonData = Chat.Parse("{\"text\":\"" + senderName + "\",\"text\":\"" + packet.Message + "\"}");
+            byte position = 0; // It represents user message in chat box
             foreach (var item in _users.Keys)
             {
-                if (await item.GetName() == receiverName)
+                if (await item.GetName() == receiverName ||
+                    await item.GetName() == senderName)
                     await item.SendChatMessage(jsonData, position);
             }
         }

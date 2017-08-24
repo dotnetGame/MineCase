@@ -45,7 +45,7 @@ namespace MineCase.Serialization
 
         public static void WriteAsChat(this BinaryWriter bw, Chat value)
         {
-            bw.Write(value.ToString());
+            bw.WriteAsString(value.ToString());
         }
 
         public static void WriteAsShort(this BinaryWriter bw, short value)

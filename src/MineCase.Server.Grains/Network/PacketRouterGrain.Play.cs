@@ -69,12 +69,7 @@ namespace MineCase.Server.Network
         private async Task DispatchPacket(ServerboundChatMessage packet)
         {
             var gameSession = await _user.GetGameSession();
-
-            // TODO command parser
-            Chat jsonData = Chat.Parse("{\"text\":\"" + await _user.GetName() + "\",\"text\":\"" + packet.Message + "\"}");
-            byte position = 0; // It represents user message in chat box
-
-            await gameSession.SendChatMessageToAll(await _user.GetName(), jsonData, position);
+            await gameSession.SendChatMessage(await _user.GetName(), packet);
         }
 
         private Task DispatchPacket(ClientSettings packet)
