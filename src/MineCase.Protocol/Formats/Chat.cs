@@ -82,37 +82,26 @@ namespace MineCase.Formats
     /// <summary>
     /// An abstract base class that contains the fields common to all components.
     /// </summary>
-    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public abstract class ChatComponent
     {
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public bool? Bold { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public bool? Itatic { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public bool? Underlined { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public bool? Strikethrough { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public bool? Obfuscated { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Color { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string Insertion { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public ChatClickEvent ClickEvent { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public ChatHoverEvent HoverEvent { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public List<ChatComponent> Extra { get; set; }
 
         public virtual JObject ToJObject()
@@ -228,6 +217,7 @@ namespace MineCase.Formats
     /// </summary>
     public class KeybindComponent : ChatComponent
     {
+        // TODO: Implements this component.
         public override JObject ToJObject()
         {
             JObject jObject = base.ToJObject();
@@ -240,6 +230,7 @@ namespace MineCase.Formats
     /// </summary>
     public class ScoreComponent : ChatComponent
     {
+        // TODO: Implements this component.
         public JObject Score { get; set; }
 
         public override JObject ToJObject()
@@ -255,57 +246,11 @@ namespace MineCase.Formats
     /// </summary>
     public class SelectorComponent : ChatComponent
     {
+        // TODO: Implements this component.
         public override JObject ToJObject()
         {
             JObject jObject = base.ToJObject();
             return jObject;
-        }
-    }
-
-    public class ChatJsonConverter : JsonConverter
-    {
-        private readonly Type[] _types;
-
-        private static readonly string[] _clickMap = new string[4]
-        { "open_url", "run_command", "suggest_command", "change_page" };
-
-        private static readonly string[] _hoverMap = new string[3]
-        { "show_text", "show_item", "show_entity" };
-
-        public ChatJsonConverter(params Type[] types)
-        {
-            _types = types;
-        }
-
-        public override bool CanConvert(Type objectType)
-        {
-            return _types.Any(t => t == objectType);
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            if (value.GetType() == typeof(bool))
-            {
-                if ((bool)value)
-                {
-                    writer.WriteValue((bool)value);
-                }
-            }
-            else if (value.GetType() == typeof(ClickEventType))
-            {
-                ClickEventType type = (ClickEventType)value;
-                writer.WriteValue(_clickMap[type.GetHashCode()]);
-            }
-            else if (value.GetType() == typeof(HoverEventType))
-            {
-                HoverEventType type = (HoverEventType)value;
-                writer.WriteValue(_hoverMap[type.GetHashCode()]);
-            }
         }
     }
 
@@ -314,17 +259,38 @@ namespace MineCase.Formats
     /// </summary>
     public class Chat
     {
+        private static readonly Dictionary<string, int> _dict = new Dictionary<string, int>
+        {
+            { "open_url", 0 }, { "run_command", 1 }, { "suggest_command", 2 }, { "change_page", 3 },
+            { "show_text", 0 }, { "show_item", 1 }, { "show_entity", 2 }
+        };
+
+        /// <summary>
+        /// Gets or sets the top-level component of this object.
+        /// </summary>
         public ChatComponent Component { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Chat"/> class.
+        /// </summary>
         public Chat()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Chat"/> class with the specified component.
+        /// </summary>
+        /// <param name="component">The top-level component of this object.</param>
         public Chat(ChatComponent component)
         {
             Component = component;
         }
 
+        /// <summary>
+        /// Parses Chat from a JSON string.
+        /// </summary>
+        /// <param name="json">The JSON string</param>
+        /// <returns>A Chat object</returns>
         public static Chat Parse(string json)
         {
             if (string.IsNullOrEmpty(json))
@@ -334,7 +300,9 @@ namespace MineCase.Formats
             {
                 NamingStrategy = new CamelCaseNamingStrategy()
             };
-            json = json.Replace("change_page", "3");
+            var jsonObject = JObject.Parse(json);
+            Handle(jsonObject);
+            json = jsonObject.ToString();
             if (json.Contains("text"))
             {
                 component = JsonConvert.DeserializeObject<StringComponent>(json, new JsonSerializerSettings
@@ -379,15 +347,43 @@ namespace MineCase.Formats
             return null;
         }
 
+        /// <summary>
+        /// Serializes this object to a JObject.
+        /// </summary>
+        /// <returns>A JObject</returns>
         public JObject ToJObject()
         {
             return Component.ToJObject();
         }
 
+        /// <summary>
+        /// Serializes this object to a string.
+        /// </summary>
+        /// <returns>A JSON string</returns>
         public override string ToString()
         {
-            // return JsonConvert.SerializeObject(Component.ToJObject(), Formatting.None);
-            return JsonConvert.SerializeObject(Component, Formatting.None, new ChatJsonConverter(typeof(bool), typeof(ClickEventType), typeof(HoverEventType)));
+            return JsonConvert.SerializeObject(Component.ToJObject(), Formatting.None);
+        }
+
+        private static void Handle(JObject jObject)
+        {
+            var clickEvent = (JObject)jObject["clickEvent"];
+            if (clickEvent != null && clickEvent.HasValues)
+            {
+                jObject["clickEvent"]["action"] = _dict[(string)jObject["clickEvent"]["action"]];
+            }
+
+            var hoverEvent = (JObject)jObject["hoverEvent"];
+            if (hoverEvent != null && hoverEvent.HasValues)
+            {
+                jObject["hoverEvent"]["action"] = _dict[(string)jObject["hoverEvent"]["action"]];
+            }
+
+            var extra = (JObject)jObject["extra"];
+            if (extra != null && extra.HasValues)
+            {
+                Handle((JObject)jObject["extra"]);
+            }
         }
     }
 }
