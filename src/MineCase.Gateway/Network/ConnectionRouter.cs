@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MineCase.Server.Settings;
 using Orleans;
 using System;
 using System.Collections.Generic;
@@ -46,7 +47,7 @@ namespace MineCase.Gateway.Network
             }
             catch (Exception ex)
             {
-
+                _logger.LogError(default(EventId), ex, ex.Message);
             }
         }
     }

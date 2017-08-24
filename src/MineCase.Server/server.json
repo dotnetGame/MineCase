@@ -1,0 +1,49 @@
+//Minecraft server properties
+//ed Jun 28 22:27:08 CST 2017
+{
+    //server
+    "motd": "A Minecase Server",
+    "server-ip": "127.0.0.1",
+    "server-port": 3388,
+    "max-tick-time": 60000,
+    "online-mode": false,
+    "enable-rcon": false,
+    "network-compression-threshold": 256,
+    "resource-pack": "",
+    "resource-pack-hash": "",
+    "snooper-enabled": true,
+    "enable-query": false,
+
+    //spawn
+    "spawn-protection": 16,
+    "spawn-monsters": true,
+    "spawn-npcs": true,
+    "spawn-animals": true,
+
+    //world
+    "max-world-size": 29999984,
+    "allow-nether": true,
+    "generate-structures": true,
+    "generator-settings": "",
+    "max-build-height": 256,
+    "level-seed": "",
+    "level-type": "DEFAULT",
+    "enable-command-block": false,
+    "hardcore": false,
+
+    //user
+    "max-players": 20,
+    "view-distance": 10,
+    "allow-flight": false,
+    //"level-name": "world",
+    "player-idle-timeout": 0,
+    "difficulty": 1,
+    "force-gamemode": false,
+    "gamemode": 0,
+    "pvp": true,
+    "announce-player-achievements": true,
+
+    //op
+    "white-list": false,
+    "op-permission-level": 4
+}

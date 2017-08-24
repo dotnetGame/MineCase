@@ -56,11 +56,18 @@ namespace MineCase.Gateway
         {
             var serviceProvider = _clusterClient.ServiceProvider;
             var logger = _clusterClient.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
-
-            logger.LogInformation("Connecting to cluster...");
-            await _clusterClient.Connect();
-            logger.LogInformation("Connected to cluster.");
-
+            try
+            {
+                logger.LogInformation("Connecting to cluster...");
+                await _clusterClient.Connect();
+                logger.LogInformation("Connected to cluster.");
+            }
+            catch (Exception e)
+            {
+                logger.LogError("Cluster connection failed.\n" + "Exception stack trace:" + e.StackTrace);
+                _exitEvent.Set();
+                return;
+            }
             var connectionRouter = serviceProvider.GetRequiredService<ConnectionRouter>();
             await connectionRouter.Startup(default(CancellationToken));
         }
