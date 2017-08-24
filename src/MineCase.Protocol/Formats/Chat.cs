@@ -84,24 +84,34 @@ namespace MineCase.Formats
     /// </summary>
     public abstract class ChatComponent
     {
+        [JsonProperty("bold")]
         public bool? Bold { get; set; }
 
+        [JsonProperty("itatic")]
         public bool? Itatic { get; set; }
 
+        [JsonProperty("underlined")]
         public bool? Underlined { get; set; }
 
+        [JsonProperty("strikethrough")]
         public bool? Strikethrough { get; set; }
 
+        [JsonProperty("obfuscated")]
         public bool? Obfuscated { get; set; }
 
+        [JsonProperty("color")]
         public string Color { get; set; }
 
+        [JsonProperty("insertion")]
         public string Insertion { get; set; }
 
+        [JsonProperty("clickEvent")]
         public ChatClickEvent ClickEvent { get; set; }
 
+        [JsonProperty("hoverEvent")]
         public ChatHoverEvent HoverEvent { get; set; }
 
+        [JsonProperty("extra")]
         public List<ChatComponent> Extra { get; set; }
 
         public virtual JObject ToJObject()
@@ -295,48 +305,31 @@ namespace MineCase.Formats
         {
             if (string.IsNullOrEmpty(json))
                 return null;
-            ChatComponent component = null;
-            DefaultContractResolver contractResolver = new DefaultContractResolver
-            {
-                NamingStrategy = new CamelCaseNamingStrategy()
-            };
+
             var jsonObject = JObject.Parse(json);
             Handle(jsonObject);
             json = jsonObject.ToString();
+            ChatComponent component = null;
+
             if (json.Contains("text"))
             {
-                component = JsonConvert.DeserializeObject<StringComponent>(json, new JsonSerializerSettings
-                {
-                    ContractResolver = contractResolver
-                });
+                component = JsonConvert.DeserializeObject<StringComponent>(json);
             }
             else if (json.Contains("translate"))
             {
-                component = JsonConvert.DeserializeObject<TranslationComponent>(json, new JsonSerializerSettings
-                {
-                    ContractResolver = contractResolver
-                });
+                component = JsonConvert.DeserializeObject<TranslationComponent>(json);
             }
             else if (json.Contains("keybind"))
             {
-                component = JsonConvert.DeserializeObject<KeybindComponent>(json, new JsonSerializerSettings
-                {
-                    ContractResolver = contractResolver
-                });
+                component = JsonConvert.DeserializeObject<KeybindComponent>(json);
             }
             else if (json.Contains("score"))
             {
-                component = JsonConvert.DeserializeObject<ScoreComponent>(json, new JsonSerializerSettings
-                {
-                    ContractResolver = contractResolver
-                });
+                component = JsonConvert.DeserializeObject<ScoreComponent>(json);
             }
             else if (json.Contains("selector"))
             {
-                component = JsonConvert.DeserializeObject<SelectorComponent>(json, new JsonSerializerSettings
-                {
-                    ContractResolver = contractResolver
-                });
+                component = JsonConvert.DeserializeObject<SelectorComponent>(json);
             }
 
             if (component != null)
