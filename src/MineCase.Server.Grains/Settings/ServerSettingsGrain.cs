@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Orleans;
 using Orleans.Concurrency;
+using Orleans.Runtime;
 
 namespace MineCase.Server.Settings
 {
@@ -11,6 +13,12 @@ namespace MineCase.Server.Settings
     internal class ServerSettingsGrain : Grain, IServerSettings
     {
         private ServerSettings _settings;
+        private readonly ILogger _logger;
+
+        public ServerSettingsGrain(ILoggerFactory loggerFactory)
+        {
+            _logger = loggerFactory.CreateLogger<ServerSettingsGrain>();
+        }
 
         // read settings from file
         public override async Task OnActivateAsync()
@@ -22,7 +30,7 @@ namespace MineCase.Server.Settings
             }
             catch (Exception e)
             {
-                System.Console.WriteLine("Json deserialization failed\n" + e.StackTrace);
+                _logger.LogError(default(EventId), e, e.Message);
             }
         }
 
@@ -36,21 +44,24 @@ namespace MineCase.Server.Settings
             return Task.CompletedTask;
         }
 
-        private Task<string> ReadSettingsAsString(string path)
+        private async Task<string> ReadSettingsAsString(string path)
         {
             string result = null;
+
             try
             {
-                result = File.ReadAllText(path);
+                FileStream fs = new FileStream(path, FileMode.Open);
+                using (StreamReader sr = new StreamReader(fs))
+                {
+                    result = await sr.ReadToEndAsync();
+                }
             }
-            catch (IOException /*e*/)
+            catch (IOException e)
             {
-                // TODO
-                // 创建包含默认配置的配置文件
-                // Console.WriteLine("io异常" + e.ToString());
+                _logger.LogError(default(EventId), e, e.Message);
             }
 
-            return Task.FromResult(result);
+            return result;
         }
     }
 }
