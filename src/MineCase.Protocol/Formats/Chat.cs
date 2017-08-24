@@ -9,6 +9,30 @@ using Newtonsoft.Json.Serialization;
 namespace MineCase.Formats
 {
     /// <summary>
+    /// Available types for color of Compoent.
+    /// </summary>
+    public enum ColorType
+    {
+        Black = 0,
+        DarkBlue = 1,
+        DarkGreen = 2,
+        DarkAqua = 3,
+        DarkRed = 4,
+        DarkPurple = 5,
+        Gold = 6,
+        Gray = 7,
+        DarkGray = 8,
+        Blue = 9,
+        Green = 10,
+        Aqua = 11,
+        Red = 12,
+        LightPurple = 13,
+        Yellow = 14,
+        White = 15,
+        Reset = 16
+    }
+
+    /// <summary>
     /// Available types for Action of ClickEvent.
     /// </summary>
     public enum ClickEventType
@@ -197,8 +221,15 @@ namespace MineCase.Formats
     /// An abstract base class that contains the fields common to all components.
     /// </summary>
     [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
-    public abstract class ChatComponent
+    public class ChatComponent
     {
+        private static readonly string[] _map = new string[17]
+        {
+            "black", "dark_blue", "dark_green", "dark_aqua", "dark_red",
+            "dark_purple", "gold", "gray", "dark_gray", "blue", "green",
+            "aqua", "red", "light_purple", "yellow", "white", "reset"
+        };
+
         public bool? Bold { get; set; }
 
         public bool? Itatic { get; set; }
@@ -209,15 +240,15 @@ namespace MineCase.Formats
 
         public bool? Obfuscated { get; set; }
 
-        public string Color { get; set; }
-
         public string Insertion { get; set; }
+
+        public ColorType? Color { get; set; }
 
         public ChatClickEvent ClickEvent { get; set; }
 
         public ChatHoverEvent HoverEvent { get; set; }
 
-        public JArray Extra { get; set; }
+        public List<ChatComponent> Extra { get; set; }
 
         public virtual JObject ToJObject()
         {
@@ -228,8 +259,12 @@ namespace MineCase.Formats
             AddBoolValue(jObject, "underlined", Underlined);
             AddBoolValue(jObject, "shrikethrough", Strikethrough);
             AddBoolValue(jObject, "obfuscated", Obfuscated);
-            AddStringValue(jObject, "color", Color);
             AddStringValue(jObject, "insertion", Insertion);
+
+            if (Color != null)
+            {
+                jObject.Add("color", _map[(int)Color]);
+            }
 
             if (ClickEvent != null)
             {
@@ -247,7 +282,7 @@ namespace MineCase.Formats
 
                 foreach (var comp in Extra)
                 {
-                    jArray.Add((JObject)comp);
+                    jArray.Add(comp.ToJObject());
                 }
 
                 jObject.Add("extra", jArray);
@@ -260,10 +295,7 @@ namespace MineCase.Formats
         {
             if (value != null)
             {
-                if ((bool)value)
-                {
-                    jObject.Add(key, (bool)value);
-                }
+                jObject.Add(key, (bool)value);
             }
         }
 
@@ -321,7 +353,7 @@ namespace MineCase.Formats
     {
         public string Translate { get; set; }
 
-        public JArray With { get; set; }
+        public List<ChatComponent> With { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslationComponent"/> class.
@@ -331,11 +363,20 @@ namespace MineCase.Formats
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TranslationComponent"/> class with a string and a JArray.
+        /// Initializes a new instance of the <see cref="TranslationComponent"/> class with a string.
+        /// </summary>
+        /// <param name="translate">Translates text</param>
+        public TranslationComponent(string translate)
+        {
+            Translate = translate;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TranslationComponent"/> class with a string and a List.
         /// </summary>
         /// <param name="translate">Translates text</param>
         /// <param name="with">Optional tag</param>
-        public TranslationComponent(string translate, JArray with)
+        public TranslationComponent(string translate, List<ChatComponent> with)
         {
             Translate = translate;
             With = with;
@@ -356,7 +397,7 @@ namespace MineCase.Formats
 
                 foreach (var comp in With)
                 {
-                    jArray.Add((JObject)comp);
+                    jArray.Add(comp.ToJObject());
                 }
 
                 jObject.Add("with", jArray);
@@ -496,7 +537,11 @@ namespace MineCase.Formats
             { "key.spectatorOutlines", 19 }, { "key.swapHands", 20 }, { "key.saveToolbarActivator", 21 },
             { "key.loadToolbarActivator", 22 }, { "key.advancements", 23 }, { "key.hotbar.1", 24 },
             { "key.hotbar.2", 25 }, { "key.hotbar.3", 26 }, { "key.hotbar.4", 27 }, { "key.hotbar.5", 28 },
-            { "key.hotbar.6", 29 }, { "key.hotbar.7", 30 }, { "key.hotbar.8", 31 }, { "key.hotbar.9", 32 }
+            { "key.hotbar.6", 29 }, { "key.hotbar.7", 30 }, { "key.hotbar.8", 31 }, { "key.hotbar.9", 32 },
+            { "black", 0 }, { "dark_blue", 1 }, { "dark_green", 2 }, { "dark_aqua", 3 }, { "dark_red", 4 },
+            { "dark_purple", 5 }, { "gold", 6 }, { "gray", 7 }, { "dark_gray", 8 }, { "blue", 9 },
+            { "green", 10 }, { "aqua", 11 }, { "red", 12 }, { "light_purple", 13 }, { "yellow", 14 },
+            { "white", 15 }, { "reset", 16 }
         };
 
         /// <summary>
@@ -521,8 +566,21 @@ namespace MineCase.Formats
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Chat"/> class with a string.
+        /// It is convenient to initialize a Chat class with a StringComponent.
+        /// </summary>
+        /// <param name="text">The text of the StringComponent</param>
+        public Chat(string text)
+        {
+            Component = new StringComponent(text);
+        }
+
+        /// <summary>
         /// Parses Chat from a JSON string.
         /// </summary>
+        /// <exception>
+        /// Newtonsoft.Json.JsonException
+        /// </exception>
         /// <param name="json">The JSON string</param>
         /// <returns>A Chat object</returns>
         public static Chat Parse(string json)
@@ -541,36 +599,7 @@ namespace MineCase.Formats
             }
 
             Handle(jsonObject);
-            json = jsonObject.ToString();
-            ChatComponent component = null;
-
-            if (jsonObject.SelectToken("text") != null)
-            {
-                component = JsonConvert.DeserializeObject<StringComponent>(json);
-            }
-            else if (jsonObject.SelectToken("translate") != null)
-            {
-                component = JsonConvert.DeserializeObject<TranslationComponent>(json);
-            }
-            else if (jsonObject.SelectToken("keybind") != null)
-            {
-                component = JsonConvert.DeserializeObject<KeybindComponent>(json);
-            }
-            else if (jsonObject.SelectToken("score") != null)
-            {
-                component = JsonConvert.DeserializeObject<ScoreComponent>(json);
-            }
-            else if (jsonObject.SelectToken("selector") != null)
-            {
-                component = JsonConvert.DeserializeObject<SelectorComponent>(json);
-            }
-
-            if (component != null)
-            {
-                return new Chat(component);
-            }
-
-            throw new JsonException("Invalid JSON string.");
+            return new Chat(ParseCompoent(jsonObject));
         }
 
         /// <summary>
@@ -591,23 +620,152 @@ namespace MineCase.Formats
             return JsonConvert.SerializeObject(Component.ToJObject(), Formatting.None);
         }
 
+        private static ChatComponent ParseCompoent(JObject jsonObject)
+        {
+            ChatComponent component = null;
+
+            // Construct the special part
+            if (jsonObject.SelectToken("selector") != null)
+            {
+                component = new SelectorComponent(jsonObject.SelectToken("selector").Value<string>());
+            }
+            else if (jsonObject.SelectToken("score") != null)
+            {
+                ChatScore chatScore = new ChatScore(
+                    jsonObject.SelectToken("score.name").Value<string>(),
+                    jsonObject.SelectToken("score.objective").Value<string>());
+                if (jsonObject.SelectToken("score.value") != null)
+                {
+                    chatScore.Value = jsonObject.SelectToken("score.value").Value<int>();
+                }
+
+                component = new ScoreComponent(chatScore);
+            }
+            else if (jsonObject.SelectToken("text") != null)
+            {
+                component = new StringComponent(jsonObject.SelectToken("text").Value<string>());
+            }
+            else if (jsonObject.SelectToken("translate") != null)
+            {
+                component = new TranslationComponent(jsonObject.SelectToken("translate").Value<string>());
+                if (jsonObject.SelectToken("with") != null)
+                {
+                    // There must be elements when the `with` is not null
+                    ((TranslationComponent)component).With = new List<ChatComponent>();
+                    var with = (JArray)jsonObject.SelectToken("with");
+                    foreach (var comp in with)
+                    {
+                        ((TranslationComponent)component).With.Add(ParseCompoent((JObject)comp));
+                    }
+                }
+            }
+            else if (jsonObject.SelectToken("keybind") != null)
+            {
+                component = new KeybindComponent(jsonObject.SelectToken("keybind").Value<KeyBindType>());
+            }
+
+            if (component == null)
+            {
+                throw new JsonException("Invalid JSON string.");
+            }
+
+            // Construct the common part
+            ConstructCommonPart(jsonObject, component);
+
+            return component;
+        }
+
+        private static void ConstructCommonPart(JObject jsonObject, ChatComponent component)
+        {
+            if (jsonObject.SelectToken("bold") != null)
+            {
+                component.Bold = jsonObject.SelectToken("bold").Value<bool>();
+            }
+
+            if (jsonObject.SelectToken("itatic") != null)
+            {
+                component.Itatic = jsonObject.SelectToken("itatic").Value<bool>();
+            }
+
+            if (jsonObject.SelectToken("underlined") != null)
+            {
+                component.Underlined = jsonObject.SelectToken("underlined").Value<bool>();
+            }
+
+            if (jsonObject.SelectToken("strikethrough") != null)
+            {
+                component.Strikethrough = jsonObject.SelectToken("strikethrough").Value<bool>();
+            }
+
+            if (jsonObject.SelectToken("obfuscated") != null)
+            {
+                component.Obfuscated = jsonObject.SelectToken("obfuscated").Value<bool>();
+            }
+
+            if (jsonObject.SelectToken("insertion") != null)
+            {
+                component.Insertion = jsonObject.SelectToken("insertion").Value<string>();
+            }
+
+            if (jsonObject.SelectToken("color") != null)
+            {
+                component.Color = (ColorType)jsonObject.SelectToken("color").Value<int>();
+            }
+
+            if (jsonObject.SelectToken("clickEvent") != null)
+            {
+                component.ClickEvent = new ChatClickEvent(
+                    (ClickEventType)jsonObject.SelectToken("clickEvent.action").Value<int>(),
+                    jsonObject.SelectToken("clickEvent.value"));
+            }
+
+            if (jsonObject.SelectToken("hoverEvent") != null)
+            {
+                component.HoverEvent = new ChatHoverEvent(
+                    jsonObject.SelectToken("hoverEvent.action").Value<HoverEventType>(),
+                    jsonObject.SelectToken("hoverEvent.value"));
+            }
+
+            if (jsonObject.SelectToken("extra") != null)
+            {
+                component.Extra = new List<ChatComponent>();
+                var extra = (JArray)jsonObject.SelectToken("extra");
+                foreach (var comp in extra)
+                {
+                    component.Extra.Add(ParseCompoent((JObject)comp));
+                }
+            }
+        }
+
         private static void Handle(JObject jObject)
         {
-            var clickEvent = (JObject)jObject["clickEvent"];
-            if (clickEvent != null && clickEvent.HasValues)
+            if (jObject.SelectToken("color") != null)
+            {
+                jObject["color"] = _dict[(string)jObject["color"]];
+            }
+
+            if (jObject.SelectToken("clickEvent.action") != null)
             {
                 jObject["clickEvent"]["action"] = _dict[(string)jObject["clickEvent"]["action"]];
             }
 
-            var hoverEvent = (JObject)jObject["hoverEvent"];
-            if (hoverEvent != null && hoverEvent.HasValues)
+            if (jObject.SelectToken("hoverEvent.action") != null)
             {
                 jObject["hoverEvent"]["action"] = _dict[(string)jObject["hoverEvent"]["action"]];
             }
 
-            if (!string.IsNullOrEmpty((string)jObject["Keybind"]))
+            if (jObject.SelectToken("keybind") != null)
             {
-                jObject["Keybind"] = _dict[(string)jObject["Keybind"]];
+                jObject["keybind"] = _dict[(string)jObject["keybind"]];
+            }
+
+            var with = (JArray)jObject["with"];
+            if (with != null && with.Count != 0)
+            {
+                foreach (var comp in with)
+                {
+                    Handle((JObject)comp);
+                }
             }
 
             var extra = (JArray)jObject["extra"];
