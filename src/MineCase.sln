@@ -15,12 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Server.Interfaces"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Server.Grains", "MineCase.Server.Grains\MineCase.Server.Grains.csproj", "{3F83DE42-121D-4E7A-AB27-825AD8179D3C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A0B013BF-4BEB-4044-AA59-A9ED3AFBF99D}"
-	ProjectSection(SolutionItems) = preProject
-		..\build\Analyzers.ruleset = ..\build\Analyzers.ruleset
-		..\build\stylecop.json = ..\build\stylecop.json
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.UnitTest", "..\tests\UnitTest\MineCase.UnitTest.csproj", "{35618D69-85F0-4C38-8224-04A2D75825B6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Nbt", "MineCase.NBT\MineCase.Nbt.csproj", "{199335D6-9726-42E1-94F2-7D95932D4DDC}"
