@@ -1,0 +1,17 @@
+version: 1.0.0-alpha1-{build}
+image: Visual Studio 2017
+before_build:
+- ps: >-
+    cd src
+
+    dotnet restore
+build:
+  project: ./src/
+  verbosity: minimal
+test_script:
+- ps: >-
+    cd ..\tests
+
+    cd UnitTest
+
+    dotnet test
