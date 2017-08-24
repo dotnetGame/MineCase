@@ -55,10 +55,10 @@ namespace MineCase.Server.Game
             return Task.CompletedTask;
         }
 
-        public async Task SendChatMessage(string senderName, ServerboundChatMessage packet)
+        public async Task SendChatMessage(string senderName, string message)
         {
             // TODO command parser
-            Chat jsonData = Chat.Parse("{\"translate\":\"chat.type.text\",\"with\":[\"" + senderName + "\",\"" + packet.Message + "\"]}");
+            Chat jsonData = Chat.Parse("{\"translate\":\"chat.type.text\",\"with\":[\"" + senderName + "\",\"" + message + "\"]}");
             byte position = 0; // It represents user message in chat box
             foreach (var item in _users.Keys)
             {
@@ -66,9 +66,9 @@ namespace MineCase.Server.Game
             }
         }
 
-        public async Task SendChatMessage(string senderName, string receiverName, ServerboundChatMessage packet)
+        public async Task SendChatMessage(string senderName, string receiverName, string message)
         {
-            Chat jsonData = Chat.Parse("{\"text\":\"" + senderName + "\",\"text\":\"" + packet.Message + "\"}");
+            Chat jsonData = Chat.Parse("{\"text\":\"" + senderName + "\",\"text\":\"" + message + "\"}");
             byte position = 0; // It represents user message in chat box
             foreach (var item in _users.Keys)
             {

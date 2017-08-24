@@ -15,8 +15,8 @@ namespace MineCase.Server.Game
 
         Task LeaveGame(IUser player);
 
-        Task SendChatMessage(string senderName, ServerboundChatMessage packet);
+        Task SendChatMessage(string senderName, String message);
 
-        Task SendChatMessage(string senderName, string receiverName, ServerboundChatMessage packet);
+        Task SendChatMessage(string senderName, string receiverName, String messages);
     }
 }

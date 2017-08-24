@@ -69,7 +69,7 @@ namespace MineCase.Server.Network
         private async Task DispatchPacket(ServerboundChatMessage packet)
         {
             var gameSession = await _user.GetGameSession();
-            await gameSession.SendChatMessage(await _user.GetName(), packet);
+            await gameSession.SendChatMessage(await _user.GetName(), packet.message);
         }
 
         private Task DispatchPacket(ClientSettings packet)
