@@ -9,6 +9,9 @@ namespace MineCase.UnitTest
 {
     public class ChatTest
     {
+        /// <summary>
+        /// Tests Chat.ToJObject.
+        /// </summary>
         [Fact]
         public void Test1()
         {
@@ -25,12 +28,17 @@ namespace MineCase.UnitTest
 
             chat.Component = stringComponent;
             JObject o = chat.ToJObject();
+            JObject o2 = JObject.Parse(chat.ToString());
             Assert.Equal("hello case!", o.GetValue("text").Value<string>());
             Assert.True(o.GetValue("bold").Value<bool>());
             Assert.Equal("#FFFFFF", o.GetValue("color").Value<string>());
             Assert.Equal(JToken.Parse(chatClickEvent.ToJObject().ToString()), o.GetValue("clickEvent"));
+            Assert.True(JToken.DeepEquals(o, o2));
         }
 
+        /// <summary>
+        /// Tests Chat.ToString.
+        /// </summary>
         [Fact]
         public void Test2()
         {
@@ -45,9 +53,12 @@ namespace MineCase.UnitTest
             stringComponent.ClickEvent = chatClickEvent;
 
             Chat chat = new Chat(stringComponent);
-            Assert.Equal("{\"text\":\"hello\",\"bold\":true,\"color\":\"#FFFFFF\",\"clickEvent\":{\"action\":\"change_page\",\"value\":1}}", chat.ToString());
+            Assert.Equal("{\"bold\":true,\"color\":\"#FFFFFF\",\"clickEvent\":{\"action\":\"change_page\",\"value\":1},\"text\":\"hello\"}", chat.ToString());
         }
 
+        /// <summary>
+        /// Tests Chat.Parse.
+        /// </summary>
         [Fact]
         public void Test3()
         {
