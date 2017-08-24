@@ -46,7 +46,7 @@ namespace MineCase.Gateway.Network
             }
             catch (Exception ex)
             {
-
+                _logger.LogError("GameSession startup failure.\n"+ex.StackTrace);
             }
         }
     }
