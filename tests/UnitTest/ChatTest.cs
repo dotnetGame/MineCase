@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using MineCase.Formats;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -16,16 +15,14 @@ namespace MineCase.UnitTest
         [Fact]
         public void Test1()
         {
-            var chat = new Chat();
-            var stringComponent = new StringComponent
+            var chat = new Chat(new StringComponent
             {
                 Text = "hello case!",
                 Bold = true,
                 Itatic = false,
                 Color = ColorType.Blue,
                 ClickEvent = new ChatClickEvent(ClickEventType.OpenUrl, @"http://case.orz")
-            };
-            chat.Component = stringComponent;
+            });
 
             var o = chat.ToJObject();
             var o2 = JObject.Parse(chat.ToString());
@@ -48,14 +45,13 @@ namespace MineCase.UnitTest
                 Text = "hello",
                 Bold = true,
                 Itatic = false,
-                Color = ColorType.Green
+                Color = ColorType.Green,
+                ClickEvent = new ChatClickEvent
+                {
+                    Action = ClickEventType.ChangePage,
+                    Value = 1
+                }
             };
-            var chatClickEvent = new ChatClickEvent
-            {
-                Action = ClickEventType.ChangePage,
-                Value = 1
-            };
-            stringComponent.ClickEvent = chatClickEvent;
 
             var chat = new Chat(stringComponent);
             Assert.Equal("{\"bold\":true,\"itatic\":false,\"color\":\"green\",\"clickEvent\":{\"action\":\"change_page\",\"value\":1},\"text\":\"hello\"}", chat.ToString());
@@ -81,9 +77,6 @@ namespace MineCase.UnitTest
                     { ""text"":""bar"" }
                 ]
             }";
-            const string json2 = @"{""text"":}";
-
-            Assert.Throws<JsonException>(() => Chat.Parse(json2));
 
             var chat = Chat.Parse(json);
             var jObject = JObject.Parse(json);
@@ -120,6 +113,7 @@ namespace MineCase.UnitTest
             };
             var keybind = new KeybindComponent
             {
+                Keybind = KeyBindType.Back,
                 Bold = false,
                 Itatic = true,
                 Color = ColorType.Green
@@ -136,6 +130,7 @@ namespace MineCase.UnitTest
             Assert.True(json.SelectToken("extra[0].itatic").Value<bool>());
             Assert.Equal("red", json.SelectToken("color"));
             Assert.Equal("green", json.SelectToken("extra[0].color"));
+            Assert.Equal("key.back", json.SelectToken("extra[0].keybind"));
             Assert.Equal("insert", json.SelectToken("insertion"));
             Assert.Equal("change_page", json.SelectToken("clickEvent.action"));
             Assert.Equal(1, json.SelectToken("clickEvent.value").Value<int>());
@@ -284,6 +279,35 @@ namespace MineCase.UnitTest
             }";
             var chat2 = Chat.Parse(json);
             Assert.True(JToken.DeepEquals(j, chat2.ToJObject()));
+        }
+
+        /// <summary>
+        /// Tests exceptions.
+        /// </summary>
+        [Fact]
+        public void Test9()
+        {
+            // parse exception
+            const string json = @"{""text"":}";
+            Assert.Throws<JsonException>(() => Chat.Parse(json));
+
+            // no key exception
+            Chat chat = new Chat();  // no compoent
+            Assert.Throws<InvalidOperationException>(() => chat.ToJObject());
+
+            // no key exception
+            var comp = new StringComponent();
+            Chat chat2 = new Chat(comp); // compoent no specified key
+            Assert.Throws<InvalidOperationException>(() => chat2.ToJObject());
+
+            // no key exception
+            Chat chat3 = new Chat(
+                new ScoreComponent(
+                    new ChatScore
+                    {
+                        Name = "case" // no name key or objective key
+                    }));
+            Assert.Throws<InvalidOperationException>(() => chat3.ToJObject());
         }
     }
 }
