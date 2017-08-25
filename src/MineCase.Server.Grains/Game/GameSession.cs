@@ -55,42 +55,26 @@ namespace MineCase.Server.Game
             return Task.CompletedTask;
         }
 
-        public async Task SendChatMessage(string senderName, string message)
+        public async Task SendChatMessage(IUser sender, string message)
         {
-            try
+            var senderName = await sender.GetName();
+
+            // TODO command parser
+            // construct name
+            Chat jsonData = await CreateStandardChatMessage(senderName, message);
+            byte position = 0; // It represents user message in chat box
+            foreach (var item in _users.Keys)
             {
-                // TODO command parser
-                // construct name
-                StringComponent nameComponent = new StringComponent(senderName);
-                nameComponent.ClickEvent = new ChatClickEvent(ClickEventType.SuggestCommand, "/msg " + senderName);
-                nameComponent.HoverEvent = new ChatHoverEvent(HoverEventType.ShowEntity, senderName);
-                nameComponent.Insertion = senderName;
-
-                // construct message
-                StringComponent messageComponent = new StringComponent(message);
-
-                // list
-                List<ChatComponent> list = new List<ChatComponent>();
-                list.Add(nameComponent);
-                list.Add(messageComponent);
-
-                Chat jsonData = new Chat(new TranslationComponent("chat.type.text", list));
-                byte position = 0; // It represents user message in chat box
-                foreach (var item in _users.Keys)
-                {
-                    await item.SendChatMessage(jsonData, position);
-                }
-            }
-            catch (Exception e)
-            {
-                System.Console.WriteLine("StackTrace:" + e.StackTrace);
-                System.Console.WriteLine("ExceptionMessage:" + e.Message);
+                await item.SendChatMessage(jsonData, position);
             }
         }
 
-        public async Task SendChatMessage(string senderName, string receiverName, string message)
+        public async Task SendChatMessage(IUser sender, IUser receiver, string message)
         {
-            Chat jsonData = Chat.Parse("{\"translate\":\"chat.type.text\",\"with\":[{\"text\":\"" + senderName + "\"},{\"text\":\"" + message + "\"}]}");
+            var senderName = await sender.GetName();
+            var receiverName = await receiver.GetName();
+
+            Chat jsonData = await CreateStandardChatMessage(senderName, message);
             byte position = 0; // It represents user message in chat box
             foreach (var item in _users.Keys)
             {
@@ -107,6 +91,25 @@ namespace MineCase.Server.Game
             _lastGameTickTime = now;
 
             await Task.WhenAll(_users.Keys.Select(o => o.OnGameTick(deltaTime)));
+        }
+
+        private Task<Chat> CreateStandardChatMessage(string name, string message)
+        {
+            StringComponent nameComponent = new StringComponent(name);
+            nameComponent.ClickEvent = new ChatClickEvent(ClickEventType.SuggestCommand, "/msg " + name);
+            nameComponent.HoverEvent = new ChatHoverEvent(HoverEventType.ShowEntity, name);
+            nameComponent.Insertion = name;
+
+            // construct message
+            StringComponent messageComponent = new StringComponent(message);
+
+            // list
+            List<ChatComponent> list = new List<ChatComponent>();
+            list.Add(nameComponent);
+            list.Add(messageComponent);
+
+            Chat jsonData = new Chat(new TranslationComponent("chat.type.text", list));
+            return Task.FromResult(jsonData);
         }
 
         private class UserContext
