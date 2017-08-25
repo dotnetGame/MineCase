@@ -477,13 +477,15 @@ namespace MineCase.Formats
         public override JObject ToJObject()
         {
             JObject jObject = base.ToJObject();
-            jObject.Add("name", Score.Name);
-            jObject.Add("objective", Score.Objective);
+            JObject score = new JObject();
+            score.Add("name", Score.Name);
+            score.Add("objective", Score.Objective);
             if (Score.Value != null)
             {
-                jObject.Add("value", Score.Value);
+                score.Add("value", Score.Value);
             }
 
+            jObject.Add("score", score);
             return jObject;
         }
     }
@@ -661,7 +663,7 @@ namespace MineCase.Formats
             }
             else if (jsonObject.SelectToken("keybind") != null)
             {
-                component = new KeybindComponent(jsonObject.SelectToken("keybind").Value<KeyBindType>());
+                component = new KeybindComponent((KeyBindType)jsonObject.SelectToken("keybind").Value<int>());
             }
 
             if (component == null)
@@ -722,7 +724,7 @@ namespace MineCase.Formats
             if (jsonObject.SelectToken("hoverEvent") != null)
             {
                 component.HoverEvent = new ChatHoverEvent(
-                    jsonObject.SelectToken("hoverEvent.action").Value<HoverEventType>(),
+                    (HoverEventType)jsonObject.SelectToken("hoverEvent.action").Value<int>(),
                     jsonObject.SelectToken("hoverEvent.value"));
             }
 
