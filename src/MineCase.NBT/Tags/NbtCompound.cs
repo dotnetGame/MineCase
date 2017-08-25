@@ -211,7 +211,7 @@ namespace MineCase.Nbt.Tags
                 var elements = new List<NbtTag>();
                 while (true)
                 {
-                    var curElement = NbtTagSerializer.DeserializeTag(br, true);
+                    var curElement = NbtTagSerializer.DeserializeTag(br);
                     if (curElement.TagType == NbtTagType.End)
                     {
                         break;
@@ -223,11 +223,11 @@ namespace MineCase.Nbt.Tags
                 return new NbtCompound(elements, name);
             }
 
-            public void Serialize(NbtTag tag, BinaryWriter bw)
+            public void Serialize(NbtTag tag, BinaryWriter bw, bool requireName)
             {
                 var nbtCompound = (NbtCompound)tag;
 
-                if (nbtCompound.Name != null)
+                if (requireName)
                 {
                     bw.WriteTagValue(nbtCompound.Name);
                 }
@@ -241,7 +241,7 @@ namespace MineCase.Nbt.Tags
             }
         }
 
-        static NbtCompound()
+        internal static void RegisterSerializer()
         {
             NbtTagSerializer.RegisterTag(NbtTagType.Compound, new Serializer());
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Text;
 using MineCase.Nbt.Serialization;
 using MineCase.Nbt.Tags;
 
@@ -9,7 +10,7 @@ namespace MineCase.Nbt
     // TODO: 实现 NbtFile 的其他接口，实现从压缩的数据中读取 Tag
     public class NbtFile
     {
-        private readonly NbtCompound _rootTag;
+        public NbtCompound RootTag { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NbtFile"/> class.<para />
@@ -17,7 +18,7 @@ namespace MineCase.Nbt
         /// </summary>
         public NbtFile()
         {
-            _rootTag = new NbtCompound();
+            RootTag = new NbtCompound();
         }
 
         /// <summary>
@@ -25,7 +26,8 @@ namespace MineCase.Nbt
         /// 从流中初始化 Nbt 数据
         /// </summary>
         /// <param name="stream">要从中初始化数据的流</param>
-        public NbtFile(Stream stream)
+        /// <param name="leaveOpen">读取完成后保持流的打开状态</param>
+        public NbtFile(Stream stream, bool leaveOpen = true)
         {
             if (stream == null)
             {
@@ -39,9 +41,9 @@ namespace MineCase.Nbt
 
             Contract.EndContractBlock();
 
-            using (var br = new BinaryReader(stream))
+            using (var br = new BinaryReader(stream, Encoding.UTF8, leaveOpen))
             {
-                _rootTag = NbtTagSerializer.DeserializeTag<NbtCompound>(br, false);
+                RootTag = NbtTagSerializer.DeserializeTag<NbtCompound>(br);
             }
         }
 
@@ -49,7 +51,8 @@ namespace MineCase.Nbt
         /// 将内容写入流中
         /// </summary>
         /// <param name="stream">要写入到的流</param>
-        public void WriteTo(Stream stream)
+        /// <param name="leaveOpen">写入完成后保持流的打开状态</param>
+        public void WriteTo(Stream stream, bool leaveOpen = true)
         {
             if (stream == null)
             {
@@ -63,9 +66,9 @@ namespace MineCase.Nbt
 
             Contract.EndContractBlock();
 
-            using (var bw = new BinaryWriter(stream))
+            using (var bw = new BinaryWriter(stream, Encoding.UTF8, leaveOpen))
             {
-                NbtTagSerializer.SerializeTag(_rootTag, bw);
+                NbtTagSerializer.SerializeTag(RootTag, bw);
             }
         }
     }

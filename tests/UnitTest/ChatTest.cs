@@ -16,17 +16,20 @@ namespace MineCase.UnitTest
         [Fact]
         public void Test1()
         {
-            Chat chat = new Chat();
-            StringComponent stringComponent = new StringComponent();
-            stringComponent.Text = "hello case!";
-            stringComponent.Bold = true;
-            stringComponent.Itatic = false;
-            stringComponent.Color = ColorType.Blue;
-            stringComponent.ClickEvent = new ChatClickEvent(ClickEventType.OpenUrl, @"http://case.orz");
+            var chat = new Chat();
+            var stringComponent = new StringComponent
+            {
+                Text = "hello case!",
+                Bold = true,
+                Itatic = false,
+                Color = "blue",
+                ClickEvent = new ChatClickEvent(ClickEventType.OpenUrl, @"http://case.orz"),
+                Extra = new JArray(JObject.Parse(@"{""text"":""foo""}"), JObject.Parse(@"{""text"":""bar""}"))
+            };
             chat.Component = stringComponent;
 
-            JObject o = chat.ToJObject();
-            JObject o2 = JObject.Parse(chat.ToString());
+            var o = chat.ToJObject();
+            var o2 = JObject.Parse(chat.ToString());
             Assert.Equal("hello case!", o.GetValue("text"));
             Assert.True(o.GetValue("bold").Value<bool>());
             Assert.Equal("blue", o.GetValue("color"));
@@ -41,17 +44,21 @@ namespace MineCase.UnitTest
         [Fact]
         public void Test2()
         {
-            StringComponent stringComponent = new StringComponent();
-            stringComponent.Text = "hello";
-            stringComponent.Bold = true;
-            stringComponent.Itatic = false;
-            stringComponent.Color = ColorType.Green;
-            ChatClickEvent chatClickEvent = new ChatClickEvent();
-            chatClickEvent.Action = ClickEventType.ChangePage;
-            chatClickEvent.Value = 1;
+            var stringComponent = new StringComponent
+            {
+                Text = "hello",
+                Bold = true,
+                Itatic = false,
+                Color = "green"
+            };
+            var chatClickEvent = new ChatClickEvent
+            {
+                Action = ClickEventType.ChangePage,
+                Value = 1
+            };
             stringComponent.ClickEvent = chatClickEvent;
 
-            Chat chat = new Chat(stringComponent);
+            var chat = new Chat(stringComponent);
             Assert.Equal("{\"bold\":true,\"itatic\":false,\"color\":\"green\",\"clickEvent\":{\"action\":\"change_page\",\"value\":1},\"text\":\"hello\"}", chat.ToString());
         }
 
@@ -61,7 +68,7 @@ namespace MineCase.UnitTest
         [Fact]
         public void Test3()
         {
-            string json = @"{
+            const string json = @"{
                 ""text"":""case"",
                 ""bold"":true,
                 ""itatic"":true,
@@ -75,14 +82,14 @@ namespace MineCase.UnitTest
                     { ""text"":""bar"" }
                 ]
             }";
-            string json2 = @"{""text"":}";
+            const string json2 = @"{""text"":}";
 
             Assert.Throws<JsonException>(() => Chat.Parse(json2));
 
-            Chat chat = Chat.Parse(json);
-            JObject jObject = JObject.Parse(json);
+            var chat = Chat.Parse(json);
+            var jObject = JObject.Parse(json);
 
-            StringComponent sc = (StringComponent)chat.Component;
+            var sc = (StringComponent)chat.Component;
             Assert.Equal("case", sc.Text);
             Assert.True(sc.Bold);
             Assert.True(sc.Itatic);

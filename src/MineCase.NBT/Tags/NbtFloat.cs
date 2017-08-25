@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using MineCase.Nbt.Serialization;
 
 namespace MineCase.Nbt.Tags
 {
@@ -23,6 +25,38 @@ namespace MineCase.Nbt.Tags
             : base(name)
         {
             Value = value;
+        }
+
+        private class Serializer : ITagSerializer
+        {
+            public NbtTag Deserialize(BinaryReader br, bool requireName)
+            {
+                string name = null;
+                if (requireName)
+                {
+                    name = br.ReadTagString();
+                }
+
+                var value = br.ReadTagFloat();
+                return new NbtFloat(value, name);
+            }
+
+            public void Serialize(NbtTag tag, BinaryWriter bw, bool requireName)
+            {
+                var nbtFloat = (NbtFloat)tag;
+
+                if (requireName)
+                {
+                    bw.WriteTagValue(nbtFloat.Name);
+                }
+
+                bw.WriteTagValue(nbtFloat.Value);
+            }
+        }
+
+        internal static void RegisterSerializer()
+        {
+            NbtTagSerializer.RegisterTag(NbtTagType.Float, new Serializer());
         }
     }
 }

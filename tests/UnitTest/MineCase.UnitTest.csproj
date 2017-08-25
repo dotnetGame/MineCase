@@ -18,6 +18,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\..\src\MineCase.NBT\MineCase.Nbt.csproj" />
     <ProjectReference Include="..\..\src\MineCase.Protocol\MineCase.Protocol.csproj" />
   </ItemGroup>
 

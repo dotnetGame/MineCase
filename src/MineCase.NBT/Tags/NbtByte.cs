@@ -41,11 +41,11 @@ namespace MineCase.Nbt.Tags
                 return new NbtByte(value, name);
             }
 
-            public void Serialize(NbtTag tag, BinaryWriter bw)
+            public void Serialize(NbtTag tag, BinaryWriter bw, bool requireName)
             {
                 var nbtByte = (NbtByte)tag;
 
-                if (nbtByte.Name != null)
+                if (requireName)
                 {
                     bw.WriteTagValue(nbtByte.Name);
                 }
@@ -54,7 +54,7 @@ namespace MineCase.Nbt.Tags
             }
         }
 
-        static NbtByte()
+        internal static void RegisterSerializer()
         {
             NbtTagSerializer.RegisterTag(NbtTagType.Byte, new Serializer());
         }
