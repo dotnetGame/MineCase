@@ -322,23 +322,26 @@ namespace MineCase.Nbt.Tags
                 return new NbtList(elements, name);
             }
 
-            public void Serialize(NbtTag tag, BinaryWriter bw)
+            public void Serialize(NbtTag tag, BinaryWriter bw, bool requireName)
             {
                 var nbtList = (NbtList)tag;
 
-                if (nbtList.Name != null)
+                if (requireName)
                 {
                     bw.WriteTagValue(nbtList.Name);
                 }
 
+                bw.WriteTagValue(nbtList.ElementType);
+                bw.Write(nbtList.Count.ToggleEndian());
+
                 foreach (var elem in nbtList._childTags)
                 {
-                    NbtTagSerializer.SerializeTag(elem, bw, false);
+                    NbtTagSerializer.SerializeTag(elem, bw, false, false);
                 }
             }
         }
 
-        static NbtList()
+        internal static void RegisterSerializer()
         {
             NbtTagSerializer.RegisterTag(NbtTagType.List, new Serializer());
         }

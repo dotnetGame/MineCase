@@ -41,11 +41,11 @@ namespace MineCase.Nbt.Tags
                 return new NbtDouble(value, name);
             }
 
-            public void Serialize(NbtTag tag, BinaryWriter bw)
+            public void Serialize(NbtTag tag, BinaryWriter bw, bool requireName)
             {
                 var nbtDouble = (NbtDouble)tag;
 
-                if (nbtDouble.Name != null)
+                if (requireName)
                 {
                     bw.WriteTagValue(nbtDouble.Name);
                 }
@@ -54,7 +54,7 @@ namespace MineCase.Nbt.Tags
             }
         }
 
-        static NbtDouble()
+        internal static void RegisterSerializer()
         {
             NbtTagSerializer.RegisterTag(NbtTagType.Double, new Serializer());
         }

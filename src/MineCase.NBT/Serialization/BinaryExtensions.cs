@@ -68,7 +68,7 @@ namespace MineCase.Nbt.Serialization
             if (value == null)
             {
                 // TODO: 这个行为是否正确？
-                bw.Write(((ushort)0).ToggleEndian());
+                bw.Write((ushort)0);
                 return;
             }
 
@@ -158,7 +158,7 @@ namespace MineCase.Nbt.Serialization
         {
             if (BitConverter.IsLittleEndian)
             {
-                return (long)((ulong)((int)(((ulong)value & 0xFFFFFFFF00000000) >> 32)).ToggleEndian() | (ulong)(((int)value).ToggleEndian() << 32));
+                return (long)((ulong)value).ToggleEndian();
             }
 
             return value;
@@ -168,7 +168,9 @@ namespace MineCase.Nbt.Serialization
         {
             if (BitConverter.IsLittleEndian)
             {
-                return (ulong)((int)((value & 0xFFFFFFFF00000000) >> 32)).ToggleEndian() | (ulong)(((int)value).ToggleEndian() << 32);
+                return (value >> 56) | ((value & 0x00FF_0000_0000_0000) >> 40) | ((value & 0x0000_FF00_0000_0000) >> 24) |
+                       ((value & 0x0000_00FF_0000_0000) >> 8) | ((value & 0x0000_0000_FF00_0000) << 8) | ((value & 0x0000_0000_00FF_0000) << 24) |
+                       ((value & 0x0000_0000_0000_FF00) << 40) | ((value & 0x0000_0000_0000_00FF) << 56);
             }
 
             return value;

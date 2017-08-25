@@ -20,12 +20,12 @@ namespace MineCase.Nbt.Tags
                 return new NbtEnd();
             }
 
-            public void Serialize(NbtTag tag, BinaryWriter bw)
+            public void Serialize(NbtTag tag, BinaryWriter bw, bool requireName)
             {
             }
         }
 
-        static NbtEnd()
+        internal static void RegisterSerializer()
         {
             NbtTagSerializer.RegisterTag(NbtTagType.End, new Serializer());
         }
