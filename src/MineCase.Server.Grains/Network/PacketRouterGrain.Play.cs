@@ -60,6 +60,11 @@ namespace MineCase.Server.Network
                     case 0x10:
                         innerPacket = DeferPacket(PlayerLook.Deserialize(br));
                         break;
+
+                    // Held Item Change
+                    case 0x1A:
+                        innerPacket = DeferPacket(ServerboundHeldItemChange.Deserialize(br));
+                        break;
                     default:
                         throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X}.");
                 }
@@ -84,6 +89,7 @@ namespace MineCase.Server.Network
 
         private Task DispatchPacket(ClientSettings packet)
         {
+            _user.SetViewDistance(packet.ViewDistance);
             return Task.CompletedTask;
         }
 
@@ -123,6 +129,11 @@ namespace MineCase.Server.Network
 
             // player.UseEntity((uint)packet.Target, (EntityUsage)packet.Type, packet.TargetX.HasValue ?
             //    new Vector3?(new Vector3(packet.TargetX.Value, packet.TargetY.Value, packet.TargetZ.Value)) : null, (EntityInteractHand?)packet.Hand).Ignore();
+            return Task.CompletedTask;
+        }
+
+        private Task DispatchPacket(ServerboundHeldItemChange packet)
+        {
             return Task.CompletedTask;
         }
     }

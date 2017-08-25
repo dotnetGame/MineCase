@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MineCase.Protocol;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
+using MineCase.Server.User;
 using MineCase.Server.World;
 using Orleans;
 using Orleans.Streams;
@@ -21,6 +22,8 @@ namespace MineCase.Server.Game
         public int ChunkZ { get; set; }
 
         public IReadOnlyCollection<IClientboundPacketSink> Clients { get; set; }
+
+        public IReadOnlyCollection<IUser> Users { get; set; }
     }
 
     internal interface IChunkSenderJobWorker : IGrainWithGuidKey
@@ -42,6 +45,8 @@ namespace MineCase.Server.Game
 
             var generator = new ClientPlayPacketGenerator(new BroadcastPacketSink(job.Clients));
             await generator.ChunkData(Dimension.Overworld, job.ChunkX, job.ChunkZ, await chunkColumn.GetState());
+            foreach (var user in job.Users)
+                user.OnChunkSent(job.ChunkX, job.ChunkZ).Ignore();
         }
 
         private class BroadcastPacketSink : IPacketSink

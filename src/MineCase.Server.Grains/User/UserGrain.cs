@@ -19,6 +19,7 @@ namespace MineCase.Server.User
     {
         private string _name;
         private uint _protocolVersion;
+        private int _viewDistance = 10;
         private string _worldId;
         private IWorld _world;
         private IClientboundPacketSink _sink;
@@ -38,6 +39,8 @@ namespace MineCase.Server.User
         private IPlayer _player;
 
         private (int x, int z)? _lastStreamedChunk;
+        private HashSet<(int x, int z)> _sendingChunks;
+        private HashSet<(int x, int z)> _sentChunks;
 
         public override async Task OnActivateAsync()
         {
@@ -49,6 +52,8 @@ namespace MineCase.Server.User
             }
 
             _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(_worldId);
+            _sendingChunks = new HashSet<(int x, int z)>();
+            _sentChunks = new HashSet<(int x, int z)>();
         }
 
         public Task<IClientboundPacketSink> GetClientPacketSink()
@@ -210,25 +215,51 @@ namespace MineCase.Server.User
             var currentChunk = await _player.GetChunkPosition();
             if (_lastStreamedChunk.HasValue && _lastStreamedChunk.Value.Equals((currentChunk.x, currentChunk.z))) return true;
 
-            var trunkSender = GrainFactory.GetGrain<IChunkSender>(_world.GetPrimaryKeyString());
-
-            // await trunkSender.PostChunk(currentChunk.x, currentChunk.z, new[] { _sink });
-            _lastStreamedChunk = (currentChunk.x, currentChunk.z);
-
-            for (int x = 0; x < 11; x++)
+            for (int d = 0; d <= _viewDistance; d++)
             {
-                for (int z = 0; z < 11; z++)
+                for (int x = -d; x <= d; x++)
                 {
-                    await trunkSender.PostChunk(x, z, new[] { _sink });
+                    var z = d - Math.Abs(x);
+
+                    if (await StreamChunk(currentChunk.x + x, currentChunk.z + z))
+                        return false;
+                    if (await StreamChunk(currentChunk.x + x, currentChunk.z - z))
+                        return false;
                 }
             }
 
+            _lastStreamedChunk = (currentChunk.x, currentChunk.z);
             return true;
+        }
+
+        private async Task<bool> StreamChunk(int chunkX, int chunkZ)
+        {
+            var trunkSender = GrainFactory.GetGrain<IChunkSender>(_world.GetPrimaryKeyString());
+            if (!_sentChunks.Contains((chunkX, chunkZ)) && _sendingChunks.Add((chunkX, chunkZ)))
+            {
+                await trunkSender.PostChunk(chunkX, chunkZ, new[] { _sink }, new[] { this.AsReference<IUser>() });
+                return true;
+            }
+
+            return false;
         }
 
         public Task SetPacketRouter(IPacketRouter packetRouter)
         {
             _packetRouter = packetRouter;
+            return Task.CompletedTask;
+        }
+
+        public Task SetViewDistance(int viewDistance)
+        {
+            _viewDistance = viewDistance;
+            return Task.CompletedTask;
+        }
+
+        public Task OnChunkSent(int chunkX, int chunkZ)
+        {
+            _sendingChunks.Remove((chunkX, chunkZ));
+            _sentChunks.Add((chunkX, chunkZ));
             return Task.CompletedTask;
         }
 
