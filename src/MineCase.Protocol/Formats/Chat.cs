@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 
 namespace MineCase.Formats
 {
@@ -96,7 +93,6 @@ namespace MineCase.Formats
     /// <summary>
     /// One of the fields of the component.
     /// </summary>
-    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class ChatClickEvent
     {
         private static readonly string[] _map = new string[4]
@@ -126,17 +122,15 @@ namespace MineCase.Formats
 
         public JObject ToJObject()
         {
-            JObject jObject = new JObject();
-            jObject.Add("action", _map[(int)Action]);
-            jObject.Add("value", Value);
-            return jObject;
+            return new JObject(
+                new JProperty("action", _map[(int)Action]),
+                new JProperty("value", Value));
         }
     }
 
     /// <summary>
     /// One of the fields of the component.
     /// </summary>
-    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class ChatHoverEvent
     {
         private static readonly string[] _map = new string[3]
@@ -166,17 +160,15 @@ namespace MineCase.Formats
 
         public JObject ToJObject()
         {
-            JObject jObject = new JObject();
-            jObject.Add("action", _map[(int)Action]);
-            jObject.Add("value", Value);
-            return jObject;
+            return new JObject(
+                new JProperty("action", _map[(int)Action]),
+                new JProperty("value", Value));
         }
     }
 
     /// <summary>
     /// A object in the ScoreComponent.
     /// </summary>
-    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class ChatScore
     {
         public string Name { get; set; }
@@ -197,30 +189,36 @@ namespace MineCase.Formats
         /// </summary>
         /// <param name="name">The name of the player</param>
         /// <param name="objective">The scoreboard target to display the score</param>
-        public ChatScore(string name, string objective)
-        {
-            Name = name;
-            Objective = objective;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ChatScore"/> class with the specified parameters.
-        /// </summary>
-        /// <param name="name">The name of the player</param>
-        /// <param name="objective">The scoreboard target to display the score</param>
         /// <param name="value">The score to be displayed</param>
-        public ChatScore(string name, string objective, int value)
+        public ChatScore(string name, string objective, int? value = null)
         {
             Name = name;
             Objective = objective;
             Value = value;
+        }
+
+        public JObject ToJObject()
+        {
+            if (string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Objective))
+            {
+                throw new InvalidOperationException("Both key 'name' and 'objective' of score can not be null.");
+            }
+
+            var jObject = new JObject(
+                new JProperty("name", Name),
+                new JProperty("objective", Objective));
+            if (Value != null)
+            {
+                jObject.Add("value", Value);
+            }
+
+            return jObject;
         }
     }
 
     /// <summary>
     /// An abstract base class that contains the fields common to all components.
     /// </summary>
-    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class ChatComponent
     {
         private static readonly string[] _map = new string[17]
@@ -250,9 +248,17 @@ namespace MineCase.Formats
 
         public List<ChatComponent> Extra { get; set; }
 
+        public void CheckKeyExist(object key, string name)
+        {
+            if (key == null)
+            {
+                throw new InvalidOperationException("The key '" + name + "' can not be null.");
+            }
+        }
+
         public virtual JObject ToJObject()
         {
-            JObject jObject = new JObject();
+            var jObject = new JObject();
 
             AddBoolValue(jObject, "bold", Bold);
             AddBoolValue(jObject, "itatic", Itatic);
@@ -278,7 +284,7 @@ namespace MineCase.Formats
 
             if (Extra != null && Extra.Count != 0)
             {
-                JArray jArray = new JArray();
+                var jArray = new JArray();
 
                 foreach (var comp in Extra)
                 {
@@ -311,7 +317,6 @@ namespace MineCase.Formats
     /// <summary>
     /// String component, which  contains only text.
     /// </summary>
-    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class StringComponent : ChatComponent
     {
         public string Text { get; set; }
@@ -334,13 +339,9 @@ namespace MineCase.Formats
 
         public override JObject ToJObject()
         {
-            JObject jObject = base.ToJObject();
-
-            if (!string.IsNullOrEmpty(Text))
-            {
-                jObject.Add("text", Text);
-            }
-
+            CheckKeyExist(Text, "text");
+            var jObject = base.ToJObject();
+            jObject.Add("text", Text);
             return jObject;
         }
     }
@@ -348,7 +349,6 @@ namespace MineCase.Formats
     /// <summary>
     /// Translation component. Translates text into the current language
     /// </summary>
-    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class TranslationComponent : ChatComponent
     {
         public string Translate { get; set; }
@@ -363,20 +363,11 @@ namespace MineCase.Formats
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TranslationComponent"/> class with a string.
-        /// </summary>
-        /// <param name="translate">Translates text</param>
-        public TranslationComponent(string translate)
-        {
-            Translate = translate;
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="TranslationComponent"/> class with a string and a List.
         /// </summary>
         /// <param name="translate">Translates text</param>
         /// <param name="with">Optional tag</param>
-        public TranslationComponent(string translate, List<ChatComponent> with)
+        public TranslationComponent(string translate = null, List<ChatComponent> with = null)
         {
             Translate = translate;
             With = with;
@@ -384,16 +375,13 @@ namespace MineCase.Formats
 
         public override JObject ToJObject()
         {
-            JObject jObject = base.ToJObject();
-
-            if (!string.IsNullOrEmpty(Translate))
-            {
-                jObject.Add("translate", Translate);
-            }
+            CheckKeyExist(Translate, "translate");
+            var jObject = base.ToJObject();
+            jObject.Add("translate", Translate);
 
             if (With != null && With.Count != 0)
             {
-                JArray jArray = new JArray();
+                var jArray = new JArray();
 
                 foreach (var comp in With)
                 {
@@ -410,7 +398,6 @@ namespace MineCase.Formats
     /// <summary>
     /// Keybind component. Displays the client's current keybind for the specified key.
     /// </summary>
-    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class KeybindComponent : ChatComponent
     {
         private static readonly string[] _map = new string[33]
@@ -424,7 +411,7 @@ namespace MineCase.Formats
             "key.hotbar.5", "key.hotbar.6", "key.hotbar.7", "key.hotbar.8", "key.hotbar.9"
         };
 
-        public KeyBindType Keybind { get; set; }
+        public KeyBindType? Keybind { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KeybindComponent"/> class.
@@ -444,7 +431,8 @@ namespace MineCase.Formats
 
         public override JObject ToJObject()
         {
-            JObject jObject = base.ToJObject();
+            CheckKeyExist(Keybind, "keybind");
+            var jObject = base.ToJObject();
             jObject.Add("keybind", _map[(int)Keybind]);
             return jObject;
         }
@@ -453,7 +441,6 @@ namespace MineCase.Formats
     /// <summary>
     /// Score component. Displays a score.
     /// </summary>
-    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class ScoreComponent : ChatComponent
     {
         public ChatScore Score { get; set; }
@@ -476,16 +463,9 @@ namespace MineCase.Formats
 
         public override JObject ToJObject()
         {
-            JObject jObject = base.ToJObject();
-            JObject score = new JObject();
-            score.Add("name", Score.Name);
-            score.Add("objective", Score.Objective);
-            if (Score.Value != null)
-            {
-                score.Add("value", Score.Value);
-            }
-
-            jObject.Add("score", score);
+            CheckKeyExist(Score, "score");
+            var jObject = base.ToJObject();
+            jObject.Add("score", Score.ToJObject());
             return jObject;
         }
     }
@@ -493,7 +473,6 @@ namespace MineCase.Formats
     /// <summary>
     /// Selector component. Displays the results of an entity selector.
     /// </summary>
-    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class SelectorComponent : ChatComponent
     {
         public string Selector { get; set; }
@@ -516,7 +495,8 @@ namespace MineCase.Formats
 
         public override JObject ToJObject()
         {
-            JObject jObject = base.ToJObject();
+            CheckKeyExist(Selector, "selector");
+            var jObject = base.ToJObject();
             jObject.Add("selector", Selector);
             return jObject;
         }
@@ -600,22 +580,35 @@ namespace MineCase.Formats
                 throw new JsonException("Invalid JSON string.");
             }
 
+            // preprocesses the format of some values
             Handle(jsonObject);
+
             return new Chat(ParseCompoent(jsonObject));
         }
 
         /// <summary>
         /// Serializes this object to a JObject.
         /// </summary>
+        /// <exception>
+        /// InvalidOperationException
+        /// </exception>
         /// <returns>A JObject</returns>
         public JObject ToJObject()
         {
+            if (Component == null)
+            {
+                throw new InvalidOperationException("No compoent in a Chat object");
+            }
+
             return Component.ToJObject();
         }
 
         /// <summary>
         /// Serializes this object to a string.
         /// </summary>
+        /// <exception>
+        /// InvalidOperationException
+        /// </exception>
         /// <returns>A JSON string</returns>
         public override string ToString()
         {
@@ -633,7 +626,7 @@ namespace MineCase.Formats
             }
             else if (jsonObject.SelectToken("score") != null)
             {
-                ChatScore chatScore = new ChatScore(
+                var chatScore = new ChatScore(
                     jsonObject.SelectToken("score.name").Value<string>(),
                     jsonObject.SelectToken("score.objective").Value<string>());
                 if (jsonObject.SelectToken("score.value") != null)
@@ -652,7 +645,7 @@ namespace MineCase.Formats
                 component = new TranslationComponent(jsonObject.SelectToken("translate").Value<string>());
                 if (jsonObject.SelectToken("with") != null)
                 {
-                    // There must be elements when the `with` is not null
+                    // There should be elements when the `with` is not null
                     ((TranslationComponent)component).With = new List<ChatComponent>();
                     var with = (JArray)jsonObject.SelectToken("with");
                     foreach (var comp in with)
