@@ -22,9 +22,8 @@ namespace MineCase.UnitTest
                 Text = "hello case!",
                 Bold = true,
                 Itatic = false,
-                Color = "blue",
-                ClickEvent = new ChatClickEvent(ClickEventType.OpenUrl, @"http://case.orz"),
-                Extra = new JArray(JObject.Parse(@"{""text"":""foo""}"), JObject.Parse(@"{""text"":""bar""}"))
+                Color = ColorType.Blue,
+                ClickEvent = new ChatClickEvent(ClickEventType.OpenUrl, @"http://case.orz")
             };
             chat.Component = stringComponent;
 
@@ -49,7 +48,7 @@ namespace MineCase.UnitTest
                 Text = "hello",
                 Bold = true,
                 Itatic = false,
-                Color = "green"
+                Color = ColorType.Green
             };
             var chatClickEvent = new ChatClickEvent
             {
@@ -107,18 +106,25 @@ namespace MineCase.UnitTest
         [Fact]
         public void Test4()
         {
-            Chat chat = new Chat("text");
-            chat.Component.Bold = true;
-            chat.Component.Itatic = false;
-            chat.Component.Insertion = "insert";
-            chat.Component.Color = ColorType.Red;
-            chat.Component.ClickEvent = new ChatClickEvent(ClickEventType.ChangePage, 1);
-            chat.Component.HoverEvent = new ChatHoverEvent(HoverEventType.ShowText, "show");
-            KeybindComponent keybind = new KeybindComponent();
-            keybind.Bold = false;
-            keybind.Itatic = true;
-            keybind.Color = ColorType.Green;
-            chat.Component.Extra = new List<ChatComponent>() { keybind };
+            var chat = new Chat("text")
+            {
+                Component =
+                {
+                    Bold = true,
+                    Itatic = false,
+                    Insertion = "insert",
+                    Color = ColorType.Red,
+                    ClickEvent = new ChatClickEvent(ClickEventType.ChangePage, 1),
+                    HoverEvent = new ChatHoverEvent(HoverEventType.ShowText, "show")
+                }
+            };
+            var keybind = new KeybindComponent
+            {
+                Bold = false,
+                Itatic = true,
+                Color = ColorType.Green
+            };
+            chat.Component.Extra = new List<ChatComponent> { keybind };
 
             var json = chat.ToJObject();
             Assert.Null(json.SelectToken("underlined"));
@@ -143,14 +149,14 @@ namespace MineCase.UnitTest
         [Fact]
         public void Test5()
         {
-            StringComponent sc = new StringComponent("text");
-            sc.Bold = true;
-            sc.ClickEvent = new ChatClickEvent(ClickEventType.RunCommand, "/msg a");
-            List<ChatComponent> list = new List<ChatComponent>();
-            list.Add(sc);
-            list.Add(new StringComponent("nothing"));
+            var sc = new StringComponent("text")
+            {
+                Bold = true,
+                ClickEvent = new ChatClickEvent(ClickEventType.RunCommand, "/msg a")
+            };
+            var list = new List<ChatComponent> { sc, new StringComponent("nothing") };
 
-            Chat chat = new Chat(new TranslationComponent("chat.type.text", list));
+            var chat = new Chat(new TranslationComponent("chat.type.text", list));
             var jObject = chat.ToJObject();
             Assert.Equal("chat.type.text", jObject.SelectToken("translate"));
             Assert.True(jObject.SelectToken("with[0].bold").Value<bool>());
@@ -182,20 +188,22 @@ namespace MineCase.UnitTest
         [Fact]
         public void Test6()
         {
-            KeybindComponent keybind = new KeybindComponent(KeyBindType.Attack);
-            keybind.Extra = new List<ChatComponent>()
+            var keybind = new KeybindComponent(KeyBindType.Attack)
             {
-                new StringComponent("text1"),
-                new StringComponent("text2")
+                Extra = new List<ChatComponent>
+                {
+                    new StringComponent("text1"),
+                    new StringComponent("text2")
+                }
             };
 
-            Chat chat = new Chat(keybind);
+            var chat = new Chat(keybind);
             var j = chat.ToJObject();
             Assert.Equal("key.attack", j.SelectToken("keybind"));
             Assert.Equal("text1", j.SelectToken("extra[0].text"));
             Assert.Equal("text2", j.SelectToken("extra[1].text"));
 
-            string json = @"{
+            const string json = @"{
                 ""keybind"":""key.attack"",
                 ""extra"":[
                     { ""text"":""text1"" },
@@ -212,14 +220,16 @@ namespace MineCase.UnitTest
         [Fact]
         public void Test7()
         {
-            ScoreComponent score = new ScoreComponent(new ChatScore("case", "ball", 100));
-            score.Extra = new List<ChatComponent>()
+            var score = new ScoreComponent(new ChatScore("case", "ball", 100))
             {
-                new StringComponent("text1"),
-                new StringComponent("text2")
+                Extra = new List<ChatComponent>
+                {
+                    new StringComponent("text1"),
+                    new StringComponent("text2")
+                }
             };
 
-            Chat chat = new Chat(score);
+            var chat = new Chat(score);
             var j = chat.ToJObject();
             Assert.Equal("case", j.SelectToken("score.name"));
             Assert.Equal("ball", j.SelectToken("score.objective"));
@@ -227,7 +237,7 @@ namespace MineCase.UnitTest
             Assert.Equal("text1", j.SelectToken("extra[0].text"));
             Assert.Equal("text2", j.SelectToken("extra[1].text"));
 
-            string json = @"{
+            const string json = @"{
                 ""score"":{
                     ""name"":""case"",
                     ""objective"":""ball"",
@@ -248,11 +258,16 @@ namespace MineCase.UnitTest
         [Fact]
         public void Test8()
         {
-            Chat chat = new Chat(new SelectorComponent("@p"));
-            chat.Component.Extra = new List<ChatComponent>()
+            var chat = new Chat(new SelectorComponent("@p"))
             {
-                new StringComponent("text1"),
-                new StringComponent("text2")
+                Component =
+                {
+                    Extra = new List<ChatComponent>
+                    {
+                        new StringComponent("text1"),
+                        new StringComponent("text2")
+                    }
+                }
             };
 
             var j = chat.ToJObject();
@@ -260,7 +275,7 @@ namespace MineCase.UnitTest
             Assert.Equal("text1", j.SelectToken("extra[0].text"));
             Assert.Equal("text2", j.SelectToken("extra[1].text"));
 
-            string json = @"{
+            const string json = @"{
                 ""selector"":""@p"",
                 ""extra"":[
                     { ""text"":""text1"" },
