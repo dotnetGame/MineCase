@@ -4,6 +4,7 @@ using System.IO;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Formats;
 using MineCase.Protocol;
 using MineCase.Protocol.Play;
 using MineCase.Server.Game;
@@ -23,6 +24,11 @@ namespace MineCase.Server.Network
                     // Teleport Confirm
                     case 0x00:
                         innerPacket = TeleportConfirm.Deserialize(br);
+                        break;
+
+                    // Chat Message
+                    case 0x03:
+                        innerPacket = ServerboundChatMessage.Deserialize(br);
                         break;
 
                     // Client Settings
@@ -58,6 +64,12 @@ namespace MineCase.Server.Network
         {
             var player = await _user.GetPlayer();
             player.OnTeleportConfirm(packet.TeleportId).Ignore();
+        }
+
+        private async Task DispatchPacket(ServerboundChatMessage packet)
+        {
+            var gameSession = await _user.GetGameSession();
+            await gameSession.SendChatMessage(_user, packet.Message);
         }
 
         private Task DispatchPacket(ClientSettings packet)

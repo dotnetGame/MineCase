@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Formats;
 using MineCase.Protocol.Play;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
@@ -109,6 +110,15 @@ namespace MineCase.Server.Network.Play
                 Pitch = pitch,
                 Flags = (byte)relative,
                 TeleportId = teleportId
+            });
+        }
+
+        public Task SendChatMessage(Chat jsonData, Byte position)
+        {
+            return Sink.SendPacket(new ClientboundChatMessage
+            {
+                JSONData = jsonData,
+                Position = position
             });
         }
 
