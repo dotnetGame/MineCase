@@ -48,7 +48,22 @@ namespace MineCase.Server.Network
 
                     // Position And Look
                     case 0x0F:
-                        innerPacket = ServerboundPositionAndLook.Deserialize(br);
+                        innerPacket = DeferPacket(ServerboundPositionAndLook.Deserialize(br));
+                        break;
+
+                    // Player Position
+                    case 0x0E:
+                        innerPacket = DeferPacket(PlayerPosition.Deserialize(br));
+                        break;
+
+                    // Player Look
+                    case 0x10:
+                        innerPacket = DeferPacket(PlayerLook.Deserialize(br));
+                        break;
+
+                    // Held Item Change
+                    case 0x1A:
+                        innerPacket = DeferPacket(ServerboundHeldItemChange.Deserialize(br));
                         break;
                     default:
                         throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X}.");
@@ -74,6 +89,7 @@ namespace MineCase.Server.Network
 
         private Task DispatchPacket(ClientSettings packet)
         {
+            _user.SetViewDistance(packet.ViewDistance);
             return Task.CompletedTask;
         }
 
@@ -91,7 +107,20 @@ namespace MineCase.Server.Network
         private async Task DispatchPacket(ServerboundPositionAndLook packet)
         {
             var player = await _user.GetPlayer();
-            player.SetPositionAndLook(packet.X, packet.FeetY, packet.Z, packet.Yaw, packet.Pitch, packet.OnGround).Ignore();
+            player.SetPosition(packet.X, packet.FeetY, packet.Z, packet.OnGround).Ignore();
+            player.SetLook(packet.Yaw, packet.Pitch, packet.OnGround).Ignore();
+        }
+
+        private async Task DispatchPacket(PlayerPosition packet)
+        {
+            var player = await _user.GetPlayer();
+            player.SetPosition(packet.X, packet.FeetY, packet.Z, packet.OnGround).Ignore();
+        }
+
+        private async Task DispatchPacket(PlayerLook packet)
+        {
+            var player = await _user.GetPlayer();
+            player.SetLook(packet.Yaw, packet.Pitch, packet.OnGround).Ignore();
         }
 
         private Task DispatchPacket(UseEntity packet)
@@ -100,6 +129,11 @@ namespace MineCase.Server.Network
 
             // player.UseEntity((uint)packet.Target, (EntityUsage)packet.Type, packet.TargetX.HasValue ?
             //    new Vector3?(new Vector3(packet.TargetX.Value, packet.TargetY.Value, packet.TargetZ.Value)) : null, (EntityInteractHand?)packet.Hand).Ignore();
+            return Task.CompletedTask;
+        }
+
+        private Task DispatchPacket(ServerboundHeldItemChange packet)
+        {
             return Task.CompletedTask;
         }
     }

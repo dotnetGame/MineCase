@@ -43,5 +43,11 @@ namespace MineCase.Server.User
         Task<uint> GetPing();
 
         Task OnGameTick(TimeSpan deltaTime);
+
+        Task SetPacketRouter(IPacketRouter packetRouter);
+
+        Task SetViewDistance(int viewDistance);
+
+        Task OnChunkSent(int chunkX, int chunkZ);
     }
 }

@@ -43,7 +43,7 @@ namespace MineCase.Server.Game.Entities
             _level = 0;
             _teleportId = 0;
             _levelMaxExp = 7;
-            _position = default(Vector3);
+            _position = new Vector3(0, 2, 0);
             _pitch = 0;
             _yaw = 0;
             return base.OnActivateAsync();
@@ -115,8 +115,21 @@ namespace MineCase.Server.Game.Entities
             return Task.CompletedTask;
         }
 
-        public Task SetPositionAndLook(double x, double feetY, double z, float yaw, float pitch, bool onGround)
+        public Task<(int x, int y, int z)> GetChunkPosition()
         {
+            return Task.FromResult(((int)(_position.X / 16), (int)(_position.Y / 16), (int)(_position.Z / 16)));
+        }
+
+        public Task SetPosition(double x, double feetY, double z, bool onGround)
+        {
+            _position = new Vector3((float)x, (float)feetY, (float)z);
+            return Task.CompletedTask;
+        }
+
+        public Task SetLook(float yaw, float pitch, bool onGround)
+        {
+            _pitch = pitch;
+            _yaw = yaw;
             return Task.CompletedTask;
         }
     }

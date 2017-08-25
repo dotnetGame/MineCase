@@ -7,14 +7,15 @@ using MineCase.Formats;
 using MineCase.Protocol.Play;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.World;
 
 namespace MineCase.Server.Network.Play
 {
-    internal class ClientPlayPacketGenerator
+    internal struct ClientPlayPacketGenerator
     {
-        public IClientboundPacketSink Sink { get; }
+        public IPacketSink Sink { get; }
 
-        public ClientPlayPacketGenerator(IClientboundPacketSink sink)
+        public ClientPlayPacketGenerator(IPacketSink sink)
         {
             Sink = sink;
         }
@@ -122,7 +123,83 @@ namespace MineCase.Server.Network.Play
             });
         }
 
-        private Protocol.Play.Slot TransformSlotData(Game.Slot o)
+        public Task ChunkData(Dimension dimension, int chunkX, int chunkZ, ChunkColumn chunkColumn)
+        {
+            ulong[] CompactBlockIds(Block[] blocks)
+            {
+                var result = new ulong[16 * 16 * 16 * 13 / 64];
+                int byteIndex = 0;
+                int bitIndex = 0;
+                foreach (var block in blocks)
+                {
+                    ulong id = (block.Id << 4) | (block.MetaValue & 0b1111);
+                    var availBits = 64 - bitIndex;
+                    var bitsToWrite = Math.Min(13, availBits);
+                    var shiftBits = 13 - bitsToWrite;
+                    result[byteIndex] |= id << bitIndex;
+                    bitIndex += bitsToWrite;
+                    if (bitIndex == 64)
+                    {
+                        byteIndex++;
+                        bitIndex = 0;
+                    }
+
+                    if (shiftBits > 0)
+                    {
+                        bitsToWrite = shiftBits;
+                        result[byteIndex] = id >> (13 - shiftBits);
+                        bitIndex += bitsToWrite;
+                    }
+
+                    if (bitIndex == 64)
+                    {
+                        byteIndex++;
+                        bitIndex = 0;
+                    }
+                }
+
+                return result;
+            }
+
+            Protocol.Play.ChunkSection ToChunkSection(World.ChunkSection chunkSection)
+            {
+                return new Protocol.Play.ChunkSection
+                {
+                    BitsPerBlock = chunkSection.BitsPerBlock,
+                    PaletteLength = 0,
+                    BlockLight = CompactBy2(chunkSection.Blocks.Select(o => o.BlockLight).ToArray()),
+                    SkyLight = dimension == Dimension.Overworld ? CompactBy2(chunkSection.Blocks.Select(o => o.SkyLight).ToArray()) : null,
+                    DataArray = CompactBlockIds(chunkSection.Blocks)
+                };
+            }
+
+            return Sink.SendPacket(new ChunkData
+            {
+                ChunkX = chunkX,
+                ChunkZ = chunkZ,
+                GroundUpContinuous = chunkColumn.Biomes != null,
+                Biomes = chunkColumn.Biomes,
+                PrimaryBitMask = chunkColumn.SectionBitMask,
+                NumberOfBlockEntities = 0,
+                Data = (from s in chunkColumn.Sections select ToChunkSection(s)).ToArray()
+            });
+        }
+
+        private static byte[] CompactBy2(byte[] source)
+        {
+            if (source.Length % 2 != 0) throw new ArgumentException("source array's length must be even.");
+            var result = new byte[source.Length / 2];
+            for (int i = 0; i < result.Length; i++)
+                result[i] = (byte)(source[i * 2] | (source[i * 2 + 1] << 4));
+            return result;
+        }
+
+        public Task SendPacket(uint packetId, byte[] data)
+        {
+            return Sink.SendPacket(packetId, data);
+        }
+
+        private static Protocol.Play.Slot TransformSlotData(Game.Slot o)
         {
             return new Protocol.Play.Slot
             {
@@ -133,6 +210,15 @@ namespace MineCase.Server.Network.Play
         public static byte ToByte(GameMode gameMode)
         {
             return (byte)(((uint)gameMode.ModeClass) | (gameMode.IsHardcore ? 0b100u : 0u));
+        }
+
+        public Task UnloadChunk(int chunkX, int chunkZ)
+        {
+            return Sink.SendPacket(new UnloadChunk
+            {
+                ChunkX = chunkX,
+                ChunkZ = chunkZ
+            });
         }
     }
 

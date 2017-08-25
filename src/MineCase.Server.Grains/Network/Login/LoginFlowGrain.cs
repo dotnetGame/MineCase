@@ -36,7 +36,9 @@ namespace MineCase.Server.Network.Login
                     await SendLoginSuccess(packet.Name, uuid);
 
                     await user.SetClientPacketSink(GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey()));
-                    await GrainFactory.GetGrain<IPacketRouter>(this.GetPrimaryKey()).BindToUser(user);
+                    var packetRouter = GrainFactory.GetGrain<IPacketRouter>(this.GetPrimaryKey());
+                    await user.SetPacketRouter(packetRouter);
+                    await packetRouter.BindToUser(user);
 
                     var world = await user.GetWorld();
                     var game = GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());

@@ -63,6 +63,11 @@ namespace MineCase.Serialization
             bw.Write(((ulong)value).ToBigEndian());
         }
 
+        public static void WriteAsUnsignedLong(this BinaryWriter bw, ulong value)
+        {
+            bw.Write(value.ToBigEndian());
+        }
+
         public static void WriteAsFloat(this BinaryWriter bw, float value)
         {
             var uintValue = Unsafe.As<float, uint>(ref value);

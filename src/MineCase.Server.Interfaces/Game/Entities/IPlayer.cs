@@ -32,6 +32,10 @@ namespace MineCase.Server.Game.Entities
 
         Task OnTeleportConfirm(uint teleportId);
 
-        Task SetPositionAndLook(double x, double feetY, double z, float yaw, float pitch, bool onGround);
+        Task SetPosition(double x, double feetY, double z, bool onGround);
+
+        Task SetLook(float yaw, float pitch, bool onGround);
+
+        Task<(int x, int y, int z)> GetChunkPosition();
     }
 }
