@@ -53,8 +53,6 @@ namespace MineCase.Server.User
             }
 
             _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(_worldId);
-            _sendingChunks = new HashSet<(int x, int z)>();
-            _sentChunks = new HashSet<(int x, int z)>();
         }
 
         public Task<IClientboundPacketSink> GetClientPacketSink()
@@ -88,6 +86,8 @@ namespace MineCase.Server.User
             _lastStreamedChunk = null;
             _state = UserState.JoinedGame;
             _keepAliveWaiters = new HashSet<uint>();
+            _sendingChunks = new HashSet<(int x, int z)>();
+            _sentChunks = new HashSet<(int x, int z)>();
             _sendKeepAliveTimer = RegisterTimer(OnSendKeepAliveRequests, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
 
             // _worldTimeSyncTimer = RegisterTimer(OnSyncWorldTime, null, TimeSpan.Zero, )
@@ -247,10 +247,19 @@ namespace MineCase.Server.User
             return false;
         }
 
+        private readonly List<(int x, int y)> _clonedSentChunks = new List<(int x, int y)>();
+
+        private List<(int x, int z)> CloneSentChunks()
+        {
+            _clonedSentChunks.Clear();
+            _clonedSentChunks.AddRange(_sentChunks);
+            return _clonedSentChunks;
+        }
+
         private async Task UnloadOutOfRangeChunks()
         {
             var currentChunk = await _player.GetChunkPosition();
-            foreach (var chunk in _sentChunks.ToArray())
+            foreach (var chunk in CloneSentChunks())
             {
                 var distance = Math.Abs(chunk.x - currentChunk.x) + Math.Abs(chunk.z - currentChunk.z);
                 if (distance > _viewDistance)
