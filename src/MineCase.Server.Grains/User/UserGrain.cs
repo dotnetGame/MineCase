@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
@@ -207,6 +208,8 @@ namespace MineCase.Server.User
                     if (!await StreamNextChunk())
                         break;
                 }
+
+                await UnloadOutOfRangeChunks();
             }
         }
 
@@ -242,6 +245,20 @@ namespace MineCase.Server.User
             }
 
             return false;
+        }
+
+        private async Task UnloadOutOfRangeChunks()
+        {
+            var currentChunk = await _player.GetChunkPosition();
+            foreach (var chunk in _sentChunks.ToArray())
+            {
+                var distance = Math.Abs(chunk.x - currentChunk.x) + Math.Abs(chunk.z - currentChunk.z);
+                if (distance > _viewDistance)
+                {
+                    await _generator.UnloadChunk(chunk.x, chunk.z);
+                    _sentChunks.Remove(chunk);
+                }
+            }
         }
 
         public Task SetPacketRouter(IPacketRouter packetRouter)

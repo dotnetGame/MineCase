@@ -211,6 +211,15 @@ namespace MineCase.Server.Network.Play
         {
             return (byte)(((uint)gameMode.ModeClass) | (gameMode.IsHardcore ? 0b100u : 0u));
         }
+
+        public Task UnloadChunk(int chunkX, int chunkZ)
+        {
+            return Sink.SendPacket(new UnloadChunk
+            {
+                ChunkX = chunkX,
+                ChunkZ = chunkZ
+            });
+        }
     }
 
     [Flags]
