@@ -36,7 +36,30 @@ namespace MineCase.UnitTest
                 {
                     for (int y = 0; y < yExtent; y++)
                     {
-                        var color = (byte)noise.Noise(x, 0, y);
+                        var color = (byte)(noise.Noise(x / 10.0, 0, y / 10.0) * 255);
+                        image[x, y] = new ImageSharp.PixelFormats.Rgb24(color, color, color);
+                    }
+                }
+
+                image.SaveAsBmp(file);
+            }
+        }
+
+        [Fact]
+        public void TestOctavedPerlinNoise3D()
+        {
+            const int xExtent = 100;
+            const int yExtent = 100;
+
+            using (var file = File.OpenWrite(Path.Combine(RootDir, "OctavedPerlinNoise3D.bmp")))
+            using (var image = new Image<ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
+            {
+                var noise = new OctavedNoise<PerlinNoise>(new PerlinNoise(100), 8, 1);
+                for (int x = 0; x < xExtent; x++)
+                {
+                    for (int y = 0; y < yExtent; y++)
+                    {
+                        var color = (byte)(noise.Noise(x / 10.0, 0, y / 10.0) * 255);
                         image[x, y] = new ImageSharp.PixelFormats.Rgb24(color, color, color);
                     }
                 }
