@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ImageSharp" Version="1.0.0-alpha9-00187" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0-preview-20170810-02" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="xunit" Version="2.3.0-beta4-build3742" />
@@ -18,6 +19,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\..\src\MineCase.Algorithm\MineCase.Algorithm.csproj" />
     <ProjectReference Include="..\..\src\MineCase.NBT\MineCase.Nbt.csproj" />
     <ProjectReference Include="..\..\src\MineCase.Protocol\MineCase.Protocol.csproj" />
   </ItemGroup>
