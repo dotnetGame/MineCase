@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using ImageSharp;
 using MineCase.Algorithm.Noise;
@@ -11,7 +12,15 @@ namespace MineCase.UnitTest
 {
     public class NoiseTest
     {
-        public static readonly string RootDir = @"F:\Work\Repository\MineCase\tests\UnitTest\bin\Debug";
+        public readonly string RootDir;
+
+        public NoiseTest()
+        {
+            RootDir = SetRootDir();
+        }
+
+        private static string SetRootDir([CallerFilePath]string fileName = null) =>
+            Path.Combine(Path.GetDirectoryName(fileName), "bin");
 
         [Fact]
         public void TestPerlinNoise3D()
