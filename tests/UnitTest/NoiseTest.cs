@@ -22,7 +22,7 @@ namespace MineCase.UnitTest
             using (var file = File.OpenWrite(Path.Combine(RootDir, "PerlinNoise3D.bmp")))
             using (var image = new Image<ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
             {
-                var noise = new PerlinNoise();
+                var noise = new PerlinNoise(100);
                 for (int x = 0; x < xExtent; x++)
                 {
                     for (int y = 0; y < yExtent; y++)
