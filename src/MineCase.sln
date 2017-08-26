@@ -22,11 +22,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A0B013BF-4BEB-4044-AA59-A9ED3AFBF99D}"
 	ProjectSection(SolutionItems) = preProject
 		..\build\Analyzers.ruleset = ..\build\Analyzers.ruleset
-		NuGet.config = NuGet.config
+		..\NuGet.config = ..\NuGet.config
 		..\build\stylecop.json = ..\build\stylecop.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Algorithm", "MineCase.Algorithm\MineCase.Algorithm.csproj", "{47C1F452-E59C-42E3-8799-BF09444D8384}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Algorithm", "MineCase.Algorithm\MineCase.Algorithm.csproj", "{47C1F452-E59C-42E3-8799-BF09444D8384}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D53C0015-5761-4018-A50A-63C919C00D35}"
 EndProject
