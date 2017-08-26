@@ -31,9 +31,9 @@ namespace MineCase.Algorithm.Noise
             var ycoord = Split(y);
             var zcoord = Split(z);
 
-            var u = Fade(xcoord.reminder);
-            var v = Fade(ycoord.reminder);
-            var w = Fade(zcoord.reminder);
+            var u = Fade(xcoord.remainder);
+            var v = Fade(ycoord.remainder);
+            var w = Fade(zcoord.remainder);
 
             int aaa, aba, aab, abb, baa, bba, bab, bbb;
             aaa = _p[_p[_p[xcoord.integer] + ycoord.integer] + zcoord.integer];
@@ -47,29 +47,29 @@ namespace MineCase.Algorithm.Noise
 
             double x1, x2, y1, y2;
             x1 = Lerp(
-                Grad(aaa, xcoord.reminder, ycoord.reminder, zcoord.reminder),
-                Grad(baa, xcoord.reminder - 1, ycoord.reminder, zcoord.reminder),
+                Grad(aaa, xcoord.remainder, ycoord.remainder, zcoord.remainder),
+                Grad(baa, xcoord.remainder - 1, ycoord.remainder, zcoord.remainder),
                 u);
             x2 = Lerp(
-                Grad(aba, xcoord.reminder, ycoord.reminder - 1, zcoord.reminder),
-                Grad(bba, xcoord.reminder - 1, ycoord.reminder - 1, zcoord.reminder),
+                Grad(aba, xcoord.remainder, ycoord.remainder - 1, zcoord.remainder),
+                Grad(bba, xcoord.remainder - 1, ycoord.remainder - 1, zcoord.remainder),
                 u);
             y1 = Lerp(x1, x2, v);
 
             x1 = Lerp(
-                Grad(aab, xcoord.reminder, ycoord.reminder, zcoord.reminder - 1),
-                Grad(bab, xcoord.reminder - 1, ycoord.reminder, zcoord.reminder - 1),
+                Grad(aab, xcoord.remainder, ycoord.remainder, zcoord.remainder - 1),
+                Grad(bab, xcoord.remainder - 1, ycoord.remainder, zcoord.remainder - 1),
                 u);
             x2 = Lerp(
-                Grad(abb, xcoord.reminder, ycoord.reminder - 1, zcoord.reminder - 1),
-                Grad(bbb, xcoord.reminder - 1, ycoord.reminder - 1, zcoord.reminder - 1),
+                Grad(abb, xcoord.remainder, ycoord.remainder - 1, zcoord.remainder - 1),
+                Grad(bbb, xcoord.remainder - 1, ycoord.remainder - 1, zcoord.remainder - 1),
                 u);
             y2 = Lerp(x1, x2, v);
 
             return (Lerp(y1, y2, w) + 1) / 2;
         }
 
-        private static (int integer, double reminder) Split(double value)
+        private static (int integer, double remainder) Split(double value)
         {
             var integer = (int)value;
             return (integer % 256, value - integer);
