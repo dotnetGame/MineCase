@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MineCase.Serialization;
+using Orleans.Concurrency;
 
 namespace MineCase.Protocol.Login
 {
+    [Immutable]
     [Packet(0x00)]
     public sealed class LoginStart
     {
@@ -21,6 +23,7 @@ namespace MineCase.Protocol.Login
         }
     }
 
+    [Immutable]
     [Packet(0x00)]
     public sealed class LoginDisconnect : ISerializablePacket
     {
@@ -41,6 +44,7 @@ namespace MineCase.Protocol.Login
         }
     }
 
+    [Immutable]
     [Packet(0x02)]
     public sealed class LoginSuccess : ISerializablePacket
     {

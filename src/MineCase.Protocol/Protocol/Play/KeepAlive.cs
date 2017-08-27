@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MineCase.Serialization;
+using Orleans.Concurrency;
 
 namespace MineCase.Protocol.Play
 {
+    [Immutable]
     [Packet(0x0C)]
     public sealed class ServerboundKeepAlive
     {
@@ -21,6 +23,7 @@ namespace MineCase.Protocol.Play
         }
     }
 
+    [Immutable]
     [Packet(0x1F)]
     public sealed class ClientboundKeepAlive : ISerializablePacket
     {

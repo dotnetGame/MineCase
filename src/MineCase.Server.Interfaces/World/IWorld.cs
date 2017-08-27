@@ -16,5 +16,9 @@ namespace MineCase.Server.World
         Task<IEntity> FindEntity(uint eid);
 
         Task<(long age, long timeOfDay)> GetTime();
+
+        Task<long> GetAge();
+
+        Task OnGameTick(TimeSpan deltaTime);
     }
 }

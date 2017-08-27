@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace MineCase.Algorithm.Noise
 {
     public interface INoise
     {
-        double Noise(double x, double y, double z);
+        float Noise(float x, float y, float z);
+
+        void Noise(float[,,] noise, Vector3 offset, Vector3 scale);
+
+        void AddNoise(float[,,] noise, Vector3 offset, Vector3 scale, float noiseScale);
     }
 }

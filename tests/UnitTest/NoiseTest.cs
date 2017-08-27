@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -32,11 +33,13 @@ namespace MineCase.UnitTest
             using (var image = new Image<ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
             {
                 var noise = new PerlinNoise(100);
+                var noiseValue = new float[xExtent, yExtent, 1];
+                noise.Noise(noiseValue, Vector3.Zero, new Vector3(0.1f, 0.1f, 0));
                 for (int x = 0; x < xExtent; x++)
                 {
                     for (int y = 0; y < yExtent; y++)
                     {
-                        var color = (byte)(noise.Noise(x / 10.0, 0, y / 10.0) * 255);
+                        var color = (byte)(noiseValue[x, y, 0] * 255);
                         image[x, y] = new ImageSharp.PixelFormats.Rgb24(color, color, color);
                     }
                 }
@@ -55,16 +58,45 @@ namespace MineCase.UnitTest
             using (var image = new Image<ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
             {
                 var noise = new OctavedNoise<PerlinNoise>(new PerlinNoise(100), 8, 1);
+                var noiseValue = new float[xExtent, yExtent, 1];
+                noise.Noise(noiseValue, Vector3.Zero, new Vector3(0.1f, 0.1f, 0));
                 for (int x = 0; x < xExtent; x++)
                 {
                     for (int y = 0; y < yExtent; y++)
                     {
-                        var color = (byte)(noise.Noise(x / 10.0, 0, y / 10.0) * 255);
+                        var color = (byte)(noiseValue[x, y, 0] * 255);
                         image[x, y] = new ImageSharp.PixelFormats.Rgb24(color, color, color);
                     }
                 }
 
                 image.SaveAsBmp(file);
+            }
+        }
+
+        [Fact]
+        public void TestPerlinNoise3DPerformance()
+        {
+            if (!Vector.IsHardwareAccelerated)
+                throw new NotSupportedException();
+
+            var noise = new PerlinNoise(100);
+            for (int i = 0; i < 100_0000; i++)
+            {
+                noise.Noise(i, i, i);
+            }
+        }
+
+        [Fact]
+        public void TestPerlinNoise3DPerformanceArray()
+        {
+            if (!Vector.IsHardwareAccelerated)
+                throw new NotSupportedException();
+
+            var noiseValue = new float[100, 100, 10];
+            var noise = new PerlinNoise(100);
+            for (int i = 0; i < 100; i++)
+            {
+                noise.Noise(noiseValue, new Vector3(i, i, i), new Vector3(0.1f, 0.1f, 0.1f));
             }
         }
     }
