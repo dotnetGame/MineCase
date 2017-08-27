@@ -336,5 +336,10 @@ namespace MineCase.Server.Game.Entities
             public IWindow Window;
             public short ActionNumber;
         }
+
+        public bool HasPermission(Permission permission)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
