@@ -17,5 +17,5 @@ test_script:
     cd ..\tests
 
     OpenCover.Console.exe -register:user -target:"dotnet" -targetargs:"test" -output:".\test_coverage.xml"
-    
-    codecov -f "test_coverage.xml
+
+    codecov -f "test_coverage.xml"
