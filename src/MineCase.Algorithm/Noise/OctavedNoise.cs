@@ -40,7 +40,7 @@ namespace MineCase.Algorithm.Noise
         public void Noise(float[,,] noise, Vector3 offset, Vector3 scale)
         {
             Array.Clear(noise, 0, noise.Length);
-            float frequency = 1;
+            int frequency = 1;
             double amplitude = 1;
             double maxValue = 0;
 
