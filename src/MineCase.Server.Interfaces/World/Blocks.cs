@@ -8,7 +8,7 @@ namespace MineCase.Server.World
     {
         public Block GetBlockStone()
         {
-            return new Block{Id=(uint)BlockId.Stone};
+            return new Block{ Id = (uint)BlockId.Stone };
         }
     }
 
