@@ -209,7 +209,9 @@ namespace MineCase.Server.User
                         break;
                 }
 
-                await UnloadOutOfRangeChunks();
+                // unload per 5 ticks
+                if (await _world.GetAge() % 100 == 0)
+                    await UnloadOutOfRangeChunks();
             }
         }
 

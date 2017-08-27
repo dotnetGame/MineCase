@@ -4,20 +4,21 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.World
 {
+    [Reentrant]
     internal class WorldGrain : Grain, IWorld
     {
         private Dictionary<uint, IEntity> _entities;
         private uint _nextAvailEId;
-        private DateTime _worldStartTime;
+        private long _worldAge;
 
         public override Task OnActivateAsync()
         {
             _nextAvailEId = 0;
             _entities = new Dictionary<uint, IEntity>();
-            _worldStartTime = DateTime.UtcNow;
             return base.OnActivateAsync();
         }
 
@@ -36,8 +37,7 @@ namespace MineCase.Server.World
 
         public Task<(long age, long timeOfDay)> GetTime()
         {
-            var age = (long)((DateTime.UtcNow - _worldStartTime).TotalSeconds * 20);
-            return Task.FromResult((age, age % 24000));
+            return Task.FromResult((_worldAge, _worldAge % 24000));
         }
 
         public Task<uint> NewEntityId()
@@ -45,5 +45,13 @@ namespace MineCase.Server.World
             var id = _nextAvailEId++;
             return Task.FromResult(id);
         }
+
+        public Task OnGameTick(TimeSpan deltaTime)
+        {
+            _worldAge += 20;
+            return Task.CompletedTask;
+        }
+
+        public Task<long> GetAge() => Task.FromResult(_worldAge);
     }
 }

@@ -8,6 +8,7 @@ using MineCase.Protocol.Play;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.World;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Network.Play
 {
@@ -196,7 +197,7 @@ namespace MineCase.Server.Network.Play
 
         public Task SendPacket(uint packetId, byte[] data)
         {
-            return Sink.SendPacket(packetId, data);
+            return Sink.SendPacket(packetId, data.AsImmutable());
         }
 
         private static Protocol.Play.Slot TransformSlotData(Game.Slot o)

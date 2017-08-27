@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MineCase.Serialization;
+using Orleans.Concurrency;
 
 namespace MineCase.Protocol.Status
 {
+    [Immutable]
     [Packet(0x00)]
     public sealed class Request
     {
@@ -15,6 +17,7 @@ namespace MineCase.Protocol.Status
         }
     }
 
+    [Immutable]
     [Packet(0x00)]
     public sealed class Response : ISerializablePacket
     {

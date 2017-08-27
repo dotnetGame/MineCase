@@ -7,12 +7,19 @@ using System.Threading.Tasks;
 using MineCase.Protocol;
 using MineCase.Protocol.Handshaking;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Network
 {
     internal class ClientboundPacketSinkGrain : Grain, IClientboundPacketSink
     {
         private ObserverSubscriptionManager<IClientboundPacketObserver> _subsManager;
+        private readonly IPacketPackager _packetPackager;
+
+        public ClientboundPacketSinkGrain(IPacketPackager packetPackager)
+        {
+            _packetPackager = packetPackager;
+        }
 
         public override Task OnActivateAsync()
         {
@@ -36,23 +43,16 @@ namespace MineCase.Server.Network
 
         public async Task SendPacket(ISerializablePacket packet)
         {
-            var prepared = await PreparePacket(packet);
-            await SendPacket(prepared.packetId, prepared.data);
+            var prepared = await _packetPackager.PreparePacket(packet);
+            await SendPacket(prepared.packetId, prepared.data.AsImmutable());
         }
 
-        private uint GetPacketId(ISerializablePacket packet)
-        {
-            var typeInfo = packet.GetType().GetTypeInfo();
-            var attr = typeInfo.GetCustomAttribute<PacketAttribute>();
-            return attr.PacketId;
-        }
-
-        public Task SendPacket(uint packetId, byte[] data)
+        public Task SendPacket(uint packetId, Immutable<byte[]> data)
         {
             var packet = new UncompressedPacket
             {
                 PacketId = packetId,
-                Data = data
+                Data = data.Value
             };
             _subsManager.Notify(n => n.ReceivePacket(packet));
             return Task.CompletedTask;
@@ -63,17 +63,6 @@ namespace MineCase.Server.Network
             _subsManager.Notify(n => n.OnClosed());
             DeactivateOnIdle();
             return Task.CompletedTask;
-        }
-
-        public Task<(uint packetId, byte[] data)> PreparePacket(ISerializablePacket packet)
-        {
-            using (var stream = new MemoryStream())
-            using (var bw = new BinaryWriter(stream))
-            {
-                packet.Serialize(bw);
-                bw.Flush();
-                return Task.FromResult((GetPacketId(packet), stream.ToArray()));
-            }
         }
     }
 }
