@@ -4,7 +4,7 @@ namespace MineCase.Server.World.Generation
 {
     public class GeneratorSettings
     {
-        public int seed{get;set;}
+        public int Seed{get;set;}
 
         public bool GenerateStructure{ get; set; }
 
@@ -57,7 +57,6 @@ namespace MineCase.Server.World.Generation
         public float LowerLimitScale{get;set;}
 
         public float UpperLimitScale{get;set;}
-
         
         public FlatGeneratorInfo flatGeneratorInfo{get; set;}
 
