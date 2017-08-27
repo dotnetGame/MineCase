@@ -9,19 +9,19 @@ namespace MineCase.Algorithm.Noise
     {
         private readonly TNoise _innerNoise;
         private readonly int _octaves;
-        private readonly double _persistence;
+        private readonly float _persistence;
 
-        public OctavedNoise(TNoise innerNoise, int octaves, double persistence)
+        public OctavedNoise(TNoise innerNoise, int octaves, float persistence)
         {
             _innerNoise = innerNoise;
             _octaves = octaves;
             _persistence = persistence;
         }
 
-        public override double Noise(double x, double y, double z)
+        public override float Noise(float x, float y, float z)
         {
             double total = 0;
-            double frequency = 1;
+            float frequency = 1;
             double amplitude = 1;
             double maxValue = 0;
 
@@ -33,7 +33,7 @@ namespace MineCase.Algorithm.Noise
                 frequency *= 2;
             }
 
-            return total / maxValue;
+            return (float)(total / maxValue);
         }
     }
 }

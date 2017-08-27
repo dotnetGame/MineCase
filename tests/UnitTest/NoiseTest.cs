@@ -33,7 +33,7 @@ namespace MineCase.UnitTest
             using (var image = new Image<ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
             {
                 var noise = new PerlinNoise(100);
-                var noiseValue = new double[xExtent, yExtent, 1];
+                var noiseValue = new float[xExtent, yExtent, 1];
                 noise.Noise(noiseValue, Vector3.Zero, new Vector3(0.1f, 0.1f, 0));
                 for (int x = 0; x < xExtent; x++)
                 {
@@ -58,7 +58,7 @@ namespace MineCase.UnitTest
             using (var image = new Image<ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
             {
                 var noise = new OctavedNoise<PerlinNoise>(new PerlinNoise(100), 8, 1);
-                var noiseValue = new double[xExtent, yExtent, 1];
+                var noiseValue = new float[xExtent, yExtent, 1];
                 noise.Noise(noiseValue, Vector3.Zero, new Vector3(0.1f, 0.1f, 0));
                 for (int x = 0; x < xExtent; x++)
                 {

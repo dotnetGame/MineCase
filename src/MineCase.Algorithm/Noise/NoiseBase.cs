@@ -7,9 +7,9 @@ namespace MineCase.Algorithm.Noise
 {
     public abstract class NoiseBase : INoise
     {
-        public abstract double Noise(double x, double y, double z);
+        public abstract float Noise(float x, float y, float z);
 
-        public virtual void Noise(double[,,] noise, Vector3 offset, Vector3 scale)
+        public virtual void Noise(float[,,] noise, Vector3 offset, Vector3 scale)
         {
             var xExtent = noise.GetUpperBound(0) + 1;
             var yExtent = noise.GetUpperBound(1) + 1;
