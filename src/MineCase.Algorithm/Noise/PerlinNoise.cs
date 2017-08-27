@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace MineCase.Algorithm.Noise
@@ -7,7 +8,7 @@ namespace MineCase.Algorithm.Noise
     /// <summary>
     /// Implementation for Improved Perlin Noise (http://mrl.nyu.edu/~perlin/noise/)
     /// </summary>
-    public class PerlinNoise : INoise
+    public class PerlinNoise : NoiseBase, INoise
     {
         /// <summary>
         /// Permutation
@@ -25,7 +26,7 @@ namespace MineCase.Algorithm.Noise
                 _p[i + 256] = _p[i] = random.Next(0, 256);
         }
 
-        public double Noise(double x, double y, double z)
+        public override double Noise(double x, double y, double z)
         {
             var xcoord = Split(x);
             var ycoord = Split(y);

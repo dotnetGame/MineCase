@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MineCase.Algorithm.Noise
 {
-    public class OctavedNoise<TNoise> : INoise
+    public class OctavedNoise<TNoise> : NoiseBase, INoise
         where TNoise : INoise
     {
         private readonly TNoise _innerNoise;
@@ -18,7 +18,7 @@ namespace MineCase.Algorithm.Noise
             _persistence = persistence;
         }
 
-        public double Noise(double x, double y, double z)
+        public override double Noise(double x, double y, double z)
         {
             double total = 0;
             double frequency = 1;
