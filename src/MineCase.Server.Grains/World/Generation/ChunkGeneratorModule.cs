@@ -5,10 +5,12 @@ using Autofac;
 
 namespace MineCase.Server.World.Generation
 {
-    internal class ChunkGeneratorOverWorldModule : Module
+    internal class ChunkGeneratorModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterType<ChunkGeneratorFlatGrain>();
+            
             builder.RegisterType<ChunkGeneratorOverWorldGrain>();
         }
     }
