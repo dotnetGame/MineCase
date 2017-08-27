@@ -6,7 +6,9 @@ namespace MineCase.Server.World.Generation
 {
     public interface IChunkGenerator
     {
-        Task<ChunkColumn> generateChunk(int x, int z, long seed);
-        Task populateChunk(ChunkColumn chunk, int x, int z, long seed);
+        Task<ChunkColumn> Generate(int x, int z, GeneratorSettings settings);
+
+        Task GenerateChunk(ChunkColumn chunk, int x, int z, GeneratorSettings settings);
+        Task PopulateChunk(ChunkColumn chunk, int x, int z, GeneratorSettings settings);
     }
 }

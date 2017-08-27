@@ -12,24 +12,25 @@ namespace MineCase.Server.World.Generation
     [StatelessWorker]
     internal class ChunkGeneratorOverWorldGrain : IChunkGeneratorOverworld
     {
-        public ChunkGeneratorOverWorldGrain()
-        {
-
-        }
-
-        public Task<ChunkColumn> generateChunk(int x, int z, long seed)
+        public Task<ChunkColumn> Generate(int x, int z)
         {
             ChunkColumn chunkColumn=new ChunkColumn();
 
             return Task.FromResult(chunkColumn);
         }
 
-        public Task populateChunk(ChunkColumn chunk, int x, int z, long seed)
+        public Task GenerateChunk(ChunkColumn chunk, int x, int z, GeneratorSettings settings)
+        {
+
+            return Task.CompletedTask;
+        }
+
+        public Task PopulateChunk(ChunkColumn chunk, int x, int z, GeneratorSettings settings)
         {
             return Task.CompletedTask;
         }
 
-        private Task<double[]> generateDensityMap(int x,int y,int z)
+        private Task<double[]> GenerateDensityMap(int x,int y,int z, GeneratorSettings settings)
         {
             double [] densityMap=new double[5*5*33];
 

@@ -10,24 +10,43 @@ using Orleans.Runtime;
 namespace MineCase.Server.World.Generation
 {
     [StatelessWorker]
-    internal class ChunkGeneratorFlatGrain : IChunkGeneratorFlat
+    internal class ChunkGeneratorFlatGrain : Grain, IChunkGeneratorFlat
     {
-        public Task<ChunkColumn> generateChunk(int x, int z, long seed)
+        public Task<ChunkColumn> Generate(int x, int z, GeneratorSettings settings)
         {
             ChunkColumn chunkColumn=new ChunkColumn();
-
+            GenerateChunk(chunkColumn,x,z,settings);
+            PopulateChunk(chunkColumn,x,z,settings);
             return Task.FromResult(chunkColumn);
         }
-        public Task populateChunk(ChunkColumn chunk, int x, int z, long seed)
+
+        public Task GenerateChunk(ChunkColumn chunk, int x, int z, GeneratorSettings settings)
         {
+            //按照flat模式每层的设置给chunk赋值
+            for (int i = 0; i < settings.flatGeneratorInfo.FlatBlockId.Length; ++i)
+            {
+                BlockState state = settings.flatGeneratorInfo.FlatBlockId[i];
+                if (state != null)
+                {
+                    for (int j = 0; j < 16; ++j)
+                    {
+                        for (int k = 0; k < 16; ++k)
+                        {
+                            chunk.SetBlockState(j, i, k, state);
+                        }
+                    }
+                }
+            }
+            // todo biomes
+            chunk.GenerateSkylightMap();
             return Task.CompletedTask;
         }
 
-        private Task<double[]> generateDensityMap(int x,int y,int z)
+        public Task PopulateChunk(ChunkColumn chunk, int x, int z, GeneratorSettings settings)
         {
-            double [] densityMap=new double[5*5*33];
-
-            return Task.FromResult(densityMap);
+            // TODO generator tree, grass, structures\
+            return Task.CompletedTask;
         }
+
     }
 }
