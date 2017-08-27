@@ -5,6 +5,10 @@ before_build:
     cd src
 
     dotnet restore
+
+    choco install opencover.portable
+
+    choco install codecov
 build:
   project: ./src/
   verbosity: minimal
@@ -12,6 +16,6 @@ test_script:
 - ps: >-
     cd ..\tests
 
-    cd UnitTest
+    OpenCover.Console.exe -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test" -output:".\test_coverage.xml"
 
-    dotnet test
+    codecov -f "test_coverage.xml"
