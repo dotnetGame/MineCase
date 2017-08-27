@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace MineCase.Algorithm.Noise
 {
-    public class OctavedNoise<TNoise> : NoiseBase, INoise
+    public class OctavedNoise<TNoise>
         where TNoise : INoise
     {
         private readonly TNoise _innerNoise;
@@ -18,10 +19,10 @@ namespace MineCase.Algorithm.Noise
             _persistence = persistence;
         }
 
-        public override float Noise(float x, float y, float z)
+        public float Noise(float x, float y, float z)
         {
             double total = 0;
-            float frequency = 1;
+            int frequency = 1;
             double amplitude = 1;
             double maxValue = 0;
 
@@ -34,6 +35,34 @@ namespace MineCase.Algorithm.Noise
             }
 
             return (float)(total / maxValue);
+        }
+
+        public void Noise(float[,,] noise, Vector3 offset, Vector3 scale)
+        {
+            Array.Clear(noise, 0, noise.Length);
+            float frequency = 1;
+            double amplitude = 1;
+            double maxValue = 0;
+
+            for (int i = 0; i < _octaves; i++)
+            {
+                _innerNoise.AddNoise(noise, offset * frequency, scale * frequency, (float)amplitude);
+                maxValue += amplitude;
+                amplitude *= _persistence;
+                frequency *= 2;
+            }
+
+            var xExtent = noise.GetUpperBound(0) + 1;
+            var yExtent = noise.GetUpperBound(1) + 1;
+            var zExtent = noise.GetUpperBound(2) + 1;
+            for (int x = 0; x < xExtent; x++)
+            {
+                for (int y = 0; y < yExtent; y++)
+                {
+                    for (int z = 0; z < zExtent; z++)
+                        noise[x, y, z] /= (float)maxValue;
+                }
+            }
         }
     }
 }

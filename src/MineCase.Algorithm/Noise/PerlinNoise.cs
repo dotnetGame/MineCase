@@ -8,7 +8,7 @@ namespace MineCase.Algorithm.Noise
     /// <summary>
     /// Implementation for Improved Perlin Noise (http://mrl.nyu.edu/~perlin/noise/)
     /// </summary>
-    public class PerlinNoise : NoiseBase, INoise
+    public class PerlinNoise : INoise
     {
         /// <summary>
         /// Permutation
@@ -26,7 +26,7 @@ namespace MineCase.Algorithm.Noise
                 _p[i + 256] = _p[i] = random.Next(0, 256);
         }
 
-        public override float Noise(float x, float y, float z)
+        public float Noise(float x, float y, float z)
         {
             var xcoord = Split(x);
             var ycoord = Split(y);
@@ -68,6 +68,126 @@ namespace MineCase.Algorithm.Noise
             var yl = Vector2.Lerp(ya, yb, v);
 
             return (Lerp(yl.X, yl.Y, w) + 1) / 2;
+        }
+
+        public void Noise(float[,,] noise, Vector3 offset, Vector3 scale)
+        {
+            var xExtent = noise.GetUpperBound(0) + 1;
+            var yExtent = noise.GetUpperBound(1) + 1;
+            var zExtent = noise.GetUpperBound(2) + 1;
+
+            for (int x = 0; x < xExtent; x++)
+            {
+                var xOffset = offset.X + x * scale.X;
+                var xcoord = Split(xOffset);
+                var u = Fade(xcoord.remainder);
+
+                int a = _p[xcoord.integer];
+                int b = _p[xcoord.integer + 1];
+                for (int y = 0; y < yExtent; y++)
+                {
+                    var yOffset = offset.Y + y * scale.Y;
+                    var ycoord = Split(yOffset);
+                    var v = Fade(ycoord.remainder);
+
+                    int aa = _p[a + ycoord.integer];
+                    int ab = _p[a + ycoord.integer + 1];
+                    int ba = _p[b + ycoord.integer];
+                    int bb = _p[b + ycoord.integer + 1];
+                    for (int z = 0; z < zExtent; z++)
+                    {
+                        var zOffset = offset.Z + z * scale.Z;
+                        var zcoord = Split(zOffset);
+                        var w = Fade(zcoord.remainder);
+
+                        int aaa = _p[aa + zcoord.integer];
+                        int aba = _p[ab + zcoord.integer];
+                        int aab = _p[aa + zcoord.integer + 1];
+                        int abb = _p[ab + zcoord.integer + 1];
+                        int baa = _p[ba + zcoord.integer];
+                        int bba = _p[bb + zcoord.integer];
+                        int bab = _p[ba + zcoord.integer + 1];
+                        int bbb = _p[bb + zcoord.integer + 1];
+
+                        var xa = new Vector4(
+                            Grad(aaa, xcoord.remainder, ycoord.remainder, zcoord.remainder),
+                            Grad(aba, xcoord.remainder, ycoord.remainder - 1, zcoord.remainder),
+                            Grad(aab, xcoord.remainder, ycoord.remainder, zcoord.remainder - 1),
+                            Grad(abb, xcoord.remainder, ycoord.remainder - 1, zcoord.remainder - 1));
+                        var xb = new Vector4(
+                            Grad(baa, xcoord.remainder - 1, ycoord.remainder, zcoord.remainder),
+                            Grad(bba, xcoord.remainder - 1, ycoord.remainder - 1, zcoord.remainder),
+                            Grad(bab, xcoord.remainder - 1, ycoord.remainder, zcoord.remainder - 1),
+                            Grad(bbb, xcoord.remainder - 1, ycoord.remainder - 1, zcoord.remainder - 1));
+                        var xl = Vector4.Lerp(xa, xb, u);
+                        var ya = new Vector2(xl.X, xl.Z);
+                        var yb = new Vector2(xl.Y, xl.W);
+                        var yl = Vector2.Lerp(ya, yb, v);
+
+                        noise[x, y, z] = (Lerp(yl.X, yl.Y, w) + 1) / 2;
+                    }
+                }
+            }
+        }
+
+        public void AddNoise(float[,,] noise, Vector3 offset, Vector3 scale, float noiseScale)
+        {
+            var xExtent = noise.GetUpperBound(0) + 1;
+            var yExtent = noise.GetUpperBound(1) + 1;
+            var zExtent = noise.GetUpperBound(2) + 1;
+
+            for (int x = 0; x < xExtent; x++)
+            {
+                var xOffset = offset.X + x * scale.X;
+                var xcoord = Split(xOffset);
+                var u = Fade(xcoord.remainder);
+
+                int a = _p[xcoord.integer];
+                int b = _p[xcoord.integer + 1];
+                for (int y = 0; y < yExtent; y++)
+                {
+                    var yOffset = offset.Y + y * scale.Y;
+                    var ycoord = Split(yOffset);
+                    var v = Fade(ycoord.remainder);
+
+                    int aa = _p[a + ycoord.integer];
+                    int ab = _p[a + ycoord.integer + 1];
+                    int ba = _p[b + ycoord.integer];
+                    int bb = _p[b + ycoord.integer + 1];
+                    for (int z = 0; z < zExtent; z++)
+                    {
+                        var zOffset = offset.Z + z * scale.Z;
+                        var zcoord = Split(zOffset);
+                        var w = Fade(zcoord.remainder);
+
+                        int aaa = _p[aa + zcoord.integer];
+                        int aba = _p[ab + zcoord.integer];
+                        int aab = _p[aa + zcoord.integer + 1];
+                        int abb = _p[ab + zcoord.integer + 1];
+                        int baa = _p[ba + zcoord.integer];
+                        int bba = _p[bb + zcoord.integer];
+                        int bab = _p[ba + zcoord.integer + 1];
+                        int bbb = _p[bb + zcoord.integer + 1];
+
+                        var xa = new Vector4(
+                            Grad(aaa, xcoord.remainder, ycoord.remainder, zcoord.remainder),
+                            Grad(aba, xcoord.remainder, ycoord.remainder - 1, zcoord.remainder),
+                            Grad(aab, xcoord.remainder, ycoord.remainder, zcoord.remainder - 1),
+                            Grad(abb, xcoord.remainder, ycoord.remainder - 1, zcoord.remainder - 1));
+                        var xb = new Vector4(
+                            Grad(baa, xcoord.remainder - 1, ycoord.remainder, zcoord.remainder),
+                            Grad(bba, xcoord.remainder - 1, ycoord.remainder - 1, zcoord.remainder),
+                            Grad(bab, xcoord.remainder - 1, ycoord.remainder, zcoord.remainder - 1),
+                            Grad(bbb, xcoord.remainder - 1, ycoord.remainder - 1, zcoord.remainder - 1));
+                        var xl = Vector4.Lerp(xa, xb, u);
+                        var ya = new Vector2(xl.X, xl.Z);
+                        var yb = new Vector2(xl.Y, xl.W);
+                        var yl = Vector2.Lerp(ya, yb, v);
+
+                        noise[x, y, z] += (Lerp(yl.X, yl.Y, w) + 1) / 2 * noiseScale;
+                    }
+                }
+            }
         }
 
         private static (int integer, float remainder) Split(float value)

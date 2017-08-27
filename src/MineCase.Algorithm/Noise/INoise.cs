@@ -10,5 +10,7 @@ namespace MineCase.Algorithm.Noise
         float Noise(float x, float y, float z);
 
         void Noise(float[,,] noise, Vector3 offset, Vector3 scale);
+
+        void AddNoise(float[,,] noise, Vector3 offset, Vector3 scale, float noiseScale);
     }
 }
