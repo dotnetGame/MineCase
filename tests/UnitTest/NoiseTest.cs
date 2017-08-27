@@ -33,7 +33,7 @@ namespace MineCase.UnitTest
             using (var image = new Image<ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
             {
                 var noise = new PerlinNoise(100);
-                var noiseValue = new double[xExtent, yExtent, 1];
+                var noiseValue = new float[xExtent, yExtent, 1];
                 noise.Noise(noiseValue, Vector3.Zero, new Vector3(0.1f, 0.1f, 0));
                 for (int x = 0; x < xExtent; x++)
                 {
@@ -58,7 +58,7 @@ namespace MineCase.UnitTest
             using (var image = new Image<ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
             {
                 var noise = new OctavedNoise<PerlinNoise>(new PerlinNoise(100), 8, 1);
-                var noiseValue = new double[xExtent, yExtent, 1];
+                var noiseValue = new float[xExtent, yExtent, 1];
                 noise.Noise(noiseValue, Vector3.Zero, new Vector3(0.1f, 0.1f, 0));
                 for (int x = 0; x < xExtent; x++)
                 {
@@ -70,6 +70,33 @@ namespace MineCase.UnitTest
                 }
 
                 image.SaveAsBmp(file);
+            }
+        }
+
+        [Fact]
+        public void TestPerlinNoise3DPerformance()
+        {
+            if (!Vector.IsHardwareAccelerated)
+                throw new NotSupportedException();
+
+            var noise = new PerlinNoise(100);
+            for (int i = 0; i < 100_0000; i++)
+            {
+                noise.Noise(i, i, i);
+            }
+        }
+
+        [Fact]
+        public void TestPerlinNoise3DPerformanceArray()
+        {
+            if (!Vector.IsHardwareAccelerated)
+                throw new NotSupportedException();
+
+            var noiseValue = new float[100, 100, 10];
+            var noise = new PerlinNoise(100);
+            for (int i = 0; i < 100; i++)
+            {
+                noise.Noise(noiseValue, new Vector3(i, i, i), new Vector3(0.1f, 0.1f, 0.1f));
             }
         }
     }
