@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MineCase.Serialization;
+using Orleans.Concurrency;
 
 namespace MineCase.Protocol.Play
 {
+    [Immutable]
     public sealed class Slot : ISerializablePacket
     {
         [SerializeAs(DataType.Short)]
@@ -29,6 +31,7 @@ namespace MineCase.Protocol.Play
         }
     }
 
+    [Immutable]
     [Packet(0x14)]
     public sealed class WindowItems : ISerializablePacket
     {

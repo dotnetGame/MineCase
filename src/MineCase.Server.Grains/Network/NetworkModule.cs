@@ -11,6 +11,7 @@ namespace MineCase.Server.Network
         {
             builder.RegisterType<PacketRouterGrain>();
             builder.RegisterType<ClientboundPacketSinkGrain>();
+            builder.RegisterType<PacketPackager>().As<IPacketPackager>();
         }
     }
 }

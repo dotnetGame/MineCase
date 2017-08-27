@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MineCase.Serialization;
+using Orleans.Concurrency;
 
 namespace MineCase.Protocol.Play
 {
+    [Immutable]
     [Packet(0x20)]
     public sealed class ChunkData : ISerializablePacket
     {
@@ -59,6 +61,7 @@ namespace MineCase.Protocol.Play
         }
     }
 
+    [Immutable]
     public sealed class ChunkSection : ISerializablePacket
     {
         [SerializeAs(DataType.Byte)]

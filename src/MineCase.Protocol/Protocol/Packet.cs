@@ -4,10 +4,12 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Serialization;
+using Orleans.Concurrency;
 
 namespace MineCase.Protocol
 {
-    public struct UncompressedPacket
+    [Immutable]
+    public class UncompressedPacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint Length;
@@ -34,7 +36,7 @@ namespace MineCase.Protocol
 
         public static async Task<UncompressedPacket> DeserializeAsync(Stream stream)
         {
-            var packet = default(UncompressedPacket);
+            var packet = new UncompressedPacket();
             int packetIdLen;
             using (var br = new BinaryReader(stream, Encoding.UTF8, true))
             {
@@ -48,7 +50,8 @@ namespace MineCase.Protocol
         }
     }
 
-    public struct CompressedPacket
+    [Immutable]
+    public class CompressedPacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint PacketLength;
@@ -75,7 +78,7 @@ namespace MineCase.Protocol
 
         public static async Task<CompressedPacket> DeserializeAsync(Stream stream)
         {
-            var packet = default(CompressedPacket);
+            var packet = new CompressedPacket();
             int dataLengthLen;
             using (var br = new BinaryReader(stream, Encoding.UTF8, true))
             {

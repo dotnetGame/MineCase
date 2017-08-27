@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MineCase.Serialization;
+using Orleans.Concurrency;
 
 namespace MineCase.Protocol.Play
 {
+    [Immutable]
     [Packet(0x2E)]
     public sealed class ClientboundPositionAndLook : ISerializablePacket
     {
@@ -42,6 +44,7 @@ namespace MineCase.Protocol.Play
         }
     }
 
+    [Immutable]
     [Packet(0x0F)]
     public sealed class ServerboundPositionAndLook
     {
