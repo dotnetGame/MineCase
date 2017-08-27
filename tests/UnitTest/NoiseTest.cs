@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -32,11 +33,13 @@ namespace MineCase.UnitTest
             using (var image = new Image<ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
             {
                 var noise = new PerlinNoise(100);
+                var noiseValue = new double[xExtent, yExtent, 1];
+                noise.Noise(noiseValue, Vector3.Zero, new Vector3(0.1f, 0.1f, 0));
                 for (int x = 0; x < xExtent; x++)
                 {
                     for (int y = 0; y < yExtent; y++)
                     {
-                        var color = (byte)(noise.Noise(x / 10.0, 0, y / 10.0) * 255);
+                        var color = (byte)(noiseValue[x, y, 0] * 255);
                         image[x, y] = new ImageSharp.PixelFormats.Rgb24(color, color, color);
                     }
                 }
@@ -55,11 +58,13 @@ namespace MineCase.UnitTest
             using (var image = new Image<ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
             {
                 var noise = new OctavedNoise<PerlinNoise>(new PerlinNoise(100), 8, 1);
+                var noiseValue = new double[xExtent, yExtent, 1];
+                noise.Noise(noiseValue, Vector3.Zero, new Vector3(0.1f, 0.1f, 0));
                 for (int x = 0; x < xExtent; x++)
                 {
                     for (int y = 0; y < yExtent; y++)
                     {
-                        var color = (byte)(noise.Noise(x / 10.0, 0, y / 10.0) * 255);
+                        var color = (byte)(noiseValue[x, y, 0] * 255);
                         image[x, y] = new ImageSharp.PixelFormats.Rgb24(color, color, color);
                     }
                 }
