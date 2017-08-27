@@ -3,15 +3,14 @@ image: Visual Studio 2017
 before_build:
 - ps: >-
     cd src
-
     dotnet restore
+    choco install opencover.portable
+    choco install codecov
 build:
   project: ./src/
   verbosity: minimal
 test_script:
 - ps: >-
     cd ..\tests
-
-    cd UnitTest
-
-    dotnet test
+    OpenCover.Console.exe -register:user -target:"dotnet" -targetargs:"test" -output:".\test_coverage.xml"
+    codecov -f "test_coverage.xml
