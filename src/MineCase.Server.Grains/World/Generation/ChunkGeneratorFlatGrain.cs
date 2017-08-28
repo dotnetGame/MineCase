@@ -15,6 +15,23 @@ namespace MineCase.Server.World.Generation
         public Task<ChunkColumn> Generate(int x, int z, GeneratorSettings settings)
         {
             ChunkColumn chunkColumn = new ChunkColumn();
+            chunkColumn.Sections = new ChunkSection[16];
+            for (int i = 0; i < chunkColumn.Sections.Length; ++i)
+            {
+                chunkColumn.Sections[i] = new ChunkSection
+                {
+                    BitsPerBlock = 13,
+                    Blocks = new Block[4096]
+                };
+                for (int j = 0; j < chunkColumn.Sections[i].Blocks.Length; ++j)
+                {
+                    chunkColumn.Sections[i].Blocks[j] = new Block();
+                }
+            }
+
+            chunkColumn.SectionBitMask = 0b1111_1111_1111_1111;
+            chunkColumn.Biomes = new byte[256];
+
             GenerateChunk(chunkColumn, x, z, settings);
             PopulateChunk(chunkColumn, x, z, settings);
             return Task.FromResult(chunkColumn);

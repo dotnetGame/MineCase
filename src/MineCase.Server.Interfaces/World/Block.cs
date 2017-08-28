@@ -47,11 +47,11 @@ namespace MineCase.Server.World
     {
         public byte BitsPerBlock { get; set; }
 
-        public Block[] Blocks { get; set; }
+        public Block[] Blocks { get; set; } // size 4096
 
         private static int GetBlockIndex(int x, int y, int z)
         {
-            return x << 8 | z << 4 | y;
+            return y << 8 | z << 4 | x;
         }
 
         public void SetBlockState(int x, int y, int z, BlockState state)
@@ -68,11 +68,11 @@ namespace MineCase.Server.World
     public sealed class ChunkColumn
     {
         // private BlockState _defaultBlockState;
-        public ChunkSection[] Sections { get; set; }
+        public ChunkSection[] Sections { get; set; } // size 16
 
         public uint SectionBitMask { get; set; }
 
-        public byte[] Biomes { get; set; }
+        public byte[] Biomes { get; set; } // size 256
 
         private static int GetSectionIndex(int x, int y, int z)
         {
@@ -81,16 +81,23 @@ namespace MineCase.Server.World
 
         public void SetBlockState(int x, int y, int z, BlockState state)
         {
-            Sections[GetSectionIndex(x, y, z)].SetBlockState(x, y >> 4, z, state);
+            Sections[GetSectionIndex(x, y, z)].SetBlockState(x, y & 0xFF, z, state);
         }
 
         public void SetBlockId(int x, int y, int z, BlockId id)
         {
-            Sections[GetSectionIndex(x, y, z)].SetBlockId(x, y >> 4, z, id);
+            Sections[GetSectionIndex(x, y, z)].SetBlockId(x, y & 0xFF, z, id);
         }
 
         public void GenerateSkylightMap()
         {
+            for (int i = 0; i < Sections.Length; ++i)
+            {
+                for (int j = 0; j < Sections[i].Blocks.Length; ++j)
+                {
+                    Sections[i].Blocks[j].SkyLight = 0xF;
+                }
+            }
         }
     }
 }

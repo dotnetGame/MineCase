@@ -50,6 +50,7 @@ namespace MineCase.Server.World.Generation
             _maxNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 3, 0.5f);
             _minNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 3, 0.5f);
 
+            _biomeWeights = new float[5, 5];
             for (int i = -2; i <= 2; ++i)
             {
                 for (int j = -2; j <= 2; ++j)
@@ -59,12 +60,38 @@ namespace MineCase.Server.World.Generation
                 }
             }
 
+            _biomesForGeneration = new Biome[10 * 10];
+            for (int i = 0; i < 10; ++i)
+            {
+                for (int j = 0; j < 10; ++j)
+                {
+                    _biomesForGeneration[10 * i + j] = new BiomePlains(new BiomeProperties("plains"));
+                }
+            }
+
             return Task.CompletedTask;
         }
 
         public async Task<ChunkColumn> Generate(int x, int z, GeneratorSettings settings)
         {
             ChunkColumn chunkColumn = new ChunkColumn();
+            chunkColumn.Sections = new ChunkSection[16];
+            for (int i = 0; i < chunkColumn.Sections.Length; ++i)
+            {
+                chunkColumn.Sections[i] = new ChunkSection
+                {
+                    BitsPerBlock = 13,
+                    Blocks = new Block[4096]
+                };
+                for (int j = 0; j < chunkColumn.Sections[i].Blocks.Length; ++j)
+                {
+                    chunkColumn.Sections[i].Blocks[j] = new Block();
+                }
+            }
+
+            chunkColumn.SectionBitMask = 0b1111_1111_1111_1111;
+            chunkColumn.Biomes = new byte[256];
+
             await GenerateChunk(chunkColumn, x, z, settings);
             await PopulateChunk(chunkColumn, x, z, settings);
             return chunkColumn;
@@ -73,7 +100,8 @@ namespace MineCase.Server.World.Generation
         public async Task GenerateChunk(ChunkColumn chunk, int x, int z, GeneratorSettings settings)
         {
             Random rand = new Random(settings.Seed);
-            GetBiomesForGeneration(_biomesForGeneration, x * 4 - 2, z * 4 - 2, 10, 10);
+
+            // GetBiomesForGeneration(_biomesForGeneration, x * 4 - 2, z * 4 - 2, 10, 10);
             await GenerateBasicTerrain(chunk, x, z, settings);
 
             // Todo add biomes blocks

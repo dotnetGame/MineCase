@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.World.Generation;
 using Orleans;
 
 namespace MineCase.Server.World
@@ -13,8 +14,21 @@ namespace MineCase.Server.World
         private int _chunkX;
         private int _chunkZ;
 
-        public Task<ChunkColumn> GetState()
+        public async Task<ChunkColumn> GetState()
         {
+            var generator = GrainFactory.GetGrain<IChunkGeneratorFlat>(1);
+            GeneratorSettings settings = new GeneratorSettings
+            {
+                Seed = 1,
+                FlatGeneratorInfo = new FlatGeneratorInfo
+                {
+                    FlatBlockId = new BlockState[] { BlockStates.GetBlockStateStone(), BlockStates.GetBlockStateGrass() }
+                }
+            };
+            ChunkColumn chunkColumn = await generator.Generate(_chunkX, _chunkZ, settings);
+
+            return chunkColumn;
+            /*
             var blocks = new Block[16 * 16 * 16];
             var index = 0;
             for (int y = 0; y < 16; y++)
@@ -50,6 +64,7 @@ namespace MineCase.Server.World
                         Blocks = Enumerable.Repeat(new Block { Id = 0, SkyLight = 0xF }, 16 * 16 * 16).ToArray()
                     }, 15)).ToArray()
             });
+            */
         }
 
         public override Task OnActivateAsync()

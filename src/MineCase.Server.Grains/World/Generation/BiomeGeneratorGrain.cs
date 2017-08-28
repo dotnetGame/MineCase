@@ -14,10 +14,10 @@ namespace MineCase.Server.World.Generation
     [StatelessWorker]
     internal class BiomeGeneratorFlatGrain : Grain, IBiomeGenerator
     {
-        private GenLayer _genBiomes;
-        private GenLayer _biomeIndexLayer;
+        // private GenLayer _genBiomes;
+        // private GenLayer _biomeIndexLayer;
 
-        private int _seed;
+        // private int _seed;
 
         /*
         public override Task OnActivateAsync()
