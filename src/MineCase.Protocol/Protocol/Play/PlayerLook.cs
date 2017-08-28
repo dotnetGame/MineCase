@@ -20,7 +20,7 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.Boolean)]
         public bool OnGround;
 
-        public static PlayerLook Deserialize(BinaryReader br)
+        public static PlayerLook Deserialize(ref SpanReader br)
         {
             return new PlayerLook
             {

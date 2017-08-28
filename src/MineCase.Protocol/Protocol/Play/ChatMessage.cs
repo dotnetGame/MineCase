@@ -15,7 +15,7 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.String)]
         public string Message;
 
-        public static ServerboundChatMessage Deserialize(BinaryReader br)
+        public static ServerboundChatMessage Deserialize(ref SpanReader br)
         {
             return new ServerboundChatMessage
             {

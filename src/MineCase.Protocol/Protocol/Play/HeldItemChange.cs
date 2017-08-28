@@ -14,7 +14,7 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.Short)]
         public short Slot;
 
-        public static ServerboundHeldItemChange Deserialize(BinaryReader br)
+        public static ServerboundHeldItemChange Deserialize(ref SpanReader br)
         {
             return new ServerboundHeldItemChange
             {

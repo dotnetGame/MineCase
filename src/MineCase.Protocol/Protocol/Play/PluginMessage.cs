@@ -17,12 +17,12 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.ByteArray)]
         public byte[] Data;
 
-        public static ServerboundPluginMessage Deserialize(BinaryReader br)
+        public static ServerboundPluginMessage Deserialize(ref SpanReader br)
         {
             return new ServerboundPluginMessage
             {
                 Channel = br.ReadAsString(),
-                Data = br.ReadBytes((int)(br.BaseStream.Length - br.BaseStream.Position))
+                Data = br.ReadAsByteArray()
             };
         }
     }
