@@ -13,7 +13,7 @@ namespace MineCase.Server.Network
 {
     internal partial class PacketRouterGrain
     {
-        private object DeserializeHandshakingPacket(ref UncompressedPacket packet)
+        private object DeserializeHandshakingPacket(UncompressedPacket packet)
         {
             var br = new SpanReader(packet.Data);
             switch (packet.PacketId)
@@ -22,7 +22,7 @@ namespace MineCase.Server.Network
                 case 0x00:
                     return Handshake.Deserialize(ref br);
                 default:
-                    throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X}.");
+                    throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X2}.");
             }
         }
 

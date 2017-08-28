@@ -61,10 +61,58 @@ namespace MineCase.Serialization
             return value;
         }
 
-        private ReadOnlySpan<byte> ReadBytes(int len)
+        public byte ReadAsByte()
         {
-            var bytes = _span.Slice(0, len);
-            Advance(len);
+            var value = _span.ReadBigEndian<byte>();
+            Advance(sizeof(byte));
+            return value;
+        }
+
+        public bool ReadAsBoolean()
+        {
+            var value = _span.ReadBigEndian<bool>();
+            Advance(sizeof(bool));
+            return value;
+        }
+
+        public short ReadAsShort()
+        {
+            var value = _span.ReadBigEndian<short>();
+            Advance(sizeof(short));
+            return value;
+        }
+
+        public float ReadAsFloat()
+        {
+            var value = _span.ReadBigEndian<float>();
+            Advance(sizeof(float));
+            return value;
+        }
+
+        public double ReadAsDouble()
+        {
+            var value = _span.ReadBigEndian<double>();
+            Advance(sizeof(double));
+            return value;
+        }
+
+        public byte[] ReadAsByteArray(int length)
+        {
+            var value = ReadBytes(length);
+            return value.ToArray();
+        }
+
+        public byte[] ReadAsByteArray()
+        {
+            var bytes = _span.ToArray();
+            _span = ReadOnlySpan<byte>.Empty;
+            return bytes;
+        }
+
+        private ReadOnlySpan<byte> ReadBytes(int length)
+        {
+            var bytes = _span.Slice(0, length);
+            Advance(length);
             return bytes;
         }
 

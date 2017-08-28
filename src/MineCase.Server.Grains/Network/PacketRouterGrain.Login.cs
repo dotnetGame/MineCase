@@ -14,7 +14,7 @@ namespace MineCase.Server.Network
 {
     internal partial class PacketRouterGrain
     {
-        private object DeserializeLoginPacket(ref UncompressedPacket packet)
+        private object DeserializeLoginPacket(UncompressedPacket packet)
         {
             var br = new SpanReader(packet.Data);
             object innerPacket;
