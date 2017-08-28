@@ -14,7 +14,7 @@ namespace MineCase.Server.World.Generation
     {
         public Task<ChunkColumn> Generate(int x, int z, GeneratorSettings settings)
         {
-            ChunkColumn chunkColumn=new ChunkColumn();
+            ChunkColumn chunkColumn = new ChunkColumn();
             GenerateChunk(chunkColumn, x, z, settings);
             PopulateChunk(chunkColumn, x, z, settings);
             return Task.FromResult(chunkColumn);
@@ -22,7 +22,7 @@ namespace MineCase.Server.World.Generation
 
         public Task GenerateChunk(ChunkColumn chunk, int x, int z, GeneratorSettings settings)
         {
-            //按照flat模式每层的设置给chunk赋值
+            // 按照flat模式每层的设置给chunk赋值
             for (int i = 0; i < settings.FlatGeneratorInfo.FlatBlockId.Length; ++i)
             {
                 BlockState state = settings.FlatGeneratorInfo.FlatBlockId[i];
@@ -37,6 +37,7 @@ namespace MineCase.Server.World.Generation
                     }
                 }
             }
+
             // todo biomes
             chunk.GenerateSkylightMap();
             return Task.CompletedTask;

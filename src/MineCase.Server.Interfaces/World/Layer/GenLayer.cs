@@ -26,6 +26,21 @@ namespace MineCase.Server.World.Layer
 
         public abstract int[] GetInts(int areaX, int areaY, int areaWidth, int areaHeight);
 
+        /**
+         * Initialize layer's local worldGenSeed based on its own baseSeed and the world's global seed (passed in as an
+         * argument).
+         */
+        public void InitWorldGenSeed(int seed)
+        {
+            _worldGenSeed = seed;
+            _worldGenSeed *= _worldGenSeed * 46793005 + 88963407;
+            _worldGenSeed += _baseSeed;
+            _worldGenSeed *= _worldGenSeed * 46793005 + 88963407;
+            _worldGenSeed += _baseSeed;
+            _worldGenSeed *= _worldGenSeed * 46793005 + 88963407;
+            _worldGenSeed += _baseSeed;
+        }
+
         public void InitChunkSeed(int x, int y)
         {
             _chunkSeed = _worldGenSeed;
@@ -125,7 +140,8 @@ namespace MineCase.Server.World.Layer
             genlayerrivermix.initWorldGenSeed(seed);
             genlayer3.initWorldGenSeed(seed);
             */
-            return new GenLayer[] { genlayerrivermix, genlayer3, genlayerrivermix };
+            // TODO
+            return new GenLayer[1];
         }
     }
 }

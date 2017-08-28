@@ -7,9 +7,9 @@ namespace MineCase.Server.World.Layer
     public class GenLayerZoom : GenLayer
     {
         public GenLayerZoom(int seed, GenLayer layer)
-        :base(seed)
+        : base(seed)
         {
-            base._parent = layer;
+            _parent = layer;
         }
 
         /**
@@ -18,7 +18,7 @@ namespace MineCase.Server.World.Layer
         */
         public override int[] GetInts(int areaX, int areaY, int areaWidth, int areaHeight)
         {
-            int [] aint2=new int[areaWidth*areaHeight];
+            int[] aint2 = new int[areaWidth * areaHeight];
             return aint2;
         }
 

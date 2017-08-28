@@ -6,20 +6,28 @@ namespace MineCase.Server.World.Biomes
 {
     public class BiomeProperties
     {
-        public string BiomeName{ get;set; }
-        public float BaseHeight{ get;set;} = 0.1F;
-        public float HeightVariation{ get;set;} = 0.2F;
-        public float Temperature{ get;set;} = 0.5F;
-        public float Rainfall{ get;set;} = 0.5F;
-        public int WaterColor{ get;set;} = 16777215;
-        public bool EnableSnow{ get;set;} =false;
-        public bool EnableRain{ get;set; } = true;
+        public string BiomeName { get; set; }
+
+        public float BaseHeight { get; set; } = 0.1F;
+
+        public float HeightVariation { get; set; } = 0.2F;
+
+        public float Temperature { get; set; } = 0.5F;
+
+        public float Rainfall { get; set; } = 0.5F;
+
+        public int WaterColor { get; set; } = 16777215;
+
+        public bool EnableSnow { get; set; } = false;
+
+        public bool EnableRain { get; set; } = true;
 
         public BiomeProperties(string name)
         {
-            BiomeName=name;
+            BiomeName = name;
         }
     }
+
     public abstract class Biome
     {
         private string _name;
@@ -41,6 +49,7 @@ namespace MineCase.Server.World.Biomes
         public BlockState _topBlock = BlockStates.GetBlockStateGrass();
         /** The block to fill spots in when not on the top */
         public BlockState _fillerBlock = BlockStates.GetBlockStateDirt();
+
         public Biome(BiomeProperties properties)
         {
             _name = properties.BiomeName;
@@ -57,6 +66,7 @@ namespace MineCase.Server.World.Biomes
         {
             return _baseHeight;
         }
+
         public float GetHeightVariation()
         {
             return _heightVariation;
@@ -64,17 +74,17 @@ namespace MineCase.Server.World.Biomes
 
         public static Biome GetBiome(int id)
         {
-            BiomeId biomeId=(BiomeId)id;
+            BiomeId biomeId = (BiomeId)id;
             switch (biomeId)
             {
                 case BiomeId.Ocean:
-                    return new BiomeOcean();
+                    // return new BiomeOcean();
                 case BiomeId.Plains:
-                    return new BiomePlains();
+                    // return new BiomePlains();
                 case BiomeId.Desert:
-                    return new BiomeDesert();
+                    // return new BiomeDesert();
                 case BiomeId.ExtremeHills:
-                    return new BiomeExtremeHills();
+                    // return new BiomeExtremeHills();
                 default:
                     return null;
             }
@@ -83,9 +93,9 @@ namespace MineCase.Server.World.Biomes
 
     public enum BiomeId : byte
     {
-        Ocean=0,
-        Plains=1,
-        Desert=2,
-        ExtremeHills=3
+        Ocean = 0,
+        Plains = 1,
+        Desert = 2,
+        ExtremeHills = 3
     }
 }

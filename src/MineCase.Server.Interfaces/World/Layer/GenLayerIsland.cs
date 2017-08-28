@@ -7,7 +7,7 @@ namespace MineCase.Server.World.Layer
     public class GenLayerIsland : GenLayer
     {
         public GenLayerIsland(int seed)
-            :base(seed)
+            : base(seed)
         {
         }
 

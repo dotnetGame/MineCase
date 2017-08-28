@@ -7,7 +7,7 @@ namespace MineCase.Server.World.Biomes
     public class BiomePlains : Biome
     {
         public BiomePlains(BiomeProperties properties)
-            :base(properties)
+            : base(properties)
         {
         }
     }

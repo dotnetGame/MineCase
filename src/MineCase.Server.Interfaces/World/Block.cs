@@ -16,24 +16,24 @@ namespace MineCase.Server.World
 
         public void SetBlockState(BlockState state)
         {
-            Id=state.Id;
-            MetaValue=state.MetaValue;
+            Id = state.Id;
+            MetaValue = state.MetaValue;
         }
 
         public void SetBlockId(BlockId id)
         {
-            Id=(uint)id;
+            Id = (uint)id;
         }
     }
 
     public enum BlockId : uint
     {
-        Air=0,
-        Stone=1,
-        Grass=2,
-        Dirt=3,
-        Cobblestone=4,
-        Water=9
+        Air = 0,
+        Stone = 1,
+        Grass = 2,
+        Dirt = 3,
+        Cobblestone = 4,
+        Water = 9
     }
 
     public class BlockState
@@ -67,7 +67,7 @@ namespace MineCase.Server.World
 
     public sealed class ChunkColumn
     {
-        private BlockState _defaultBlockState;
+        // private BlockState _defaultBlockState;
         public ChunkSection[] Sections { get; set; }
 
         public uint SectionBitMask { get; set; }
@@ -78,6 +78,7 @@ namespace MineCase.Server.World
         {
             return y >> 4;
         }
+
         public void SetBlockState(int x, int y, int z, BlockState state)
         {
             Sections[GetSectionIndex(x, y, z)].SetBlockState(x, y >> 4, z, state);

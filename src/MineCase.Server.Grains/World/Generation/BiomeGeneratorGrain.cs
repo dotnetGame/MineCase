@@ -2,34 +2,37 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using MineCase.Server.World.Biomes;
+using MineCase.Server.World.Layer;
 using Newtonsoft.Json;
 using Orleans;
 using Orleans.Concurrency;
 using Orleans.Runtime;
-using MineCase.Server.World.Biomes;
 
 namespace MineCase.Server.World.Generation
 {
     [StatelessWorker]
     internal class BiomeGeneratorFlatGrain : Grain, IBiomeGenerator
     {
-
         private GenLayer _genBiomes;
         private GenLayer _biomeIndexLayer;
 
         private int _seed;
+
+        /*
         public override Task OnActivateAsync()
         {
-            _seed=(int)this.GetPrimaryKeyLong();
+            _seed = (int)this.GetPrimaryKeyLong();
             GenLayer[] agenlayer = GenLayer.initializeAllBiomeGenerators(_seed, worldTypeIn, settings);
             agenlayer = getModdedBiomeGenerators(worldTypeIn, seed, agenlayer);
             _genBiomes = agenlayer[0];
             _biomeIndexLayer = agenlayer[1];
             return Task.CompletedTask;
         }
-        /**
-        * Returns an array of biomes for the location input.
-        */
+
+        /// <summary>
+        /// Returns an array of biomes for the location input.
+        /// </summary>
         public void GetBiomesForGeneration(Biome[] biomes, int x, int z, int width, int height)
         {
             if (biomes == null || biomes.Length < width * height)
@@ -44,5 +47,6 @@ namespace MineCase.Server.World.Generation
                 biomes[i] = Biome.GetBiome(aint[i]);
             }
         }
+        */
     }
 }
