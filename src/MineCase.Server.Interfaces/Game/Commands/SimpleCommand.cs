@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace MineCase.Server.Game
+namespace MineCase.Server.Game.Commands
 {
+    /// <summary>
+    /// 简单指令
+    /// </summary>
+    /// <remarks>用于无复杂的名称、描述、权限及别名机制的指令</remarks>
     public abstract class SimpleCommand : ICommand
     {
         public string Name { get; }
@@ -27,6 +30,6 @@ namespace MineCase.Server.Game
             }
         }
 
-        public abstract bool Execute(ICommandSender commandSender, IEnumerable<string> args);
+        public abstract bool Execute(ICommandSender commandSender, IList<ICommandArgument> args);
     }
 }

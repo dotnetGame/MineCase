@@ -337,7 +337,12 @@ namespace MineCase.Server.Game.Entities
             public short ActionNumber;
         }
 
-        public bool HasPermission(Permission permission)
+        public Task<bool> HasPermission(Permission permission)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SendMessage(string msg)
         {
             throw new NotImplementedException();
         }

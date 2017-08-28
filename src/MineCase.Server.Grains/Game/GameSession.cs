@@ -23,6 +23,8 @@ namespace MineCase.Server.Game
 
         private HashSet<ITickable> _tickables;
 
+        private readonly Commands.CommandMap _commandMap = new Commands.CommandMap();
+
         public override async Task OnActivateAsync()
         {
             _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(this.GetPrimaryKeyString());
@@ -64,10 +66,23 @@ namespace MineCase.Server.Game
         {
             var senderName = await sender.GetName();
 
-            // TODO command parser
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                var command = message.Trim();
+                if (command[0] == '/')
+                {
+                    if (!_commandMap.Dispatch(await sender.GetPlayer(), message))
+                    {
+                        // TODO: 处理命令未成功执行的情形
+                    }
+
+                    return;
+                }
+            }
+
             // construct name
-            Chat jsonData = await CreateStandardChatMessage(senderName, message);
-            byte position = 0; // It represents user message in chat box
+            var jsonData = await CreateStandardChatMessage(senderName, message);
+            const byte position = 0; // It represents user message in chat box
             foreach (var item in _users.Keys)
             {
                 await item.SendChatMessage(jsonData, position);
