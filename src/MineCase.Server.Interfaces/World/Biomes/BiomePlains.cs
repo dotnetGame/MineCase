@@ -9,8 +9,6 @@ namespace MineCase.Server.World.Biomes
         public BiomePlains(BiomeProperties properties)
             :base(properties)
         {
-            
         }
     }
-
 }

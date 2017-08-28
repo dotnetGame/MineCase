@@ -24,9 +24,9 @@ namespace MineCase.Server.World.Layer
             _baseSeed = seed;
         }
 
-        public abstract int[] getInts(int areaX, int areaY, int areaWidth, int areaHeight);
+        public abstract int[] GetInts(int areaX, int areaY, int areaWidth, int areaHeight);
 
-        public void initChunkSeed(int x, int y)
+        public void InitChunkSeed(int x, int y)
         {
             _chunkSeed = _worldGenSeed;
             _chunkSeed *= _chunkSeed * 46793005 + 88963407;
@@ -39,7 +39,7 @@ namespace MineCase.Server.World.Layer
             _chunkSeed += y;
         }
 
-        protected int nextInt(int num)
+        protected int NextInt(int num)
         {
             int i = (_chunkSeed >> 12) % num;
 
@@ -53,7 +53,7 @@ namespace MineCase.Server.World.Layer
             return i;
         }
 
-        public static GenLayer[] initializeAllBiomeGenerators(long seed, WorldType worldType, GeneratorSettings settings)
+        public static GenLayer[] InitializeAllBiomeGenerators(long seed, WorldType worldType, GeneratorSettings settings)
         {
             /*
             GenLayer genlayer = new GenLayerIsland(1);
@@ -75,8 +75,8 @@ namespace MineCase.Server.World.Layer
             GenLayer genlayeraddmushroomisland = new GenLayerAddMushroomIsland(5L, genlayeraddisland3);
             GenLayer genlayerdeepocean = new GenLayerDeepOcean(4L, genlayeraddmushroomisland);
             GenLayer genlayer4 = GenLayerZoom.magnify(1000L, genlayerdeepocean, 0);
-             
-            
+
+
             int i = 4;
             int j = i;
 
@@ -125,9 +125,7 @@ namespace MineCase.Server.World.Layer
             genlayerrivermix.initWorldGenSeed(seed);
             genlayer3.initWorldGenSeed(seed);
             */
-            return new GenLayer[] {genlayerrivermix, genlayer3, genlayerrivermix};
+            return new GenLayer[] { genlayerrivermix, genlayer3, genlayerrivermix };
         }
     }
-
-
 }

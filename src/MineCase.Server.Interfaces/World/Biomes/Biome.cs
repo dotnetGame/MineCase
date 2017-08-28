@@ -6,14 +6,14 @@ namespace MineCase.Server.World.Biomes
 {
     public class BiomeProperties
     {
-        public string BiomeName{get;set;}
-        public float BaseHeight{get;set;}= 0.1F;
-        public float HeightVariation{get;set;}= 0.2F;
-        public float Temperature{get;set;}= 0.5F;
-        public float Rainfall{get;set;}= 0.5F;
-        public int WaterColor{get;set;}= 16777215;
-        public bool EnableSnow{get;set;}=false;
-        public bool EnableRain{get;set;} = true;
+        public string BiomeName{ get;set; }
+        public float BaseHeight{ get;set;} = 0.1F;
+        public float HeightVariation{ get;set;} = 0.2F;
+        public float Temperature{ get;set;} = 0.5F;
+        public float Rainfall{ get;set;} = 0.5F;
+        public int WaterColor{ get;set;} = 16777215;
+        public bool EnableSnow{ get;set;} =false;
+        public bool EnableRain{ get;set; } = true;
 
         public BiomeProperties(string name)
         {
@@ -36,7 +36,7 @@ namespace MineCase.Server.World.Biomes
         /** Set to true if snow is enabled for this biome. */
         private bool _enableSnow;
         /** Is true (default) if the biome support rain (desert and nether can't have rain) */
-        private bool _enableRain; 
+        private bool _enableRain;
         /** The block expected to be on the top of this biome */
         public BlockState _topBlock = BlockStates.GetBlockStateGrass();
         /** The block to fill spots in when not on the top */
@@ -65,7 +65,7 @@ namespace MineCase.Server.World.Biomes
         public static Biome GetBiome(int id)
         {
             BiomeId biomeId=(BiomeId)id;
-            switch(biomeId)
+            switch (biomeId)
             {
                 case BiomeId.Ocean:
                     return new BiomeOcean();

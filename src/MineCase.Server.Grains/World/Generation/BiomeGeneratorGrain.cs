@@ -44,7 +44,5 @@ namespace MineCase.Server.World.Generation
                 biomes[i] = Biome.GetBiome(aint[i]);
             }
         }
-        
     }
-
 }

@@ -10,7 +10,7 @@ namespace MineCase.Server.World.Generation
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<ChunkGeneratorFlatGrain>();
-            
+
             builder.RegisterType<ChunkGeneratorOverWorldGrain>();
         }
     }

@@ -14,13 +14,13 @@ namespace MineCase.Server.World
 
         public byte SkyLight { get; set; }
 
-        public void setBlockState(BlockState state)
+        public void SetBlockState(BlockState state)
         {
             Id=state.Id;
             MetaValue=state.MetaValue;
         }
 
-        public void setBlockId(BlockId id)
+        public void SetBlockId(BlockId id)
         {
             Id=(uint)id;
         }
@@ -56,12 +56,12 @@ namespace MineCase.Server.World
 
         public void SetBlockState(int x, int y, int z, BlockState state)
         {
-            Blocks[GetBlockIndex(x,y,z)].setBlockState(state);
+            Blocks[GetBlockIndex(x, y, z)].SetBlockState(state);
         }
 
-        public void setBlockId(int x, int y, int z, BlockId id)
+        public void SetBlockId(int x, int y, int z, BlockId id)
         {
-            Blocks[GetBlockIndex(x,y,z)].setBlockId(id);
+            Blocks[GetBlockIndex(x, y, z)].SetBlockId(id);
         }
     }
 
@@ -80,17 +80,16 @@ namespace MineCase.Server.World
         }
         public void SetBlockState(int x, int y, int z, BlockState state)
         {
-            Sections[GetSectionIndex(x, y, z)].SetBlockState(x,y >> 4,z,state);
+            Sections[GetSectionIndex(x, y, z)].SetBlockState(x, y >> 4, z, state);
         }
 
-        public void setBlockId(int x, int y, int z, BlockId id)
+        public void SetBlockId(int x, int y, int z, BlockId id)
         {
-            Sections[GetSectionIndex(x,y,z)].setBlockId(x,y >> 4,z,id);
+            Sections[GetSectionIndex(x, y, z)].SetBlockId(x, y >> 4, z, id);
         }
 
         public void GenerateSkylightMap()
         {
-
         }
     }
 }

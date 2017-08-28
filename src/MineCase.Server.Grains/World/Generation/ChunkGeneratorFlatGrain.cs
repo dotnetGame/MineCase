@@ -15,17 +15,17 @@ namespace MineCase.Server.World.Generation
         public Task<ChunkColumn> Generate(int x, int z, GeneratorSettings settings)
         {
             ChunkColumn chunkColumn=new ChunkColumn();
-            GenerateChunk(chunkColumn,x,z,settings);
-            PopulateChunk(chunkColumn,x,z,settings);
+            GenerateChunk(chunkColumn, x, z, settings);
+            PopulateChunk(chunkColumn, x, z, settings);
             return Task.FromResult(chunkColumn);
         }
 
         public Task GenerateChunk(ChunkColumn chunk, int x, int z, GeneratorSettings settings)
         {
             //按照flat模式每层的设置给chunk赋值
-            for (int i = 0; i < settings.flatGeneratorInfo.FlatBlockId.Length; ++i)
+            for (int i = 0; i < settings.FlatGeneratorInfo.FlatBlockId.Length; ++i)
             {
-                BlockState state = settings.flatGeneratorInfo.FlatBlockId[i];
+                BlockState state = settings.FlatGeneratorInfo.FlatBlockId[i];
                 if (state != null)
                 {
                     for (int j = 0; j < 16; ++j)
@@ -47,6 +47,5 @@ namespace MineCase.Server.World.Generation
             // TODO generator tree, grass, structures\
             return Task.CompletedTask;
         }
-
     }
 }

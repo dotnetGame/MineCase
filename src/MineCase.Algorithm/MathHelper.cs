@@ -1,18 +1,17 @@
 using System;
 using System.Collections.Generic;
 
-
 namespace MineCase.Algorithm
 {
     public class MathHelper
     {
-        public static float denormalizeClamp(float min,float max,float value)
+        public static float DenormalizeClamp(float min, float max, float value)
         {
-            if(value < 0)
+            if (value < 0)
             {
                 return min;
             }
-            else if(value > 1)
+            else if (value > 1)
             {
                 return max;
             }

@@ -6,6 +6,5 @@ namespace MineCase.Server.World.Generation
 {
     public interface IBiomeGenerator : IGrainWithIntegerKey
     {
-
     }
 }
