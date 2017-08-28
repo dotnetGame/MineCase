@@ -61,6 +61,24 @@ namespace MineCase.Server.World.Biomes
         {
             return _heightVariation;
         }
+
+        public static Biome GetBiome(int id)
+        {
+            BiomeId biomeId=(BiomeId)id;
+            switch(biomeId)
+            {
+                case BiomeId.Ocean:
+                    return new BiomeOcean();
+                case BiomeId.Plains:
+                    return new BiomePlains();
+                case BiomeId.Desert:
+                    return new BiomeDesert();
+                case BiomeId.ExtremeHills:
+                    return new BiomeExtremeHills();
+                default:
+                    return null;
+            }
+        }
     }
 
     public enum BiomeId : byte

@@ -34,6 +34,8 @@ namespace MineCase.Server.World.Generation
 
         private float[,] _biomeWeights;
 
+        private Biome [] _biomesForGeneration; // 10x10
+
         public override Task OnActivateAsync()
         {
             _densityMap=new float[5,33,5];
@@ -72,6 +74,7 @@ namespace MineCase.Server.World.Generation
         public async Task GenerateChunk(ChunkColumn chunk, int x, int z, GeneratorSettings settings)
         {
             Random rand=new Random(settings.Seed);
+            GetBiomesForGeneration(_biomesForGeneration, x * 4 - 2, z * 4 - 2, 10, 10);
             await GenerateBasicTerrain(chunk, x, z, settings);
             // Todo add biomes blocks
 
@@ -191,7 +194,7 @@ namespace MineCase.Server.World.Generation
                     float groundYOffset = 0.0F;
                     float totalWeight = 0.0F;
                     // 中心点生物群系
-                    Biome centerBiome = this.biomesForGeneration[x1 + 2 + (z1 + 2) * 10];
+                    Biome centerBiome = _biomesForGeneration[x1 + 2 + (z1 + 2) * 10];
 
                     // 求scale和groundYOffset的加权平均值
 
@@ -199,12 +202,12 @@ namespace MineCase.Server.World.Generation
                     {
                         for (int z2 = 0; z2 < 5; ++z2)
                         {
-                            Biome biome = this.biomesForGeneration[x1 + x2 + (z1 + z2) * 10];
+                            Biome biome = _biomesForGeneration[x1 + x2 + (z1 + z2) * 10];
                             float curGroundYOffset = settings.BiomeDepthOffSet + biome.GetBaseHeight() * settings.BiomeDepthWeight; // biomeDepthOffSet=0
                             float curScale = settings.BiomeScaleOffset + biome.GetHeightVariation() * settings.BiomeScaleWeight; // biomeScaleOffset=0
 
                             // parabolicField为 10 / √(该点到中心点的距离^2 + 0.2)
-                            float weight = _biomeWeights[x2 + z2 * 5] / (curGroundYOffset + 2.0F);
+                            float weight = _biomeWeights[z2,x2] / (curGroundYOffset + 2.0F);
 
                             if (biome.GetBaseHeight() > centerBiome.GetBaseHeight())
                             {

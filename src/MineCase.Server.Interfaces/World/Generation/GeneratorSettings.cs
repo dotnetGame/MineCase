@@ -57,6 +57,10 @@ namespace MineCase.Server.World.Generation
         public float LowerLimitScale{get;set;}
 
         public float UpperLimitScale{get;set;}
+
+        public int BiomeSize{get;set;}
+
+        public int RiverSize{get;set;}
         
         public FlatGeneratorInfo flatGeneratorInfo{get; set;}
 
