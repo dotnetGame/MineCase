@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Serialization;
@@ -34,9 +35,9 @@ namespace MineCase.Protocol
             await stream.WriteAsync(Data, 0, Data.Length);
         }
 
-        public static async Task<UncompressedPacket> DeserializeAsync(Stream stream)
+        public static async Task<UncompressedPacket> DeserializeAsync(Stream stream, UncompressedPacket packet = null)
         {
-            var packet = new UncompressedPacket();
+            packet = packet ?? new UncompressedPacket();
             int packetIdLen;
             using (var br = new BinaryReader(stream, Encoding.UTF8, true))
             {
@@ -76,9 +77,9 @@ namespace MineCase.Protocol
             await stream.WriteAsync(CompressedData, 0, CompressedData.Length);
         }
 
-        public static async Task<CompressedPacket> DeserializeAsync(Stream stream)
+        public static async Task<CompressedPacket> DeserializeAsync(Stream stream, CompressedPacket packet = null)
         {
-            var packet = new CompressedPacket();
+            packet = packet ?? new CompressedPacket();
             int dataLengthLen;
             using (var br = new BinaryReader(stream, Encoding.UTF8, true))
             {

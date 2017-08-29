@@ -12,7 +12,7 @@
 ## 要求
 运行这个服务器之前，请保证你的环境满足：
 
-* `.net core` sdk 1.1
+* `.net core` sdk 2.0
 
 目前支持的 `minecraft` 版本：
 
@@ -63,7 +63,7 @@ Press Ctrl+C to terminate...
 ## Required
 Before running this server, please make sure your environment meet:
 
-* `.net core` sdk 1.1
+* `.net core` sdk 2.0
 
 Currently supported version of `minecraft`:
 

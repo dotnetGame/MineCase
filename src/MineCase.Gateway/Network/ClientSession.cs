@@ -1,4 +1,5 @@
-﻿using MineCase.Protocol;
+﻿using Microsoft.Extensions.ObjectPool;
+using MineCase.Protocol;
 using MineCase.Server.Network;
 using Orleans;
 using System;
@@ -21,12 +22,14 @@ namespace MineCase.Gateway.Network
         private readonly Guid _sessionId;
         private readonly OutcomingPacketObserver _outcomingPacketObserver;
         private readonly ActionBlock<UncompressedPacket> _outcomingPacketDispatcher;
+        private readonly ObjectPool<UncompressedPacket> _uncompressedPacketObjectPool;
 
-        public ClientSession(TcpClient tcpClient, IGrainFactory grainFactory)
+        public ClientSession(TcpClient tcpClient, IGrainFactory grainFactory, ObjectPool<UncompressedPacket> uncompressedPacketObjectPool)
         {
             _sessionId = Guid.NewGuid();
             _tcpClient = tcpClient;
             _grainFactory = grainFactory;
+            _uncompressedPacketObjectPool = uncompressedPacketObjectPool;
             _outcomingPacketObserver = new OutcomingPacketObserver(this);
             _outcomingPacketDispatcher = new ActionBlock<UncompressedPacket>(SendOutcomingPacket);
         }
@@ -60,17 +63,24 @@ namespace MineCase.Gateway.Network
 
         private async Task DispatchIncomingPacket()
         {
-            UncompressedPacket packet;
-            if (_useCompression)
+            var packet = _uncompressedPacketObjectPool.Get();
+            try
             {
-                var compressedPacket = await CompressedPacket.DeserializeAsync(_remoteStream);
-                packet = PacketCompress.Decompress(ref compressedPacket);
+                if (_useCompression)
+                {
+                    var compressedPacket = await CompressedPacket.DeserializeAsync(_remoteStream, null);
+                    packet = PacketCompress.Decompress(ref compressedPacket);
+                }
+                else
+                {
+                    packet = await UncompressedPacket.DeserializeAsync(_remoteStream, packet);
+                }
+                await DispatchIncomingPacket(packet);
             }
-            else
+            finally
             {
-                packet = await UncompressedPacket.DeserializeAsync(_remoteStream);
+                _uncompressedPacketObjectPool.Return(packet);
             }
-            await DispatchIncomingPacket(packet);
         }
 
         private async Task SendOutcomingPacket(UncompressedPacket packet)
