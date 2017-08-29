@@ -24,7 +24,7 @@ namespace MineCase.Server.Game
 
         public IReadOnlyCollection<IClientboundPacketSink> Clients { get; set; }
 
-        public IReadOnlyCollection<IUser> Users { get; set; }
+        public IReadOnlyCollection<IUserChunkLoader> Loaders { get; set; }
     }
 
     internal interface IChunkSenderJobWorker : IGrainWithGuidKey
@@ -53,8 +53,8 @@ namespace MineCase.Server.Game
 
             var generator = new ClientPlayPacketGenerator(new BroadcastPacketSink(job.Clients, _packetPackager));
             await generator.ChunkData(Dimension.Overworld, job.ChunkX, job.ChunkZ, await chunkColumn.GetState());
-            foreach (var user in job.Users)
-                user.OnChunkSent(job.ChunkX, job.ChunkZ).Ignore();
+            foreach (var loader in job.Loaders)
+                loader.OnChunkSent(job.ChunkX, job.ChunkZ).Ignore();
         }
 
         private class BroadcastPacketSink : IPacketSink

@@ -20,12 +20,12 @@ namespace MineCase.Server.User
     {
         private string _name;
         private uint _protocolVersion;
-        private int _viewDistance = 10;
         private string _worldId;
         private IWorld _world;
         private IClientboundPacketSink _sink;
         private IPacketRouter _packetRouter;
         private ClientPlayPacketGenerator _generator;
+        private IUserChunkLoader _chunkLoader;
         private IDisposable _sendKeepAliveTimer;
         private IDisposable _worldTimeSyncTimer;
         public HashSet<uint> _keepAliveWaiters;
@@ -39,10 +39,6 @@ namespace MineCase.Server.User
 
         private IPlayer _player;
 
-        private (int x, int z)? _lastStreamedChunk;
-        private HashSet<(int x, int z)> _sendingChunks;
-        private HashSet<(int x, int z)> _sentChunks;
-
         public override async Task OnActivateAsync()
         {
             if (string.IsNullOrEmpty(_worldId))
@@ -53,6 +49,7 @@ namespace MineCase.Server.User
             }
 
             _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(_worldId);
+            _chunkLoader = GrainFactory.GetGrain<IUserChunkLoader>(this.GetPrimaryKey());
         }
 
         public Task<IClientboundPacketSink> GetClientPacketSink()
@@ -72,7 +69,7 @@ namespace MineCase.Server.User
         {
             _sink = sink;
             _generator = new ClientPlayPacketGenerator(sink);
-            return Task.CompletedTask;
+            return _chunkLoader.SetClientPacketSink(sink);
         }
 
         public async Task JoinGame()
@@ -83,11 +80,9 @@ namespace MineCase.Server.User
             await _player.BindToUser(this);
             await _world.AttachEntity(_player);
 
-            _lastStreamedChunk = null;
+            await _chunkLoader.JoinGame(_world, _player);
             _state = UserState.JoinedGame;
             _keepAliveWaiters = new HashSet<uint>();
-            _sendingChunks = new HashSet<(int x, int z)>();
-            _sentChunks = new HashSet<(int x, int z)>();
             _sendKeepAliveTimer = RegisterTimer(OnSendKeepAliveRequests, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
 
             // _worldTimeSyncTimer = RegisterTimer(OnSyncWorldTime, null, TimeSpan.Zero, )
@@ -202,74 +197,7 @@ namespace MineCase.Server.User
             }
 
             if (_state >= UserState.JoinedGame && _state < UserState.Destroying)
-            {
-                for (int i = 0; i < 4; i++)
-                {
-                    if (!await StreamNextChunk())
-                        break;
-                }
-
-                // unload per 5 ticks
-                if (await _world.GetAge() % 100 == 0)
-                    await UnloadOutOfRangeChunks();
-            }
-        }
-
-        private async Task<bool> StreamNextChunk()
-        {
-            var currentChunk = await _player.GetChunkPosition();
-            if (_lastStreamedChunk.HasValue && _lastStreamedChunk.Value.Equals((currentChunk.x, currentChunk.z))) return true;
-
-            for (int d = 0; d <= _viewDistance; d++)
-            {
-                for (int x = -d; x <= d; x++)
-                {
-                    var z = d - Math.Abs(x);
-
-                    if (await StreamChunk(currentChunk.x + x, currentChunk.z + z))
-                        return false;
-                    if (await StreamChunk(currentChunk.x + x, currentChunk.z - z))
-                        return false;
-                }
-            }
-
-            _lastStreamedChunk = (currentChunk.x, currentChunk.z);
-            return true;
-        }
-
-        private async Task<bool> StreamChunk(int chunkX, int chunkZ)
-        {
-            var trunkSender = GrainFactory.GetGrain<IChunkSender>(_world.GetPrimaryKeyString());
-            if (!_sentChunks.Contains((chunkX, chunkZ)) && _sendingChunks.Add((chunkX, chunkZ)))
-            {
-                await trunkSender.PostChunk(chunkX, chunkZ, new[] { _sink }, new[] { this.AsReference<IUser>() });
-                return true;
-            }
-
-            return false;
-        }
-
-        private readonly List<(int x, int y)> _clonedSentChunks = new List<(int x, int y)>();
-
-        private List<(int x, int z)> CloneSentChunks()
-        {
-            _clonedSentChunks.Clear();
-            _clonedSentChunks.AddRange(_sentChunks);
-            return _clonedSentChunks;
-        }
-
-        private async Task UnloadOutOfRangeChunks()
-        {
-            var currentChunk = await _player.GetChunkPosition();
-            foreach (var chunk in CloneSentChunks())
-            {
-                var distance = Math.Abs(chunk.x - currentChunk.x) + Math.Abs(chunk.z - currentChunk.z);
-                if (distance > _viewDistance)
-                {
-                    await _generator.UnloadChunk(chunk.x, chunk.z);
-                    _sentChunks.Remove(chunk);
-                }
-            }
+                await _chunkLoader.OnGameTick();
         }
 
         public Task SetPacketRouter(IPacketRouter packetRouter)
@@ -280,15 +208,7 @@ namespace MineCase.Server.User
 
         public Task SetViewDistance(int viewDistance)
         {
-            _viewDistance = viewDistance;
-            return Task.CompletedTask;
-        }
-
-        public Task OnChunkSent(int chunkX, int chunkZ)
-        {
-            _sendingChunks.Remove((chunkX, chunkZ));
-            _sentChunks.Add((chunkX, chunkZ));
-            return Task.CompletedTask;
+            return _chunkLoader.SetViewDistance(viewDistance);
         }
 
         private enum UserState : uint

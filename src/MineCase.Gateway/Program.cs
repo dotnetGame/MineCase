@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using MineCase.Gateway.Network;
 using Microsoft.Extensions.ObjectPool;
 using MineCase.Protocol;
+using MineCase.Buffers;
+using System.Buffers;
 
 namespace MineCase.Gateway
 {
@@ -55,6 +57,7 @@ namespace MineCase.Gateway
                 var provider = s.GetRequiredService<ObjectPoolProvider>();
                 return provider.Create<UncompressedPacket>();
             });
+            services.AddSingleton<IBufferPool<byte>>(s => new BufferPool<byte>(ArrayPool<byte>.Shared));
         }
 
         private static IConfiguration LoadConfiguration()

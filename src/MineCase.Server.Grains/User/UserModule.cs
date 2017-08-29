@@ -10,6 +10,8 @@ namespace MineCase.Server.User
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<NonAuthenticatedUserGrain>();
+            builder.RegisterType<UserGrain>();
+            builder.RegisterType<UserChunkLoaderGrain>();
         }
     }
 }

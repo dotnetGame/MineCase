@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.IO;
 using System;
 using System.IO;
 
@@ -31,6 +32,7 @@ namespace MineCase.Server
             services.AddOptions();
             services.AddSingleton(ConfigureLogging());
             services.AddLogging();
+            services.AddSingleton<RecyclableMemoryStreamManager>();
 
             var container = new ContainerBuilder();
             container.Populate(services);

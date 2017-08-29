@@ -11,6 +11,8 @@ namespace MineCase.Protocol
     {
         public static UncompressedPacket Decompress(ref CompressedPacket packet)
         {
+            throw new NotImplementedException();
+            /*
             var targetPacket = default(UncompressedPacket);
             using (var br = new BinaryReader(new DeflateStream(new MemoryStream(packet.CompressedData), CompressionMode.Decompress)))
             {
@@ -19,11 +21,13 @@ namespace MineCase.Protocol
             }
 
             targetPacket.Length = packet.DataLength;
-            return targetPacket;
+            return targetPacket;*/
         }
 
         public static CompressedPacket Compress(ref UncompressedPacket packet)
         {
+            throw new NotImplementedException();
+            /*
             var targetPacket = default(CompressedPacket);
             using (var stream = new MemoryStream())
             using (var bw = new BinaryWriter(new DeflateStream(stream, CompressionMode.Compress)))
@@ -36,7 +40,7 @@ namespace MineCase.Protocol
                 targetPacket.CompressedData = stream.ToArray();
             }
 
-            return targetPacket;
+            return targetPacket;*/
         }
     }
 }
