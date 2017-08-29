@@ -73,7 +73,10 @@ namespace MineCase.Server.Game
                 {
                     if (!_commandMap.Dispatch(await sender.GetPlayer(), message))
                     {
-                        // TODO: 处理命令未成功执行的情形
+                        await sender.SendChatMessage(
+                            await CreateStandardChatMessage(
+                                senderName,
+                                $"试图执行指令 \"{command}\" 时被拒绝，请检查是否具有足够的权限以及指令语法是否正确"), 0);
                     }
 
                     return;

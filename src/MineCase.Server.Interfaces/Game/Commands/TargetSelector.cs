@@ -17,7 +17,7 @@ namespace MineCase.Server.Game.Commands
     }
 
     /// <summary>
-    /// TargetSelector 类型
+    /// 目标选择器类型
     /// </summary>
     public enum TargetSelectorType
     {
@@ -70,17 +70,17 @@ namespace MineCase.Server.Game.Commands
             Rejected
         }
 
-        private const char PrefixToken = '@';
+        internal const char PrefixToken = '@';
         private const char ArgumentListStartToken = '[';
         private const char ArgumentListEndToken = ']';
         private const char ArgumentAssignmentToken = '=';
         private const char ArgumentSeparatorToken = ',';
 
         private static readonly Dictionary<char, TargetSelectorType> TargetSelectorMap =
-            typeof(TargetSelectorType).GetFields()
+            typeof(TargetSelectorType).GetFields(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Static)
                 .ToDictionary(
-                    v => v.GetType().GetTypeInfo().GetCustomAttribute<TargetSelectorAliasAsAttribute>().Alias,
-                    v => (TargetSelectorType)v.GetValue(null));
+                    v => v.GetCustomAttribute<TargetSelectorAliasAsAttribute>().Alias,
+                    v => (TargetSelectorType)v.GetRawConstantValue());
 
         /// <summary>
         /// Gets 指示选择了哪一类型的目标
@@ -91,11 +91,11 @@ namespace MineCase.Server.Game.Commands
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TargetSelectorArgument"/> class.<para />
-        /// 构造并分析一个 TargetSelector
+        /// 构造并分析一个目标选择器
         /// </summary>
-        /// <param name="rawContent">作为 TargetSelector 的内容</param>
+        /// <param name="rawContent">作为目标选择器的内容</param>
         /// <exception cref="ArgumentNullException"><paramref name="rawContent"/> 为 null</exception>
-        /// <exception cref="ArgumentException"><paramref name="rawContent"/> 无法作为 TargetSelector 解析</exception>
+        /// <exception cref="ArgumentException"><paramref name="rawContent"/> 无法作为目标选择器解析</exception>
         public TargetSelectorArgument(string rawContent)
             : base(rawContent)
         {
@@ -108,13 +108,20 @@ namespace MineCase.Server.Game.Commands
                 switch (status)
                 {
                     case ParseStatus.Prefix:
-                        status = cur == PrefixToken ? ParseStatus.VariableTag : ParseStatus.Rejected;
+                        if (cur == PrefixToken)
+                        {
+                            status = ParseStatus.VariableTag;
+                        }
+                        else
+                        {
+                            goto case ParseStatus.Rejected;
+                        }
+
                         break;
                     case ParseStatus.VariableTag:
                         if (!TargetSelectorMap.TryGetValue(cur, out var type))
                         {
-                            status = ParseStatus.Rejected;
-                            break;
+                            goto case ParseStatus.Rejected;
                         }
 
                         Type = type;
@@ -123,11 +130,18 @@ namespace MineCase.Server.Game.Commands
                     case ParseStatus.OptionalArgumentListStart:
                         if (cur != ArgumentListStartToken)
                         {
-                            status = ParseStatus.Rejected;
+                            goto case ParseStatus.Rejected;
                         }
 
+                        status = ParseStatus.ArgumentElementName;
                         break;
                     case ParseStatus.ArgumentElementName:
+                        if (char.IsWhiteSpace(cur) && tmpString.Length == 0)
+                        {
+                            // 略过开头的空白字符，但是这不可能发生。。。
+                            continue;
+                        }
+
                         if (cur == ArgumentAssignmentToken)
                         {
                             argName = tmpString.ToString();
@@ -144,7 +158,15 @@ namespace MineCase.Server.Game.Commands
                             Contract.Assert(argName != null);
                             _arguments.Add(argName, tmpString.ToString());
                             tmpString = new StringBuilder();
-                            status = cur == ArgumentSeparatorToken ? ParseStatus.ArgumentElementName : ParseStatus.ArgumentListEnd;
+                            if (cur == ArgumentSeparatorToken)
+                            {
+                                status = ParseStatus.ArgumentElementName;
+                            }
+                            else
+                            {
+                                goto case ParseStatus.ArgumentListEnd;
+                            }
+
                             break;
                         }
 
@@ -154,7 +176,9 @@ namespace MineCase.Server.Game.Commands
                         status = ParseStatus.Accepted;
                         break;
                     case ParseStatus.Accepted:
-                        return;
+                        // 尾部有多余的字符
+                        status = ParseStatus.Rejected;
+                        break;
                     case ParseStatus.Rejected:
                         throw new ArgumentException($"\"{rawContent}\" 不能被解析为合法的 TargetSelector", nameof(rawContent));
                     default:
@@ -163,7 +187,7 @@ namespace MineCase.Server.Game.Commands
                 }
             }
 
-            if (status != ParseStatus.Accepted || status != ParseStatus.OptionalArgumentListStart)
+            if (status != ParseStatus.Accepted && status != ParseStatus.OptionalArgumentListStart)
             {
                 throw new ArgumentException($"在解析 \"{rawContent}\" 的过程中，解析被过早地中止");
             }

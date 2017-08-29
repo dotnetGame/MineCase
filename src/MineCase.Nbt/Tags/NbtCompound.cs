@@ -111,7 +111,7 @@ namespace MineCase.Nbt.Tags
 
             if (_childTags.ContainsKey(tag.Name))
             {
-                throw new ArgumentException($"试图加入具有名称{tag.Name}的 Tag，但因已有重名的子 Tag 而失败", nameof(tag));
+                throw new ArgumentException($"试图加入具有名称 \"{tag.Name}\" 的 Tag，但因已有重名的子 Tag 而失败", nameof(tag));
             }
 
             Contract.EndContractBlock();

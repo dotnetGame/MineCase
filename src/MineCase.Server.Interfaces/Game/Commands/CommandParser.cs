@@ -39,11 +39,12 @@ namespace MineCase.Server.Game.Commands
         /// <summary>
         /// 分析命令
         /// </summary>
-        /// <param name="input">输入，即作为命令被分析的文本</param>
+        /// <param name="input">输入，即作为命令被分析的文本，应当不为 null、经过 <see cref="string.Trim()"/> 处理且以 '/' 开头</param>
         /// <returns>命令名及命令的参数</returns>
+        /// <exception cref="ArgumentException"><paramref name="input"/> 不合法</exception>
         public static (string, IList<ICommandArgument>) ParseCommand(string input)
         {
-            if (input == null || input.Length < 2)
+            if (input == null || input.Length < 2 || input[0] != '/')
             {
                 throw new ArgumentException("输入不合法", nameof(input));
             }
@@ -51,29 +52,32 @@ namespace MineCase.Server.Game.Commands
             var splitResult = input.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
             if (splitResult.Length == 0)
             {
-                throw new ArgumentException($"输入 ({input}) 不合法");
+                throw new ArgumentException($"输入 ({input}) 不合法", nameof(input));
             }
 
-            return (splitResult[0], ParseCommandArgument(splitResult.Skip(1)));
+            return (splitResult[0].Substring(1), ParseCommandArgument(splitResult.Skip(1)));
         }
 
-        // 参数必须保持有序，因此返回值使用 IList 而不是 IEnumerable
+        // 参数必须保持原来的顺序，因此返回值使用 IList 而不是 IEnumerable
         private static IList<ICommandArgument> ParseCommandArgument(IEnumerable<string> input)
         {
             var result = new List<ICommandArgument>();
 
             foreach (var arg in input)
             {
-                Contract.Assert(arg != null && arg.Length > 1);
+                Contract.Assert(!string.IsNullOrWhiteSpace(arg));
 
                 // TODO: 使用更加具有可扩展性的方法
                 switch (arg[0])
                 {
-                    case '@':
+                    case TargetSelectorArgument.PrefixToken:
                         result.Add(new TargetSelectorArgument(arg));
                         break;
-                    case '{':
+                    case DataTagArgument.PrefixToken:
                         result.Add(new DataTagArgument(arg));
+                        break;
+                    case TildeNotationArgument.PrefixToken:
+                        result.Add(new TildeNotationArgument(arg));
                         break;
                     default:
                         result.Add(new UnresolvedArgument(arg));
