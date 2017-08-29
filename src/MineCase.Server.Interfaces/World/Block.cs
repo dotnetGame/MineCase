@@ -4,6 +4,13 @@ using System.Text;
 
 namespace MineCase.Server.World
 {
+    public struct BlockValue
+    {
+        public uint Id { get; set; }
+
+        public uint MetaValue { get; set; }
+    }
+
     public sealed class Block
     {
         public uint Id { get; set; }

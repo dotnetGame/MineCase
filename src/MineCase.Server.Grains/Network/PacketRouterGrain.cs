@@ -27,16 +27,16 @@ namespace MineCase.Server.Network
             switch (_state)
             {
                 case SessionState.Handshaking:
-                    innerPacket = DeserializeHandshakingPacket(ref packet);
+                    innerPacket = DeserializeHandshakingPacket(packet);
                     break;
                 case SessionState.Status:
-                    innerPacket = DeserializeStatusPacket(ref packet);
+                    innerPacket = DeserializeStatusPacket(packet);
                     break;
                 case SessionState.Login:
-                    innerPacket = DeserializeLoginPacket(ref packet);
+                    innerPacket = DeserializeLoginPacket(packet);
                     break;
                 case SessionState.Play:
-                    innerPacket = DeserializePlayPacket(ref packet);
+                    innerPacket = DeserializePlayPacket(packet);
                     break;
                 case SessionState.Closed:
                     break;

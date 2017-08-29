@@ -14,7 +14,7 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.VarInt)]
         public uint TeleportId;
 
-        public static TeleportConfirm Deserialize(BinaryReader br)
+        public static TeleportConfirm Deserialize(ref SpanReader br)
         {
             return new TeleportConfirm
             {

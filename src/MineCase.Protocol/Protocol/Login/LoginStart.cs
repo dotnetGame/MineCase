@@ -14,7 +14,7 @@ namespace MineCase.Protocol.Login
         [SerializeAs(DataType.String)]
         public string Name;
 
-        public static LoginStart Deserialize(BinaryReader br)
+        public static LoginStart Deserialize(ref SpanReader br)
         {
             return new LoginStart
             {
@@ -30,7 +30,7 @@ namespace MineCase.Protocol.Login
         [SerializeAs(DataType.Chat)]
         public string Reason;
 
-        public static LoginDisconnect Deserialize(BinaryReader br)
+        public static LoginDisconnect Deserialize(ref SpanReader br)
         {
             return new LoginDisconnect
             {

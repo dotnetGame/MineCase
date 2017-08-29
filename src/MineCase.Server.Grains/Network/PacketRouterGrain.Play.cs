@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MineCase.Formats;
 using MineCase.Protocol;
 using MineCase.Protocol.Play;
+using MineCase.Serialization;
 using MineCase.Server.Game;
 using Orleans;
 
@@ -14,65 +15,63 @@ namespace MineCase.Server.Network
 {
     internal partial class PacketRouterGrain
     {
-        private object DeserializePlayPacket(ref UncompressedPacket packet)
+        private object DeserializePlayPacket(UncompressedPacket packet)
         {
-            using (var br = new BinaryReader(new MemoryStream(packet.Data)))
+            var br = new SpanReader(packet.Data);
+            object innerPacket;
+            switch (packet.PacketId)
             {
-                object innerPacket;
-                switch (packet.PacketId)
-                {
-                    // Teleport Confirm
-                    case 0x00:
-                        innerPacket = TeleportConfirm.Deserialize(br);
-                        break;
+                // Teleport Confirm
+                case 0x00:
+                    innerPacket = TeleportConfirm.Deserialize(ref br);
+                    break;
 
-                    // Chat Message
-                    case 0x03:
-                        innerPacket = ServerboundChatMessage.Deserialize(br);
-                        break;
+                // Chat Message
+                case 0x03:
+                    innerPacket = ServerboundChatMessage.Deserialize(ref br);
+                    break;
 
-                    // Client Settings
-                    case 0x05:
-                        innerPacket = ClientSettings.Deserialize(br);
-                        break;
+                // Client Settings
+                case 0x05:
+                    innerPacket = ClientSettings.Deserialize(ref br);
+                    break;
 
-                    // Plugin Message
-                    case 0x0A:
-                        innerPacket = ServerboundPluginMessage.Deserialize(br);
-                        break;
+                // Plugin Message
+                case 0x0A:
+                    innerPacket = ServerboundPluginMessage.Deserialize(ref br);
+                    break;
 
-                    // Keep Alive
-                    case 0x0C:
-                        innerPacket = ServerboundKeepAlive.Deserialize(br);
-                        break;
+                // Keep Alive
+                case 0x0C:
+                    innerPacket = ServerboundKeepAlive.Deserialize(ref br);
+                    break;
 
-                    // Position And Look
-                    case 0x0F:
-                        innerPacket = DeferPacket(ServerboundPositionAndLook.Deserialize(br));
-                        break;
+                // Position And Look
+                case 0x0F:
+                    innerPacket = DeferPacket(ServerboundPositionAndLook.Deserialize(ref br));
+                    break;
 
-                    // Player Position
-                    case 0x0E:
-                        innerPacket = DeferPacket(PlayerPosition.Deserialize(br));
-                        break;
+                // Player Position
+                case 0x0E:
+                    innerPacket = DeferPacket(PlayerPosition.Deserialize(ref br));
+                    break;
 
-                    // Player Look
-                    case 0x10:
-                        innerPacket = DeferPacket(PlayerLook.Deserialize(br));
-                        break;
+                // Player Look
+                case 0x10:
+                    innerPacket = DeferPacket(PlayerLook.Deserialize(ref br));
+                    break;
 
-                    // Held Item Change
-                    case 0x1A:
-                        innerPacket = DeferPacket(ServerboundHeldItemChange.Deserialize(br));
-                        break;
-                    default:
-                        throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X}.");
-                }
-
-                if (br.BaseStream.Position != br.BaseStream.Length)
-                    throw new InvalidDataException($"Packet data is not fully consumed.");
-                return innerPacket;
+                // Held Item Change
+                case 0x1A:
+                    innerPacket = DeferPacket(ServerboundHeldItemChange.Deserialize(ref br));
+                    break;
+                default:
+                    throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X2}.");
             }
+
+            if (!br.IsCosumed)
+                throw new InvalidDataException($"Packet data is not fully consumed.");
+            return innerPacket;
         }
 
         private async Task DispatchPacket(TeleportConfirm packet)

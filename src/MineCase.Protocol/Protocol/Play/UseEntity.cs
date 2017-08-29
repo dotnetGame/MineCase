@@ -29,7 +29,7 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.VarInt)]
         public int? Hand;
 
-        public static UseEntity Deserialize(BinaryReader br)
+        public static UseEntity Deserialize(ref SpanReader br)
         {
             var packet = new UseEntity
             {
