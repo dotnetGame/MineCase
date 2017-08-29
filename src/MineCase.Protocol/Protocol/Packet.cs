@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Buffers;
 using MineCase.Serialization;
 using Orleans.Concurrency;
 
@@ -19,11 +20,11 @@ namespace MineCase.Protocol
         public uint PacketId;
 
         [SerializeAs(DataType.ByteArray)]
-        public byte[] Data;
+        public ArraySegment<byte> Data;
 
         public async Task SerializeAsync(Stream stream)
         {
-            Length = (uint)Data.Length + PacketId.SizeOfVarInt();
+            Length = (uint)Data.Count + PacketId.SizeOfVarInt();
 
             using (var bw = new BinaryWriter(stream, Encoding.UTF8, true))
             {
@@ -32,10 +33,10 @@ namespace MineCase.Protocol
                 bw.Flush();
             }
 
-            await stream.WriteAsync(Data, 0, Data.Length);
+            await stream.WriteAsync(Data.Array, Data.Offset, Data.Count);
         }
 
-        public static async Task<UncompressedPacket> DeserializeAsync(Stream stream, UncompressedPacket packet = null)
+        public static async Task<UncompressedPacket> DeserializeAsync(Stream stream, IBufferPoolScope<byte> bufferPool, UncompressedPacket packet = null)
         {
             packet = packet ?? new UncompressedPacket();
             int packetIdLen;
@@ -45,8 +46,8 @@ namespace MineCase.Protocol
                 packet.PacketId = br.ReadAsVarInt(out packetIdLen);
             }
 
-            packet.Data = new byte[packet.Length - packetIdLen];
-            await stream.ReadExactAsync(packet.Data, 0, packet.Data.Length);
+            packet.Data = bufferPool.Rent((int)(packet.Length - packetIdLen));
+            await stream.ReadExactAsync(packet.Data.Array, packet.Data.Offset, packet.Data.Count);
             return packet;
         }
     }

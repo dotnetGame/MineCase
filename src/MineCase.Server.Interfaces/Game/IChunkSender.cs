@@ -10,6 +10,6 @@ namespace MineCase.Server.Game
 {
     public interface IChunkSender : IGrainWithStringKey
     {
-        Task PostChunk(int x, int z, IReadOnlyCollection<IClientboundPacketSink> clients, IReadOnlyCollection<IUser> users);
+        Task PostChunk(int x, int z, IReadOnlyCollection<IClientboundPacketSink> clients, IReadOnlyCollection<IUserChunkLoader> loaders);
     }
 }

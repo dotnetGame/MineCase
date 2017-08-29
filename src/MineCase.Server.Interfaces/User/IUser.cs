@@ -47,7 +47,5 @@ namespace MineCase.Server.User
         Task SetPacketRouter(IPacketRouter packetRouter);
 
         Task SetViewDistance(int viewDistance);
-
-        Task OnChunkSent(int chunkX, int chunkZ);
     }
 }

@@ -52,7 +52,7 @@ namespace MineCase.Server.Network
             var packet = new UncompressedPacket
             {
                 PacketId = packetId,
-                Data = data.Value
+                Data = new ArraySegment<byte>(data.Value)
             };
             _subsManager.Notify(n => n.ReceivePacket(packet));
             return Task.CompletedTask;

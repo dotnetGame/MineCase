@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
+using MineCase.Buffers;
 using MineCase.Protocol;
 using MineCase.Server.Settings;
 using Orleans;
@@ -18,12 +19,14 @@ namespace MineCase.Gateway.Network
         private readonly TcpListener _listener;
         private readonly IGrainFactory _grainFactory;
         private readonly ILogger _logger;
+        private readonly IBufferPool<byte> _bufferPool;
         private readonly ObjectPool<UncompressedPacket> _uncompressedPacketObjectPool;
 
-        public ConnectionRouter(IGrainFactory grainFactory, ILoggerFactory loggerFactory, ObjectPool<UncompressedPacket> uncompressedPacketObjectPool)
+        public ConnectionRouter(IGrainFactory grainFactory, ILoggerFactory loggerFactory, IBufferPool<byte> bufferPool, ObjectPool<UncompressedPacket> uncompressedPacketObjectPool)
         {
             _grainFactory = grainFactory;
             _logger = loggerFactory.CreateLogger<ConnectionRouter>();
+            _bufferPool = bufferPool;
             _uncompressedPacketObjectPool = uncompressedPacketObjectPool;
             _listener = new TcpListener(new IPEndPoint(IPAddress.Any, 25565));
         }
@@ -44,7 +47,7 @@ namespace MineCase.Gateway.Network
             try
             {
                 _logger.LogInformation($"Incoming connection from {tcpClient.Client.RemoteEndPoint}.");
-                using (var session = new ClientSession(tcpClient, _grainFactory, _uncompressedPacketObjectPool))
+                using (var session = new ClientSession(tcpClient, _grainFactory, _bufferPool, _uncompressedPacketObjectPool))
                 {
                     await session.Startup(cancellationToken);
                 }

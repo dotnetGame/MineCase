@@ -19,7 +19,7 @@ namespace MineCase.Server.Game
             return base.OnActivateAsync();
         }
 
-        public Task PostChunk(int x, int z, IReadOnlyCollection<IClientboundPacketSink> clients, IReadOnlyCollection<IUser> users)
+        public Task PostChunk(int x, int z, IReadOnlyCollection<IClientboundPacketSink> clients, IReadOnlyCollection<IUserChunkLoader> loaders)
         {
             var stream = GetStreamProvider(StreamProviders.JobsProvider).GetStream<SendChunkJob>(_jobWorkerId, StreamProviders.Namespaces.ChunkSender);
             stream.OnNextAsync(new SendChunkJob
@@ -28,7 +28,7 @@ namespace MineCase.Server.Game
                 ChunkX = x,
                 ChunkZ = z,
                 Clients = clients,
-                Users = users
+                Loaders = loaders
             }).Ignore();
             return Task.CompletedTask;
         }
