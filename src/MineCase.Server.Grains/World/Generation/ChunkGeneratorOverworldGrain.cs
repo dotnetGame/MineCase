@@ -45,10 +45,10 @@ namespace MineCase.Server.World.Generation
 
             int seed = (int)this.GetPrimaryKeyLong();
             _random = new Random(seed);
-            _depthNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 3, 0.5f);
-            _mainNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 3, 0.5f);
-            _maxNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 3, 0.5f);
-            _minNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 3, 0.5f);
+            _depthNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 8, 1);
+            _mainNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 8, 1);
+            _maxNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 8, 1);
+            _minNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 8, 1);
 
             _biomeWeights = new float[5, 5];
             for (int i = -2; i <= 2; ++i)
@@ -167,6 +167,10 @@ namespace MineCase.Server.World.Generation
                                     else if (posY < settings.SeaLevel)
                                     {
                                         chunk.SetBlockId(posX, posY, posZ, BlockId.Water);
+                                    }
+                                    else
+                                    {
+                                        chunk.SetBlockId(posX, posY, posZ, BlockId.Air);
                                     }
                                 }
 

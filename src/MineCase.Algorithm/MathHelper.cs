@@ -17,7 +17,7 @@ namespace MineCase.Algorithm
             }
             else
             {
-                return value;
+                return min + (max - min) * value;
             }
         }
     }

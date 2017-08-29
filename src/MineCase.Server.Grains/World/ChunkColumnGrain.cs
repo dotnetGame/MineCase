@@ -16,18 +16,28 @@ namespace MineCase.Server.World
 
         public async Task<ChunkColumn> GetState()
         {
+            /*
             var generator = GrainFactory.GetGrain<IChunkGeneratorFlat>(1);
             GeneratorSettings settings = new GeneratorSettings
             {
                 Seed = 1,
                 FlatGeneratorInfo = new FlatGeneratorInfo
                 {
-                    FlatBlockId = new BlockState[] { BlockStates.GetBlockStateStone(), BlockStates.GetBlockStateGrass() }
+                    FlatBlockId = new BlockState[] { BlockStates.GetBlockStateStone(), BlockStates.GetBlockStateDirt(), BlockStates.GetBlockStateGrass() }
                 }
             };
             ChunkColumn chunkColumn = await generator.Generate(_chunkX, _chunkZ, settings);
 
             return chunkColumn;
+            */
+            var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(1);
+            GeneratorSettings settings = new GeneratorSettings
+            {
+                Seed = 1,
+            };
+            ChunkColumn chunkColumn = await generator.Generate(_chunkX, _chunkZ, settings);
+            return chunkColumn;
+
             /*
             var blocks = new Block[16 * 16 * 16];
             var index = 0;
