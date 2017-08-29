@@ -14,7 +14,7 @@ namespace MineCase.Protocol.Status
         [SerializeAs(DataType.Long)]
         public long Payload;
 
-        public static Ping Deserialize(BinaryReader br)
+        public static Ping Deserialize(ref SpanReader br)
         {
             return new Ping
             {

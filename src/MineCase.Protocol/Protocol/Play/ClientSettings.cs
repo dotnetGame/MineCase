@@ -29,7 +29,7 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.VarInt)]
         public uint MainHand;
 
-        public static ClientSettings Deserialize(BinaryReader br)
+        public static ClientSettings Deserialize(ref SpanReader br)
         {
             return new ClientSettings
             {

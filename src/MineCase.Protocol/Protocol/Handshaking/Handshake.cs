@@ -23,7 +23,7 @@ namespace MineCase.Protocol.Handshaking
         [SerializeAs(DataType.VarInt)]
         public uint NextState;
 
-        public static Handshake Deserialize(BinaryReader br)
+        public static Handshake Deserialize(ref SpanReader br)
         {
             return new Handshake
             {

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Protocol;
 using MineCase.Protocol.Handshaking;
+using MineCase.Serialization;
 using MineCase.Server.Network.Handshaking;
 using Orleans;
 
@@ -12,18 +13,16 @@ namespace MineCase.Server.Network
 {
     internal partial class PacketRouterGrain
     {
-        private object DeserializeHandshakingPacket(ref UncompressedPacket packet)
+        private object DeserializeHandshakingPacket(UncompressedPacket packet)
         {
-            using (var br = new BinaryReader(new MemoryStream(packet.Data)))
+            var br = new SpanReader(packet.Data);
+            switch (packet.PacketId)
             {
-                switch (packet.PacketId)
-                {
-                    // Handshake
-                    case 0x00:
-                        return Handshake.Deserialize(br);
-                    default:
-                        throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X}.");
-                }
+                // Handshake
+                case 0x00:
+                    return Handshake.Deserialize(ref br);
+                default:
+                    throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X2}.");
             }
         }
 

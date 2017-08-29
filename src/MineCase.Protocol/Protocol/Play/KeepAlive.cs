@@ -14,7 +14,7 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.VarInt)]
         public uint KeepAliveId;
 
-        public static ServerboundKeepAlive Deserialize(BinaryReader br)
+        public static ServerboundKeepAlive Deserialize(ref SpanReader br)
         {
             return new ServerboundKeepAlive
             {

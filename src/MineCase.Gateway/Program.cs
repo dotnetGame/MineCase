@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using MineCase.Gateway.Network;
+using Microsoft.Extensions.ObjectPool;
+using MineCase.Protocol;
 
 namespace MineCase.Gateway
 {
@@ -34,6 +36,7 @@ namespace MineCase.Gateway
             services.AddSingleton(ConfigureLogging());
             services.AddLogging();
             services.AddSingleton<ConnectionRouter>();
+            ConfigureObjectPools(services);
         }
 
         private static ILoggerFactory ConfigureLogging()
@@ -42,6 +45,16 @@ namespace MineCase.Gateway
             factory.AddConsole();
 
             return factory;
+        }
+
+        private static void ConfigureObjectPools(IServiceCollection services)
+        {
+            services.AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
+            services.AddSingleton<ObjectPool<UncompressedPacket>>(s =>
+            {
+                var provider = s.GetRequiredService<ObjectPoolProvider>();
+                return provider.Create<UncompressedPacket>();
+            });
         }
 
         private static IConfiguration LoadConfiguration()

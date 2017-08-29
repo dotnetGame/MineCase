@@ -66,7 +66,7 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.Boolean)]
         public bool OnGround;
 
-        public static ServerboundPositionAndLook Deserialize(BinaryReader br)
+        public static ServerboundPositionAndLook Deserialize(ref SpanReader br)
         {
             return new ServerboundPositionAndLook
             {

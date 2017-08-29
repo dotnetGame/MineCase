@@ -20,7 +20,7 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.Boolean)]
         public bool Accepted;
 
-        public static ServerboundConfirmTransaction Deserialize(BinaryReader br)
+        public static ServerboundConfirmTransaction Deserialize(ref SpanReader br)
         {
             return new ServerboundConfirmTransaction
             {

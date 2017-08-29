@@ -12,14 +12,18 @@ namespace MineCase.Protocol.Play
     public sealed class PrepareCraftingGrid
     {
         [SerializeAs(DataType.Byte)]
-        public byte WindowID;
+        public byte WindowId;
 
         [SerializeAs(DataType.Short)]
         public short ActionNumber;
 
-        public static PrepareCraftingGrid Deserialize(BinaryReader br)
+        public static PrepareCraftingGrid Deserialize(ref SpanReader br)
         {
-            throw new NotImplementedException();
+            return new PrepareCraftingGrid
+            {
+                WindowId = br.ReadAsByte(),
+                ActionNumber = br.ReadAsShort()
+            };
         }
     }
 }
