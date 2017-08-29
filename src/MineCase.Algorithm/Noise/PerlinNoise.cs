@@ -132,6 +132,12 @@ namespace MineCase.Algorithm.Noise
 
         public void AddNoise(float[,,] noise, Vector3 offset, Vector3 scale, float noiseScale)
         {
+            if (offset.X < 0)
+            {
+                offset.X -= 1;
+                offset.X += 1;
+            }
+
             var xExtent = noise.GetUpperBound(0) + 1;
             var yExtent = noise.GetUpperBound(1) + 1;
             var zExtent = noise.GetUpperBound(2) + 1;
@@ -142,32 +148,32 @@ namespace MineCase.Algorithm.Noise
                 var xcoord = Split(xOffset);
                 var u = Fade(xcoord.remainder);
 
-                int a = _p[xcoord.integer];
-                int b = _p[xcoord.integer + 1];
+                int a = _p[Math.Abs(xcoord.integer)];
+                int b = _p[Math.Abs(xcoord.integer + 1)];
                 for (int y = 0; y < yExtent; y++)
                 {
                     var yOffset = offset.Y + y * scale.Y;
                     var ycoord = Split(yOffset);
                     var v = Fade(ycoord.remainder);
 
-                    int aa = _p[a + ycoord.integer];
-                    int ab = _p[a + ycoord.integer + 1];
-                    int ba = _p[b + ycoord.integer];
-                    int bb = _p[b + ycoord.integer + 1];
+                    int aa = _p[Math.Abs(a + ycoord.integer)];
+                    int ab = _p[Math.Abs(a + ycoord.integer + 1)];
+                    int ba = _p[Math.Abs(b + ycoord.integer)];
+                    int bb = _p[Math.Abs(b + ycoord.integer + 1)];
                     for (int z = 0; z < zExtent; z++)
                     {
                         var zOffset = offset.Z + z * scale.Z;
                         var zcoord = Split(zOffset);
                         var w = Fade(zcoord.remainder);
 
-                        int aaa = _p[aa + zcoord.integer];
-                        int aba = _p[ab + zcoord.integer];
-                        int aab = _p[aa + zcoord.integer + 1];
-                        int abb = _p[ab + zcoord.integer + 1];
-                        int baa = _p[ba + zcoord.integer];
-                        int bba = _p[bb + zcoord.integer];
-                        int bab = _p[ba + zcoord.integer + 1];
-                        int bbb = _p[bb + zcoord.integer + 1];
+                        int aaa = _p[Math.Abs(aa + zcoord.integer)];
+                        int aba = _p[Math.Abs(ab + zcoord.integer)];
+                        int aab = _p[Math.Abs(aa + zcoord.integer + 1)];
+                        int abb = _p[Math.Abs(ab + zcoord.integer + 1)];
+                        int baa = _p[Math.Abs(ba + zcoord.integer)];
+                        int bba = _p[Math.Abs(bb + zcoord.integer)];
+                        int bab = _p[Math.Abs(ba + zcoord.integer + 1)];
+                        int bbb = _p[Math.Abs(bb + zcoord.integer + 1)];
 
                         var xa = new Vector4(
                             Grad(aaa, xcoord.remainder, ycoord.remainder, zcoord.remainder),

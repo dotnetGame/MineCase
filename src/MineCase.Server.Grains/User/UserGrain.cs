@@ -91,6 +91,9 @@ namespace MineCase.Server.User
             _sendKeepAliveTimer = RegisterTimer(OnSendKeepAliveRequests, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
 
             // _worldTimeSyncTimer = RegisterTimer(OnSyncWorldTime, null, TimeSpan.Zero, )
+
+            // 设置出生点
+            await _player.SetPosition(0, 200, 0, false);
         }
 
         private async Task SendTimeUpdate()

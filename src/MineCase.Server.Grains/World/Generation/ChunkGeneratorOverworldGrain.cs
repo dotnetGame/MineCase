@@ -18,11 +18,11 @@ namespace MineCase.Server.World.Generation
     [StatelessWorker]
     internal class ChunkGeneratorOverWorldGrain : Grain, IChunkGeneratorOverworld
     {
-        private float[,,] _densityMap = new float[5, 33, 5];
-        private float[,,] _depthMap = new float[5, 33, 5];
-        private float[,,] _mainNoiseMap = new float[5, 33, 5];
-        private float[,,] _minLimitMap = new float[5, 33, 5];
-        private float[,,] _maxLimitMap = new float[5, 33, 5];
+        private float[,,] _densityMap;
+        private float[,,] _depthMap;
+        private float[,,] _mainNoiseMap;
+        private float[,,] _minLimitMap;
+        private float[,,] _maxLimitMap;
 
         private OctavedNoise<PerlinNoise> _depthNoise;
         private OctavedNoise<PerlinNoise> _mainNoise;
@@ -38,7 +38,7 @@ namespace MineCase.Server.World.Generation
         public override Task OnActivateAsync()
         {
             _densityMap = new float[5, 33, 5];
-            _depthMap = new float[5, 33, 5];
+            _depthMap = new float[5, 1, 5];
             _mainNoiseMap = new float[5, 33, 5];
             _minLimitMap = new float[5, 33, 5];
             _maxLimitMap = new float[5, 33, 5];
@@ -99,8 +99,6 @@ namespace MineCase.Server.World.Generation
 
         public async Task GenerateChunk(ChunkColumn chunk, int x, int z, GeneratorSettings settings)
         {
-            Random rand = new Random(settings.Seed);
-
             // GetBiomesForGeneration(_biomesForGeneration, x * 4 - 2, z * 4 - 2, 10, 10);
             await GenerateBasicTerrain(chunk, x, z, settings);
 
@@ -153,14 +151,14 @@ namespace MineCase.Server.World.Generation
                             for (int xLow = 0; xLow < 4; ++xLow)
                             {
                                 double zDensityDif11 = (density121 - density111) * 0.25;
-                                double lvt_45_1_ = density111 - zDensityDif11;
+                                double blockValue = density111 - zDensityDif11;
 
                                 for (int zLow = 0; zLow < 4; ++zLow)
                                 {
                                     int posX = xHigh * 4 + xLow;
                                     int posY = yHigh * 8 + yLow;
                                     int posZ = zHigh * 4 + zLow;
-                                    if ((lvt_45_1_ += zDensityDif11) > 0.0)
+                                    if ((blockValue += zDensityDif11) > 0.0)
                                     {
                                         chunk.SetBlockId(posX, posY, posZ, BlockId.Stone);
                                     }
@@ -192,7 +190,7 @@ namespace MineCase.Server.World.Generation
         {
             _depthNoise.Noise(
                 _depthMap,
-                new Vector3(xOffset, 0.0f, zOffset),
+                new Vector3(xOffset + 0.1f, 0.0f, zOffset + 0.1f),
                 new Vector3(settings.DepthNoiseScaleX, 1.0f, settings.DepthNoiseScaleZ));
 
             float coordinateScale = settings.CoordinateScale;
@@ -264,17 +262,13 @@ namespace MineCase.Server.World.Generation
                     groundYOffset = (groundYOffset * 4.0F - 1.0F) / 8.0F;
 
                     // 取一个-0.36~0.125的随机数，这个随机数决定了起伏的地表
-                    float random = _densityMap[xOffset, 0, zOffset] / 8000.0F;
-                    if (random < 0.0)
+                    float random = (_depthMap[x1, 0, z1] - 0.5F) * 160000 / 8000.0F;
+                    if (random < 0.0F)
                     {
-                        random = -random;
-                    }
-                    else
-                    {
-                        random = random * 3.0F;
+                        random = -random * 0.3F;
                     }
 
-                    random -= 2.0F;
+                    random = random * 3.0F - 2.0F;
 
                     if (random < 0.0)
                     {
@@ -302,11 +296,11 @@ namespace MineCase.Server.World.Generation
 
                     // groundYOffset有-0.072~0.025的变动量
                     groundYOffset1 = groundYOffset1 + random * 0.2F;
-                    /*_groundYOffset = _groundYOffset * (double)this.settings.baseSize / 8.0D;
-                    double groundY = (double)this.settings.baseSize + _groundYOffset * 4.0D;*/
+                    groundYOffset1 = groundYOffset1 * settings.BaseSize / 8.0F;
+                    float groundY = settings.BaseSize + groundYOffset1 * 4.0F;
 
                     // 这个是大概的地面y坐标，实际上也没有保证不会出现浮空岛...
-                    float groundY = settings.BaseSize * (1.0F + groundYOffset1 / 2.0F); // baseSize=8.5，应该代表了平均地表高度68
+                    // float groundY = settings.BaseSize * (1.0F + groundYOffset1 / 2.0F); // baseSize=8.5，应该代表了平均地表高度68
 
                     // 注意这个y*8才是最终的y坐标
                     for (int y = 0; y < 33; ++y)
@@ -320,9 +314,9 @@ namespace MineCase.Server.World.Generation
                         }
 
                         // 并不保证lowerLimit < upperLimit，不过没有影响
-                        float lowerLimit = _minLimitMap[x1, y, z1] / settings.LowerLimitScale; // lowerLimitScale=512
-                        float upperLimit = _maxLimitMap[x1, y, z1] / settings.UpperLimitScale; // upperLimitScale=512
-                        float t = (_mainNoiseMap[x1, y, z1] / 10.0F + 1.0F) / 2.0F;
+                        float lowerLimit = (_minLimitMap[x1, y, z1] - 0.5F) * 160000 / settings.LowerLimitScale; // lowerLimitScale=512
+                        float upperLimit = (_maxLimitMap[x1, y, z1] - 0.5F) * 160000 / settings.UpperLimitScale; // upperLimitScale=512
+                        float t = ((_mainNoiseMap[x1, y, z1] - 0.5F) * 160000 / 10.0F + 1.0F) / 2.0F;
 
                         // 这个函数t < 0则取lowerLimit，t > 1则取upperLimit，否则以t为参数在上下限间线性插值
                         float result = MathHelper.DenormalizeClamp(lowerLimit, upperLimit, t) - offset;
