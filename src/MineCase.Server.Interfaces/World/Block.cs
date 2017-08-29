@@ -88,12 +88,12 @@ namespace MineCase.Server.World
 
         public void SetBlockState(int x, int y, int z, BlockState state)
         {
-            Sections[GetSectionIndex(x, y, z)].SetBlockState(x, y & 0xFF, z, state);
+            Sections[GetSectionIndex(x, y, z)].SetBlockState(x, y & 0xF, z, state);
         }
 
         public void SetBlockId(int x, int y, int z, BlockId id)
         {
-            Sections[GetSectionIndex(x, y, z)].SetBlockId(x, y & 0xFF, z, id);
+            Sections[GetSectionIndex(x, y, z)].SetBlockId(x, y & 0xF, z, id);
         }
 
         public void GenerateSkylightMap()
