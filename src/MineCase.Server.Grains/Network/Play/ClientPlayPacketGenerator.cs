@@ -124,56 +124,8 @@ namespace MineCase.Server.Network.Play
             });
         }
 
-        public Task ChunkData(Dimension dimension, int chunkX, int chunkZ, ChunkColumn chunkColumn)
+        public Task ChunkData(Dimension dimension, int chunkX, int chunkZ, ChunkColumnStorage chunkColumn)
         {
-            ulong[] CompactBlockIds(Block[] blocks)
-            {
-                var result = new ulong[16 * 16 * 16 * 13 / 64];
-                int byteIndex = 0;
-                int bitIndex = 0;
-                foreach (var block in blocks)
-                {
-                    ulong id = (block.Id << 4) | (block.MetaValue & 0b1111);
-                    var availBits = 64 - bitIndex;
-                    var bitsToWrite = Math.Min(13, availBits);
-                    var shiftBits = 13 - bitsToWrite;
-                    result[byteIndex] |= id << bitIndex;
-                    bitIndex += bitsToWrite;
-                    if (bitIndex == 64)
-                    {
-                        byteIndex++;
-                        bitIndex = 0;
-                    }
-
-                    if (shiftBits > 0)
-                    {
-                        bitsToWrite = shiftBits;
-                        result[byteIndex] = id >> (13 - shiftBits);
-                        bitIndex += bitsToWrite;
-                    }
-
-                    if (bitIndex == 64)
-                    {
-                        byteIndex++;
-                        bitIndex = 0;
-                    }
-                }
-
-                return result;
-            }
-
-            Protocol.Play.ChunkSection ToChunkSection(World.ChunkSection chunkSection)
-            {
-                return new Protocol.Play.ChunkSection
-                {
-                    BitsPerBlock = chunkSection.BitsPerBlock,
-                    PaletteLength = 0,
-                    BlockLight = CompactBy2(chunkSection.Blocks.Select(o => o.BlockLight).ToArray()),
-                    SkyLight = dimension == Dimension.Overworld ? CompactBy2(chunkSection.Blocks.Select(o => o.SkyLight).ToArray()) : null,
-                    DataArray = CompactBlockIds(chunkSection.Blocks)
-                };
-            }
-
             return Sink.SendPacket(new ChunkData
             {
                 ChunkX = chunkX,
@@ -182,17 +134,17 @@ namespace MineCase.Server.Network.Play
                 Biomes = chunkColumn.Biomes,
                 PrimaryBitMask = chunkColumn.SectionBitMask,
                 NumberOfBlockEntities = 0,
-                Data = (from s in chunkColumn.Sections select ToChunkSection(s)).ToArray()
+                Data = (from c in chunkColumn.Sections
+                        where c != null
+                        select new Protocol.Play.ChunkSection
+                        {
+                            PaletteLength = 0,
+                            BitsPerBlock = c.BitsPerBlock,
+                            SkyLight = c.SkyLight.Storage,
+                            BlockLight = c.BlockLight.Storage,
+                            DataArray = c.Data.Storage
+                        }).ToArray()
             });
-        }
-
-        private static byte[] CompactBy2(byte[] source)
-        {
-            if (source.Length % 2 != 0) throw new ArgumentException("source array's length must be even.");
-            var result = new byte[source.Length / 2];
-            for (int i = 0; i < result.Length; i++)
-                result[i] = (byte)(source[i * 2] | (source[i * 2 + 1] << 4));
-            return result;
         }
 
         public Task SendPacket(uint packetId, byte[] data)

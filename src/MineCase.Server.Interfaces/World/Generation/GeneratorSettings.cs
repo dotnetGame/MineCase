@@ -4,8 +4,6 @@ namespace MineCase.Server.World.Generation
 {
     public class GeneratorSettings
     {
-        public int Seed { get; set; }
-
         public bool GenerateStructure { get; set; } = true;
 
         public bool UseCaves { get; set; } = true;
