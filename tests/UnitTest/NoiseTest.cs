@@ -57,7 +57,7 @@ namespace MineCase.UnitTest
             using (var file = File.OpenWrite(Path.Combine(RootDir, "OctavedPerlinNoise3D.bmp")))
             using (var image = new Image<ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
             {
-                var noise = new OctavedNoise<PerlinNoise>(new PerlinNoise(100), 8, 1);
+                var noise = new OctavedNoise<PerlinNoise>(new PerlinNoise(100), 8, 0.25f);
                 var noiseValue = new float[xExtent, yExtent, 1];
                 noise.Noise(noiseValue, new Vector3(-10, 10, -10), new Vector3(0.1f, 0.1f, 0));
                 for (int x = 0; x < xExtent; x++)

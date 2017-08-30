@@ -192,10 +192,10 @@ namespace MineCase.Algorithm.Noise
 
         private static (int integer, float remainder) Split(float value)
         {
+            value = value % 256;
+            if (value < 0) value += 256;
             var integer = (int)value;
             var remainder = value - integer;
-            integer %= 256;
-            if (integer < 0) integer += 256;
             return (integer, remainder);
         }
 
