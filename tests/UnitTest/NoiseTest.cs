@@ -59,7 +59,7 @@ namespace MineCase.UnitTest
             {
                 var noise = new OctavedNoise<PerlinNoise>(new PerlinNoise(100), 8, 1);
                 var noiseValue = new float[xExtent, yExtent, 1];
-                noise.Noise(noiseValue, Vector3.Zero, new Vector3(0.1f, 0.1f, 0));
+                noise.Noise(noiseValue, new Vector3(-10, 10, -10), new Vector3(0.1f, 0.1f, 0));
                 for (int x = 0; x < xExtent; x++)
                 {
                     for (int y = 0; y < yExtent; y++)
