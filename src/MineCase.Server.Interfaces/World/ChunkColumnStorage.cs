@@ -48,6 +48,7 @@ namespace MineCase.Server.World
         private const byte _bitsId = 9;
         private const byte _bitsMeta = 4;
         private const byte _bitsPerBlock = _bitsId + _bitsMeta;
+        private const uint _idMask = (1u << _bitsId) - 1;
         private const uint _metaMask = (1u << _bitsMeta) - 1;
         private const ulong _blockMask = (1u << _bitsPerBlock) - 1;
 
@@ -79,7 +80,7 @@ namespace MineCase.Server.World
                     var rest = _bitsPerBlock - toRead;
                     if (rest > 0)
                         value = (value << rest) | (Storage[offset.bitOffset + 1] & ((1u << rest) - 1));
-                    return new BlockState { Id = (uint)(value >> _bitsMeta), MetaValue = (uint)(value & _metaMask) };
+                    return new BlockState { Id = (uint)((value >> _bitsMeta) & _idMask), MetaValue = (uint)(value & _metaMask) };
                 }
 
                 set
