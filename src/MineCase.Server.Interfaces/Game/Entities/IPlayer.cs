@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Formats;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Network;
 using MineCase.Server.User;
@@ -37,5 +38,11 @@ namespace MineCase.Server.Game.Entities
         Task SetLook(float yaw, float pitch, bool onGround);
 
         Task<(int x, int y, int z)> GetChunkPosition();
+
+        Task StartDigging(Position location, PlayerDiggingFace face);
+
+        Task CancelDigging(Position location, PlayerDiggingFace face);
+
+        Task FinishDigging(Position location, PlayerDiggingFace face);
     }
 }

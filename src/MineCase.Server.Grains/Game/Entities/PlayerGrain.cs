@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Formats;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
@@ -130,6 +131,21 @@ namespace MineCase.Server.Game.Entities
         {
             _pitch = pitch;
             _yaw = yaw;
+            return Task.CompletedTask;
+        }
+
+        public Task StartDigging(Position location, PlayerDiggingFace face)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task CancelDigging(Position location, PlayerDiggingFace face)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task FinishDigging(Position location, PlayerDiggingFace face)
+        {
             return Task.CompletedTask;
         }
     }

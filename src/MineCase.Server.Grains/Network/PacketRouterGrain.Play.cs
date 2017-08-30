@@ -65,6 +65,16 @@ namespace MineCase.Server.Network
                 case 0x1A:
                     innerPacket = DeferPacket(ServerboundHeldItemChange.Deserialize(ref br));
                     break;
+
+                // Player Digging
+                case 0x14:
+                    innerPacket = DeferPacket(PlayerDigging.Deserialize(ref br));
+                    break;
+
+                // Animation
+                case 0x1D:
+                    innerPacket = DeferPacket(ServerboundAnimation.Deserialize(ref br));
+                    break;
                 default:
                     throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X2}.");
             }
@@ -134,6 +144,44 @@ namespace MineCase.Server.Network
         private Task DispatchPacket(ServerboundHeldItemChange packet)
         {
             return Task.CompletedTask;
+        }
+
+        private async Task DispatchPacket(PlayerDigging packet)
+        {
+            var face = ConvertDiggingFace(packet.Face);
+            var player = await _user.GetPlayer();
+            switch (packet.Status)
+            {
+                case PlayerDiggingStatus.StartedDigging:
+                    player.StartDigging(packet.Location, face).Ignore();
+                    break;
+                case PlayerDiggingStatus.CancelledDigging:
+                    player.CancelDigging(packet.Location, face).Ignore();
+                    break;
+                case PlayerDiggingStatus.FinishedDigging:
+                    player.FinishDigging(packet.Location, face).Ignore();
+                    break;
+                case PlayerDiggingStatus.DropItemStack:
+                    break;
+                case PlayerDiggingStatus.DropItem:
+                    break;
+                case PlayerDiggingStatus.ShootArrowOrFinishEating:
+                    break;
+                case PlayerDiggingStatus.SwapItemInHand:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private Task DispatchPacket(ServerboundAnimation packet)
+        {
+            return Task.CompletedTask;
+        }
+
+        private Game.PlayerDiggingFace ConvertDiggingFace(Protocol.Play.PlayerDiggingFace face)
+        {
+            return (Game.PlayerDiggingFace)face;
         }
     }
 }
