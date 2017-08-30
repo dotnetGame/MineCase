@@ -96,8 +96,8 @@ namespace MineCase.Server.World.Biomes
             BlockState fillerBlockstate = _fillerBlock;
             int surfaceFlag = -1;
             int surfaceDepth = (int)(noiseVal / 3.0D + 3.0D + rand.NextDouble() * 0.25D);
-            int x_in_chunk = x & 0xF;
-            int z_in_chunk = z & 0xF;
+            int x_in_chunk = x % 16;
+            int z_in_chunk = z % 16;
 
             for (int y = 255; y >= 0; --y)
             {

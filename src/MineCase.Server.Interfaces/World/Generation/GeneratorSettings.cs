@@ -30,9 +30,9 @@ namespace MineCase.Server.World.Generation
 
         public float DepthNoiseScaleZ { get; set; } = 200.0F;
 
-        public float CoordinateScale { get; set; } = 684.412F; // mc = 684.412F;
+        public float CoordinateScale { get; set; } = 0.05F; // mc = 684.412F;
 
-        public float HeightScale { get; set; } = 684.412F; // mc = 684.412F;
+        public float HeightScale { get; set; } = 0.05F; // mc = 684.412F;
 
         public float MainNoiseScaleX { get; set; } = 80.0F;
 
