@@ -77,6 +77,7 @@ namespace MineCase.Server.World
 
         private async Task EnsureChunkGenerated()
         {
+            /*
             var generator = GrainFactory.GetGrain<IChunkGeneratorFlat>(1);
             GeneratorSettings settings = new GeneratorSettings
             {
@@ -84,6 +85,12 @@ namespace MineCase.Server.World
                 {
                     FlatBlockId = new BlockState?[] { BlockStates.Stone(), BlockStates.Dirt(), BlockStates.Grass() }
                 }
+            };
+            _state = await generator.Generate(_chunkX, _chunkZ, settings);
+            */
+            var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(1);
+            GeneratorSettings settings = new GeneratorSettings
+            {
             };
             _state = await generator.Generate(_chunkX, _chunkZ, settings);
         }

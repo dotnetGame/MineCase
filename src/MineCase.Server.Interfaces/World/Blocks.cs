@@ -6,6 +6,15 @@ namespace MineCase.Server.World
 {
     public static class BlockStates
     {
+        public static BlockState Air()
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.Air,
+                MetaValue = 0
+            };
+        }
+
         public static BlockState Stone()
         {
             return new BlockState
@@ -33,6 +42,15 @@ namespace MineCase.Server.World
              };
         }
 
+        public static BlockState Bedrock()
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.Bedrock,
+                MetaValue = 0
+            };
+        }
+
         public static BlockState Water()
         {
             return new BlockState
@@ -42,11 +60,11 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Air()
+        public static BlockState Gravel()
         {
             return new BlockState
             {
-                Id = (uint)BlockId.Air,
+                Id = (uint)BlockId.Gravel,
                 MetaValue = 0
             };
         }
