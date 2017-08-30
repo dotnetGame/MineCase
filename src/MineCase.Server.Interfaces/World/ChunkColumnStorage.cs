@@ -79,7 +79,7 @@ namespace MineCase.Server.World
                     var value = Storage[offset.indexOffset] >> offset.bitOffset;
                     var rest = _bitsPerBlock - toRead;
                     if (rest > 0)
-                        value = (value << rest) | (Storage[offset.bitOffset + 1] & ((1u << rest) - 1));
+                        value |= (Storage[offset.indexOffset + 1] & ((1u << rest) - 1)) << toRead;
                     return new BlockState { Id = (uint)((value >> _bitsMeta) & _idMask), MetaValue = (uint)(value & _metaMask) };
                 }
 

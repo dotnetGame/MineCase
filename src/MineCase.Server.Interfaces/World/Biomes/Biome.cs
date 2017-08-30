@@ -78,13 +78,13 @@ namespace MineCase.Server.World.Biomes
             switch (biomeId)
             {
                 case BiomeId.Ocean:
-                    // return new BiomeOcean();
+                // return new BiomeOcean();
                 case BiomeId.Plains:
-                    // return new BiomePlains();
+                // return new BiomePlains();
                 case BiomeId.Desert:
-                    // return new BiomeDesert();
+                // return new BiomeDesert();
                 case BiomeId.ExtremeHills:
-                    // return new BiomeExtremeHills();
+                // return new BiomeExtremeHills();
                 default:
                     return null;
             }
