@@ -66,6 +66,11 @@ namespace MineCase.Server.Network
                     innerPacket = DeferPacket(ServerAnimation.Deserialize(ref br));
                     break;
 
+                // Player Digging
+                case 0x14:
+                    innerPacket = DeferPacket(PlayerDigging.Deserialize(ref br));
+                    break;
+
                 // Held Item Change
                 case 0x1A:
                     innerPacket = DeferPacket(ServerboundHeldItemChange.Deserialize(ref br));
@@ -148,6 +153,12 @@ namespace MineCase.Server.Network
 
             // TODO:check enum to enum.
             await player.SendClientAnimation((ClientAnimationID)handState);
+        }
+
+        private Task DispatchPacket(PlayerDigging packet)
+        {
+            // TODO:update world state.
+            return Task.CompletedTask;
         }
     }
 }
