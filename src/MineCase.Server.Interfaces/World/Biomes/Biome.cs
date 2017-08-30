@@ -90,14 +90,12 @@ namespace MineCase.Server.World.Biomes
             }
         }
 
-        public void GenerateBiomeTerrain(int seaLevel, Random rand, ChunkColumnStorage chunk, int x, int z, double noiseVal)
+        public void GenerateBiomeTerrain(int seaLevel, Random rand, ChunkColumnStorage chunk, int chunk_x, int chunk_z, int x_in_chunk, int z_in_chunk, double noiseVal)
         {
             BlockState topBlockstate = _topBlock;
             BlockState fillerBlockstate = _fillerBlock;
             int surfaceFlag = -1;
             int surfaceDepth = (int)(noiseVal / 3.0D + 3.0D + rand.NextDouble() * 0.25D);
-            int x_in_chunk = x % 16;
-            int z_in_chunk = z % 16;
 
             for (int y = 255; y >= 0; --y)
             {

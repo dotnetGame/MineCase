@@ -94,7 +94,7 @@ namespace MineCase.Server.World.Generation
             await GenerateBasicTerrain(chunk, x, z, settings);
 
             // Todo add biomes blocks
-            ReplaceBiomeBlocks(settings, x, z, chunk, _biomesForGeneration);
+            await ReplaceBiomeBlocks(settings, x, z, chunk, _biomesForGeneration);
 
             // Todo genrate structure
             await GenerateSkylightMap(chunk);
@@ -330,7 +330,7 @@ namespace MineCase.Server.World.Generation
             return Task.CompletedTask;
         }
 
-        public void ReplaceBiomeBlocks(GeneratorSettings settings, int x, int z, ChunkColumnStorage chunk, Biome[,] biomesIn)
+        private Task ReplaceBiomeBlocks(GeneratorSettings settings, int x, int z, ChunkColumnStorage chunk, Biome[,] biomesIn)
         {
             _surfaceNoise.Noise(
                 _surfaceMap,
@@ -342,9 +342,11 @@ namespace MineCase.Server.World.Generation
                 for (int z1 = 0; z1 < 16; ++z1)
                 {
                     Biome biome = biomesIn[x1, z1];
-                    biome.GenerateBiomeTerrain(settings.SeaLevel, _random, chunk, x + x1, z + z1, _surfaceMap[x1, 0, z1]);
+                    biome.GenerateBiomeTerrain(settings.SeaLevel, _random, chunk, x, z, x1, z1, _surfaceMap[x1, 0, z1]);
                 }
             }
+
+            return Task.CompletedTask;
         }
 
         private Task GenerateSkylightMap(ChunkColumnStorage chunk)
