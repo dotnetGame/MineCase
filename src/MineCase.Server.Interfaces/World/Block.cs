@@ -8,7 +8,7 @@ namespace MineCase.Server.World
     {
         Air = 0,
         Stone = 1,
-        Grass = 2,
+        GrassBlock = 2,
         Dirt = 3,
         Cobblestone = 4,
         WoodPlanks = 5,
@@ -261,6 +261,494 @@ namespace MineCase.Server.World
         ConcretePowder = 252,
         StructureBlock = 255
     }
+
+    public enum WoodPlanksType : uint
+    {
+        OakWoodPlanks = 0,
+        SpruceWoodPlanks = 1,
+        BirchWoodPlanks = 2,
+        JungleWoodPlanks = 3,
+        AcaciaWoodPlanks = 4,
+        DarkOakWoodPlanks = 5
+    }
+
+    public enum StoneType : uint
+    {
+        Stone = 0,
+        Granite = 1,
+        PolishedGranite = 2,
+        Diorite = 3,
+        PolishedDiorite = 4,
+        Andesite = 5,
+        PolishedAndesite = 6
+    }
+
+    public enum DirtType : uint
+    {
+        Dirt = 0,
+        CoarseDirt = 1,
+        Podzol = 2
+    }
+
+    public enum SaplingsType : uint
+    {
+        OakSapling = 0,
+        SpruceSapling = 1,
+        BirchSapling = 2,
+        JungleSapling = 3,
+        AcaciaSapling = 4,
+        DarkOakSapling = 5,
+        // 0x8 bit field : Set if sapling is ready to grow into a tree
+        ReadyForTree = 0x8
+    }
+
+    /// <summary>
+    /// Attributes of water and lava.
+    /// 
+    /// If Falling is set, the lower bits are essentially ignored,
+    /// since this block is then at its highest fluid level.
+    /// Level1 is the highest fluid level(not necessarily filling the block - 
+    /// this depends on the neighboring fluid blocks above each upper corner of the block)
+    /// </summary>
+    public enum FluidType : uint
+    {
+        Level1 = 0,
+        Level2 = 1,
+        Level3 = 2,
+        Level4 = 3,
+        Level5 = 4,
+        Level6 = 5,
+        Level7 = 6,
+        Level8 = 7,
+        // 0x8 bit field : Set if sapling is ready to grow into a tree
+        Falling = 0x8
+    }
+
+    public enum SandType : uint
+    {
+        Sand = 0,
+        RedSand = 1
+    }
+
+    public enum WoodType : uint
+    {
+        OakWoodOrAcaciaWood = 0,
+        SpruceWoodOrDarkOakWood = 1,
+        BirchWood = 2,
+        JungleWood = 3,
+        // 0x4~0x8 bits specifying the orientation of the wood
+        FacingUp = 0x0,
+        FacingEast = 0x4,
+        FacingNorth = 0x8,
+        Onlybark = 0xC
+    }
+
+    public enum LeavesType : uint
+    {
+        OakLeaves = 0,
+        SpruceLeaves = 1,
+        BirchLeaves = 2,
+        JungleLeaves = 3,
+        OakLeavesNoDecay = 4,
+        SpruceLeavesNoDecay = 5,
+        BirchLeavesNoDecay = 6,
+        JungleLeavesNoDecay = 7,
+        OakLeavesCheckDecay = 8,
+        SpruceLeavesCheckDecay = 9,
+        BirchLeavesCheckDecay = 10,
+        JungleLeavesCheckDecay = 11,
+        OakLeavesNoDecayAndCheckDecay = 12,
+        SpruceLeavesNoDecayAndCheckDecay = 13,
+        BirchLeavesNoDecayAndCheckDecay = 14,
+        JungleLeavesNoDecayAndCheckDecay = 15
+    }
+
+    /// <summary>
+    /// Specifies the color of the wool, stained terracotta, stained glass and carpet. 
+    /// </summary>
+    public enum ColorType : uint
+    {
+        White = 0,
+        Orange = 1,
+        Magenta = 2,
+        LightBlue = 3,
+        Yellow = 4,
+        Lime = 5,
+        Pink = 6,
+        Gray = 7,
+        LightGray = 8,
+        Cyan = 9,
+        Purple = 10,
+        Blue = 11,
+        Brown = 12,
+        Green = 13,
+        Red = 14,
+        Black = 15
+    }
+
+    public enum TorchesType : uint
+    {
+        FacingEast = 1,
+        FacingWest = 2,
+        FacingSouth = 3,
+        FacingNorth = 4,
+        FacingUp = 5
+    }
+
+    public enum DoubleStoneSlabsType : uint
+    {
+        DoubleStoneSlab = 0,
+        DoubleSandstoneSlab = 1,
+        DoubleWoodenSlab = 2,
+        DoubleCobblestoneSlab = 3,
+        DoubleBricksSlab = 4,
+        DoubleStoneBrickSlab = 5,
+        DoubleNetherBrickSlab = 6,
+        DoubleQuartzSlab = 7,
+        SmoothDoubleStoneSlab = 8,
+        SmoothDoubleSandstoneSlab = 9,
+        TileDoubleQuartzSlab = 10
+    }
+
+    public enum StoneSlabsType : uint
+    {
+        StoneSlab = 0,
+        SandstoneSlab = 1,
+        WoodenSlab = 2,
+        CobblestoneSlab = 3,
+        BricksSlab = 4,
+        StoneBrickSlab = 5,
+        NetherBrickSlab = 6,
+        QuartzSlab = 7,
+        UpperStoneSlab = 8,
+        UpperSandstoneSlab = 9,
+        UpperWoodenSlab = 10,
+        UpperCobblestoneSlab = 11,
+        UpperBricksSlab = 12,
+        UpperStoneBrickSlab = 13,
+        UpperNetherBrickSlab = 14,
+        UpperQuartzSlab = 15
+    }
+
+    public enum DoubleWoodenSlabsType : uint
+    {
+
+    }
+
+    public enum WoodenSlabsType : uint
+    {
+
+    }
+
+    public enum FireType : uint
+    {
+        Placed = 0x0,
+        Eternal = 0xF
+    }
+
+    public enum SandstoneType : uint
+    {
+        Sandstone = 0,
+        ChiseledSandstone = 1,
+        SmoothSandstone = 2
+    }
+
+    public enum RedSandstoneType : uint
+    {
+        RedSandstone = 0,
+        ChiseledRedSandstone = 1,
+        SmoothRedSandstone = 2
+    }
+
+    public enum BedType : uint
+    {
+        HeadFacingSouth = 0,
+        HeadFacingWest = 1,
+        HeadFacingNorth = 2,
+        HeadFacingEast = 3,
+        // 0x4 bit : When 0, the bed is empty, otherwise, the bed is occupied
+        Occupied = 0x4,
+        // 0x8 bit : When 0, the foot of the bed, otherwise, the head of the bed
+        Head = 0x8
+    }
+
+    public enum GrassType : uint
+    {
+        Shrub = 0,
+        TallGrass = 1,
+        Fern = 2
+    }
+
+    public enum FlowersType : uint
+    {
+        Poppy = 0,
+        BlueOrchid = 1,
+        Allium = 2,
+        AzureBluet = 3,
+        RedTulip = 4,
+        OrangeTulip = 5,
+        WhiteTulip = 6,
+        PinkTulip = 7,
+        OxeyeDaisy = 8
+    }
+
+    public enum LargeFlowersType : uint
+    {
+        Sunflower = 0,
+        Lilac = 1,
+        DoubleTallgrass = 2,
+        LargeFern = 3,
+        RoseBush = 4,
+        Peony = 5,
+        // Top Half of any Large Plant; low three bits 0x7 are derived from the block below
+        TopHalf = 0x8
+    }
+
+    public enum PistionType : uint
+    {
+        Down = 0,
+        Up = 1,
+        North = 2,
+        South = 3,
+        West = 4,
+        East = 5,
+        // bit field determines whether the piston is pushed out or not. 1 for pushed out, 0 for retracted
+        PushedOut = 0x8
+    }
+
+    public enum PistionExType : uint
+    {
+        Down = 0,
+        Up = 1,
+        North = 2,
+        South = 3,
+        West = 4,
+        East = 5,
+        // bit field determines whether the head is sticky or not(note that the Piston Body actually
+        // has completely different block types for Sticky and Regular). 1 is sticky, 0 is regular
+        Sticky = 0x8
+    }
+
+    public enum StairsType : uint
+    {
+        East = 0,
+        West = 1,
+        South = 2,
+        North = 3,
+        // 0x4 bit field : Set if stairs are upside-down
+        UpsideDown = 0x4
+    }
+
+    /// <summary>
+    /// Specifies the redstone dust's current redstone power level.
+    /// </summary>
+    public enum RedstoneWireType : uint
+    {
+        Level1 = 0,
+        Level2 = 1,
+        Level3 = 2,
+        Level4 = 3,
+        Level5 = 4,
+        Level6 = 5,
+        Level7 = 6,
+        Level8 = 7,
+        Level9 = 8,
+        Level10 = 9,
+        Level11 = 10,
+        Level12 = 11,
+        Level13 = 12,
+        Level14 = 13,
+        Level15 = 14,
+        Level16 = 15,
+    }
+
+    /// <summary>
+    /// Represents the daylight sensor's current redstone power level.
+    /// </summary>
+    public enum DaylightSensorType : uint
+    {
+        Level1 = 0,
+        Level2 = 1,
+        Level3 = 2,
+        Level4 = 3,
+        Level5 = 4,
+        Level6 = 5,
+        Level7 = 6,
+        Level8 = 7,
+        Level9 = 8,
+        Level10 = 9,
+        Level11 = 10,
+        Level12 = 11,
+        Level13 = 12,
+        Level14 = 13,
+        Level15 = 14,
+        Level16 = 15,
+    }
+
+    /// <summary>
+    /// Crops grow from 0x0 to 0x7. Carrots, beetroot and potatoes appear to have 4 stages,
+    /// but actually grow identically to wheat, merely using the same texture for multiple stages.
+    /// </summary>
+    public enum CropsType : uint
+    {
+        GrowStage1 = 0,
+        GrowStage2 = 1,
+        GrowStage3 = 2,
+        GrowStage4 = 3,
+        GrowStage5 = 4,
+        GrowStage6 = 5,
+        GrowStage7 = 6,
+        GrowStage8 = 7,
+    }
+
+    public enum FarmlandType : uint
+    {
+        DryLand = 0,
+        WetnessLevel1 = 1,
+        WetnessLevel2 = 2,
+        WetnessLevel3 = 3,
+        WetnessLevel4 = 4,
+        WetnessLevel5 = 5,
+        WetnessLevel6 = 6,
+        WetnessLevel7 = 7,
+    }
+
+    public enum BannerStandingType : uint
+    {
+
+    }
+
+    public enum BannerWallType : uint
+    {
+
+    }
+
+    // TODO: door 
+
+    public enum RailsType : uint
+    {
+        StraightRailConnectNS = 0,
+        StraightRailConnectEW = 1,
+        SlopedRailAscendEast = 2,
+        SlopedRailAscendWest = 3,
+        SlopedRailAscendNorth = 4,
+        SlopedRailAscendSouth = 5,
+        CurvedRailConnectSE = 6,
+        CurvedRailConnectSW = 7,
+        CurvedRailConnectNW = 8,
+        CurvedRailConnectNE = 9
+    }
+
+    /// <summary>
+    /// For Activator Rails, Detector Rails, and Powered Rails
+    /// </summary>
+    public enum RailsExType : uint
+    {
+        FlatTrackGoingNS = 0,
+        FlatTrackGoingWE = 1,
+        SlopedTrackAscendEast = 2,
+        SlopedTrackAscendWest = 3,
+        SlopedTrackAscendNorth = 4,
+        SlopedTrackAscendSouth = 5,
+    }
+
+    /// <summary>
+    /// For Ladders, Furnaces, Chests, Trapped Chests
+    /// </summary>
+    public enum FacingDirectionType : uint
+    {
+        FacingNorth = 2,
+        FacingSouth = 3,
+        FacingWest = 4,
+        FacingEast = 5,
+    }
+
+    public enum SignStandingType : uint
+    {
+        South = 0,
+        SouthToSouthwest = 1,
+        Southwest = 2,
+        WestToSouthwest = 3,
+        West = 4,
+        WestToNorthwest = 5,
+        Northwest = 6,
+        NorthToNorthwest = 7,
+        North = 8,
+        NorthToNortheast = 9,
+        Northeast = 10,
+        EastToNortheast = 11,
+        East = 12,
+        EastToSoutheast = 13,
+        Southeast = 14,
+        SouthToSoutheast = 15
+    }
+
+    public enum SignWallType : uint
+    {
+        North = 2,
+        South = 3,
+        West = 4,
+        East = 5
+    }
+
+    /// <summary>
+    /// 0x1 ~ 0x4 bits specifying which direction the dispenser is facing
+    /// </summary>
+    public enum DispenserType : uint
+    {
+        FacingDown = 0,
+        FacingUp = 1,
+        FacingNorth = 2,
+        FacingSouth = 3,
+        FacingWest = 4,
+        FacingEast = 5,
+        // If set, the dispenser is activated
+        Activated = 0x8
+    }
+
+    /// <summary>
+    /// 0x1 ~ 0x4 bits specifying which direction the dropper is facing
+    /// </summary>
+    public enum DropperType : uint
+    {
+        FacingDown = 0,
+        FacingUp = 1,
+        FacingNorth = 2,
+        FacingSouth = 3,
+        FacingWest = 4,
+        FacingEast = 5,
+        // If set, the dropper is activated
+        Activated = 0x8
+    }
+
+    public enum HopperType : uint
+    {
+
+    }
+
+    public enum LeverType : uint
+    {
+        BottomPointsEastWhenOff = 0,
+        SideFacingEast = 1,
+        SideFacingWest = 2,
+        SideFacingSouth = 3,
+        SideFacingNorth = 4,
+        TopPointsSouthWhenOff =5,
+        TopPointsEastWhenOff = 6,
+        BottomPointsSouthWhenOff = 7,
+        // 0x8 bit field : If this bit is set, the lever is active
+        Active = 0x8
+    }
+
+    // TODO:
+
+    public enum SpongeType : uint
+    {
+        Sponge = 0,
+        WetSponge = 1,
+    }
+
+    // TODO:
 
     public struct BlockState : IEquatable<BlockState>
     {
