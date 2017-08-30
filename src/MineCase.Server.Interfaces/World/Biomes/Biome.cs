@@ -46,9 +46,9 @@ namespace MineCase.Server.World.Biomes
         /** Is true (default) if the biome support rain (desert and nether can't have rain) */
         private bool _enableRain;
         /** The block expected to be on the top of this biome */
-        public BlockState _topBlock = BlockStates.GetBlockStateGrass();
+        public BlockState _topBlock = BlockStates.Grass;
         /** The block to fill spots in when not on the top */
-        public BlockState _fillerBlock = BlockStates.GetBlockStateDirt();
+        public BlockState _fillerBlock = BlockStates.Dirt;
 
         public Biome(BiomeProperties properties)
         {
@@ -87,6 +87,74 @@ namespace MineCase.Server.World.Biomes
                     // return new BiomeExtremeHills();
                 default:
                     return null;
+            }
+        }
+
+        public void GenerateBiomeTerrain(int seaLevel, Random rand, ChunkColumn chunk, int x, int z, double noiseVal)
+        {
+            BlockState topBlockstate = _topBlock;
+            BlockState fillerBlockstate = _fillerBlock;
+            int surfaceFlag = -1;
+            int surfaceDepth = (int)(noiseVal / 3.0D + 3.0D + rand.NextDouble() * 0.25D);
+            int x_in_chunk = x & 0xF;
+            int z_in_chunk = z & 0xF;
+
+            // BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+            for (int y = 255; y >= 0; --y)
+            {
+                if (y <= rand.Next(5))
+                {
+                    chunk.SetBlockState(x_in_chunk, y, z_in_chunk, BlockStates.Bedrock);
+                }
+                else
+                {
+                    BlockState iblockstate = chunk.GetBlockState(x_in_chunk, y, z_in_chunk);
+
+                    if (iblockstate.Equals(BlockStates.Air))
+                    {
+                        surfaceFlag = -1;
+                    }
+                    else if (iblockstate.Equals(BlockStates.Stone))
+                    {
+                        // 将地面石头进行生物群系替换
+                        if (surfaceFlag == -1)
+                        {
+                            if (surfaceDepth <= 0)
+                            {
+                                topBlockstate = BlockStates.Air;
+                                fillerBlockstate = BlockStates.Stone;
+                            }
+                            else if (y >= seaLevel - 4 && y <= seaLevel + 1)
+                            {
+                                topBlockstate = _topBlock;
+                                fillerBlockstate = _fillerBlock;
+                            }
+
+                            // TODO 根据温度变化决定水的状态
+                            surfaceFlag = surfaceDepth;
+
+                            if (y >= seaLevel - 1)
+                            {
+                                chunk.SetBlockState(x_in_chunk, y, z_in_chunk, topBlockstate);
+                            }
+                            else if (y < seaLevel - 7 - surfaceDepth)
+                            {
+                                topBlockstate = BlockStates.Air;
+                                fillerBlockstate = BlockStates.Stone;
+                                chunk.SetBlockState(x_in_chunk, y, z_in_chunk, BlockStates.Gravel);
+                            }
+                            else
+                            {
+                                chunk.SetBlockState(x_in_chunk, y, z_in_chunk, fillerBlockstate);
+                            }
+                        }
+                        else if (surfaceFlag > 0)
+                        {
+                            --surfaceFlag;
+                            chunk.SetBlockState(x_in_chunk, y, z_in_chunk, fillerBlockstate);
+                        }
+                    }
+                }
             }
         }
     }

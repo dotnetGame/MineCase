@@ -27,6 +27,11 @@ namespace MineCase.Server.World
             MetaValue = state.MetaValue;
         }
 
+        public BlockState GetBlockState()
+        {
+            return new BlockState { Id = Id, MetaValue = MetaValue };
+        }
+
         public void SetBlockId(BlockId id)
         {
             Id = (uint)id;
@@ -40,7 +45,16 @@ namespace MineCase.Server.World
         Grass = 2,
         Dirt = 3,
         Cobblestone = 4,
-        Water = 9
+        Planks = 5,
+        Sapling = 6,
+        Bedrock = 7,
+        FlowingWater = 8,
+        Water = 9,
+        FlowingLava = 10,
+        Lava = 11,
+        Sand = 12,
+        Gravel = 13,
+        GoldOre = 14
     }
 
     public class BlockState
@@ -48,6 +62,12 @@ namespace MineCase.Server.World
         public uint Id { get; set; }
 
         public uint MetaValue { get; set; }
+
+        public bool Equals(BlockState other)
+        {
+            return Id == other.Id &&
+                MetaValue == other.MetaValue;
+        }
     }
 
     public sealed class ChunkSection
@@ -64,6 +84,11 @@ namespace MineCase.Server.World
         public void SetBlockState(int x, int y, int z, BlockState state)
         {
             Blocks[GetBlockIndex(x, y, z)].SetBlockState(state);
+        }
+
+        public BlockState GetBlockState(int x, int y, int z)
+        {
+            return Blocks[GetBlockIndex(x, y, z)].GetBlockState();
         }
 
         public void SetBlockId(int x, int y, int z, BlockId id)
@@ -89,6 +114,11 @@ namespace MineCase.Server.World
         public void SetBlockState(int x, int y, int z, BlockState state)
         {
             Sections[GetSectionIndex(x, y, z)].SetBlockState(x, y & 0xF, z, state);
+        }
+
+        public BlockState GetBlockState(int x, int y, int z)
+        {
+            return Sections[GetSectionIndex(x, y, z)].GetBlockState(x, y & 0xF, z);
         }
 
         public void SetBlockId(int x, int y, int z, BlockId id)

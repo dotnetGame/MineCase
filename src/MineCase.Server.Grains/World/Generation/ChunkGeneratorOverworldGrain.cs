@@ -23,17 +23,19 @@ namespace MineCase.Server.World.Generation
         private float[,,] _mainNoiseMap;
         private float[,,] _minLimitMap;
         private float[,,] _maxLimitMap;
+        private float[,,] _surfaceMap;
 
         private OctavedNoise<PerlinNoise> _depthNoise;
         private OctavedNoise<PerlinNoise> _mainNoise;
         private OctavedNoise<PerlinNoise> _maxNoise;
         private OctavedNoise<PerlinNoise> _minNoise;
+        private OctavedNoise<PerlinNoise> _surfaceNoise;
 
         private Random _random;
 
         private float[,] _biomeWeights;
 
-        private Biome[] _biomesForGeneration; // 10x10
+        private Biome[,] _biomesForGeneration; // 10x10 or 16 x 16
 
         public override Task OnActivateAsync()
         {
@@ -42,13 +44,15 @@ namespace MineCase.Server.World.Generation
             _mainNoiseMap = new float[5, 33, 5];
             _minLimitMap = new float[5, 33, 5];
             _maxLimitMap = new float[5, 33, 5];
+            _surfaceMap = new float[16, 1, 16];
 
             int seed = (int)this.GetPrimaryKeyLong();
             _random = new Random(seed);
-            _depthNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 8, 1);
-            _mainNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 8, 1);
-            _maxNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 8, 1);
-            _minNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 8, 1);
+            _depthNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 1.0F);
+            _mainNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 1.0F);
+            _maxNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 1.0F);
+            _minNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 1.0F);
+            _surfaceNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 1.0F);
 
             _biomeWeights = new float[5, 5];
             for (int i = -2; i <= 2; ++i)
@@ -60,12 +64,13 @@ namespace MineCase.Server.World.Generation
                 }
             }
 
-            _biomesForGeneration = new Biome[10 * 10];
-            for (int i = 0; i < 10; ++i)
+            // 生物群系先暂时初始化成这样，以后修改
+            _biomesForGeneration = new Biome[16, 16];
+            for (int i = 0; i < 16; ++i)
             {
-                for (int j = 0; j < 10; ++j)
+                for (int j = 0; j < 16; ++j)
                 {
-                    _biomesForGeneration[10 * i + j] = new BiomePlains(new BiomeProperties("plains"));
+                    _biomesForGeneration[i, j] = new BiomePlains(new BiomeProperties("plains"));
                 }
             }
 
@@ -103,6 +108,7 @@ namespace MineCase.Server.World.Generation
             await GenerateBasicTerrain(chunk, x, z, settings);
 
             // Todo add biomes blocks
+            ReplaceBiomeBlocks(settings, x, z, chunk, _biomesForGeneration);
 
             // Todo genrate structure
             chunk.GenerateSkylightMap();
@@ -160,15 +166,15 @@ namespace MineCase.Server.World.Generation
                                     int posZ = zHigh * 4 + zLow;
                                     if ((blockValue += zDensityDif11) > 0.0)
                                     {
-                                        chunk.SetBlockId(posX, posY, posZ, BlockId.Stone);
+                                        chunk.SetBlockState(posX, posY, posZ, BlockStates.Stone);
                                     }
                                     else if (posY < settings.SeaLevel)
                                     {
-                                        chunk.SetBlockId(posX, posY, posZ, BlockId.Water);
+                                        chunk.SetBlockState(posX, posY, posZ, BlockStates.Water);
                                     }
                                     else
                                     {
-                                        chunk.SetBlockId(posX, posY, posZ, BlockId.Air);
+                                        chunk.SetBlockState(posX, posY, posZ, BlockStates.Air);
                                     }
                                 }
 
@@ -231,14 +237,14 @@ namespace MineCase.Server.World.Generation
                     float totalWeight = 0.0F;
 
                     // 中心点生物群系
-                    Biome centerBiome = _biomesForGeneration[x1 + 2 + (z1 + 2) * 10];
+                    Biome centerBiome = _biomesForGeneration[x1 + 2, z1 + 2];
 
                     // 求scale和groundYOffset的加权平均值
                     for (int x2 = 0; x2 < 5; ++x2)
                     {
                         for (int z2 = 0; z2 < 5; ++z2)
                         {
-                            Biome biome = _biomesForGeneration[x1 + x2 + (z1 + z2) * 10];
+                            Biome biome = _biomesForGeneration[x1 + x2, z1 + z2];
                             float curGroundYOffset = settings.BiomeDepthOffSet + biome.GetBaseHeight() * settings.BiomeDepthWeight; // biomeDepthOffSet=0
                             float curScale = settings.BiomeScaleOffset + biome.GetHeightVariation() * settings.BiomeScaleWeight; // biomeScaleOffset=0
 
@@ -262,7 +268,7 @@ namespace MineCase.Server.World.Generation
                     groundYOffset = (groundYOffset * 4.0F - 1.0F) / 8.0F;
 
                     // 取一个-0.36~0.125的随机数，这个随机数决定了起伏的地表
-                    float random = (_depthMap[x1, 0, z1] - 0.5F) * 160000 / 8000.0F;
+                    float random = (_depthMap[x1, 0, z1] - 0.5F) * 128 / 8000.0F;
                     if (random < 0.0F)
                     {
                         random = -random * 0.3F;
@@ -314,9 +320,9 @@ namespace MineCase.Server.World.Generation
                         }
 
                         // 并不保证lowerLimit < upperLimit，不过没有影响
-                        float lowerLimit = (_minLimitMap[x1, y, z1] - 0.5F) * 160000 / settings.LowerLimitScale; // lowerLimitScale=512
-                        float upperLimit = (_maxLimitMap[x1, y, z1] - 0.5F) * 160000 / settings.UpperLimitScale; // upperLimitScale=512
-                        float t = ((_mainNoiseMap[x1, y, z1] - 0.5F) * 160000 / 10.0F + 1.0F) / 2.0F;
+                        float lowerLimit = (_minLimitMap[x1, y, z1] - 0.5F) * 128 / settings.LowerLimitScale; // lowerLimitScale=512
+                        float upperLimit = (_maxLimitMap[x1, y, z1] - 0.5F) * 128 / settings.UpperLimitScale; // upperLimitScale=512
+                        float t = ((_mainNoiseMap[x1, y, z1] - 0.5F) * 128 / 10.0F + 1.0F) / 2.0F;
 
                         // 这个函数t < 0则取lowerLimit，t > 1则取upperLimit，否则以t为参数在上下限间线性插值
                         float result = MathHelper.DenormalizeClamp(lowerLimit, upperLimit, t) - offset;
@@ -336,6 +342,23 @@ namespace MineCase.Server.World.Generation
 
             densityMap = _densityMap;
             return Task.CompletedTask;
+        }
+
+        public void ReplaceBiomeBlocks(GeneratorSettings settings, int x, int z, ChunkColumn chunk, Biome[,] biomesIn)
+        {
+            _surfaceNoise.Noise(
+                _surfaceMap,
+                new Vector3(x * 16 + 0.1F, 0, z * 16 + 0.1F),
+                new Vector3(0.0625F, 1.0F, 0.0625F));
+
+            for (int x1 = 0; x1 < 16; ++x1)
+            {
+                for (int z1 = 0; z1 < 16; ++z1)
+                {
+                    Biome biome = biomesIn[x1, z1];
+                    biome.GenerateBiomeTerrain(settings.SeaLevel, _random, chunk, x * 16 + x1, z * 16 + z1, _surfaceMap[x1, 0, z1]);
+                }
+            }
         }
 
         private Task<int> GetDensityMapIndex(int x, int y, int z)
