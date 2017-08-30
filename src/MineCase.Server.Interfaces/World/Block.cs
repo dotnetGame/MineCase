@@ -623,7 +623,17 @@ namespace MineCase.Server.World
 
     }
 
-    // TODO: door 
+    public enum DoorType : uint
+    {
+        NorthwestCorner = 0,
+        NortheastCorner = 1,
+        SoutheastCorner = 2,
+        SouthwestCorner = 3,
+        // 0x4 bit field : If set, the door has swung counterclockwise around its hinge
+        HasSwungCounterclockwise = 0x4,
+        // 0x8 bit field : If set, this is the top half of a door (else the bottom half of the door)
+        TopHalfOfTheDoor = 0x8
+    }
 
     public enum RailsType : uint
     {
@@ -740,6 +750,185 @@ namespace MineCase.Server.World
         Active = 0x8
     }
 
+    public enum PressurePlatesType : uint
+    {
+        None = 0,
+        Active = 1
+    }
+
+    public enum ButtonType : uint
+    {
+        BottomFacingDown = 0,
+        SideFacingEast = 1,
+        SideFacingWest = 2,
+        SideFacingSouth = 3,
+        SideFacingNorth = 4,
+        TopFacingUp = 5,
+        // 0x8 bit field : If set, the button is currently active
+        Active = 0x8
+    }
+
+    public enum SnowType : uint
+    {
+        OneLayer = 0,
+        TwoLayers = 1,
+        ThreeLayers = 2,
+        FourLayers = 3,
+        FiveLayers = 4,
+        SixLayers = 5,
+        SevenLayers = 6,
+        EightLayers = 7
+    }
+
+    public enum CactusType : uint
+    {
+        FreshlyPlantedCactus = 0,
+        Interval1 = 1,
+        Interval2 = 2,
+        Interval3 = 3,
+        Interval4 = 4,
+        Interval5 = 5,
+        Interval6 = 6,
+        Interval7 = 7,
+        Interval8 = 8,
+        Interval9 = 9,
+        Interval10 = 10,
+        Interval11 = 11,
+        Interval12 = 12,
+        Interval13 = 13,
+        Interval14 = 14,
+        Interval15 = 15
+    }
+
+    public enum SugarCanesType : uint
+    {
+        FreshlyPlantedSugarCane = 0,
+        Interval1 = 1,
+        Interval2 = 2,
+        Interval3 = 3,
+        Interval4 = 4,
+        Interval5 = 5,
+        Interval6 = 6,
+        Interval7 = 7,
+        Interval8 = 8,
+        Interval9 = 9,
+        Interval10 = 10,
+        Interval11 = 11,
+        Interval12 = 12,
+        Interval13 = 13,
+        Interval14 = 14,
+        Interval15 = 15
+    }
+
+    public enum JuckboxType : uint
+    {
+        NoDiscInserted = 0,
+        ContainsADisc = 1
+    }
+
+    public enum PumpkinType : uint
+    {
+        FacingSouth = 0,
+        FacingWest = 1,
+        FacingNorth = 2,
+        FacingEast = 3,
+        withoutFace = 4
+    }
+
+    public enum JackLanternType : uint
+    {
+        FacingSouth = 0,
+        FacingWest = 1,
+        FacingNorth = 2,
+        FacingEast = 3,
+        withoutFace = 4
+    }
+
+    public enum CakeType : uint
+    {
+        Eat0Pieces = 0,
+        Eat1Piece = 1,
+        Eat2Pieces = 2,
+        Eat3Pieces = 3,
+        Eat4Pieces = 4,
+        Eat5Pieces = 5,
+        Eat6Pieces = 6,
+    }
+
+    public enum RedstoneRepeaterType : uint
+    {
+        // 0x1 ~ 0x2 bit field specifying the direction the redstone repeater is facing
+        FacingNorth = 0x0,
+        FacingEast = 0x1,
+        FacingSouth = 0x2,
+        FacingWest = 0x3,
+        // 0x4 ~ 0x8 bit field specifying the redstone repeater's delay
+        RedstoneTick1 = 0x0,
+        RedstoneTick2 = 0x4,
+        RedstoneTick3 = 0x8,
+        RedstoneTick4 = 0xC
+    }
+
+    public enum RedstoneComparatorType : uint
+    {
+        // 0x1 ~ 0x2 bit field specifying the direction the redstone repeater is facing
+        FacingNorth = 0x0,
+        FacingEast = 0x1,
+        FacingSouth = 0x2,
+        FacingWest = 0x3,
+        // 0x4 bit field Set if in subtraction mode (front torch up and powered)
+        SubtractionMode = 0x4,
+        // 0x8 bit field Set if powered (at any power level)
+        Powered = 0x8
+    }
+
+    public enum TrapdoorType : uint
+    {
+        SouthSide = 0,
+        NorthSide = 1,
+        EastSide = 2,
+        WestSide = 3,
+        // 0x4 bit field : If set, the trapdoor is open
+        Open = 0x4,
+        // 0x8 bit field : If set, the trapdoor is on the top half of a block. Otherwise, it is on the bottom half
+        TopHalf = 0x8
+    }
+    
+    public enum MonsterEggType : uint
+    {
+        Stone = 0,
+        Cobblestone = 1,
+        StoneBrick = 2,
+        MossyStoneBrick = 3,
+        CrackedStoneBrick = 4,
+        ChiseledStoneBrick = 5
+    }
+
+    public enum StoneBrickType : uint
+    {
+        StoneBrick = 0,
+        MossyStoneBrick = 1,
+        CrackedStoneBrick = 2,
+        ChiseledStoneBrick = 3
+    }
+
+    public enum PrismarineType : uint
+    {
+        Prismarine = 0,
+        PrismarineBricks = 1,
+        DarkPrismarine = 2
+    }
+
+    public enum SpongeType : uint
+    {
+        Sponge = 0,
+        WetSponge = 1
+    }
+
+    public enum MushroomBlockType : uint
+    {
+
+    }
     // TODO:
 
     public enum SpongeType : uint

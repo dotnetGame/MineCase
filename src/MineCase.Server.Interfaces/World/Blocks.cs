@@ -582,13 +582,12 @@ namespace MineCase.Server.World
             };
         }
 
-        // TODO: fix
-        public static BlockState OakDoor()
+        public static BlockState OakDoor(DoorType type = DoorType.NorthwestCorner)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.OakDoor,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
@@ -637,31 +636,30 @@ namespace MineCase.Server.World
             };
         }
 
-        // TODO: go on
-        public static BlockState StonePressurePlate()
+        public static BlockState StonePressurePlate(PressurePlatesType type = PressurePlatesType.None)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.StonePressurePlate,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
-        public static BlockState IronDoor()
+        public static BlockState IronDoor(DoorType type = DoorType.NorthwestCorner)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.IronDoor,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
-        public static BlockState WoodenPressurePlate()
+        public static BlockState WoodenPressurePlate(PressurePlatesType type = PressurePlatesType.None)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.WoodenPressurePlate,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
@@ -683,39 +681,39 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState RedstoneTorchInactive()
+        public static BlockState RedstoneTorchInactive(TorchesType type = TorchesType.FacingUp)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.RedstoneTorchInactive,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
-        public static BlockState RedstoneTorchActive()
+        public static BlockState RedstoneTorchActive(TorchesType type = TorchesType.FacingUp)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.RedstoneTorchActive,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
-        public static BlockState StoneButton()
+        public static BlockState StoneButton(ButtonType type = ButtonType.BottomFacingDown)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.StoneButton,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
-        public static BlockState SnowLayer()
+        public static BlockState SnowLayer(SnowType type = SnowType.OneLayer)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.SnowLayer,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
@@ -737,12 +735,12 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Cactus()
+        public static BlockState Cactus(CactusType type = CactusType.FreshlyPlantedCactus)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.Cactus,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
@@ -755,21 +753,21 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState SugarCane()
+        public static BlockState SugarCane(SugarCanesType type = SugarCanesType.FreshlyPlantedSugarCane)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.SugarCane,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
-        public static BlockState Jukebox()
+        public static BlockState Jukebox(JuckboxType type = JuckboxType.NoDiscInserted)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.Jukebox,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
@@ -782,12 +780,12 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Pumpkin()
+        public static BlockState Pumpkin(PumpkinType type = PumpkinType.FacingSouth)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.Pumpkin,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
@@ -827,78 +825,79 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState JackLantern()
+        public static BlockState JackLantern(JackLanternType type = JackLanternType.FacingSouth)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.JackLantern,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
-        public static BlockState Cake()
+        public static BlockState Cake(CakeType type = CakeType.Eat0Pieces)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.Cake,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
-        public static BlockState RedstoneRepeaterInactive()
+        public static BlockState RedstoneRepeaterInactive(RedstoneRepeaterType type = RedstoneRepeaterType.FacingNorth)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.RedstoneRepeaterInactive,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
-        public static BlockState RedstoneRepeaterActive()
+        public static BlockState RedstoneRepeaterActive(RedstoneRepeaterType type = RedstoneRepeaterType.FacingNorth)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.RedstoneRepeaterActive,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
-        public static BlockState StainedGlass()
+        public static BlockState StainedGlass(ColorType type = ColorType.White)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.StainedGlass,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
-        public static BlockState Trapdoor()
+        public static BlockState Trapdoor(TrapdoorType type = TrapdoorType.SouthSide)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.Trapdoor,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
-        public static BlockState MonsterEgg()
+        public static BlockState MonsterEgg(MonsterEggType type = MonsterEggType.Stone)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.MonsterEgg,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
-        public static BlockState StoneBricks()
+        public static BlockState StoneBricks(StoneBrickType type = StoneBrickType.StoneBrick)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.StoneBricks,
-                MetaValue = 0
+                MetaValue = (uint)type
             };
         }
 
+        // TODO: go on
         public static BlockState BrownMushroomBlock()
         {
             return new BlockState
