@@ -12,58 +12,43 @@ namespace MineCase.Server.World.Generation
     [StatelessWorker]
     internal class ChunkGeneratorFlatGrain : Grain, IChunkGeneratorFlat
     {
-        public Task<ChunkColumn> Generate(int x, int z, GeneratorSettings settings)
+        public Task<ChunkColumnStorage> Generate(int x, int z, GeneratorSettings settings)
         {
-            ChunkColumn chunkColumn = new ChunkColumn();
-            chunkColumn.Sections = new ChunkSection[16];
+            var chunkColumn = new ChunkColumnStorage();
             for (int i = 0; i < chunkColumn.Sections.Length; ++i)
-            {
-                chunkColumn.Sections[i] = new ChunkSection
-                {
-                    BitsPerBlock = 13,
-                    Blocks = new Block[4096]
-                };
-                for (int j = 0; j < chunkColumn.Sections[i].Blocks.Length; ++j)
-                {
-                    chunkColumn.Sections[i].Blocks[j] = new Block();
-                }
-            }
-
-            chunkColumn.SectionBitMask = 0b1111_1111_1111_1111;
-            chunkColumn.Biomes = new byte[256];
+                chunkColumn.Sections[i] = new ChunkSectionStorage(true);
 
             GenerateChunk(chunkColumn, x, z, settings);
             PopulateChunk(chunkColumn, x, z, settings);
             return Task.FromResult(chunkColumn);
         }
 
-        public Task GenerateChunk(ChunkColumn chunk, int x, int z, GeneratorSettings settings)
+        private void GenerateChunk(ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
         {
             // 按照flat模式每层的设置给chunk赋值
-            for (int i = 0; i < settings.FlatGeneratorInfo.FlatBlockId.Length; ++i)
+            for (int y = 0; y < settings.FlatGeneratorInfo.FlatBlockId.Length; ++y)
             {
-                BlockState state = settings.FlatGeneratorInfo.FlatBlockId[i];
+                var section = chunk.Sections[y / 16];
+                var state = settings.FlatGeneratorInfo.FlatBlockId[y];
                 if (state != null)
                 {
                     for (int j = 0; j < 16; ++j)
                     {
                         for (int k = 0; k < 16; ++k)
-                        {
-                            chunk.SetBlockState(j, i, k, state);
-                        }
+                            section.Data[j, y % 16, k] = new BlockState { Id = state.Value.Id, MetaValue = state.Value.MetaValue };
                     }
                 }
+
+                for (int i = 0; i < section.SkyLight.Storage.Length; i++)
+                    section.SkyLight.Storage[i] = 0xFF;
             }
 
             // todo biomes
-            chunk.GenerateSkylightMap();
-            return Task.CompletedTask;
         }
 
-        public Task PopulateChunk(ChunkColumn chunk, int x, int z, GeneratorSettings settings)
+        private void PopulateChunk(ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
         {
             // TODO generator tree, grass, structures\
-            return Task.CompletedTask;
         }
     }
 }

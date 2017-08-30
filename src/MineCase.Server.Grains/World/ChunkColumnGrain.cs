@@ -14,77 +14,78 @@ namespace MineCase.Server.World
         private int _chunkX;
         private int _chunkZ;
 
-        public async Task<ChunkColumn> GetState()
+        private ChunkColumnStorage _state;
+
+        public Task<ChunkColumnStorage> GetState() => Task.FromResult(_state);
+        /*
+        var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(1);
+        GeneratorSettings settings = new GeneratorSettings
         {
-            var generator = GrainFactory.GetGrain<IChunkGeneratorFlat>(1);
-            GeneratorSettings settings = new GeneratorSettings
-            {
-                Seed = 1,
-                FlatGeneratorInfo = new FlatGeneratorInfo
-                {
-                    FlatBlockId = new BlockState[] { BlockStates.GetBlockStateStone(), BlockStates.GetBlockStateDirt(), BlockStates.GetBlockStateGrass() }
-                }
-            };
-            ChunkColumn chunkColumn = await generator.Generate(_chunkX, _chunkZ, settings);
+            Seed = 1,
+        };
+        ChunkColumn chunkColumn = await generator.Generate(_chunkX, _chunkZ, settings);
+        return chunkColumn;
+        */
 
-            return chunkColumn;
-            /*
-            var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(1);
-            GeneratorSettings settings = new GeneratorSettings
+        /*
+        var blocks = new Block[16 * 16 * 16];
+        var index = 0;
+        for (int y = 0; y < 16; y++)
+        {
+            for (int x = 0; x < 16; x++)
             {
-                Seed = 1,
-            };
-            ChunkColumn chunkColumn = await generator.Generate(_chunkX, _chunkZ, settings);
-            return chunkColumn;
-            */
-
-            /*
-            var blocks = new Block[16 * 16 * 16];
-            var index = 0;
-            for (int y = 0; y < 16; y++)
-            {
-                for (int x = 0; x < 16; x++)
+                for (int z = 0; z < 16; z++)
                 {
-                    for (int z = 0; z < 16; z++)
-                    {
-                        if (y == 0)
-                            blocks[index] = new Block { Id = 1, SkyLight = 0xF };
-                        else
-                            blocks[index] = new Block { Id = 0, SkyLight = 0xF };
-                        index++;
-                    }
+                    if (y == 0)
+                        blocks[index] = new Block { Id = 1, SkyLight = 0xF };
+                    else
+                        blocks[index] = new Block { Id = 0, SkyLight = 0xF };
+                    index++;
                 }
             }
-
-            return Task.FromResult(new ChunkColumn
-            {
-                Biomes = Enumerable.Repeat<byte>(0, 256).ToArray(),
-                SectionBitMask = 0b1111_1111_1111_1111,
-                Sections = new[]
-                {
-                    new ChunkSection
-                    {
-                        BitsPerBlock = 13,
-                        Blocks = blocks
-                    }
-                }.Concat(Enumerable.Repeat(
-                    new ChunkSection
-                    {
-                        BitsPerBlock = 13,
-                        Blocks = Enumerable.Repeat(new Block { Id = 0, SkyLight = 0xF }, 16 * 16 * 16).ToArray()
-                    }, 15)).ToArray()
-            });
-            */
         }
 
-        public override Task OnActivateAsync()
+        return Task.FromResult(new ChunkColumn
+        {
+            Biomes = Enumerable.Repeat<byte>(0, 256).ToArray(),
+            SectionBitMask = 0b1111_1111_1111_1111,
+            Sections = new[]
+            {
+                new ChunkSection
+                {
+                    BitsPerBlock = 13,
+                    Blocks = blocks
+                }
+            }.Concat(Enumerable.Repeat(
+                new ChunkSection
+                {
+                    BitsPerBlock = 13,
+                    Blocks = Enumerable.Repeat(new Block { Id = 0, SkyLight = 0xF }, 16 * 16 * 16).ToArray()
+                }, 15)).ToArray()
+        });
+        */
+
+        public override async Task OnActivateAsync()
         {
             var key = this.GetWorldAndChunkPosition();
             _world = GrainFactory.GetGrain<IWorld>(key.worldKey);
             _chunkX = key.x;
             _chunkZ = key.z;
 
-            return base.OnActivateAsync();
+            await EnsureChunkGenerated();
+        }
+
+        private async Task EnsureChunkGenerated()
+        {
+            var generator = GrainFactory.GetGrain<IChunkGeneratorFlat>(1);
+            GeneratorSettings settings = new GeneratorSettings
+            {
+                FlatGeneratorInfo = new FlatGeneratorInfo
+                {
+                    FlatBlockId = new BlockState?[] { BlockStates.Stone(), BlockStates.Dirt(), BlockStates.Grass() }
+                }
+            };
+            _state = await generator.Generate(_chunkX, _chunkZ, settings);
         }
     }
 }

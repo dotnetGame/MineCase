@@ -8,7 +8,7 @@ namespace MineCase.Server.World
 {
     public interface IChunkColumn : IGrainWithStringKey
     {
-        Task<ChunkColumn> GetState();
+        Task<ChunkColumnStorage> GetState();
     }
 
     public static class ChunkColumnExtensions

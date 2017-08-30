@@ -46,9 +46,9 @@ namespace MineCase.Server.World.Biomes
         /** Is true (default) if the biome support rain (desert and nether can't have rain) */
         private bool _enableRain;
         /** The block expected to be on the top of this biome */
-        public BlockState _topBlock = BlockStates.GetBlockStateGrass();
+        public BlockState _topBlock = BlockStates.Grass();
         /** The block to fill spots in when not on the top */
-        public BlockState _fillerBlock = BlockStates.GetBlockStateDirt();
+        public BlockState _fillerBlock = BlockStates.Dirt();
 
         public Biome(BiomeProperties properties)
         {

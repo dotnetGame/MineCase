@@ -4,27 +4,9 @@ using System.Text;
 
 namespace MineCase.Server.World
 {
-    public class Blocks
+    public static class BlockStates
     {
-        public static Block GetBlockStone()
-        {
-            return new Block { Id = (uint)BlockId.Stone };
-        }
-
-        public static Block GetBlockGrass()
-        {
-            return new Block { Id = (uint)BlockId.Grass };
-        }
-
-        public static Block GetBlockDirt()
-        {
-            return new Block { Id = (uint)BlockId.Dirt };
-        }
-    }
-
-    public class BlockStates
-    {
-        public static BlockState GetBlockStateStone()
+        public static BlockState Stone()
         {
             return new BlockState
             {
@@ -33,7 +15,7 @@ namespace MineCase.Server.World
                  };
         }
 
-        public static BlockState GetBlockStateGrass()
+        public static BlockState Grass()
         {
             return new BlockState
             {
@@ -42,13 +24,31 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState GetBlockStateDirt()
+        public static BlockState Dirt()
         {
             return new BlockState
             {
                  Id = (uint)BlockId.Dirt,
                  MetaValue = 0
              };
+        }
+
+        public static BlockState Water()
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.Water,
+                MetaValue = 0
+            };
+        }
+
+        public static BlockState Air()
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.Air,
+                MetaValue = 0
+            };
         }
     }
 }
