@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Binary;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using MineCase.Formats;
 
 namespace MineCase.Serialization
 {
@@ -107,6 +107,20 @@ namespace MineCase.Serialization
             var bytes = _span.ToArray();
             _span = ReadOnlySpan<byte>.Empty;
             return bytes;
+        }
+
+        public Position ReadAsPosition()
+        {
+            var value = _span.ReadBigEndian<ulong>();
+            Position position = new Position
+            {
+                // note: binary cast, do not check value range.
+                X = (int)(value >> 38),
+                Y = (int)((value >> 26) & 0xFFF),
+                Z = (int)(value & 0x3FFFFFF)
+            };
+            Advance(sizeof(long));
+            return position;
         }
 
         private ReadOnlySpan<byte> ReadBytes(int length)
