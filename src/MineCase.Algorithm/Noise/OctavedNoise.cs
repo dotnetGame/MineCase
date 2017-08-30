@@ -46,7 +46,7 @@ namespace MineCase.Algorithm.Noise
 
             for (int i = 0; i < _octaves; i++)
             {
-                _innerNoise.AddNoise(noise, offset * frequency, scale * frequency, (float)amplitude);
+                _innerNoise.AddNoise(noise, Vector3.Multiply(offset, scale) * frequency, scale * frequency, (float)amplitude);
                 maxValue += amplitude;
                 amplitude *= _persistence;
                 frequency *= 2;

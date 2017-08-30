@@ -33,6 +33,14 @@ namespace MineCase.Server.World
         }
 
         public ChunkSectionStorage[] Sections { get; } = new ChunkSectionStorage[ChunkConstants.SectionsPerChunk];
+
+        public byte[] Biomes { get; } = new byte[256];
+
+        public BlockState this[int x, int y, int z]
+        {
+            get => Sections[y / 16].Data[x, y % 16, z];
+            set => Sections[y / 16].Data[x, y % 16, z] = value;
+        }
     }
 
     public sealed class ChunkSectionStorage
@@ -61,34 +69,34 @@ namespace MineCase.Server.World
         {
             public ulong[] Storage { get; } = new ulong[ChunkConstants.BlocksInSection * _bitsPerBlock / 64];
 
-            public BlockValue this[int x, int y, int z]
+            public BlockState this[int x, int y, int z]
             {
                 get
                 {
                     var offset = GetOffset(x, y, z);
                     var toRead = Math.Min(_bitsPerBlock, 64 - offset.bitOffset);
-                    var value = ToBigEndian(Storage[offset.indexOffset]) >> offset.bitOffset;
+                    var value = Storage[offset.indexOffset] >> offset.bitOffset;
                     var rest = _bitsPerBlock - toRead;
                     if (rest > 0)
-                        value = (value << rest) | (ToBigEndian(Storage[offset.bitOffset + 1]) & ((1u << rest) - 1));
-                    return new BlockValue { Id = (uint)(value >> _bitsMeta), MetaValue = (uint)(value & _metaMask) };
+                        value = (value << rest) | (Storage[offset.bitOffset + 1] & ((1u << rest) - 1));
+                    return new BlockState { Id = (uint)(value >> _bitsMeta), MetaValue = (uint)(value & _metaMask) };
                 }
 
                 set
                 {
                     var stgValue = ((ulong)value.Id << _bitsMeta) | (value.MetaValue & _metaMask);
                     var offset = GetOffset(x, y, z);
-                    var tmpValue = ToBigEndian(Storage[offset.indexOffset]);
+                    var tmpValue = Storage[offset.indexOffset];
                     var mask = _blockMask << offset.bitOffset;
                     var toWrite = Math.Min(_bitsPerBlock, 64 - offset.bitOffset);
-                    Storage[offset.indexOffset] = ToBigEndian((tmpValue & ~mask) | (stgValue << offset.bitOffset));
+                    Storage[offset.indexOffset] = (tmpValue & ~mask) | (stgValue << offset.bitOffset);
                     var rest = _bitsPerBlock - toWrite;
                     if (rest > 0)
                     {
                         mask = (1u << rest) - 1;
-                        tmpValue = ToBigEndian(Storage[offset.indexOffset + 1]);
+                        tmpValue = Storage[offset.indexOffset + 1];
                         stgValue >>= toWrite;
-                        Storage[offset.indexOffset + 1] = ToBigEndian((tmpValue & ~mask) | (stgValue & mask));
+                        Storage[offset.indexOffset + 1] = (tmpValue & ~mask) | (stgValue & mask);
                     }
                 }
             }
@@ -97,13 +105,6 @@ namespace MineCase.Server.World
             {
                 var index = GetBlockSerialIndex(x, y, z) * _bitsPerBlock;
                 return (index / 64, index % 64);
-            }
-
-            private static ulong ToBigEndian(ulong value)
-            {
-                return (value >> 56) | ((value & 0x00FF_0000_0000_0000) >> 40) | ((value & 0x0000_FF00_0000_0000) >> 24) |
-                    ((value & 0x0000_00FF_0000_0000) >> 8) | ((value & 0x0000_0000_FF00_0000) << 8) | ((value & 0x0000_0000_00FF_0000) << 24) |
-                    ((value & 0x0000_0000_0000_FF00) << 40) | ((value & 0x0000_0000_0000_00FF) << 56);
             }
         }
 
