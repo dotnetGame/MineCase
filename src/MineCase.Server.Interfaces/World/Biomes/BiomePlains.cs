@@ -10,5 +10,21 @@ namespace MineCase.Server.World.Biomes
             : base(properties)
         {
         }
+
+        // 使用植物进行装点修饰
+        public override void Decorate(IWorld world, Random rand, BlockPos pos)
+        {
+            // 加草
+
+            // 加花
+
+            // 加树
+        }
+
+        // 使用花装点
+        private void GenFlowers()
+        {
+
+        }
     }
 }

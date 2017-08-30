@@ -60,11 +60,56 @@ namespace MineCase.Server.World
             };
         }
 
+        public static BlockState Sand()
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.Sand,
+                MetaValue = 0
+            };
+        }
+
         public static BlockState Gravel()
         {
             return new BlockState
             {
                 Id = (uint)BlockId.Gravel,
+                MetaValue = 0
+            };
+        }
+
+        public static BlockState Wood()
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.Wood,
+                MetaValue = 0
+            };
+        }
+
+        public static BlockState Leaves()
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.Leaves,
+                MetaValue = 0
+            };
+        }
+
+        public static BlockState YellowFlower()
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.YellowFlower,
+                MetaValue = 0
+            };
+        }
+
+        public static BlockState RedFlower()
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.RedFlower,
                 MetaValue = 0
             };
         }

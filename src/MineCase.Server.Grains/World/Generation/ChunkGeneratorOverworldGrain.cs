@@ -48,11 +48,11 @@ namespace MineCase.Server.World.Generation
 
             int seed = (int)this.GetPrimaryKeyLong();
             _random = new Random(seed);
-            _depthNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 1.0F);
-            _mainNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 1.0F);
-            _maxNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 1.0F);
-            _minNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 1.0F);
-            _surfaceNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 1.0F);
+            _depthNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 8, 0.5F);
+            _mainNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 8, 0.5F);
+            _maxNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 8, 0.5F);
+            _minNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 8, 0.5F);
+            _surfaceNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 8, 0.5F);
 
             _biomeWeights = new float[5, 5];
             for (int i = -2; i <= 2; ++i)
@@ -77,18 +77,18 @@ namespace MineCase.Server.World.Generation
             return Task.CompletedTask;
         }
 
-        public async Task<ChunkColumnStorage> Generate(int x, int z, GeneratorSettings settings)
+        public async Task<ChunkColumnStorage> Generate(IWorld world, int x, int z, GeneratorSettings settings)
         {
             var chunkColumn = new ChunkColumnStorage();
             for (int i = 0; i < chunkColumn.Sections.Length; ++i)
                 chunkColumn.Sections[i] = new ChunkSectionStorage(true);
 
-            await GenerateChunk(chunkColumn, x, z, settings);
-            await PopulateChunk(chunkColumn, x, z, settings);
+            await GenerateChunk(world, chunkColumn, x, z, settings);
+            await PopulateChunk(world, chunkColumn, x, z, settings);
             return chunkColumn;
         }
 
-        public async Task GenerateChunk(ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
+        public async Task GenerateChunk(IWorld world, ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
         {
             // GetBiomesForGeneration(_biomesForGeneration, x * 4 - 2, z * 4 - 2, 10, 10);
             await GenerateBasicTerrain(chunk, x, z, settings);
@@ -100,7 +100,7 @@ namespace MineCase.Server.World.Generation
             await GenerateSkylightMap(chunk);
         }
 
-        public Task PopulateChunk(ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
+        public Task PopulateChunk(IWorld world, ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
         {
             return Task.CompletedTask;
         }

@@ -20,5 +20,9 @@ namespace MineCase.Server.World
         Task<long> GetAge();
 
         Task OnGameTick(TimeSpan deltaTime);
+
+        Task<BlockState> GetBlockState(int x, int y, int z);
+
+        Task SetBlockState(BlockState state, int x, int y, int z);
     }
 }

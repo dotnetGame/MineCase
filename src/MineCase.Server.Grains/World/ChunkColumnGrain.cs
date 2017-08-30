@@ -75,6 +75,17 @@ namespace MineCase.Server.World
             await EnsureChunkGenerated();
         }
 
+        public Task<BlockState> GetBlockState(int x, int y, int z)
+        {
+            return Task.FromResult(_state[x, y, z]);
+        }
+
+        public Task SetBlockState(BlockState state, int x, int y, int z)
+        {
+            _state[x, y, z] = state;
+            return Task.CompletedTask;
+        }
+
         private async Task EnsureChunkGenerated()
         {
             /*
@@ -86,13 +97,13 @@ namespace MineCase.Server.World
                     FlatBlockId = new BlockState?[] { BlockStates.Stone(), BlockStates.Dirt(), BlockStates.Grass() }
                 }
             };
-            _state = await generator.Generate(_chunkX, _chunkZ, settings);
+            _state = await generator.Generate(_world, _chunkX, _chunkZ, settings);
             */
             var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(1);
             GeneratorSettings settings = new GeneratorSettings
             {
             };
-            _state = await generator.Generate(_chunkX, _chunkZ, settings);
+            _state = await generator.Generate(_world, _chunkX, _chunkZ, settings);
         }
     }
 }

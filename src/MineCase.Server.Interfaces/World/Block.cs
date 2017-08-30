@@ -19,7 +19,13 @@ namespace MineCase.Server.World
         FlowingLava = 10,
         Lava = 11,
         Sand = 12,
-        Gravel = 13
+        Gravel = 13,
+        Wood = 17,
+        Leaves = 18,
+        Glass = 20,
+        Tallgrass = 31,
+        YellowFlower = 37,
+        RedFlower = 38
     }
 
     public struct BlockState : IEquatable<BlockState>
@@ -28,6 +34,20 @@ namespace MineCase.Server.World
 
         public uint MetaValue { get; set; }
 
+        // 一些特性
+        public bool IsLightOpacity()
+        {
+            if (Id == (uint)BlockId.Glass)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        // 相等比较
         public override bool Equals(object obj)
         {
             return obj is BlockState && Equals((BlockState)obj);
@@ -56,6 +76,59 @@ namespace MineCase.Server.World
         public static bool operator !=(BlockState state1, BlockState state2)
         {
             return !(state1 == state2);
+        }
+    }
+
+    public struct BlockPos : IEquatable<BlockPos>
+    {
+        public int X { get; set; }
+
+        public int Y { get; set; }
+
+        public int Z { get; set; }
+
+        public void Add(int x, int y, int z)
+        {
+            X += x;
+            Y += y;
+            Z += z;
+        }
+
+        public static BlockPos Add(BlockPos pos, int x, int y, int z)
+        {
+            return new BlockPos { X = pos.X + x, Y = pos.Y + y, Z = pos.Z + z };
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is BlockPos && Equals((BlockPos)obj);
+        }
+
+        public bool Equals(BlockPos other)
+        {
+            return X == other.X &&
+                   Y == other.Y &&
+                   Z == other.Z;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -307843816;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + X.GetHashCode();
+            hashCode = hashCode * -1521134295 + Y.GetHashCode();
+            hashCode = hashCode * -1521134295 + Z.GetHashCode();
+            return hashCode;
+        }
+
+        public static bool operator ==(BlockPos pos1, BlockPos pos2)
+        {
+            return pos1.Equals(pos2);
+        }
+
+        public static bool operator !=(BlockPos pos1, BlockPos pos2)
+        {
+            return !(pos1 == pos2);
         }
     }
 }

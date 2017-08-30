@@ -1,3 +1,5 @@
+using MineCase.Algorithm.Noise;
+using MineCase.Server.World.Plants;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -50,6 +52,13 @@ namespace MineCase.Server.World.Biomes
         /** The block to fill spots in when not on the top */
         public BlockState _fillerBlock = BlockStates.Dirt();
 
+        // 噪声函数
+        protected static readonly OctavedNoise<PerlinNoise> _temperatureNoise =
+            new OctavedNoise<PerlinNoise>(new PerlinNoise(1234), 4, 0.5F);
+
+        protected static readonly OctavedNoise<PerlinNoise> _grassColorNoise =
+            new OctavedNoise<PerlinNoise>(new PerlinNoise(2345), 4, 0.5F);
+
         public Biome(BiomeProperties properties)
         {
             _name = properties.BiomeName;
@@ -90,6 +99,18 @@ namespace MineCase.Server.World.Biomes
             }
         }
 
+        // 随机获得一个该生物群系可能出现的草
+        public virtual PlantsType GetRandomGrass(Random rand)
+        {
+            return PlantsType.TallGrass;
+        }
+
+        // 使用植物进行装点修饰
+        public virtual void Decorate(IWorld world, Random rand, BlockPos pos)
+        {
+        }
+
+        // 产生生物群系特有的方块
         public void GenerateBiomeTerrain(int seaLevel, Random rand, ChunkColumnStorage chunk, int chunk_x, int chunk_z, int x_in_chunk, int z_in_chunk, double noiseVal)
         {
             BlockState topBlockstate = _topBlock;
