@@ -173,6 +173,14 @@ namespace MineCase.Server.Network.Play
                 ChunkZ = chunkZ
             });
         }
+
+        public Task SendClientAnimation(ClientAnimationID animationID)
+        {
+            return Sink.SendPacket(new ClientAnimation
+            {
+                AnimationID = animationID
+            });
+        }
     }
 
     [Flags]

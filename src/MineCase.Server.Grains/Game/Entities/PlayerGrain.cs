@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Formats;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
@@ -131,6 +132,19 @@ namespace MineCase.Server.Game.Entities
             _pitch = pitch;
             _yaw = yaw;
             return Task.CompletedTask;
+        }
+
+        public Task<SwingHandState> OnSwingHand(SwingHandState handState)
+        {
+            // TODO:update player state here.
+            return Task.FromResult(
+                handState == SwingHandState.MainHand ?
+                SwingHandState.MainHand : SwingHandState.OffHand);
+        }
+
+        public async Task SendClientAnimation(ClientAnimationID animationID)
+        {
+            await _generator.SendClientAnimation(animationID);
         }
     }
 }
