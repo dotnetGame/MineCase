@@ -78,26 +78,24 @@ namespace MineCase.Server.World.Biomes
             switch (biomeId)
             {
                 case BiomeId.Ocean:
-                    // return new BiomeOcean();
+                // return new BiomeOcean();
                 case BiomeId.Plains:
-                    // return new BiomePlains();
+                // return new BiomePlains();
                 case BiomeId.Desert:
-                    // return new BiomeDesert();
+                // return new BiomeDesert();
                 case BiomeId.ExtremeHills:
-                    // return new BiomeExtremeHills();
+                // return new BiomeExtremeHills();
                 default:
                     return null;
             }
         }
 
-        public void GenerateBiomeTerrain(int seaLevel, Random rand, ChunkColumnStorage chunk, int x, int z, double noiseVal)
+        public void GenerateBiomeTerrain(int seaLevel, Random rand, ChunkColumnStorage chunk, int chunk_x, int chunk_z, int x_in_chunk, int z_in_chunk, double noiseVal)
         {
             BlockState topBlockstate = _topBlock;
             BlockState fillerBlockstate = _fillerBlock;
             int surfaceFlag = -1;
             int surfaceDepth = (int)(noiseVal / 3.0D + 3.0D + rand.NextDouble() * 0.25D);
-            int x_in_chunk = x & 0xF;
-            int z_in_chunk = z & 0xF;
 
             for (int y = 255; y >= 0; --y)
             {
