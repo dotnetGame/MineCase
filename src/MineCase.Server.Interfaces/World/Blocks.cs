@@ -902,7 +902,7 @@ namespace MineCase.Server.World
             return new BlockState
             {
                 Id = (uint)BlockId.BrownMushroomBlock,
-                MetaValue = (uint)type
+                MetaValue = (uint)mushroomBlockType
             };
         }
 
@@ -911,7 +911,7 @@ namespace MineCase.Server.World
             return new BlockState
             {
                 Id = (uint)BlockId.RedMushroomBlock,
-                MetaValue = (uint)type
+                MetaValue = (uint)mushroomBlockType
             };
         }
 
