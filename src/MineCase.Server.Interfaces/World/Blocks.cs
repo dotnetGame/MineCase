@@ -96,6 +96,15 @@ namespace MineCase.Server.World
             };
         }
 
+        public static BlockState Tallgrass(GrassType type = GrassType.TallGrass)
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.Tallgrass,
+                MetaValue = (uint)type
+            };
+        }
+
         public static BlockState YellowFlower()
         {
             return new BlockState

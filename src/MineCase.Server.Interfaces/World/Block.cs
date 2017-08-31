@@ -28,6 +28,13 @@ namespace MineCase.Server.World
         RedFlower = 38
     }
 
+    public enum GrassType : uint
+    {
+        Shrub = 0,
+        TallGrass = 1,
+        Fern = 2
+    }
+
     public struct BlockState : IEquatable<BlockState>
     {
         public uint Id { get; set; }

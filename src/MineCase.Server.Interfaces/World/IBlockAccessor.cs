@@ -11,5 +11,7 @@ namespace MineCase.Server.World
         Task<BlockState> GetBlockState(int x, int y, int z);
 
         Task SetBlockState(int x, int y, int z, BlockState state);
+
+        Task<bool> CanBlockStay(int x, int y, int z, BlockState state);
     }
 }

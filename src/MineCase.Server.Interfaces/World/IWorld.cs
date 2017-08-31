@@ -20,5 +20,7 @@ namespace MineCase.Server.World
         Task<long> GetAge();
 
         Task OnGameTick(TimeSpan deltaTime);
+
+        Task<IBlockAccessor> GetBlockAccessor();
     }
 }

@@ -14,11 +14,13 @@ namespace MineCase.Server.World
         private Dictionary<uint, IEntity> _entities;
         private uint _nextAvailEId;
         private long _worldAge;
+        private IBlockAccessor _blockAccessor;
 
         public override Task OnActivateAsync()
         {
             _nextAvailEId = 0;
             _entities = new Dictionary<uint, IEntity>();
+            _blockAccessor = GrainFactory.GetGrain<IBlockAccessor>(this.GetPrimaryKeyString());
             return base.OnActivateAsync();
         }
 
@@ -53,5 +55,10 @@ namespace MineCase.Server.World
         }
 
         public Task<long> GetAge() => Task.FromResult(_worldAge);
+
+        public Task<IBlockAccessor> GetBlockAccessor()
+        {
+            return Task.FromResult(_blockAccessor);
+        }
     }
 }

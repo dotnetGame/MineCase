@@ -1,8 +1,9 @@
-using MineCase.Algorithm.Noise;
-using MineCase.Server.World.Plants;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
+using MineCase.Algorithm.Noise;
+using MineCase.Server.World.Plants;
 
 namespace MineCase.Server.World.Biomes
 {
@@ -23,11 +24,6 @@ namespace MineCase.Server.World.Biomes
         public bool EnableSnow { get; set; } = false;
 
         public bool EnableRain { get; set; } = true;
-
-        public BiomeProperties(string name)
-        {
-            BiomeName = name;
-        }
     }
 
     public abstract class Biome
@@ -89,7 +85,7 @@ namespace MineCase.Server.World.Biomes
                 case BiomeId.Ocean:
                 // return new BiomeOcean();
                 case BiomeId.Plains:
-                // return new BiomePlains();
+                    return new BiomePlains(new BiomeProperties { BiomeName = "plains" });
                 case BiomeId.Desert:
                 // return new BiomeDesert();
                 case BiomeId.ExtremeHills:
@@ -106,8 +102,9 @@ namespace MineCase.Server.World.Biomes
         }
 
         // 使用植物进行装点修饰
-        public virtual void Decorate(IWorld world, Random rand, BlockPos pos)
+        public virtual Task Decorate(IWorld world, ChunkColumnStorage chunk, Random rand, BlockPos pos)
         {
+            return Task.CompletedTask;
         }
 
         // 产生生物群系特有的方块

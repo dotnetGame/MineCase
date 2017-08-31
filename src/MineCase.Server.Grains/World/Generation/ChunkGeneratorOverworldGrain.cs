@@ -70,7 +70,7 @@ namespace MineCase.Server.World.Generation
             {
                 for (int j = 0; j < 16; ++j)
                 {
-                    _biomesForGeneration[i, j] = new BiomePlains(new BiomeProperties("plains"));
+                    _biomesForGeneration[i, j] = new BiomePlains(new BiomeProperties { BiomeName = "plains" });
                 }
             }
 
@@ -100,9 +100,13 @@ namespace MineCase.Server.World.Generation
             await GenerateSkylightMap(chunk);
         }
 
-        public Task PopulateChunk(IWorld world, ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
+        public async Task PopulateChunk(IWorld world, ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
         {
-            return Task.CompletedTask;
+            int blockX = x * 16;
+            int blockZ = z * 16;
+            Biome chunkBiome = Biome.GetBiome(chunk.Biomes[7 * 16 + 7]);
+
+            await chunkBiome.Decorate(world, chunk, _random, new BlockPos { X = blockX, Y = 0, Z = blockZ });
         }
 
         private async Task GenerateBasicTerrain(ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
@@ -112,16 +116,14 @@ namespace MineCase.Server.World.Generation
 
             for (int xHigh = 0; xHigh < 4; ++xHigh)
             {
-                int xPart1 = xHigh * 5;
-                int xPart2 = (xHigh + 1) * 5;
-
+                // int xPart1 = xHigh * 5;
+                // int xPart2 = (xHigh + 1) * 5;
                 for (int zHigh = 0; zHigh < 4; ++zHigh)
                 {
-                    int zPart11 = (xPart1 + zHigh) * 33;
-                    int zPart12 = (xPart1 + zHigh + 1) * 33;
-                    int zPart21 = (xPart2 + zHigh) * 33;
-                    int zPart22 = (xPart2 + zHigh + 1) * 33;
-
+                    // int zPart11 = (xPart1 + zHigh) * 33;
+                    // int zPart12 = (xPart1 + zHigh + 1) * 33;
+                    // int zPart21 = (xPart2 + zHigh) * 33;
+                    // int zPart22 = (xPart2 + zHigh + 1) * 33;
                     for (int yHigh = 0; yHigh < 32; ++yHigh)
                     {
                         double yPart111 = _densityMap[xHigh, yHigh, zHigh];
