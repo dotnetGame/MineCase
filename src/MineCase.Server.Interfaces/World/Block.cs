@@ -131,4 +131,52 @@ namespace MineCase.Server.World
             return !(pos1 == pos2);
         }
     }
+
+    public struct ChunkPos : IEquatable<ChunkPos>
+    {
+        public int X { get; set; }
+
+        public int Z { get; set; }
+
+        public void Add(int x, int z)
+        {
+            X += x;
+            Z += z;
+        }
+
+        public static ChunkPos Add(ChunkPos pos, int x, int z)
+        {
+            return new ChunkPos { X = pos.X + x, Z = pos.Z + z };
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is ChunkPos && Equals((ChunkPos)obj);
+        }
+
+        public bool Equals(ChunkPos other)
+        {
+            return X == other.X &&
+                   Z == other.Z;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 1911744652;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + X.GetHashCode();
+            hashCode = hashCode * -1521134295 + Z.GetHashCode();
+            return hashCode;
+        }
+
+        public static bool operator ==(ChunkPos pos1, ChunkPos pos2)
+        {
+            return pos1.Equals(pos2);
+        }
+
+        public static bool operator !=(ChunkPos pos1, ChunkPos pos2)
+        {
+            return !(pos1 == pos2);
+        }
+    }
 }

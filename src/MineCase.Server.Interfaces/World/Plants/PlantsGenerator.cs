@@ -7,7 +7,7 @@ namespace MineCase.Server.World.Plants
 {
     public class PlantsGenerator
     {
-        public virtual void Generate(IWorld world, Biome biome, Random random, BlockPos pos)
+        public virtual void Generate(IWorld world, IChunkColumn chunk, Biome biome, Random random, BlockPos pos)
         {
         }
     }

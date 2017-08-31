@@ -53,20 +53,5 @@ namespace MineCase.Server.World
         }
 
         public Task<long> GetAge() => Task.FromResult(_worldAge);
-
-        public async Task<BlockState> GetBlockState(int x, int y, int z)
-        {
-            // 需要优化？？
-            var chunkColumn = GrainFactory.GetGrain<IChunkColumn>(this.MakeChunkColumnKey(x, z));
-
-            return await chunkColumn.GetBlockState(x, y, z);
-        }
-
-        public async Task SetBlockState(BlockState state, int x, int y, int z)
-        {
-            // 需要优化？？
-            var chunkColumn = GrainFactory.GetGrain<IChunkColumn>(this.MakeChunkColumnKey(x, z));
-            await chunkColumn.SetBlockState(state, x, y, z)
-        }
     }
 }

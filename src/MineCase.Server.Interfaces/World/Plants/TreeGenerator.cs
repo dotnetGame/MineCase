@@ -1,7 +1,7 @@
-﻿using MineCase.Server.World.Biomes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MineCase.Server.World.Biomes;
 
 namespace MineCase.Server.World.Plants
 {
@@ -23,7 +23,7 @@ namespace MineCase.Server.World.Plants
             _leaves = leaves;
         }
 
-        public override void Generate(IWorld world, Biome biome, Random random, BlockPos pos)
+        public override void Generate(IWorld world, IChunkColumn chunk, Biome biome, Random random, BlockPos pos)
         {
         }
     }

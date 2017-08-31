@@ -1,42 +1,48 @@
-﻿using MineCase.Server.World.Biomes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MineCase.Server.World.Biomes;
 
 namespace MineCase.Server.World.Plants
 {
     public class GrassGenerator : PlantsGenerator
     {
-        private int _grassPerChunk;
+        public int GrassPerChunk { get; set; } = 1;
 
         public GrassGenerator(int grassPerChunk = 1)
         {
-            _grassPerChunk = grassPerChunk;
+            GrassPerChunk = grassPerChunk;
         }
 
-        public override void Generate(IWorld world, Biome biome, Random random, BlockPos pos)
+        public override void Generate(IWorld world, IChunkColumn chunk, Biome biome, Random random, BlockPos pos)
         {
             var width = ChunkConstants.BlockEdgeWidthInSection;
             for (int grassNum = 0; grassNum < _grassPerChunk; ++grassNum)
             {
-                int x = random.Next(width) + 8;
-                int z = random.Next(width) + 8;
-                int height = world.getHeight(BlockPos.Add(pos, x, 0, z)).getY() * 2;
+                
+            }
 
-                if (height > 0)
+            for (BlockState iblockstate = BlockAccessor.GetBlockState(pos.X, pos.Y, pos.Z);
+                (iblockstate == BlockStates.Air() || iblockstate != BlockStates.Leaves()) && pos.Y > 0;
+                iblockstate = BlockAccessor.GetBlockState(pos.X, pos.Y, pos.Z))
+            {
+                pos.Y = pos.Y - 1;
+            }
+
+            for (int i = 0; i < 128; ++i)
+            {
+                BlockPos blockpos = BlockPos.Add(pos, random.Next(8) - random.Next(8), random.Next(4) - random.Next(4), random.Next(8) - random.Next(8));
+                if (worldIn.isAirBlock(blockpos) && Blocks.TALLGRASS.CanBlockStay(worldIn, blockpos, this.tallGrassState))
                 {
-                    int r = random.Next(height);
-                    biome.GetRandomGrass(random).generate(world, random, BlockPos.Add(pos, x, r, z));
+                    worldIn.setBlockState(blockpos, this.tallGrassState, 2);
                 }
             }
+
+            return true;
         }
 
-        private void GenGrass(IWorld world, int height, BlockPos pos)
+        private void GenGrass(IWorld world, IChunkColumn chunk, BlockPos pos)
         {
-            for (int i = 0; i < height; ++i)
-            {
-                world.SetBlockState();
-            }
         }
     }
 }
