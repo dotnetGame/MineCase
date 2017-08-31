@@ -7,13 +7,13 @@ namespace MineCase.Protocol.Play
 {
     [Immutable]
     [Packet(0x06)]
-    public sealed class ClientAnimation : ISerializablePacket
+    public sealed class ClientboundAnimation : ISerializablePacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint EntityID;
 
         [SerializeAs(DataType.Byte)]
-        public ClientAnimationID AnimationID;
+        public ClientboundAnimationID AnimationID;
 
         public void Serialize(BinaryWriter bw)
         {

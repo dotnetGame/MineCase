@@ -6,14 +6,14 @@ namespace MineCase.Protocol.Play
 {
     [Immutable]
     [Packet(0x1D)]
-    public sealed class ServerAnimation
+    public sealed class ServerboundAnimation
     {
         [SerializeAs(DataType.VarInt)]
         public SwingHandState HandState;
 
-        public static ServerAnimation Deserialize(ref SpanReader br)
+        public static ServerboundAnimation Deserialize(ref SpanReader br)
         {
-            return new ServerAnimation
+            return new ServerboundAnimation
             {
                 // TODO: check VarInt to enum.
                 HandState = (SwingHandState)br.ReadAsVarInt(out _)

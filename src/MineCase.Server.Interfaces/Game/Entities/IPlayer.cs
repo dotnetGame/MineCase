@@ -38,6 +38,6 @@ namespace MineCase.Server.Game.Entities
 
         Task<SwingHandState> OnSwingHand(SwingHandState handState);
 
-        Task SendClientAnimation(ClientAnimationID animationID);
+        Task SendClientAnimation(uint entityID, ClientboundAnimationID animationID);
     }
 }

@@ -63,7 +63,7 @@ namespace MineCase.Server.Network
 
                 // Server Animation
                 case 0x1D:
-                    innerPacket = DeferPacket(ServerAnimation.Deserialize(ref br));
+                    innerPacket = DeferPacket(ServerboundAnimation.Deserialize(ref br));
                     break;
 
                 // Player Digging
@@ -146,13 +146,10 @@ namespace MineCase.Server.Network
             return Task.CompletedTask;
         }
 
-        private async Task DispatchPacket(ServerAnimation packet)
+        private async Task DispatchPacket(ServerboundAnimation packet)
         {
             var player = await _user.GetPlayer();
             var handState = await player.OnSwingHand(packet.HandState);
-
-            // TODO:check enum to enum.
-            await player.SendClientAnimation((ClientAnimationID)handState);
         }
 
         private Task DispatchPacket(PlayerDigging packet)

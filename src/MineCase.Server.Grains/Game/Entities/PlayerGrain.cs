@@ -142,9 +142,9 @@ namespace MineCase.Server.Game.Entities
                 SwingHandState.MainHand : SwingHandState.OffHand);
         }
 
-        public async Task SendClientAnimation(ClientAnimationID animationID)
+        public async Task SendClientAnimation(uint entityID, ClientboundAnimationID animationID)
         {
-            await _generator.SendClientAnimation(animationID);
+            await _generator.SendClientAnimation(entityID, animationID);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace MineCase.Formats
 {
-    public enum ClientAnimationID : byte
+    public enum ClientboundAnimationID : byte
     {
         SwingMainArm = 0,
         TakeDamage = 1,
