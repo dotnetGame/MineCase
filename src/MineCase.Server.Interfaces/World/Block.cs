@@ -262,7 +262,7 @@ namespace MineCase.Server.World
         StructureBlock = 255
     }
 
-    public enum WoodPlanksType : uint
+    public enum WoodPlankType : uint
     {
         OakWoodPlanks = 0,
         SpruceWoodPlanks = 1,
@@ -343,7 +343,7 @@ namespace MineCase.Server.World
         Onlybark = 0xC
     }
 
-    public enum LeavesType : uint
+    public enum LeaveType : uint
     {
         OakLeaves = 0,
         SpruceLeaves = 1,
@@ -395,7 +395,7 @@ namespace MineCase.Server.World
         FacingUp = 5
     }
 
-    public enum DoubleStoneSlabsType : uint
+    public enum DoubleStoneSlabType : uint
     {
         DoubleStoneSlab = 0,
         DoubleSandstoneSlab = 1,
@@ -410,7 +410,7 @@ namespace MineCase.Server.World
         TileDoubleQuartzSlab = 10
     }
 
-    public enum StoneSlabsType : uint
+    public enum StoneSlabType : uint
     {
         StoneSlab = 0,
         SandstoneSlab = 1,
@@ -430,14 +430,30 @@ namespace MineCase.Server.World
         UpperQuartzSlab = 15
     }
 
-    public enum DoubleWoodenSlabsType : uint
+    public enum DoubleWoodenSlabType : uint
     {
-
+        DoubleOak = 0,
+        DoubleSpruce = 1,
+        DoubleBirch = 2,
+        DoubleJungle = 3,
+        DoubleAcacia = 4,
+        DoubleDarkOak = 5
     }
 
-    public enum WoodenSlabsType : uint
+    public enum WoodenSlabType : uint
     {
-
+        Oak = 0,
+        Spruce = 1,
+        Birch = 2,
+        Jungle = 3,
+        Acacia = 4,
+        DarkOak = 5,
+        UpperOak = 8,
+        UpperSpruce = 9,
+        UpperBirch = 10,
+        UpperJungle = 11,
+        UpperAcacia = 12,
+        UpperDarkOak = 13
     }
 
     public enum FireType : uint
@@ -479,7 +495,7 @@ namespace MineCase.Server.World
         Fern = 2
     }
 
-    public enum FlowersType : uint
+    public enum FlowerType : uint
     {
         Poppy = 0,
         BlueOrchid = 1,
@@ -492,7 +508,7 @@ namespace MineCase.Server.World
         OxeyeDaisy = 8
     }
 
-    public enum LargeFlowersType : uint
+    public enum LargeFlowerType : uint
     {
         Sunflower = 0,
         Lilac = 1,
@@ -613,14 +629,32 @@ namespace MineCase.Server.World
         WetnessLevel7 = 7,
     }
 
-    public enum BannerStandingType : uint
+    public enum StandingBannerType : uint
     {
-
+        South = 0,
+        SouthToSouthwest = 1,
+        Southwest = 2,
+        WestToSouthwest = 3,
+        West = 4,
+        WestToNorthwest = 5,
+        Northwest = 6,
+        NorthToNorthwest = 7,
+        North = 8,
+        NorthToNortheast = 9,
+        Northeast = 10,
+        EastToNortheast = 11,
+        East = 12,
+        EastToSoutheast = 13,
+        Southeast = 14,
+        SouthToSoutheast = 15
     }
 
-    public enum BannerWallType : uint
+    public enum WallBannerType : uint
     {
-
+        North = 2,
+        South = 3,
+        West = 4,
+        East = 5
     }
 
     public enum DoorType : uint
@@ -635,7 +669,7 @@ namespace MineCase.Server.World
         TopHalfOfTheDoor = 0x8
     }
 
-    public enum RailsType : uint
+    public enum RailType : uint
     {
         StraightRailConnectNS = 0,
         StraightRailConnectEW = 1,
@@ -652,7 +686,7 @@ namespace MineCase.Server.World
     /// <summary>
     /// For Activator Rails, Detector Rails, and Powered Rails
     /// </summary>
-    public enum RailsExType : uint
+    public enum RailExType : uint
     {
         FlatTrackGoingNS = 0,
         FlatTrackGoingWE = 1,
@@ -673,7 +707,7 @@ namespace MineCase.Server.World
         FacingEast = 5,
     }
 
-    public enum SignStandingType : uint
+    public enum StandingSignType : uint
     {
         South = 0,
         SouthToSouthwest = 1,
@@ -693,7 +727,7 @@ namespace MineCase.Server.World
         SouthToSoutheast = 15
     }
 
-    public enum SignWallType : uint
+    public enum WallSignType : uint
     {
         North = 2,
         South = 3,
@@ -733,7 +767,13 @@ namespace MineCase.Server.World
 
     public enum HopperType : uint
     {
-
+        FacingDown = 0,
+        FacingNorth = 2,
+        FacingSouth = 3,
+        FacingWest = 4,
+        FacingEast = 5,
+        // 0x8 bit field : Set if activated/disabled
+        Activated = 0x8
     }
 
     public enum LeverType : uint
@@ -754,6 +794,29 @@ namespace MineCase.Server.World
     {
         None = 0,
         Active = 1
+    }
+
+    /// <summary>
+    /// Represents the weighted pressure plate's current redstone power level.
+    /// </summary>
+    public enum WeightedPressurePlateType : uint
+    {
+        Level1 = 0,
+        Level2 = 1,
+        Level3 = 2,
+        Level4 = 3,
+        Level5 = 4,
+        Level6 = 5,
+        Level7 = 6,
+        Level8 = 7,
+        Level9 = 8,
+        Level10 = 9,
+        Level11 = 10,
+        Level12 = 11,
+        Level13 = 12,
+        Level14 = 13,
+        Level15 = 14,
+        Level16 = 15,
     }
 
     public enum ButtonType : uint
@@ -800,7 +863,7 @@ namespace MineCase.Server.World
         Interval15 = 15
     }
 
-    public enum SugarCanesType : uint
+    public enum SugarCaneType : uint
     {
         FreshlyPlantedSugarCane = 0,
         Interval1 = 1,
@@ -927,17 +990,214 @@ namespace MineCase.Server.World
 
     public enum MushroomBlockType : uint
     {
-
+        PoresOnAllSides = 0,
+        CapTextureOnTopWestNorth = 1,
+        CapTextureOnTopNorth = 2,
+        CapTextureOnTopNorthEast = 3,
+        CapTextureOnTopWest = 4,
+        CapTextureOnTop = 5,
+        CapTextureOnTopEast = 6,
+        CapTextureOnTopSouthWest = 7,
+        CapTextureOnTopSouth = 8,
+        CapTextureOnTopEastSouth = 9,
+        StemTextureOnAllFourSidesPoresOnTopBottom = 10,
+        CapTextureOnAllSixSides = 11,
+        StemTextureOnAllSixSides = 12
     }
-    // TODO:
 
-    public enum SpongeType : uint
+    public enum PumpkinMelonStemType : uint
     {
-        Sponge = 0,
-        WetSponge = 1,
+        FreshlyPlantedStem = 0,
+        FirstStageOfGrowth = 1,
+        SecondStageOfGrowth = 2,
+        ThirdStageOfGrowth = 3,
+        FourthStageOfGrowth = 4,
+        FifthStageOfGrowth = 5,
+        SixthStageOfGrowth = 6,
+        SeventhStageOfGrowth = 7
     }
 
-    // TODO:
+    /// <summary>
+    /// Determines the face against which the vine is anchored. 
+    /// </summary>
+    public enum VineType : uint
+    {
+        South = 1,
+        West = 2,
+        North = 4,
+        East = 8
+    }
+
+    public enum FenceGateType : uint
+    {
+        FacingSouth = 0,
+        FacingWest = 1,
+        FacingNorth = 2,
+        FacingEast = 3,
+        // 0x4 bit field : 0 if the gate is closed, 1 if open
+        Open = 0x4
+    }
+
+    public enum NetherWartType : uint
+    {
+        GrowthStage1 = 0,
+        GrowthStage2 = 1,
+        GrowthStage3 = 2,
+        GrowthStage4 = 3,
+    }
+
+    public enum BrewingStandType : uint
+    {
+        TheSlotPointingSast = 0x1,
+        TheSlotPointingSouthwest = 0x2,
+        TheSlotPointingNorthwest = 0x4
+    }
+
+    public enum CauldronType : uint
+    {
+        Empty = 0,
+        LittleFilled = 1,
+        ManyFilled = 2,
+        FullFilled = 3
+    }
+
+    public enum EndPortalFrameType : uint
+    {
+        South = 0,
+        West = 1,
+        North = 2,
+        East = 3,
+        // 0x4 bit field : 0 is an "empty" frame block, 1 is a block with an Eye of Ender inserted
+        EyeOfEnder = 0x4
+    }
+
+    public enum CocoaType : uint
+    {
+        North = 0,
+        East = 1,
+        South = 2,
+        West = 3,
+        // 0x4 ~ 0x8 bit field specifying the stage of growth of the plant
+        FirstStage = 0x0,
+        SecondStage = 0x4,
+        FinalStage = 0x8
+    }
+
+    public enum TripwireHookType : uint
+    {
+        FacingSouth = 0,
+        FacingWest = 1,
+        FacingNorth = 2,
+        FacingEast = 3,
+        // 0x4 bit field : If set, the tripwire hook is connected and ready to trip ("middle" position)
+        Connected = 0x4,
+        // 0x8 bit field : If set, the tripwire hook is currently activated ("down" position)
+        Activated = 0x8
+    }
+
+    public enum TripwireType : uint
+    {
+        None = 0,
+        // 0x1 bit field : Set if tripwire is activated (an entity is intersecting its collision mask)
+        Activated = 0x1,
+        // 0x4 bit field : Set if tripwire is attached to a valid tripwire circuit
+        Attached = 0x4,
+        // 0x8 bit field : Set if tripwire is disarmed
+        Disarmed = 0x8
+    }
+
+    public enum CobblestoneWallType : uint
+    {
+        CobblestoneWall = 0,
+        MossyCobblestoneWall = 1
+    }
+
+    public enum FlowerPotType : uint
+    {
+        Empty = 0,
+        Poppy = 1,
+        Dandelion = 2,
+        OakSapling = 3,
+        SpruceSapling = 4,
+        BirchSapling = 5,
+        JungleSapling = 6,
+        RedMushroom = 7,
+        BrownMushroom = 8,
+        Cactus = 9,
+        DeadBush = 10,
+        Fern = 11,
+        AcaciaSapling = 12,
+        DarkOakSapling = 13
+    }
+
+    public enum HeadForBlockType : uint
+    {
+        OnTheFloor = 1,
+        OnAWallFacingNorth = 2,
+        OnAWallFacingSouth = 3,
+        OnAWallFacingEast = 4,
+        OnAWallFacingWest = 5
+    }
+
+    public enum HeadForItemType : uint
+    {
+        SkeletonSkull = 0,
+        WitherSkeletonSkull = 1,
+        ZombieHead = 2,
+        Head = 3,
+        CreeperHead = 4,
+        DragonHead = 5
+    }
+
+    public enum BlockOfQuartzType : uint
+    {
+        BlockOfQuartz = 0,
+        ChiseledQuartzBlock = 1,
+        PillarQuartzBlockVertical = 2,
+        PillarQuartzBlockNorthSouth = 3,
+        PillarQuartzBlockEastWest = 4
+    }
+
+    public enum CoalType : uint
+    {
+        Coal = 0,
+        Charcoal = 1
+    }
+
+    public enum DyeType : uint
+    {
+        InkSac = 0,
+        RoseRed = 1,
+        CactusGreen = 2,
+        CocoaBeans = 3,
+        LapisLazuli = 4,
+        PurpleDye = 5,
+        CyanDye = 6,
+        LightGrayDye = 7,
+        GrayDye = 8,
+        PinkDye = 9,
+        LimeDye = 10,
+        DandelionYellow = 11,
+        LightBlueDye = 12,
+        MagentaDye = 13,
+        OrangeDye = 14,
+        BoneMeal = 15
+    }
+
+    public enum FishType : uint
+    {
+        RawFishOrCookedFish = 0,
+        RawSalmonOrCookedSalmon = 1,
+        Clownfish = 2,
+        Pufferfish = 3
+    }
+
+    public enum AnvilForItemType : uint
+    {
+        Anvil = 0,
+        SlightlyDamagedAnvil = 1,
+        VeryDamagedAnvil = 2
+    }
 
     public struct BlockState : IEquatable<BlockState>
     {
