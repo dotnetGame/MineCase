@@ -290,6 +290,7 @@ namespace MineCase.Server.World
         Podzol = 2
     }
 
+    [Flags]
     public enum SaplingsType : uint
     {
         OakSapling = 0,
@@ -300,7 +301,7 @@ namespace MineCase.Server.World
         DarkOakSapling = 5,
 
         // 0x8 bit field : Set if sapling is ready to grow into a tree
-        ReadyForTree = 0x8
+        ReadyForTreeFlag = 0x8
     }
 
     /// <summary>
@@ -311,6 +312,7 @@ namespace MineCase.Server.World
     /// Level1 is the highest fluid level(not necessarily filling the block -
     /// this depends on the neighboring fluid blocks above each upper corner of the block)
     /// </summary>
+    [Flags]
     public enum FluidType : uint
     {
         Level1 = 0,
@@ -323,7 +325,7 @@ namespace MineCase.Server.World
         Level8 = 7,
 
         // 0x8 bit field : Set if sapling is ready to grow into a tree
-        Falling = 0x8
+        FallingFlag = 0x8
     }
 
     public enum SandType : uint
@@ -332,6 +334,7 @@ namespace MineCase.Server.World
         RedSand = 1
     }
 
+    [Flags]
     public enum WoodType : uint
     {
         OakWoodOrAcaciaWood = 0,
@@ -339,11 +342,11 @@ namespace MineCase.Server.World
         BirchWood = 2,
         JungleWood = 3,
 
-        // 0x4~0x8 bits specifying the orientation of the wood
-        FacingUp = 0x0,
-        FacingEast = 0x4,
-        FacingNorth = 0x8,
-        Onlybark = 0xC
+        // 0x4 ~ 0x8 bits field specifying the orientation of the wood
+        FacingUpFlag = 0x0,
+        FacingEastFlag = 0x4,
+        FacingNorthFlag = 0x8,
+        OnlybarkFlag = 0xC
     }
 
     public enum LeaveType : uint
@@ -479,6 +482,7 @@ namespace MineCase.Server.World
         SmoothRedSandstone = 2
     }
 
+    [Flags]
     public enum BedType : uint
     {
         HeadFacingSouth = 0,
@@ -486,11 +490,11 @@ namespace MineCase.Server.World
         HeadFacingNorth = 2,
         HeadFacingEast = 3,
 
-        // 0x4 bit : When 0, the bed is empty, otherwise, the bed is occupied
-        Occupied = 0x4,
+        // 0x4 bit field : When 0, the bed is empty, otherwise, the bed is occupied
+        OccupiedFlag = 0x4,
 
-        // 0x8 bit : When 0, the foot of the bed, otherwise, the head of the bed
-        Head = 0x8
+        // 0x8 bit field : When 0, the foot of the bed, otherwise, the head of the bed
+        HeadFlag = 0x8
     }
 
     public enum GrassType : uint
@@ -513,6 +517,7 @@ namespace MineCase.Server.World
         OxeyeDaisy = 8
     }
 
+    [Flags]
     public enum LargeFlowerType : uint
     {
         Sunflower = 0,
@@ -522,10 +527,11 @@ namespace MineCase.Server.World
         RoseBush = 4,
         Peony = 5,
 
-        // Top Half of any Large Plant; low three bits 0x7 are derived from the block below
-        TopHalf = 0x8
+        // 0x8 bit field : Top Half of any Large Plant; low three bits 0x7 are derived from the block below
+        TopHalfFlag = 0x8
     }
 
+    [Flags]
     public enum PistionType : uint
     {
         Down = 0,
@@ -535,10 +541,11 @@ namespace MineCase.Server.World
         West = 4,
         East = 5,
 
-        // bit field determines whether the piston is pushed out or not. 1 for pushed out, 0 for retracted
-        PushedOut = 0x8
+        // 0x8 bit field : Determines whether the piston is pushed out or not. 1 for pushed out, 0 for retracted
+        PushedOutFlag = 0x8
     }
 
+    [Flags]
     public enum PistionExType : uint
     {
         Down = 0,
@@ -548,11 +555,12 @@ namespace MineCase.Server.World
         West = 4,
         East = 5,
 
-        // bit field determines whether the head is sticky or not(note that the Piston Body actually
+        // 0x8 bit field : Determines whether the head is sticky or not(note that the Piston Body actually
         // has completely different block types for Sticky and Regular). 1 is sticky, 0 is regular
-        Sticky = 0x8
+        StickyFlag = 0x8
     }
 
+    [Flags]
     public enum StairsType : uint
     {
         East = 0,
@@ -561,7 +569,7 @@ namespace MineCase.Server.World
         North = 3,
 
         // 0x4 bit field : Set if stairs are upside-down
-        UpsideDown = 0x4
+        UpsideDownFlag = 0x4
     }
 
     /// <summary>
@@ -666,6 +674,7 @@ namespace MineCase.Server.World
         East = 5
     }
 
+    [Flags]
     public enum DoorType : uint
     {
         NorthwestCorner = 0,
@@ -674,10 +683,10 @@ namespace MineCase.Server.World
         SouthwestCorner = 3,
 
         // 0x4 bit field : If set, the door has swung counterclockwise around its hinge
-        HasSwungCounterclockwise = 0x4,
+        HasSwungCounterclockwiseFlag = 0x4,
 
         // 0x8 bit field : If set, this is the top half of a door (else the bottom half of the door)
-        TopHalfOfTheDoor = 0x8
+        TopHalfOfTheDoorFlag = 0x8
     }
 
     public enum RailType : uint
@@ -749,6 +758,7 @@ namespace MineCase.Server.World
     /// <summary>
     /// 0x1 ~ 0x4 bits specifying which direction the dispenser is facing
     /// </summary>
+    [Flags]
     public enum DispenserType : uint
     {
         FacingDown = 0,
@@ -758,13 +768,14 @@ namespace MineCase.Server.World
         FacingWest = 4,
         FacingEast = 5,
 
-        // If set, the dispenser is activated
-        Activated = 0x8
+        // 0x8 bit field : If set, the dispenser is activated
+        ActivatedFlag = 0x8
     }
 
     /// <summary>
     /// 0x1 ~ 0x4 bits specifying which direction the dropper is facing
     /// </summary>
+    [Flags]
     public enum DropperType : uint
     {
         FacingDown = 0,
@@ -774,10 +785,11 @@ namespace MineCase.Server.World
         FacingWest = 4,
         FacingEast = 5,
 
-        // If set, the dropper is activated
-        Activated = 0x8
+        // 0x8 bit field : If set, the dropper is activated
+        ActivatedFlag = 0x8
     }
 
+    [Flags]
     public enum HopperType : uint
     {
         FacingDown = 0,
@@ -787,9 +799,10 @@ namespace MineCase.Server.World
         FacingEast = 5,
 
         // 0x8 bit field : Set if activated/disabled
-        Activated = 0x8
+        ActivatedFlag = 0x8
     }
 
+    [Flags]
     public enum LeverType : uint
     {
         BottomPointsEastWhenOff = 0,
@@ -801,8 +814,8 @@ namespace MineCase.Server.World
         TopPointsEastWhenOff = 6,
         BottomPointsSouthWhenOff = 7,
 
-        // 0x8 bit field : If this bit is set, the lever is active
-        Active = 0x8
+        // 0x8 bit field : If set, the lever is active
+        ActivatedFlag = 0x8
     }
 
     public enum PressurePlatesType : uint
@@ -834,6 +847,7 @@ namespace MineCase.Server.World
         Level16 = 15,
     }
 
+    [Flags]
     public enum ButtonType : uint
     {
         BottomFacingDown = 0,
@@ -844,7 +858,7 @@ namespace MineCase.Server.World
         TopFacingUp = 5,
 
         // 0x8 bit field : If set, the button is currently active
-        Active = 0x8
+        ActivatedFlag = 0x8
     }
 
     public enum SnowType : uint
@@ -934,36 +948,37 @@ namespace MineCase.Server.World
         Eat6Pieces = 6,
     }
 
+    [Flags]
     public enum RedstoneRepeaterType : uint
     {
-        // 0x1 ~ 0x2 bit field specifying the direction the redstone repeater is facing
-        FacingNorth = 0x0,
-        FacingEast = 0x1,
-        FacingSouth = 0x2,
-        FacingWest = 0x3,
+        FacingNorth = 0,
+        FacingEast = 1,
+        FacingSouth = 2,
+        FacingWest = 3,
 
         // 0x4 ~ 0x8 bit field specifying the redstone repeater's delay
-        RedstoneTick1 = 0x0,
-        RedstoneTick2 = 0x4,
-        RedstoneTick3 = 0x8,
-        RedstoneTick4 = 0xC
+        RedstoneTick1Flag = 0x0,
+        RedstoneTick2Flag = 0x4,
+        RedstoneTick3Flag = 0x8,
+        RedstoneTick4Flag = 0xC
     }
 
+    [Flags]
     public enum RedstoneComparatorType : uint
     {
-        // 0x1 ~ 0x2 bit field specifying the direction the redstone repeater is facing
-        FacingNorth = 0x0,
-        FacingEast = 0x1,
-        FacingSouth = 0x2,
-        FacingWest = 0x3,
+        FacingNorth = 0,
+        FacingEast = 1,
+        FacingSouth = 2,
+        FacingWest = 3,
 
         // 0x4 bit field Set if in subtraction mode (front torch up and powered)
-        SubtractionMode = 0x4,
+        SubtractionModeFlag = 0x4,
 
         // 0x8 bit field Set if powered (at any power level)
-        Powered = 0x8
+        PoweredFlag = 0x8
     }
 
+    [Flags]
     public enum TrapdoorType : uint
     {
         SouthSide = 0,
@@ -972,10 +987,10 @@ namespace MineCase.Server.World
         WestSide = 3,
 
         // 0x4 bit field : If set, the trapdoor is open
-        Open = 0x4,
+        OpenFlag = 0x4,
 
         // 0x8 bit field : If set, the trapdoor is on the top half of a block. Otherwise, it is on the bottom half
-        TopHalf = 0x8
+        TopHalfFlag = 0x8
     }
 
     public enum MonsterEggType : uint
@@ -1049,6 +1064,7 @@ namespace MineCase.Server.World
         East = 8
     }
 
+    [Flags]
     public enum FenceGateType : uint
     {
         FacingSouth = 0,
@@ -1057,7 +1073,7 @@ namespace MineCase.Server.World
         FacingEast = 3,
 
         // 0x4 bit field : 0 if the gate is closed, 1 if open
-        Open = 0x4
+        OpenFlag = 0x4
     }
 
     public enum NetherWartType : uint
@@ -1083,6 +1099,7 @@ namespace MineCase.Server.World
         FullFilled = 3
     }
 
+    [Flags]
     public enum EndPortalFrameType : uint
     {
         South = 0,
@@ -1091,9 +1108,10 @@ namespace MineCase.Server.World
         East = 3,
 
         // 0x4 bit field : 0 is an "empty" frame block, 1 is a block with an Eye of Ender inserted
-        EyeOfEnder = 0x4
+        EyeOfEnderFlag = 0x4
     }
 
+    [Flags]
     public enum CocoaType : uint
     {
         North = 0,
@@ -1102,11 +1120,12 @@ namespace MineCase.Server.World
         West = 3,
 
         // 0x4 ~ 0x8 bit field specifying the stage of growth of the plant
-        FirstStage = 0x0,
-        SecondStage = 0x4,
-        FinalStage = 0x8
+        FirstStageFlag = 0x0,
+        SecondStageFlag = 0x4,
+        FinalStageFlag = 0x8
     }
 
+    [Flags]
     public enum TripwireHookType : uint
     {
         FacingSouth = 0,
@@ -1115,24 +1134,25 @@ namespace MineCase.Server.World
         FacingEast = 3,
 
         // 0x4 bit field : If set, the tripwire hook is connected and ready to trip ("middle" position)
-        Connected = 0x4,
+        ConnectedFlag = 0x4,
 
         // 0x8 bit field : If set, the tripwire hook is currently activated ("down" position)
-        Activated = 0x8
+        ActivatedFlag = 0x8
     }
 
+    [Flags]
     public enum TripwireType : uint
     {
         None = 0,
 
         // 0x1 bit field : Set if tripwire is activated (an entity is intersecting its collision mask)
-        Activated = 0x1,
+        ActivatedFlag = 0x1,
 
         // 0x4 bit field : Set if tripwire is attached to a valid tripwire circuit
-        Attached = 0x4,
+        AttachedFlag = 0x4,
 
         // 0x8 bit field : Set if tripwire is disarmed
-        Disarmed = 0x8
+        DisarmedFlag = 0x8
     }
 
     public enum CobblestoneWallType : uint
