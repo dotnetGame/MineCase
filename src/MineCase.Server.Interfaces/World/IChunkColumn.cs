@@ -12,7 +12,7 @@ namespace MineCase.Server.World
 
         Task<BlockState> GetBlockState(int x, int y, int z);
 
-        Task SetBlockState(BlockState state, int x, int y, int z);
+        Task SetBlockState(int x, int y, int z, BlockState state);
     }
 
     public static class ChunkColumnExtensions

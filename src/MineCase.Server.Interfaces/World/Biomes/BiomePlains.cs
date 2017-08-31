@@ -27,12 +27,12 @@ namespace MineCase.Server.World.Biomes
             if (d0 < -0.8F)
             {
                 _flowersGenerator.FlowersPerChunk = 15;
-                _grassGenerator.GrassPerChunk = 5;
+                _grassGenerator.GrassPerChunk = 5 * 7;
             }
             else
             {
                 _flowersGenerator.FlowersPerChunk = 4;
-                _grassGenerator.GrassPerChunk = 10;
+                _grassGenerator.GrassPerChunk = 10 * 7;
             }
 
             await _grassGenerator.Generate(world, chunk, this, rand, pos);

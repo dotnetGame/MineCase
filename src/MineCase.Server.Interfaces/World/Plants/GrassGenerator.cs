@@ -27,9 +27,9 @@ namespace MineCase.Server.World.Plants
                 {
                     // TODO use block accessor
                     if (chunk[x, y, z] == BlockStates.Air() &&
-                        chunk[x, y - 1, z] == BlockStates.Grass())
+                        chunk[x, y - 1, z] == BlockStates.GrassBlock())
                     {
-                        chunk[x, y, z] = BlockStates.Tallgrass();
+                        chunk[x, y, z] = BlockStates.Grass(GrassType.TallGrass);
                         break;
                     }
                 }

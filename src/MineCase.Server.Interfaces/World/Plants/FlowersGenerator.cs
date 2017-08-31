@@ -26,16 +26,16 @@ namespace MineCase.Server.World.Plants
                 {
                     // TODO use block accessor
                     if (chunk[x, y, z] == BlockStates.Air() &&
-                        chunk[x, y - 1, z] == BlockStates.Grass())
+                        chunk[x, y - 1, z] == BlockStates.GrassBlock())
                     {
                         var flowerType = biome.GetRandomFlower(random);
                         switch (flowerType)
                         {
                             case PlantsType.RedFlower:
-                                chunk[x, y, z] = BlockStates.RedFlower();
+                                chunk[x, y, z] = BlockStates.Poppy();
                                 break;
                             case PlantsType.YellowFlower:
-                                chunk[x, y, z] = BlockStates.YellowFlower();
+                                chunk[x, y, z] = BlockStates.Dandelion();
                                 break;
                         }
 

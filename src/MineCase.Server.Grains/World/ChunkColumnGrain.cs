@@ -80,7 +80,7 @@ namespace MineCase.Server.World
             return Task.FromResult(_state[x, y, z]);
         }
 
-        public Task SetBlockState(BlockState state, int x, int y, int z)
+        public Task SetBlockState(int x, int y, int z, BlockState state)
         {
             _state[x, y, z] = state;
             return Task.CompletedTask;

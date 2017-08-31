@@ -29,7 +29,7 @@ namespace MineCase.Server.World
             return await chunkColumn.GetBlockState(offsetX, y, offsetZ);
         }
 
-        public async Task SetBlockState(int x, int y, int z, BlockState state)
+        public Task SetBlockState(int x, int y, int z, BlockState state)
         {
             // 需要优化？？
             var chunkColumn = GrainFactory.GetGrain<IChunkColumn>(_world.MakeChunkColumnKey(x / 16, z / 16));
@@ -37,12 +37,14 @@ namespace MineCase.Server.World
             int offsetZ = z % 16;
             if (offsetX < 0) offsetX += 16;
             if (offsetZ < 0) offsetZ += 16;
-            await chunkColumn.SetBlockState(state, offsetX, y, offsetZ);
+
+            // await chunkColumn.SetBlockState(state, offsetX, y, offsetZ);
+            return Task.CompletedTask;
         }
 
         public async Task<bool> CanBlockStay(int x, int y, int z, BlockState state)
         {
-            if (state == BlockStates.Tallgrass())
+            if (state == BlockStates.Poppy())
             {
                 if (y > 0)
                 {
