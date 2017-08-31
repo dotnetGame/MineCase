@@ -146,5 +146,20 @@ namespace MineCase.Server.Game.Entities
         {
             await _generator.SendClientAnimation(entityID, animationID);
         }
+
+        public Task StartDigging(Position location, PlayerDiggingFace face)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task CancelDigging(Position location, PlayerDiggingFace face)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task FinishDigging(Position location, PlayerDiggingFace face)
+        {
+            return Task.CompletedTask;
+        }
     }
 }
