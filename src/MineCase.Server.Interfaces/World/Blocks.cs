@@ -897,21 +897,21 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState BrownMushroomBlock(MushroomBlockType mushroomBlockType = MushroomBlockType.PoresOnAllSides)
+        public static BlockState BrownMushroomBlock(MushroomBlockType type = MushroomBlockType.PoresOnAllSides)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.BrownMushroomBlock,
-                MetaValue = (uint)mushroomBlockType
+                MetaValue = (uint)type
             };
         }
 
-        public static BlockState RedMushroomBlock(MushroomBlockType mushroomBlockType = MushroomBlockType.PoresOnAllSides)
+        public static BlockState RedMushroomBlock(MushroomBlockType type = MushroomBlockType.PoresOnAllSides)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.RedMushroomBlock,
-                MetaValue = (uint)mushroomBlockType
+                MetaValue = (uint)type
             };
         }
 
