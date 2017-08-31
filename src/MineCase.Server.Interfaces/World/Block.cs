@@ -307,7 +307,7 @@ namespace MineCase.Server.World
     /// <summary>
     /// Attributes of water and lava.
     ///
-    /// If Falling is set, the lower bits are essentially ignored,
+    /// If FallingFlag is set, the lower bits are essentially ignored,
     /// since this block is then at its highest fluid level.
     /// Level1 is the highest fluid level(not necessarily filling the block -
     /// this depends on the neighboring fluid blocks above each upper corner of the block)
@@ -324,7 +324,7 @@ namespace MineCase.Server.World
         Level7 = 6,
         Level8 = 7,
 
-        // 0x8 bit field : Set if sapling is ready to grow into a tree
+        // 0x8 bit field : If set, this liquid is "falling" and only spreads downward
         FallingFlag = 0x8
     }
 
