@@ -16,6 +16,8 @@ namespace MineCase.Server.World
 
         private ChunkColumnStorage _state;
 
+        public Task<BlockState> GetBlockState(int x, int y, int z) => Task.FromResult(_state[x, y, z]);
+
         public Task<ChunkColumnStorage> GetState() => Task.FromResult(_state);
         /*
         var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(1);
@@ -73,6 +75,12 @@ namespace MineCase.Server.World
             _chunkZ = key.z;
 
             await EnsureChunkGenerated();
+        }
+
+        public Task SetBlockState(int x, int y, int z, BlockState blockState)
+        {
+            _state[x, y, z] = blockState;
+            return Task.CompletedTask;
         }
 
         private async Task EnsureChunkGenerated()

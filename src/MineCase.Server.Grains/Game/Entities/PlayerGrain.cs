@@ -9,6 +9,7 @@ using MineCase.Server.Game.Windows;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
 using MineCase.Server.User;
+using MineCase.Server.World;
 using Orleans;
 
 namespace MineCase.Server.Game.Entities
@@ -35,6 +36,8 @@ namespace MineCase.Server.Game.Entities
         private Vector3 _position;
         private float _pitch;
         private float _yaw;
+
+        private (Position, BlockState)? _diggingBlock;
 
         public override Task OnActivateAsync()
         {
@@ -142,24 +145,34 @@ namespace MineCase.Server.Game.Entities
                 SwingHandState.MainHand : SwingHandState.OffHand);
         }
 
-        public async Task SendClientAnimation(uint entityID, ClientboundAnimationID animationID)
+        public async Task SendClientAnimation(uint entityID, ClientboundAnimationId animationID)
         {
             await _generator.SendClientAnimation(entityID, animationID);
         }
 
-        public Task StartDigging(Position location, PlayerDiggingFace face)
+        private const float _maxDiggingRadius = 6;
+
+        public async Task StartDigging(Position location, PlayerDiggingFace face)
         {
-            return Task.CompletedTask;
+            // A Notchian server only accepts digging packets with coordinates within a 6-unit radius between the center of the block and 1.5 units from the player's feet (not their eyes).
+            var distance = (new Vector3(location.X + 0.5f, location.Y + 0.5f, location.Z + 0.5f)
+                - new Vector3(_position.X, _position.Y + 1.5f, _position.Z)).Length();
+            if (distance <= _maxDiggingRadius)
+                _diggingBlock = (location, await World.GetBlockState(GrainFactory, location.X, location.Y, location.Z));
         }
 
         public Task CancelDigging(Position location, PlayerDiggingFace face)
         {
+            _diggingBlock = null;
             return Task.CompletedTask;
         }
 
-        public Task FinishDigging(Position location, PlayerDiggingFace face)
+        public async Task FinishDigging(Position location, PlayerDiggingFace face)
         {
-            return Task.CompletedTask;
+            if (_diggingBlock != null)
+            {
+                await World.SetBlockState(GrainFactory, location.X, location.Y, location.Z, BlockStates.Air());
+            }
         }
     }
 }

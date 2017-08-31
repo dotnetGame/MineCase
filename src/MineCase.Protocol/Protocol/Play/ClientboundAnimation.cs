@@ -13,7 +13,7 @@ namespace MineCase.Protocol.Play
         public uint EntityID;
 
         [SerializeAs(DataType.Byte)]
-        public ClientboundAnimationID AnimationID;
+        public ClientboundAnimationId AnimationID;
 
         public void Serialize(BinaryWriter bw)
         {

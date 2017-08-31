@@ -174,7 +174,7 @@ namespace MineCase.Server.Network.Play
             });
         }
 
-        public Task SendClientAnimation(uint entityID, ClientboundAnimationID animationID)
+        public Task SendClientAnimation(uint entityID, ClientboundAnimationId animationID)
         {
             return Sink.SendPacket(new ClientboundAnimation
             {
