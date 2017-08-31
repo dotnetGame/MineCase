@@ -2,6 +2,8 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/w9h243k1lqee2ke5/branch/master?svg=true)](https://ci.appveyor.com/project/sunnycase/minecase/branch/master)
 ===
 
+![Build status](screenshots/mc1.jpg)
+
 ## 介绍
 `MineCase` 是一个分布式的 `minecraft` 服务端应用。`MineCase` 采用 `.net core` 编写，使用 `Orleans` 框架。<br>
 `MineCase` 具有以下特性：
