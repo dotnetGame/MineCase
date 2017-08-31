@@ -101,6 +101,20 @@ namespace MineCase.Server.World.Biomes
             return PlantsType.TallGrass;
         }
 
+        // 随机获得一个该生物群系可能出现的花
+        public virtual PlantsType GetRandomFlower(Random rand)
+        {
+            double n = rand.NextDouble();
+            if (n > 0.5)
+            {
+                return PlantsType.RedFlower;
+            }
+            else
+            {
+                return PlantsType.YellowFlower;
+            }
+        }
+
         // 使用植物进行装点修饰
         public virtual Task Decorate(IWorld world, ChunkColumnStorage chunk, Random rand, BlockPos pos)
         {

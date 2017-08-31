@@ -10,10 +10,13 @@ namespace MineCase.Server.World.Biomes
     {
         private GrassGenerator _grassGenerator;
 
+        private FlowersGenerator _flowersGenerator;
+
         public BiomePlains(BiomeProperties properties)
             : base(properties)
         {
             _grassGenerator = new GrassGenerator();
+            _flowersGenerator = new FlowersGenerator();
         }
 
         // 添加其他东西
@@ -23,14 +26,17 @@ namespace MineCase.Server.World.Biomes
 
             if (d0 < -0.8F)
             {
+                _flowersGenerator.FlowersPerChunk = 15;
                 _grassGenerator.GrassPerChunk = 5;
             }
             else
             {
+                _flowersGenerator.FlowersPerChunk = 4;
                 _grassGenerator.GrassPerChunk = 10;
             }
 
             await _grassGenerator.Generate(world, chunk, this, rand, pos);
+            await _flowersGenerator.Generate(world, chunk, this, rand, pos);
         }
     }
 }
