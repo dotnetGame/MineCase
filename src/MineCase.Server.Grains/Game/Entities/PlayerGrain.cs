@@ -134,19 +134,17 @@ namespace MineCase.Server.Game.Entities
             return Task.CompletedTask;
         }
 
-        public Task StartDigging(Position location, PlayerDiggingFace face)
+        public Task<SwingHandState> OnSwingHand(SwingHandState handState)
         {
-            return Task.CompletedTask;
+            // TODO:update player state here.
+            return Task.FromResult(
+                handState == SwingHandState.MainHand ?
+                SwingHandState.MainHand : SwingHandState.OffHand);
         }
 
-        public Task CancelDigging(Position location, PlayerDiggingFace face)
+        public async Task SendClientAnimation(uint entityID, ClientboundAnimationID animationID)
         {
-            return Task.CompletedTask;
-        }
-
-        public Task FinishDigging(Position location, PlayerDiggingFace face)
-        {
-            return Task.CompletedTask;
+            await _generator.SendClientAnimation(entityID, animationID);
         }
     }
 }
