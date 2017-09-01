@@ -28,6 +28,8 @@ namespace MineCase.Server.Game.Entities
 
         Task SendExperience();
 
+        Task Collect(uint collectedEntityId, Slot item);
+
         Task SendPlayerListAddPlayer(IReadOnlyList<IPlayer> player);
 
         Task NotifyLoggedIn();

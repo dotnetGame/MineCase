@@ -41,6 +41,25 @@ namespace MineCase.Server.Network.Play
             });
         }
 
+        public Task SetSlot(byte windowId, short slot, Slot slotData)
+        {
+            return Sink.SendPacket(new SetSlot
+            {
+                WindowId = windowId,
+                Slot = slot,
+                SlotData = slotData
+            });
+        }
+
+        public Task DestroyEntities(uint[] entityIds)
+        {
+            return Sink.SendPacket(new DestroyEntities
+            {
+                Count = (uint)entityIds.Length,
+                EntityIds = entityIds
+            });
+        }
+
         public Task EntityMetadata(uint entityId, Entity metadata)
         {
             return Sink.SendPacket(CreateEntityMetadata(entityId, metadata, bw =>
@@ -215,6 +234,16 @@ namespace MineCase.Server.Network.Play
             {
                 JSONData = jsonData,
                 Position = position
+            });
+        }
+
+        public Task CollectItem(uint collectedEntityId, uint entityId, uint itemCount)
+        {
+            return Sink.SendPacket(new CollectItem
+            {
+                CollectedEntityId = collectedEntityId,
+                CollectorEntityId = entityId,
+                PickupItemCount = itemCount
             });
         }
 

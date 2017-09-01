@@ -4,13 +4,23 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Formats;
+using MineCase.Server.World;
 using Orleans;
 
 namespace MineCase.Server.Game.Entities
 {
-    internal class PickupGrain : EntityGrain, IPickup
+    internal class PickupGrain : EntityGrain, IPickup, ICollectable
     {
         private EntityMetadata.Pickup _metadata;
+
+        public async Task CollectBy(IPlayer player)
+        {
+            var chunkPos = GetChunkPosition();
+            await GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunkPos.x, chunkPos.z)).Unregister(this);
+            await player.Collect(EntityId, _metadata.Item);
+            await GetBroadcastGenerator().DestroyEntities(new[] { EntityId });
+            DeactivateOnIdle();
+        }
 
         public override Task OnActivateAsync()
         {
@@ -27,8 +37,11 @@ namespace MineCase.Server.Game.Entities
         public async Task Spawn(Guid uuid, Vector3 position)
         {
             UUID = uuid;
-            Position = position;
+            await SetPosition(position);
             await GetBroadcastGenerator().SpawnObject(EntityId, uuid, 2, position, 0, 0, 0);
+
+            var chunkPos = GetChunkPosition();
+            await GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunkPos.x, chunkPos.z)).Register(this);
         }
     }
 }

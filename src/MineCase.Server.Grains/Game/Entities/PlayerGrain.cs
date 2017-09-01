@@ -12,9 +12,11 @@ using MineCase.Server.Network.Play;
 using MineCase.Server.User;
 using MineCase.Server.World;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Game.Entities
 {
+    [Reentrant]
     internal class PlayerGrain : EntityGrain, IPlayer
     {
         private IUser _user;
@@ -62,6 +64,7 @@ namespace MineCase.Server.Game.Entities
             _generator = new ClientPlayPacketGenerator(await user.GetClientPacketSink());
             _user = user;
             _health = MaxHealth;
+            await _inventory.SetUser(user);
         }
 
         public async Task SendHealth()
@@ -142,7 +145,7 @@ namespace MineCase.Server.Game.Entities
         public async Task StartDigging(Position location, PlayerDiggingFace face)
         {
             // A Notchian server only accepts digging packets with coordinates within a 6-unit radius between the center of the block and 1.5 units from the player's feet (not their eyes).
-            var distance = (new Vector3(location.X, location.Y, location.Z)
+            var distance = (new Vector3(location.X + 0.5f, location.Y + 0.5f, location.Z + 0.5f)
                 - new Vector3(Position.X, Position.Y + 1.5f, Position.Z)).Length();
             if (distance <= _maxDiggingRadius)
                 _diggingBlock = (location, await World.GetBlockState(GrainFactory, location.X, location.Y, location.Z));
@@ -158,6 +161,7 @@ namespace MineCase.Server.Game.Entities
         {
             if (_diggingBlock != null)
             {
+                var oldState = _diggingBlock.Value.Item2;
                 var newState = BlockStates.Air();
                 await World.SetBlockState(GrainFactory, location.X, location.Y, location.Z, newState);
 
@@ -169,8 +173,8 @@ namespace MineCase.Server.Game.Entities
                 await World.AttachEntity(pickup);
                 await pickup.Spawn(
                     Guid.NewGuid(),
-                    new Vector3(location.X, location.Y, location.Z));
-                await pickup.SetItem(new Slot { BlockId = (short)_diggingBlock.Value.Item2.Id, ItemDamage = (short)_diggingBlock.Value.Item2.MetaValue, ItemCount = 1 });
+                    new Vector3(location.X + 0.5f, location.Y + 0.5f, location.Z + 0.5f));
+                await pickup.SetItem(new Slot { BlockId = (short)oldState.Id, ItemDamage = (short)oldState.MetaValue, ItemCount = 1 });
             }
         }
 
@@ -181,13 +185,31 @@ namespace MineCase.Server.Game.Entities
             return SetPosition(new Vector3((float)x, (float)feetY, (float)z));
         }
 
-        public Task Spawn(Guid uuid, Vector3 position, float pitch, float yaw)
+        public async Task Spawn(Guid uuid, Vector3 position, float pitch, float yaw)
         {
             UUID = uuid;
-            Position = position;
+            await SetPosition(position);
             _pitch = pitch;
             _yaw = yaw;
-            return Task.CompletedTask;
+        }
+
+        protected override Task OnPositionChanged()
+        {
+            return CollectCollectables();
+        }
+
+        private async Task CollectCollectables()
+        {
+            var chunkPos = GetChunkPosition();
+            var collectables = await GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunkPos.x, chunkPos.z)).Collision(this);
+            await Task.WhenAll(from c in collectables
+                               select c.CollectBy(this));
+        }
+
+        public async Task Collect(uint collectedEntityId, Slot item)
+        {
+            await GetBroadcastGenerator().CollectItem(collectedEntityId, EntityId, item.ItemCount);
+            await _inventory.AddItem(item);
         }
     }
 }

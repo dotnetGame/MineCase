@@ -15,7 +15,7 @@ namespace MineCase.Server.Game.Entities
 
         protected uint EntityId { get; private set; }
 
-        protected Vector3 Position { get; set; }
+        protected Vector3 Position { get; private set; }
 
         protected Guid UUID { get; set; }
 
@@ -33,6 +33,11 @@ namespace MineCase.Server.Game.Entities
         public Task SetPosition(Vector3 position)
         {
             Position = position;
+            return OnPositionChanged();
+        }
+
+        protected virtual Task OnPositionChanged()
+        {
             return Task.CompletedTask;
         }
 
