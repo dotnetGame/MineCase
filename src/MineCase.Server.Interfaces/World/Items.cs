@@ -869,7 +869,7 @@ namespace MineCase.Server.World
                 MetaValue = (uint)type
             };
         }
-        
+
         public static ItemState Bone()
         {
             return new ItemState
