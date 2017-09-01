@@ -9,24 +9,23 @@ using Orleans.Concurrency;
 namespace MineCase.Protocol.Play
 {
     [Immutable]
-    [Packet(0x14)]
-    public sealed class WindowItems : ISerializablePacket
+    [Packet(0x16)]
+    public sealed class SetSlot : ISerializablePacket
     {
         [SerializeAs(DataType.Byte)]
         public byte WindowId;
 
         [SerializeAs(DataType.Short)]
-        public short Count;
+        public short Slot;
 
-        [SerializeAs(DataType.Array)]
-        public Slot[] Slots;
+        [SerializeAs(DataType.Slot)]
+        public Slot SlotData;
 
         public void Serialize(BinaryWriter bw)
         {
             bw.WriteAsByte(WindowId);
-            bw.WriteAsShort(Count);
-            foreach (var slot in Slots)
-                bw.WriteAsSlot(slot);
+            bw.WriteAsShort(Slot);
+            bw.WriteAsSlot(SlotData);
         }
     }
 }

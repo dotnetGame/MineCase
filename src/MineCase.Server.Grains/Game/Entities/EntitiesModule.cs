@@ -10,6 +10,7 @@ namespace MineCase.Server.Game.Entities
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<PlayerGrain>();
+            builder.RegisterType<PickupGrain>();
         }
     }
 }

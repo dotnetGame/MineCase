@@ -138,5 +138,10 @@ namespace MineCase.Server.World
         {
             return ((y * ChunkConstants.BlockEdgeWidthInSection) + z) * ChunkConstants.BlockEdgeWidthInSection + x;
         }
+
+        internal static uint SerializeBlockState(BlockState blockState)
+        {
+            return ((blockState.Id & _idMask) << _bitsMeta) | (blockState.MetaValue & _metaMask);
+        }
     }
 }

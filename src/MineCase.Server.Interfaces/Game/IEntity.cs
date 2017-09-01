@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.World;
@@ -9,6 +10,11 @@ namespace MineCase.Server.Game
 {
     public interface IEntity : IGrainWithStringKey
     {
+        Task<Vector3> GetPosition();
+
+        Task SetPosition(Vector3 position);
+
+        Task<(int x, int y, int z)> GetChunkPosition();
     }
 
     public static class EntityExtensions

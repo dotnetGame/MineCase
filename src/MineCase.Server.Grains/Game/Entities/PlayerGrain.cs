@@ -4,14 +4,20 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using MineCase.Formats;
+using MineCase.Protocol.Play;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
 using MineCase.Server.User;
+using MineCase.Server.World;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Game.Entities
 {
+    [Reentrant]
     internal class PlayerGrain : EntityGrain, IPlayer
     {
         private IUser _user;
@@ -31,9 +37,10 @@ namespace MineCase.Server.Game.Entities
         private uint _level;
         private uint _teleportId;
 
-        private Vector3 _position;
         private float _pitch;
         private float _yaw;
+
+        private (Position, BlockState)? _diggingBlock;
 
         public override Task OnActivateAsync()
         {
@@ -43,9 +50,7 @@ namespace MineCase.Server.Game.Entities
             _level = 0;
             _teleportId = 0;
             _levelMaxExp = 7;
-            _position = new Vector3(0, 2, 0);
-            _pitch = 0;
-            _yaw = 0;
+
             return base.OnActivateAsync();
         }
 
@@ -60,6 +65,7 @@ namespace MineCase.Server.Game.Entities
             _generator = new ClientPlayPacketGenerator(await user.GetClientPacketSink());
             _user = user;
             _health = MaxHealth;
+            await _inventory.SetUser(user);
         }
 
         public async Task SendHealth()
@@ -107,7 +113,7 @@ namespace MineCase.Server.Game.Entities
 
         public async Task SendPositionAndLook()
         {
-            await _generator.PositionAndLook(_position.X, _position.Y, _position.Z, _yaw, _pitch, 0, _teleportId);
+            await _generator.PositionAndLook(Position.X, Position.Y, Position.Z, _yaw, _pitch, 0, _teleportId);
         }
 
         public Task OnTeleportConfirm(uint teleportId)
@@ -115,21 +121,105 @@ namespace MineCase.Server.Game.Entities
             return Task.CompletedTask;
         }
 
-        public Task<(int x, int y, int z)> GetChunkPosition()
-        {
-            return Task.FromResult(((int)(_position.X / 16), (int)(_position.Y / 16), (int)(_position.Z / 16)));
-        }
-
-        public Task SetPosition(double x, double feetY, double z, bool onGround)
-        {
-            _position = new Vector3((float)x, (float)feetY, (float)z);
-            return Task.CompletedTask;
-        }
-
         public Task SetLook(float yaw, float pitch, bool onGround)
         {
             _pitch = pitch;
             _yaw = yaw;
+            return Task.CompletedTask;
+        }
+
+        public Task<SwingHandState> OnSwingHand(SwingHandState handState)
+        {
+            // TODO:update player state here.
+            return Task.FromResult(
+                handState == SwingHandState.MainHand ?
+                SwingHandState.MainHand : SwingHandState.OffHand);
+        }
+
+        public async Task SendClientAnimation(uint entityID, ClientboundAnimationId animationID)
+        {
+            await _generator.SendClientAnimation(entityID, animationID);
+        }
+
+        private const float _maxDiggingRadius = 6;
+
+        public async Task StartDigging(Position location, PlayerDiggingFace face)
+        {
+            // A Notchian server only accepts digging packets with coordinates within a 6-unit radius between the center of the block and 1.5 units from the player's feet (not their eyes).
+            var distance = (new Vector3(location.X + 0.5f, location.Y + 0.5f, location.Z + 0.5f)
+                - new Vector3(Position.X, Position.Y + 1.5f, Position.Z)).Length();
+            if (distance <= _maxDiggingRadius)
+                _diggingBlock = (location, await World.GetBlockState(GrainFactory, location.X, location.Y, location.Z));
+        }
+
+        public Task CancelDigging(Position location, PlayerDiggingFace face)
+        {
+            _diggingBlock = null;
+            return Task.CompletedTask;
+        }
+
+        public async Task FinishDigging(Position location, PlayerDiggingFace face)
+        {
+            if (_diggingBlock != null)
+            {
+                var oldState = _diggingBlock.Value.Item2;
+                var newState = BlockStates.Air();
+                await World.SetBlockState(GrainFactory, location.X, location.Y, location.Z, newState);
+
+                var chunk = location.GetChunk();
+                await GetBroadcastGenerator(chunk.chunkX, chunk.chunkZ).BlockChange(location, newState);
+
+                // 产生 Pickup
+                var pickup = GrainFactory.GetGrain<IPickup>(World.MakeEntityKey(await World.NewEntityId()));
+                await World.AttachEntity(pickup);
+                await pickup.Spawn(
+                    Guid.NewGuid(),
+                    new Vector3(location.X + 0.5f, location.Y + 0.5f, location.Z + 0.5f));
+                await pickup.SetItem(new Slot { BlockId = (short)oldState.Id, ItemDamage = (short)oldState.MetaValue, ItemCount = 1 });
+            }
+        }
+
+        public Task<IUser> GetUser() => Task.FromResult(_user);
+
+        public Task SetPosition(double x, double feetY, double z, bool onGround)
+        {
+            return SetPosition(new Vector3((float)x, (float)feetY, (float)z));
+        }
+
+        public async Task Spawn(Guid uuid, Vector3 position, float pitch, float yaw)
+        {
+            UUID = uuid;
+            await SetPosition(position);
+            _pitch = pitch;
+            _yaw = yaw;
+        }
+
+        protected override Task OnPositionChanged()
+        {
+            return CollectCollectables();
+        }
+
+        private async Task CollectCollectables()
+        {
+            var chunkPos = GetChunkPosition();
+            var collectables = await GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunkPos.x, chunkPos.z)).Collision(this);
+            await Task.WhenAll(from c in collectables
+                               select c.CollectBy(this));
+        }
+
+        public async Task<bool> Collect(uint collectedEntityId, Slot item)
+        {
+            await GetBroadcastGenerator().CollectItem(collectedEntityId, EntityId, item.ItemCount);
+            return await _inventory.AddItem(item);
+        }
+
+        public Task PlaceBlock(Position location, EntityInteractHand hand, PlayerDiggingFace face, Vector3 cursorPosition)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task SetHeldItem(short slot)
+        {
             return Task.CompletedTask;
         }
     }

@@ -1248,5 +1248,10 @@ namespace MineCase.Server.World
         {
             return !(state1 == state2);
         }
+
+        public uint ToUInt32()
+        {
+            return ChunkSectionStorage.SerializeBlockState(this);
+        }
     }
 }

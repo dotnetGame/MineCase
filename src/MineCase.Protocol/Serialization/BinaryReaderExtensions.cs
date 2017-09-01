@@ -92,6 +92,18 @@ namespace MineCase.Serialization
             var value = br.ReadAsUnsignedLong();
             return Unsafe.As<ulong, double>(ref value);
         }
+
+        public static Position ReadAsPosition(this BinaryReader br)
+        {
+            var value = br.ReadAsUnsignedLong();
+            return new Position
+            {
+                // note: binary cast, do not check value range.
+                X = (int)(value >> 38),
+                Y = (int)((value >> 26) & 0xFFF),
+                Z = (int)(value & 0x3FFFFFF)
+            };
+        }
     }
 
     internal static class StreamExtensions
