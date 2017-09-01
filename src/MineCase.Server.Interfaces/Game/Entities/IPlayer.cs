@@ -36,18 +36,16 @@ namespace MineCase.Server.Game.Entities
 
         Task OnTeleportConfirm(uint teleportId);
 
-        Task<Vector3> GetPosition();
-
         Task SetPosition(double x, double feetY, double z, bool onGround);
 
         Task SetLook(float yaw, float pitch, bool onGround);
-
-        Task<(int x, int y, int z)> GetChunkPosition();
 
         Task StartDigging(Position location, PlayerDiggingFace face);
 
         Task CancelDigging(Position location, PlayerDiggingFace face);
 
         Task FinishDigging(Position location, PlayerDiggingFace face);
+
+        Task Spawn(Guid uuid, Vector3 position, float pitch, float yaw);
     }
 }

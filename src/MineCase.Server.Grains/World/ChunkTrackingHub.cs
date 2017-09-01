@@ -40,7 +40,8 @@ namespace MineCase.Server.World
 
         public async Task Subscribe(IUser user)
         {
-            _trackingUsers.Add(user, await user.GetClientPacketSink());
+            if (!_trackingUsers.ContainsKey(user))
+                _trackingUsers.Add(user, await user.GetClientPacketSink());
         }
 
         public Task Unsubscribe(IUser user)

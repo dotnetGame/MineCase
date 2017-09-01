@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Formats;
 using MineCase.Protocol.Play;
+using MineCase.Serialization;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Entities.EntityMetadata;
 using MineCase.Server.World;
 using Orleans.Concurrency;
 
@@ -19,6 +23,96 @@ namespace MineCase.Server.Network.Play
         public ClientPlayPacketGenerator(IPacketSink sink)
         {
             Sink = sink;
+        }
+
+        public Task SpawnObject(uint entityId, Guid uuid, byte objectType, Vector3 position, float pitch, float yaw, int data)
+        {
+            return Sink.SendPacket(new SpawnObject
+            {
+                EID = entityId,
+                ObjectUUID = uuid,
+                Type = objectType,
+                X = position.X,
+                Y = position.Y,
+                Z = position.Z,
+                Pitch = 0,
+                Yaw = 0,
+                Data = data
+            });
+        }
+
+        public Task EntityMetadata(uint entityId, Entity metadata)
+        {
+            return Sink.SendPacket(CreateEntityMetadata(entityId, metadata, bw =>
+            {
+                WriteEntityMetadata(bw, metadata);
+            }));
+        }
+
+        public Task EntityMetadata(uint entityId, Pickup metadata)
+        {
+            return Sink.SendPacket(CreateEntityMetadata(entityId, metadata, bw =>
+            {
+                WriteEntityMetadata(bw, (Entity)metadata);
+                WriteEntityMetadata(bw, metadata);
+            }));
+        }
+
+        private static void WriteEntityMetadata(BinaryWriter bw, Entity metadata)
+        {
+            byte flag = 0;
+            {
+                if (metadata.OnFire)
+                    flag |= 0x01;
+                if (metadata.Crouched)
+                    flag |= 0x02;
+                if (metadata.Sprinting)
+                    flag |= 0x08;
+                if (metadata.Invisible)
+                    flag |= 0x20;
+                if (metadata.GlowingEffect)
+                    flag |= 0x40;
+                if (metadata.FlyingWithElytra)
+                    flag |= 0x80;
+            }
+
+            // Flag
+            bw.WriteAsEntityMetadata(0, EntityMetadataType.Byte).WriteAsByte(flag);
+
+            // Air
+            bw.WriteAsEntityMetadata(1, EntityMetadataType.VarInt).WriteAsVarInt(metadata.Air, out _);
+
+            // Custom name
+            bw.WriteAsEntityMetadata(2, EntityMetadataType.String).WriteAsString(metadata.CustomName);
+
+            // Is custom name visible
+            bw.WriteAsEntityMetadata(3, EntityMetadataType.Boolean).WriteAsBoolean(metadata.IsCustomNameVisible);
+
+            // Is silent
+            bw.WriteAsEntityMetadata(4, EntityMetadataType.Boolean).WriteAsBoolean(metadata.IsSilent);
+
+            // No gravity
+            bw.WriteAsEntityMetadata(5, EntityMetadataType.Boolean).WriteAsBoolean(metadata.NoGravity);
+        }
+
+        private static void WriteEntityMetadata(BinaryWriter bw, Pickup metadata)
+        {
+            // Item
+            bw.WriteAsEntityMetadata(6, EntityMetadataType.Slot).WriteAsSlot(metadata.Item);
+        }
+
+        private static EntityMetadata CreateEntityMetadata<T>(uint entityId, T metadata, Action<BinaryWriter> action)
+        {
+            using (var stream = new MemoryStream())
+            {
+                using (var bw = new BinaryWriter(stream, Encoding.UTF8, true))
+                {
+                    action(bw);
+                    bw.WriteAsByte(0xFF);
+                }
+
+                return new EntityMetadata { EntityId = entityId, Metadata = stream.ToArray() };
+            }
         }
 
         public Task JoinGame(uint eid, GameMode gameMode, Dimension dimension, Difficulty difficulty, byte maxPlayers, string levelType, bool reducedDebugInfo)
@@ -91,13 +185,13 @@ namespace MineCase.Server.Network.Play
             });
         }
 
-        public Task WindowItems(byte windowId, IReadOnlyList<Game.Slot> slots)
+        public Task WindowItems(byte windowId, IReadOnlyList<Slot> slots)
         {
             return Sink.SendPacket(new WindowItems
             {
                 WindowId = windowId,
                 Count = (short)slots.Count,
-                Slots = slots.Select(o => TransformSlotData(o)).ToArray()
+                Slots = slots.ToArray()
             });
         }
 
@@ -150,14 +244,6 @@ namespace MineCase.Server.Network.Play
         public Task SendPacket(uint packetId, byte[] data)
         {
             return Sink.SendPacket(packetId, data.AsImmutable());
-        }
-
-        private static Protocol.Play.Slot TransformSlotData(Game.Slot o)
-        {
-            return new Protocol.Play.Slot
-            {
-                BlockId = -1
-            };
         }
 
         public static byte ToByte(GameMode gameMode)

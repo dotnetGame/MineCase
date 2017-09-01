@@ -34,7 +34,6 @@ namespace MineCase.Server.Game.Entities
         private uint _level;
         private uint _teleportId;
 
-        private Vector3 _position;
         private float _pitch;
         private float _yaw;
 
@@ -48,9 +47,6 @@ namespace MineCase.Server.Game.Entities
             _level = 0;
             _teleportId = 0;
             _levelMaxExp = 7;
-            _position = new Vector3(0, 2, 0);
-            _pitch = 0;
-            _yaw = 0;
 
             return base.OnActivateAsync();
         }
@@ -113,17 +109,12 @@ namespace MineCase.Server.Game.Entities
 
         public async Task SendPositionAndLook()
         {
-            await _generator.PositionAndLook(_position.X, _position.Y, _position.Z, _yaw, _pitch, 0, _teleportId);
+            await _generator.PositionAndLook(Position.X, Position.Y, Position.Z, _yaw, _pitch, 0, _teleportId);
         }
 
         public Task OnTeleportConfirm(uint teleportId)
         {
             return Task.CompletedTask;
-        }
-
-        public Task<(int x, int y, int z)> GetChunkPosition()
-        {
-            return Task.FromResult(((int)(_position.X / 16), (int)(_position.Y / 16), (int)(_position.Z / 16)));
         }
 
         public Task SetLook(float yaw, float pitch, bool onGround)
@@ -152,7 +143,7 @@ namespace MineCase.Server.Game.Entities
         {
             // A Notchian server only accepts digging packets with coordinates within a 6-unit radius between the center of the block and 1.5 units from the player's feet (not their eyes).
             var distance = (new Vector3(location.X + 0.5f, location.Y + 0.5f, location.Z + 0.5f)
-                - new Vector3(_position.X, _position.Y + 1.5f, _position.Z)).Length();
+                - new Vector3(Position.X, Position.Y + 1.5f, Position.Z)).Length();
             if (distance <= _maxDiggingRadius)
                 _diggingBlock = (location, await World.GetBlockState(GrainFactory, location.X, location.Y, location.Z));
         }
@@ -172,16 +163,30 @@ namespace MineCase.Server.Game.Entities
 
                 var chunk = location.GetChunk();
                 await GetBroadcastGenerator(chunk.chunkX, chunk.chunkZ).BlockChange(location, newState);
+
+                // 产生 Pickup
+                var pickup = GrainFactory.GetGrain<IPickup>(World.MakeEntityKey(await World.NewEntityId()));
+                await World.AttachEntity(pickup);
+                await pickup.Spawn(
+                    Guid.NewGuid(),
+                    new Vector3(location.X + 0.5f, location.Y + 0.5f, location.Z + 0.5f));
+                await pickup.SetItem(new Slot { BlockId = (short)_diggingBlock.Value.Item2.Id, ItemDamage = (short)_diggingBlock.Value.Item2.MetaValue, ItemCount = 1 });
             }
         }
-
-        public Task<Vector3> GetPosition() => Task.FromResult(_position);
 
         public Task<IUser> GetUser() => Task.FromResult(_user);
 
         public Task SetPosition(double x, double feetY, double z, bool onGround)
         {
-            _position = new Vector3((float)x, (float)feetY, (float)z);
+            return SetPosition(new Vector3((float)x, (float)feetY, (float)z));
+        }
+
+        public Task Spawn(Guid uuid, Vector3 position, float pitch, float yaw)
+        {
+            UUID = uuid;
+            Position = position;
+            _pitch = pitch;
+            _yaw = yaw;
             return Task.CompletedTask;
         }
     }

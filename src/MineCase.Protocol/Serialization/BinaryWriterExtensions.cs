@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using MineCase.Formats;
 using MineCase.Protocol;
+using MineCase.Protocol.Play;
 
 namespace MineCase.Serialization
 {
@@ -108,6 +109,24 @@ namespace MineCase.Serialization
         private static bool IsValueInRangeInclusive(long value, long min, long max)
         {
             return (value >= min) && (value <= max);
+        }
+
+        public static void WriteAsSlot(this BinaryWriter bw, Slot slot)
+        {
+            bw.WriteAsShort(slot.BlockId);
+            if (!slot.IsEmpty)
+            {
+                bw.WriteAsByte(slot.ItemCount);
+                bw.WriteAsShort(slot.ItemDamage);
+                bw.WriteAsByte(0);
+            }
+        }
+
+        public static BinaryWriter WriteAsEntityMetadata(this BinaryWriter bw, byte index, EntityMetadataType type)
+        {
+            bw.WriteAsByte(index);
+            bw.WriteAsByte((byte)type);
+            return bw;
         }
     }
 
