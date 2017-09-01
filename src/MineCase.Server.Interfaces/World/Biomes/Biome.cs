@@ -194,7 +194,7 @@ namespace MineCase.Server.World.Biomes
         }
 
         // 后期添加一些方块，Biome基类主要生成矿物
-        public virtual Task Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockPos pos)
+        public virtual Task Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
         {
             _dirtGen.Generate(world, grainFactory, chunk, rand, pos, _genSettings.DirtCount);
             _gravelOreGen.Generate(world, grainFactory, chunk, rand, pos, _genSettings.GravelCount);

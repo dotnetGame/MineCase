@@ -23,7 +23,7 @@ namespace MineCase.Server.World.Mine
             MinHeight = minHeight;
         }
 
-        public void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockPos position, int count)
+        public void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos position, int count)
         {
             if (MinHeight > MaxHeight)
             {
@@ -41,7 +41,7 @@ namespace MineCase.Server.World.Mine
 
             for (int j = 0; j < count; ++j)
             {
-                BlockPos blockpos = BlockPos.Add(
+                BlockWorldPos blockpos = BlockWorldPos.Add(
                     position,
                     random.Next(16),
                     random.Next(MaxHeight - MinHeight) + MinHeight,
@@ -50,7 +50,7 @@ namespace MineCase.Server.World.Mine
             }
         }
 
-        private void OreGenerate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockPos position)
+        private void OreGenerate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos position)
         {
             // 在xz平面上的方向
             float angle = (float)rand.NextDouble() * (float)Math.PI;
@@ -108,8 +108,8 @@ namespace MineCase.Server.World.Mine
                                     // 参考椭球方程
                                     if (xDist * xDist + yDist * yDist + zDist * zDist < 1.0D)
                                     {
-                                        BlockPos blockpos = new BlockPos(x, y, z);
-                                        BlockPos posInChunk = WorldExtensions.WorldToBlock(blockpos);
+                                        BlockWorldPos blockpos = new BlockWorldPos(x, y, z);
+                                        BlockChunkPos posInChunk = blockpos.ToBlockChunkPos();
                                         if (posInChunk.Y >= 0 &&
                                             posInChunk.Y < 255 &&
                                             chunk[posInChunk.X, posInChunk.Y, posInChunk.Z] == BlockStates.Stone())

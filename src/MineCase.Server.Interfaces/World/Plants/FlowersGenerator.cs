@@ -16,7 +16,7 @@ namespace MineCase.Server.World.Plants
             FlowersPerChunk = flowerPerChunk;
         }
 
-        public override Task Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockPos pos)
+        public override Task Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
         {
             int flowerMaxNum = random.Next(FlowersPerChunk);
             for (int flowerNum = 0; flowerNum < flowerMaxNum; ++flowerNum)

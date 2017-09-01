@@ -110,7 +110,7 @@ namespace MineCase.Server.World.Generation
             int blockZ = z * 16;
             Biome chunkBiome = Biome.GetBiome(chunk.Biomes[7 * 16 + 7], settings);
 
-            await chunkBiome.Decorate(world, GrainFactory, chunk, _random, new BlockPos { X = blockX, Y = 0, Z = blockZ });
+            await chunkBiome.Decorate(world, GrainFactory, chunk, _random, new BlockWorldPos { X = blockX, Y = 0, Z = blockZ });
         }
 
         private async Task GenerateBasicTerrain(ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)

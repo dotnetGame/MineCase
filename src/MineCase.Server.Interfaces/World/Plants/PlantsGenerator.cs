@@ -9,7 +9,7 @@ namespace MineCase.Server.World.Plants
 {
     public class PlantsGenerator
     {
-        public virtual Task Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockPos pos)
+        public virtual Task Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
         {
             return Task.CompletedTask;
         }

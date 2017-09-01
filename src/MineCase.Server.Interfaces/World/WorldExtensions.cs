@@ -19,15 +19,6 @@ namespace MineCase.Server.World
             return chunkPos;
         }
 
-        public static ChunkPos WorldToChunk(BlockPos n)
-        {
-            int chunkPosX = n.X / ChunkConstants.BlockEdgeWidthInSection;
-            int chunkPosZ = n.Z / ChunkConstants.BlockEdgeWidthInSection;
-            if (chunkPosX < 0) chunkPosX -= 1;
-            if (chunkPosZ < 0) chunkPosZ -= 1;
-            return new ChunkPos(chunkPosX, chunkPosZ);
-        }
-
         /// <summary>
         /// Worlds to block.世界坐标转区块内坐标
         /// </summary>
@@ -37,15 +28,6 @@ namespace MineCase.Server.World
             int blockPos = n % ChunkConstants.BlockEdgeWidthInSection;
             if (blockPos < 0) blockPos += ChunkConstants.BlockEdgeWidthInSection;
             return blockPos;
-        }
-
-        public static BlockPos WorldToBlock(BlockPos n)
-        {
-            int blockPosX = n.X % ChunkConstants.BlockEdgeWidthInSection;
-            int blockPosZ = n.Z % ChunkConstants.BlockEdgeWidthInSection;
-            if (blockPosX < 0) blockPosX += ChunkConstants.BlockEdgeWidthInSection;
-            if (blockPosZ < 0) blockPosZ += ChunkConstants.BlockEdgeWidthInSection;
-            return new BlockPos(blockPosX, n.Y, blockPosZ);
         }
 
         /// <summary>
@@ -73,7 +55,7 @@ namespace MineCase.Server.World
         /// <param name="grainFactory">The grain factory.</param>
         /// <param name="pos">The position.</param>
         /// <returns>方块类型</returns>
-        public static Task<BlockState> GetBlockState(this IWorld world, IGrainFactory grainFactory, BlockPos pos)
+        public static Task<BlockState> GetBlockState(this IWorld world, IGrainFactory grainFactory, BlockWorldPos pos)
         {
             var chunkColumnKey = world.MakeChunkColumnKey(WorldToChunk(pos.X), WorldToChunk(pos.Z));
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockState(
@@ -108,7 +90,7 @@ namespace MineCase.Server.World
         /// <param name="grainFactory">The grain factory.</param>
         /// <param name="pos">The position.</param>
         /// <param name="state">The state.</param>
-        public static Task SetBlockState(this IWorld world, IGrainFactory grainFactory, BlockPos pos, BlockState state)
+        public static Task SetBlockState(this IWorld world, IGrainFactory grainFactory, BlockWorldPos pos, BlockState state)
         {
             var chunkColumnKey = world.MakeChunkColumnKey(WorldToChunk(pos.X), WorldToChunk(pos.Z));
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).SetBlockState(

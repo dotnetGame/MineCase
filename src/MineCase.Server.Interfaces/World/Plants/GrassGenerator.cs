@@ -16,7 +16,7 @@ namespace MineCase.Server.World.Plants
             GrassPerChunk = grassPerChunk;
         }
 
-        public override async Task Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockPos pos)
+        public override async Task Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
         {
             var blockAccessor = await world.GetBlockAccessor();
             int grassMaxNum = random.Next(GrassPerChunk);
