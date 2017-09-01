@@ -28,8 +28,8 @@ namespace MineCase.Server.World
         {
             return new BlockState
             {
-                 Id = (uint)BlockId.GrassBlock,
-                 MetaValue = 0
+                Id = (uint)BlockId.GrassBlock,
+                MetaValue = 0
             };
         }
 
@@ -1302,7 +1302,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Mobhead(HeadForItemType type = HeadForItemType.SkeletonSkull)
+        public static BlockState Mobhead(HeadForBlockType type = HeadForBlockType.OnTheFloor)
         {
             return new BlockState
             {
@@ -1311,7 +1311,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Anvil(AnvilForItemType type = AnvilForItemType.Anvil)
+        public static BlockState Anvil(AnvilForBlockType type = AnvilForBlockType.AnvilNS)
         {
             return new BlockState
             {
