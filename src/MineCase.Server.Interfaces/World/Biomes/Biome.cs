@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Algorithm.Noise;
 using MineCase.Server.World.Plants;
+using Orleans;
 
 namespace MineCase.Server.World.Biomes
 {
@@ -116,7 +117,7 @@ namespace MineCase.Server.World.Biomes
         }
 
         // 后期添加一些方块，Biome基类主要生成矿物
-        public virtual Task Decorate(IWorld world, ChunkColumnStorage chunk, Random rand, BlockPos pos)
+        public virtual Task Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockPos pos)
         {
             return Task.CompletedTask;
         }

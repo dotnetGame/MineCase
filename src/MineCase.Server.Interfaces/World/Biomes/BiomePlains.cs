@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.World.Plants;
+using Orleans;
 
 namespace MineCase.Server.World.Biomes
 {
@@ -20,7 +21,7 @@ namespace MineCase.Server.World.Biomes
         }
 
         // 添加其他东西
-        public override async Task Decorate(IWorld world, ChunkColumnStorage chunk, Random rand, BlockPos pos)
+        public override async Task Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockPos pos)
         {
             float d0 = (_grassColorNoise.Noise((pos.X + 8) / 200.0F, 0.0F, (pos.Z + 8) / 200.0F) - 0.5F) * 2;
 
@@ -35,8 +36,8 @@ namespace MineCase.Server.World.Biomes
                 _grassGenerator.GrassPerChunk = 10 * 7;
             }
 
-            await _grassGenerator.Generate(world, chunk, this, rand, pos);
-            await _flowersGenerator.Generate(world, chunk, this, rand, pos);
+            await _grassGenerator.Generate(world, grainFactory, chunk, this, rand, pos);
+            await _flowersGenerator.Generate(world, grainFactory, chunk, this, rand, pos);
         }
     }
 }

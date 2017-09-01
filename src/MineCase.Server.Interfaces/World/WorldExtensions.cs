@@ -19,6 +19,15 @@ namespace MineCase.Server.World
             return chunkPos;
         }
 
+        public static ChunkPos WorldToChunk(BlockPos n)
+        {
+            int chunkPosX = n.X / ChunkConstants.BlockEdgeWidthInSection;
+            int chunkPosZ = n.Z / ChunkConstants.BlockEdgeWidthInSection;
+            if (chunkPosX < 0) chunkPosX -= 1;
+            if (chunkPosZ < 0) chunkPosZ -= 1;
+            return new ChunkPos(chunkPosX, chunkPosZ);
+        }
+
         /// <summary>
         /// Worlds to block.世界坐标转区块内坐标
         /// </summary>
@@ -28,6 +37,15 @@ namespace MineCase.Server.World
             int blockPos = n % ChunkConstants.BlockEdgeWidthInSection;
             if (blockPos < 0) blockPos += ChunkConstants.BlockEdgeWidthInSection;
             return blockPos;
+        }
+
+        public static BlockPos WorldToBlock(BlockPos n)
+        {
+            int blockPosX = n.X % ChunkConstants.BlockEdgeWidthInSection;
+            int blockPosZ = n.Z % ChunkConstants.BlockEdgeWidthInSection;
+            if (blockPosX < 0) blockPosX += ChunkConstants.BlockEdgeWidthInSection;
+            if (blockPosZ < 0) blockPosZ += ChunkConstants.BlockEdgeWidthInSection;
+            return new BlockPos(blockPosX, n.Y, blockPosZ);
         }
 
         /// <summary>

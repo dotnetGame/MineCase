@@ -1338,6 +1338,12 @@ namespace MineCase.Server.World
 
         public int Z { get; set; }
 
+        public ChunkPos(int x, int z)
+        {
+            X = x;
+            Z = z;
+        }
+
         public void Add(int x, int z)
         {
             X += x;

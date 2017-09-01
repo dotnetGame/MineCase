@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Orleans;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -20,7 +21,7 @@ namespace MineCase.Server.World.Mine
             NumberOfBlocks = blockCount;
         }
 
-        public void Generate(IWorld world, ChunkColumnStorage chunk, Random random, BlockPos position, int count)
+        public void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockPos position, int count)
         {
             if (MinHeight > MaxHeight)
             {
@@ -43,13 +44,82 @@ namespace MineCase.Server.World.Mine
                     random.Next(16),
                     random.Next(MaxHeight - MinHeight) + MinHeight,
                     random.Next(16));
-                OreGenerate(world, chunk, random, position);
+                OreGenerate(world, grainFactory, chunk, random, position);
             }
         }
 
-        private void OreGenerate(IWorld world, ChunkColumnStorage chunk, Random rand, BlockPos position)
+        private void OreGenerate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockPos position)
         {
+            // 在xz平面上的方向
+            float angle = (float)rand.NextDouble() * (float)Math.PI;
 
+            // 起始点和结束点
+            double startX = (double)((float)(position.X + 8) + Math.Sin(angle) * (float)NumberOfBlocks / 8.0F);
+            double endX = (double)((float)(position.X + 8) - Math.Sin(angle) * (float)NumberOfBlocks / 8.0F);
+            double startZ = (double)((float)(position.Z + 8) + Math.Cos(angle) * (float)NumberOfBlocks / 8.0F);
+            double endZ = (double)((float)(position.Z + 8) - Math.Cos(angle) * (float)NumberOfBlocks / 8.0F);
+            double startY = (double)(position.Y + rand.Next(3) - 2);
+            double endY = (double)(position.Y + rand.Next(3) - 2);
+
+            for (int i = 0; i < NumberOfBlocks; ++i)
+            {
+                // 插值参数
+                float t = (float)i / (float)NumberOfBlocks;
+
+                // 椭球中心
+                double centerX = startX + (endX - startX) * (double)t;
+                double centerY = startY + (endY - startY) * (double)t;
+                double centerZ = startZ + (endZ - startZ) * (double)t;
+
+                // 椭球尺寸（可以看出XZ和Y尺寸一样，应该是球）
+                double scale = rand.NextDouble() * (double)NumberOfBlocks / 16.0D;
+                double diameterXZ = (double)(Math.Sin((float)Math.PI * t) + 1.0F) * scale + 1.0D;
+                double diameterY = (double)(Math.Sin((float)Math.PI * t) + 1.0F) * scale + 1.0D;
+
+                // 椭球包围盒
+                int minX = (int)Math.Floor(centerX - diameterXZ / 2.0D);
+                int minY = (int)Math.Floor(centerY - diameterY / 2.0D);
+                int minZ = (int)Math.Floor(centerZ - diameterXZ / 2.0D);
+                int maxX = (int)Math.Floor(centerX + diameterXZ / 2.0D);
+                int maxY = (int)Math.Floor(centerY + diameterY / 2.0D);
+                int maxZ = (int)Math.Floor(centerZ + diameterXZ / 2.0D);
+
+                // 把这个椭球里的方块替换为矿石
+                for (int x = minX; x <= maxX; ++x)
+                {
+                    double xDist = ((double)x + 0.5D - centerX) / (diameterXZ / 2.0D);
+
+                    // 参考椭球方程
+                    if (xDist * xDist < 1.0D)
+                    {
+                        for (int y = minY; y <= maxY; ++y)
+                        {
+                            double yDist = ((double)y + 0.5D - centerY) / (diameterY / 2.0D);
+
+                            // 参考椭球方程
+                            if (xDist * xDist + yDist * yDist < 1.0D)
+                            {
+                                for (int z = minZ; z <= maxZ; ++z)
+                                {
+                                    double zDist = ((double)z + 0.5D - centerZ) / (diameterXZ / 2.0D);
+
+                                    // 参考椭球方程
+                                    if (xDist * xDist + yDist * yDist + zDist * zDist < 1.0D)
+                                    {
+                                        BlockPos blockpos = new BlockPos(x, y, z);
+                                        BlockPos posInChunk = WorldExtensions.WorldToBlock(blockpos);
+                                        if (chunk[posInChunk.X, posInChunk.Y, posInChunk.Z] == BlockStates.Stone())
+                                        {
+                                            // 替换为矿石
+                                            chunk[posInChunk.X, posInChunk.Y, posInChunk.Z] = OreBlock;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

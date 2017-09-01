@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.World.Biomes;
+using Orleans;
 
 namespace MineCase.Server.World.Plants
 {
@@ -15,7 +16,7 @@ namespace MineCase.Server.World.Plants
             GrassPerChunk = grassPerChunk;
         }
 
-        public override async Task Generate(IWorld world, ChunkColumnStorage chunk, Biome biome, Random random, BlockPos pos)
+        public override async Task Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockPos pos)
         {
             var blockAccessor = await world.GetBlockAccessor();
             int grassMaxNum = random.Next(GrassPerChunk);
