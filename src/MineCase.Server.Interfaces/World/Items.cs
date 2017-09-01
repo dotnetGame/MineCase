@@ -1059,7 +1059,8 @@ namespace MineCase.Server.World
             };
         }
 
-        public static ItemState Potion(PotionNameType name,
+        public static ItemState Potion(
+            PotionNameType name,
             PotionExtendedDurationType ex = PotionExtendedDurationType.Base,
             SplashPotionType splash = SplashPotionType.DrinkablePotion)
         {
@@ -1070,7 +1071,8 @@ namespace MineCase.Server.World
             };
         }
 
-        public static ItemState Potion(PotionEffectType effect,
+        public static ItemState Potion(
+            PotionEffectType effect,
             PotionTierType tier = PotionTierType.Base,
             PotionExtendedDurationType ex = PotionExtendedDurationType.Base,
             SplashPotionType splash = SplashPotionType.DrinkablePotion)
