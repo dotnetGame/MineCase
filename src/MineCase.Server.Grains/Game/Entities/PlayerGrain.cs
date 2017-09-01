@@ -142,7 +142,7 @@ namespace MineCase.Server.Game.Entities
         public async Task StartDigging(Position location, PlayerDiggingFace face)
         {
             // A Notchian server only accepts digging packets with coordinates within a 6-unit radius between the center of the block and 1.5 units from the player's feet (not their eyes).
-            var distance = (new Vector3(location.X + 0.5f, location.Y + 0.5f, location.Z + 0.5f)
+            var distance = (new Vector3(location.X, location.Y, location.Z)
                 - new Vector3(Position.X, Position.Y + 1.5f, Position.Z)).Length();
             if (distance <= _maxDiggingRadius)
                 _diggingBlock = (location, await World.GetBlockState(GrainFactory, location.X, location.Y, location.Z));
@@ -169,7 +169,7 @@ namespace MineCase.Server.Game.Entities
                 await World.AttachEntity(pickup);
                 await pickup.Spawn(
                     Guid.NewGuid(),
-                    new Vector3(location.X + 0.5f, location.Y + 0.5f, location.Z + 0.5f));
+                    new Vector3(location.X, location.Y, location.Z));
                 await pickup.SetItem(new Slot { BlockId = (short)_diggingBlock.Value.Item2.Id, ItemDamage = (short)_diggingBlock.Value.Item2.MetaValue, ItemCount = 1 });
             }
         }
