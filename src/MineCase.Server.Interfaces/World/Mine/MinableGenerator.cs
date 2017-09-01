@@ -15,10 +15,12 @@ namespace MineCase.Server.World.Mine
 
         public int MinHeight { get; set; }
 
-        public MinableGenerator(BlockState state, int blockCount)
+        public MinableGenerator(BlockState state, int blockCount, int maxHeight, int minHeight)
         {
             OreBlock = state;
             NumberOfBlocks = blockCount;
+            MaxHeight = maxHeight;
+            MinHeight = minHeight;
         }
 
         public void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockPos position, int count)
@@ -44,7 +46,7 @@ namespace MineCase.Server.World.Mine
                     random.Next(16),
                     random.Next(MaxHeight - MinHeight) + MinHeight,
                     random.Next(16));
-                OreGenerate(world, grainFactory, chunk, random, position);
+                OreGenerate(world, grainFactory, chunk, random, blockpos);
             }
         }
 
@@ -108,7 +110,9 @@ namespace MineCase.Server.World.Mine
                                     {
                                         BlockPos blockpos = new BlockPos(x, y, z);
                                         BlockPos posInChunk = WorldExtensions.WorldToBlock(blockpos);
-                                        if (chunk[posInChunk.X, posInChunk.Y, posInChunk.Z] == BlockStates.Stone())
+                                        if (posInChunk.Y >= 0 &&
+                                            posInChunk.Y < 255 &&
+                                            chunk[posInChunk.X, posInChunk.Y, posInChunk.Z] == BlockStates.Stone())
                                         {
                                             // 替换为矿石
                                             chunk[posInChunk.X, posInChunk.Y, posInChunk.Z] = OreBlock;

@@ -39,6 +39,7 @@ namespace MineCase.Server.World.Biomes
 
             await _grassGenerator.Generate(world, grainFactory, chunk, this, rand, pos);
             await _flowersGenerator.Generate(world, grainFactory, chunk, this, rand, pos);
+            await base.Decorate(world, grainFactory, chunk, rand, pos);
         }
     }
 }
