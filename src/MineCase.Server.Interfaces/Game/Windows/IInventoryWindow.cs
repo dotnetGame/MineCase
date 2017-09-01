@@ -12,6 +12,6 @@ namespace MineCase.Server.Game.Windows
     {
         Task SetUser(IUser user);
 
-        Task AddItem(Slot item);
+        Task<bool> AddItem(Slot item);
     }
 }

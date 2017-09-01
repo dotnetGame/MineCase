@@ -14,7 +14,7 @@ namespace MineCase.Server.Game.Windows
         private IUser _user;
         private ClientPlayPacketGenerator _generator;
 
-        public async Task AddItem(Slot item)
+        public async Task<bool> AddItem(Slot item)
         {
             int index = -1;
             for (int i = 0; i < Slots.Count; i++)
@@ -34,6 +34,7 @@ namespace MineCase.Server.Game.Windows
             }
 
             await _generator.SetSlot(0, (short)(index + 36), Slots[index]);
+            return true;
         }
 
         public async Task SetUser(IUser user)

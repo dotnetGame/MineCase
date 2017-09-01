@@ -15,11 +15,13 @@ namespace MineCase.Server.Game.Entities
 
         public async Task CollectBy(IPlayer player)
         {
-            var chunkPos = GetChunkPosition();
-            await GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunkPos.x, chunkPos.z)).Unregister(this);
-            await player.Collect(EntityId, _metadata.Item);
-            await GetBroadcastGenerator().DestroyEntities(new[] { EntityId });
-            DeactivateOnIdle();
+            if (await player.Collect(EntityId, _metadata.Item))
+            {
+                var chunkPos = GetChunkPosition();
+                await GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunkPos.x, chunkPos.z)).Unregister(this);
+                await GetBroadcastGenerator().DestroyEntities(new[] { EntityId });
+                DeactivateOnIdle();
+            }
         }
 
         public override Task OnActivateAsync()

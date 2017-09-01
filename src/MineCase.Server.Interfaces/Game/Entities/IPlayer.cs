@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Formats;
+using MineCase.Protocol.Play;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Network;
 using MineCase.Server.User;
@@ -28,7 +29,7 @@ namespace MineCase.Server.Game.Entities
 
         Task SendExperience();
 
-        Task Collect(uint collectedEntityId, Slot item);
+        Task<bool> Collect(uint collectedEntityId, Slot item);
 
         Task SendPlayerListAddPlayer(IReadOnlyList<IPlayer> player);
 
@@ -49,5 +50,9 @@ namespace MineCase.Server.Game.Entities
         Task FinishDigging(Position location, PlayerDiggingFace face);
 
         Task Spawn(Guid uuid, Vector3 position, float pitch, float yaw);
+
+        Task PlaceBlock(Position location, EntityInteractHand hand, PlayerDiggingFace face, Vector3 cursorPosition);
+
+        Task SetHeldItem(short slot);
     }
 }

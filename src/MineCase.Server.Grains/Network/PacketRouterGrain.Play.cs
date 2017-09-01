@@ -75,6 +75,16 @@ namespace MineCase.Server.Network
                 case 0x1D:
                     innerPacket = DeferPacket(ServerboundAnimation.Deserialize(ref br));
                     break;
+
+                // Player Block Placement
+                case 0x1F:
+                    innerPacket = DeferPacket(PlayerBlockPlacement.Deserialize(ref br));
+                    break;
+
+                // Use Item
+                case 0x20:
+                    innerPacket = DeferPacket(UseItem.Deserialize(ref br));
+                    break;
                 default:
                     throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X2}.");
             }
@@ -141,9 +151,10 @@ namespace MineCase.Server.Network
             return Task.CompletedTask;
         }
 
-        private Task DispatchPacket(ServerboundHeldItemChange packet)
+        private async Task DispatchPacket(ServerboundHeldItemChange packet)
         {
-            return Task.CompletedTask;
+            var player = await _user.GetPlayer();
+            player.SetHeldItem(packet.Slot).Ignore();
         }
 
         private async Task DispatchPacket(PlayerDigging packet)
@@ -175,6 +186,18 @@ namespace MineCase.Server.Network
         }
 
         private Task DispatchPacket(ServerboundAnimation packet)
+        {
+            return Task.CompletedTask;
+        }
+
+        private async Task DispatchPacket(PlayerBlockPlacement packet)
+        {
+            var face = ConvertDiggingFace(packet.Face);
+            var player = await _user.GetPlayer();
+            player.PlaceBlock(packet.Location, (EntityInteractHand)packet.Hand, face, new Vector3(packet.CursorPositionX, packet.CursorPositionY, packet.CursorPositionZ)).Ignore();
+        }
+
+        private Task DispatchPacket(UseItem packet)
         {
             return Task.CompletedTask;
         }

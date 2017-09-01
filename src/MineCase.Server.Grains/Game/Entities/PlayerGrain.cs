@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using MineCase.Formats;
+using MineCase.Protocol.Play;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
@@ -206,10 +207,20 @@ namespace MineCase.Server.Game.Entities
                                select c.CollectBy(this));
         }
 
-        public async Task Collect(uint collectedEntityId, Slot item)
+        public async Task<bool> Collect(uint collectedEntityId, Slot item)
         {
             await GetBroadcastGenerator().CollectItem(collectedEntityId, EntityId, item.ItemCount);
-            await _inventory.AddItem(item);
+            return await _inventory.AddItem(item);
+        }
+
+        public Task PlaceBlock(Position location, EntityInteractHand hand, PlayerDiggingFace face, Vector3 cursorPosition)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task SetHeldItem(short slot)
+        {
+            return Task.CompletedTask;
         }
     }
 }
