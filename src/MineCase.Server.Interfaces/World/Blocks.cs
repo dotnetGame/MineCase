@@ -78,7 +78,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Water(FluidType type = FluidType.Falling)
+        public static BlockState Water(FluidType type = FluidType.FallingFlag)
         {
             return new BlockState
             {
@@ -87,7 +87,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState StationaryWater(FluidType type = FluidType.Falling)
+        public static BlockState StationaryWater(FluidType type = FluidType.FallingFlag)
         {
             return new BlockState
             {
@@ -96,7 +96,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Lava(FluidType type = FluidType.Falling)
+        public static BlockState Lava(FluidType type = FluidType.FallingFlag)
         {
             return new BlockState
             {
@@ -105,7 +105,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState StationaryLava(FluidType type = FluidType.Falling)
+        public static BlockState StationaryLava(FluidType type = FluidType.FallingFlag)
         {
             return new BlockState
             {
@@ -1464,7 +1464,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Wood2(WoodType type = WoodType.FacingUp)
+        public static BlockState Wood2(WoodType type = WoodType.FacingUpFlag)
         {
             return new BlockState
             {
