@@ -118,6 +118,22 @@ namespace MineCase.Server.World
         RawChicken = 365,
         CookedChicken = 366,
         RottenFlesh = 367,
+        EnderPearl = 368,
+        BlazeRod = 369,
+        GhastTear = 370,
+        GoldNugget = 371,
+        NetherWart = 372,
+        Potion = 373,
+        GlassBottle = 374,
+        SpiderEye = 375,
+        FermentedSpiderEye = 376,
+        BlazePowder = 377,
+        MagmaCream = 378,
+        BrewingStand = 379,
+        Cauldron = 380,
+        EyeofEnder = 381,
+        GlisteringMelon = 382,
+        SpawnEgg = 383,
         BottleEnchanting = 384,
         FireCharge = 385,
         BookandQuill = 386,
@@ -248,6 +264,110 @@ namespace MineCase.Server.World
         Head = 3,
         CreeperHead = 4,
         DragonHead = 5
+    }
+
+    public enum PotionNameType : uint
+    {
+        WaterBottleOrMundanePotion = 0,
+        PotionOfRegeneration1 = 1,
+        PotionOfSwiftness1 = 2,
+        PotionOfFireResistance1 = 3,
+        PotionOfPoison1 = 4,
+        PotionOfHealing1 = 5,
+        PotionOfNightVision1 = 6,
+        ClearPotion = 7,
+        PotionOfWeakness1 = 8,
+        PotionOfStrength1 = 9,
+        PotionOfSlowness1 = 10,
+        PotionOfLeaping1 = 11,
+        PotionOfHarming1 = 12,
+        PotionOfWaterBreathing1 = 13,
+        PotionOfInvisibility1 = 14,
+        ThinPotion = 15,
+        AwkwardPotion = 16,
+        PotionOfRegeneration2 = 17,
+        PotionOfSwiftness2 = 18,
+        PotionOfFireResistance2 = 19,
+        PotionOfPoison2 = 20,
+        PotionOfHealing2 = 21,
+        PotionOfNightVision2 = 22,
+        BunglingPotion = 23,
+        PotionOfWeakness2 = 24,
+        PotionOfStrength2 = 25,
+        PotionOfSlowness2 = 26,
+        PotionOfLeaping2 = 27,
+        PotionOfHarming2 = 28,
+        PotionOfWaterBreathing2 = 29,
+        PotionOfInvisibility2 = 30,
+        DebonairPotion = 31,
+        ThickPotion = 32,
+        PotionOfRegeneration3 = 33,
+        PotionOfSwiftness3 = 34,
+        PotionOfFireResistance3 = 35,
+        PotionOfPoison3 = 36,
+        PotionOfHealing3 = 37,
+        PotionOfNightVision3 = 38,
+        CharmingPotion = 39,
+        PotionOfWeakness3 = 40,
+        PotionOfStrength3 = 41,
+        PotionOfSlowness3 = 42,
+        PotionOfLeaping3 = 43,
+        PotionOfHarming3 = 44,
+        PotionOfWaterBreathing3 = 45,
+        PotionOfInvisibility3 = 46,
+        SparklingPotion = 47,
+        PotentPotion = 48,
+        PotionOfRegeneration4 = 49,
+        PotionOfSwiftness4 = 50,
+        PotionOfFireResistance4 = 51,
+        PotionOfPoison4 = 52,
+        PotionOfHealing4 = 53,
+        PotionOfNightVision4 = 54,
+        RankPotion = 55,
+        PotionOfWeakness4 = 56,
+        PotionOfStrength4 = 57,
+        PotionOfSlowness4 = 58,
+        PotionOfLeaping4 = 59,
+        PotionOfHarming4 = 60,
+        PotionOfWaterBreathing4 = 61,
+        PotionOfInvisibility4 = 62,
+        StinkyPotion = 63
+    }
+
+    public enum PotionEffectType : uint
+    {
+        None = 0,
+        Regeneration = 1,
+        Speed = 2,
+        FireResistance = 3,
+        Poison = 4,
+        InstantHealth = 5,
+        NightVision = 6,
+        Weakness = 8,
+        Strength = 9,
+        Slowness = 10,
+        JumpBoost = 11,
+        InstantDamage = 12,
+        WaterBreathing = 13,
+        Invisibility = 14
+    }
+
+    public enum PotionTierType : uint
+    {
+        Base = 0,
+        LessDuration = 32
+    }
+
+    public enum PotionExtendedDurationType : uint
+    {
+        Base = 0,
+        MoreDuration = 64
+    }
+
+    public enum SplashPotionType : uint
+    {
+        DrinkablePotion = 0,
+        SplashPotion = 16384
     }
 
     public struct ItemState : IEquatable<ItemState>

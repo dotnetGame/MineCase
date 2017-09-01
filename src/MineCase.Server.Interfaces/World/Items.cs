@@ -1014,6 +1014,164 @@ namespace MineCase.Server.World
             };
         }
 
+        public static ItemState EnderPearl()
+        {
+            return new ItemState
+            {
+                Id = (uint)ItemId.EnderPearl,
+                MetaValue = 0
+            };
+        }
+
+        public static ItemState BlazeRod()
+        {
+            return new ItemState
+            {
+                Id = (uint)ItemId.BlazeRod,
+                MetaValue = 0
+            };
+        }
+
+        public static ItemState GhastTear()
+        {
+            return new ItemState
+            {
+                Id = (uint)ItemId.GhastTear,
+                MetaValue = 0
+            };
+        }
+
+        public static ItemState GoldNugget()
+        {
+            return new ItemState
+            {
+                Id = (uint)ItemId.GoldNugget,
+                MetaValue = 0
+            };
+        }
+
+        public static ItemState NetherWart()
+        {
+            return new ItemState
+            {
+                Id = (uint)ItemId.NetherWart,
+                MetaValue = 0
+            };
+        }
+
+        public static ItemState Potion(PotionNameType name,
+            PotionExtendedDurationType ex = PotionExtendedDurationType.Base,
+            SplashPotionType splash = SplashPotionType.DrinkablePotion)
+        {
+            return new ItemState
+            {
+                Id = (uint)ItemId.Potion,
+                MetaValue = (uint)name + (uint)ex + (uint)splash
+            };
+        }
+
+        public static ItemState Potion(PotionEffectType effect,
+            PotionTierType tier = PotionTierType.Base,
+            PotionExtendedDurationType ex = PotionExtendedDurationType.Base,
+            SplashPotionType splash = SplashPotionType.DrinkablePotion)
+        {
+            return new ItemState
+            {
+                Id = (uint)ItemId.Potion,
+                MetaValue = (uint)effect + (uint)tier + (uint)ex + (uint)splash
+            };
+        }
+
+        public static ItemState GlassBottle()
+        {
+            return new ItemState
+            {
+                Id = (uint)ItemId.GlassBottle,
+                MetaValue = 0
+            };
+        }
+
+        public static ItemState SpiderEye()
+        {
+            return new ItemState
+            {
+                Id = (uint)ItemId.SpiderEye,
+                MetaValue = 0
+            };
+        }
+
+        public static ItemState FermentedSpiderEye()
+        {
+            return new ItemState
+            {
+                Id = (uint)ItemId.FermentedSpiderEye,
+                MetaValue = 0
+            };
+        }
+
+        public static ItemState BlazePowder()
+        {
+            return new ItemState
+            {
+                Id = (uint)ItemId.BlazePowder,
+                MetaValue = 0
+            };
+        }
+
+        public static ItemState MagmaCream()
+        {
+            return new ItemState
+            {
+                Id = (uint)ItemId.MagmaCream,
+                MetaValue = 0
+            };
+        }
+
+        public static ItemState BrewingStand()
+        {
+            return new ItemState
+            {
+                Id = (uint)ItemId.BrewingStand,
+                MetaValue = 0
+            };
+        }
+
+        public static ItemState Cauldron()
+        {
+            return new ItemState
+            {
+                Id = (uint)ItemId.Cauldron,
+                MetaValue = 0
+            };
+        }
+
+        public static ItemState EyeofEnder()
+        {
+            return new ItemState
+            {
+                Id = (uint)ItemId.EyeofEnder,
+                MetaValue = 0
+            };
+        }
+
+        public static ItemState GlisteringMelon()
+        {
+            return new ItemState
+            {
+                Id = (uint)ItemId.GlisteringMelon,
+                MetaValue = 0
+            };
+        }
+
+        public static ItemState SpawnEgg()
+        {
+            return new ItemState
+            {
+                Id = (uint)ItemId.SpawnEgg,
+                MetaValue = 0
+            };
+        }
+
         public static ItemState BottleEnchanting()
         {
             return new ItemState
