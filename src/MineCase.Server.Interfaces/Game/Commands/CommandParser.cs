@@ -7,6 +7,7 @@ using System.Text;
 
 namespace MineCase.Server.Game.Commands
 {
+    /// <inheritdoc />
     /// <summary>
     /// 未解析参数
     /// </summary>
@@ -42,7 +43,7 @@ namespace MineCase.Server.Game.Commands
         /// <param name="input">输入，即作为命令被分析的文本，应当不为 null、经过 <see cref="string.Trim()"/> 处理且以 '/' 开头</param>
         /// <returns>命令名及命令的参数</returns>
         /// <exception cref="ArgumentException"><paramref name="input"/> 不合法</exception>
-        public static (string, IList<ICommandArgument>) ParseCommand(string input)
+        public static (string, IReadOnlyList<ICommandArgument>) ParseCommand(string input)
         {
             if (input == null || input.Length < 2 || input[0] != '/')
             {
@@ -58,8 +59,8 @@ namespace MineCase.Server.Game.Commands
             return (splitResult[0].Substring(1), ParseCommandArgument(splitResult.Skip(1)));
         }
 
-        // 参数必须保持原来的顺序，因此返回值使用 IList 而不是 IEnumerable
-        private static IList<ICommandArgument> ParseCommandArgument(IEnumerable<string> input)
+        // 参数必须保持原来的顺序，因此返回值使用 IReadOnlyList 而不是 IEnumerable
+        private static IReadOnlyList<ICommandArgument> ParseCommandArgument(IEnumerable<string> input)
         {
             var result = new List<ICommandArgument>();
 

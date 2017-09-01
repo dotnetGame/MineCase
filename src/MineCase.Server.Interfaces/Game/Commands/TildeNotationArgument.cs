@@ -4,6 +4,7 @@ using System.Text;
 
 namespace MineCase.Server.Game.Commands
 {
+    /// <inheritdoc />
     /// <summary>
     /// 波浪号记号参数
     /// </summary>

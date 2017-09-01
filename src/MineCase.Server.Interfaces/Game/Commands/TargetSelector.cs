@@ -52,8 +52,9 @@ namespace MineCase.Server.Game.Commands
         Executor
     }
 
+    /// <inheritdoc cref="UnresolvedArgument" />
     /// <summary>
-    /// 用于选择目标的 <see cref="ICommandArgument"/>
+    /// 用于选择目标的 <see cref="ICommandArgument" />
     /// </summary>
     public class TargetSelectorArgument : UnresolvedArgument, IEnumerable<KeyValuePair<string, string>>
     {

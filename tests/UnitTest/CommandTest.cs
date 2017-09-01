@@ -36,14 +36,14 @@ namespace MineCase.UnitTest
         private class TestCommand : SimpleCommand
         {
             public TestCommand()
-                : base("test", null, null, null)
+                : base("test")
             {
             }
 
-            public override bool Execute(ICommandSender commandSender, IList<ICommandArgument> args)
+            public override Task<bool> Execute(ICommandSender commandSender, IReadOnlyList<ICommandArgument> args)
             {
                 commandSender.SendMessage(string.Join(", ", args.Select(arg => arg.ToString())));
-                return true;
+                return Task.FromResult(true);
             }
         }
 

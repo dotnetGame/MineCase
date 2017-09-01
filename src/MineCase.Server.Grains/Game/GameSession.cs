@@ -71,7 +71,7 @@ namespace MineCase.Server.Game
                 var command = message.Trim();
                 if (command[0] == '/')
                 {
-                    if (!_commandMap.Dispatch(await sender.GetPlayer(), message))
+                    if (!await _commandMap.Dispatch(await sender.GetPlayer(), message))
                     {
                         await sender.SendChatMessage(
                             await CreateStandardChatMessage(

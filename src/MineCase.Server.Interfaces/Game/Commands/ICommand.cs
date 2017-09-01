@@ -47,13 +47,14 @@ namespace MineCase.Server.Game.Commands
         /// <param name="args">命令的参数</param>
         /// <returns>执行是否成功，如果成功则返回 true</returns>
         /// <exception cref="CommandException">可能抛出派生自 <see cref="CommandException"/> 的异常</exception>
-        bool Execute(ICommandSender commandSender, IList<ICommandArgument> args);
+        Task<bool> Execute(ICommandSender commandSender, IReadOnlyList<ICommandArgument> args);
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// 命令执行过程中可能发生的异常的基类
     /// </summary>
-    /// <remarks>派生自此类的异常在 <see cref="CommandMap.Dispatch(ICommandSender, string)"/> 中将会被吃掉，不会传播到外部</remarks>
+    /// <remarks>派生自此类的异常在 <see cref="M:MineCase.Server.Game.Commands.CommandMap.Dispatch(MineCase.Server.Game.Commands.ICommandSender,System.String)" /> 中将会被吃掉，不会传播到外部</remarks>
     public class CommandException : Exception
     {
         public ICommand Command { get; }
@@ -65,6 +66,7 @@ namespace MineCase.Server.Game.Commands
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// 表示命令的使用方式错误的异常
     /// </summary>
@@ -76,6 +78,7 @@ namespace MineCase.Server.Game.Commands
         }
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// 可发送命令者接口
     /// </summary>

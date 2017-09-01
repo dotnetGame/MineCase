@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MineCase.Server.Game.Commands
 {
+    /// <inheritdoc />
     /// <summary>
     /// 简单指令
     /// </summary>
@@ -30,6 +32,6 @@ namespace MineCase.Server.Game.Commands
             }
         }
 
-        public abstract bool Execute(ICommandSender commandSender, IList<ICommandArgument> args);
+        public abstract Task<bool> Execute(ICommandSender commandSender, IReadOnlyList<ICommandArgument> args);
     }
 }
