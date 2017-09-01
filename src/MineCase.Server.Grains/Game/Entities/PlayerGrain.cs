@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using MineCase.Formats;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Network;
@@ -50,6 +51,7 @@ namespace MineCase.Server.Game.Entities
             _position = new Vector3(0, 2, 0);
             _pitch = 0;
             _yaw = 0;
+
             return base.OnActivateAsync();
         }
 
@@ -124,12 +126,6 @@ namespace MineCase.Server.Game.Entities
             return Task.FromResult(((int)(_position.X / 16), (int)(_position.Y / 16), (int)(_position.Z / 16)));
         }
 
-        public Task SetPosition(double x, double feetY, double z, bool onGround)
-        {
-            _position = new Vector3((float)x, (float)feetY, (float)z);
-            return Task.CompletedTask;
-        }
-
         public Task SetLook(float yaw, float pitch, bool onGround)
         {
             _pitch = pitch;
@@ -171,8 +167,22 @@ namespace MineCase.Server.Game.Entities
         {
             if (_diggingBlock != null)
             {
-                await World.SetBlockState(GrainFactory, location.X, location.Y, location.Z, BlockStates.Air());
+                var newState = BlockStates.Air();
+                await World.SetBlockState(GrainFactory, location.X, location.Y, location.Z, newState);
+
+                var chunk = location.GetChunk();
+                await GetBroadcastGenerator(chunk.chunkX, chunk.chunkZ).BlockChange(location, newState);
             }
+        }
+
+        public Task<Vector3> GetPosition() => Task.FromResult(_position);
+
+        public Task<IUser> GetUser() => Task.FromResult(_user);
+
+        public Task SetPosition(double x, double feetY, double z, bool onGround)
+        {
+            _position = new Vector3((float)x, (float)feetY, (float)z);
+            return Task.CompletedTask;
         }
     }
 }

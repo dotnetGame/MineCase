@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Formats;
 using MineCase.Server.Game;
 using Orleans;
 
@@ -38,6 +39,11 @@ namespace MineCase.Server.World
             var zOffset = MakeRelativeBlockOffset(z);
             var chunkColumnKey = world.MakeChunkColumnKey(xOffset.chunk, zOffset.chunk);
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).SetBlockState(xOffset.block, y, zOffset.block, blockState);
+        }
+
+        public static (int chunkX, int chunkZ) GetChunk(this Position blockPosition)
+        {
+            return (MakeRelativeBlockOffset(blockPosition.X).chunk, MakeRelativeBlockOffset(blockPosition.Z).chunk);
         }
 
         private static (int chunk, int block) MakeRelativeBlockOffset(int value)

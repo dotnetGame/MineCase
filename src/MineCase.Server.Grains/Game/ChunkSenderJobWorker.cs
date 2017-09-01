@@ -56,32 +56,5 @@ namespace MineCase.Server.Game
             foreach (var loader in job.Loaders)
                 loader.OnChunkSent(job.ChunkX, job.ChunkZ).Ignore();
         }
-
-        private class BroadcastPacketSink : IPacketSink
-        {
-            private IReadOnlyCollection<IPacketSink> _sinks;
-            private readonly IPacketPackager _packetPackager;
-
-            public BroadcastPacketSink(IReadOnlyCollection<IPacketSink> sinks, IPacketPackager packetPackager)
-            {
-                _sinks = sinks ?? Array.Empty<IPacketSink>();
-                _packetPackager = packetPackager;
-            }
-
-            public async Task SendPacket(ISerializablePacket packet)
-            {
-                if (_sinks.Any())
-                {
-                    var preparedPacket = await _packetPackager.PreparePacket(packet);
-                    await SendPacket(preparedPacket.packetId, preparedPacket.data.AsImmutable());
-                }
-            }
-
-            public Task SendPacket(uint packetId, Immutable<byte[]> data)
-            {
-                return Task.WhenAll(from sink in _sinks
-                                    select sink.SendPacket(packetId, data));
-            }
-        }
     }
 }

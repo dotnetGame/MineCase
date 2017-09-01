@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Formats;
@@ -14,6 +15,8 @@ namespace MineCase.Server.Game.Entities
         Task<string> GetName();
 
         Task SetName(string name);
+
+        Task<IUser> GetUser();
 
         Task BindToUser(IUser user);
 
@@ -32,6 +35,8 @@ namespace MineCase.Server.Game.Entities
         Task SendPositionAndLook();
 
         Task OnTeleportConfirm(uint teleportId);
+
+        Task<Vector3> GetPosition();
 
         Task SetPosition(double x, double feetY, double z, bool onGround);
 

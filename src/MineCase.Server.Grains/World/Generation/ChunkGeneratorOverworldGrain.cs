@@ -48,11 +48,11 @@ namespace MineCase.Server.World.Generation
 
             int seed = (int)this.GetPrimaryKeyLong();
             _random = new Random(seed);
-            _depthNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 1.0F);
-            _mainNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 1.0F);
-            _maxNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 1.0F);
-            _minNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 1.0F);
-            _surfaceNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 1.0F);
+            _depthNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 0.5f);
+            _mainNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 0.5f);
+            _maxNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 0.5f);
+            _minNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 0.5f);
+            _surfaceNoise = new OctavedNoise<PerlinNoise>(new PerlinNoise(_random.Next()), 4, 0.5f);
 
             _biomeWeights = new float[5, 5];
             for (int i = -2; i <= 2; ++i)

@@ -182,6 +182,15 @@ namespace MineCase.Server.Network.Play
                 AnimationID = animationID
             });
         }
+
+        public Task BlockChange(Position location, BlockState blockState)
+        {
+            return Sink.SendPacket(new BlockChange
+            {
+                Location = location,
+                BlockId = blockState.ToUInt32()
+            });
+        }
     }
 
     [Flags]
