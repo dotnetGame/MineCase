@@ -1280,6 +1280,13 @@ namespace MineCase.Server.World
 
         public int Z { get; set; }
 
+        public BlockPos(int x, int y, int z)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+        }
+
         public void Add(int x, int y, int z)
         {
             X += x;

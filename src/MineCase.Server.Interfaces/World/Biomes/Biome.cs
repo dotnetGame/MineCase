@@ -115,7 +115,7 @@ namespace MineCase.Server.World.Biomes
             }
         }
 
-        // 使用植物进行装点修饰
+        // 后期添加一些方块，Biome基类主要生成矿物
         public virtual Task Decorate(IWorld world, ChunkColumnStorage chunk, Random rand, BlockPos pos)
         {
             return Task.CompletedTask;
