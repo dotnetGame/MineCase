@@ -99,10 +99,9 @@ namespace MineCase.Server.World
             };
             _state = await generator.Generate(_world, _chunkX, _chunkZ, settings);
             */
-            var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(1);
-            GeneratorSettings settings = new GeneratorSettings
-            {
-            };
+            int seed = await _world.GetSeed();
+            GeneratorSettings settings = await _world.GetGeneratorSettings();
+            var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(seed);
             _state = await generator.Generate(_world, _chunkX, _chunkZ, settings);
         }
     }

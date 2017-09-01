@@ -64,16 +64,6 @@ namespace MineCase.Server.World.Generation
                 }
             }
 
-            // 生物群系先暂时初始化成这样，以后修改
-            _biomesForGeneration = new Biome[16, 16];
-            for (int i = 0; i < 16; ++i)
-            {
-                for (int j = 0; j < 16; ++j)
-                {
-                    _biomesForGeneration[i, j] = new BiomePlains(new BiomeProperties { BiomeName = "plains" });
-                }
-            }
-
             return Task.CompletedTask;
         }
 
@@ -91,12 +81,26 @@ namespace MineCase.Server.World.Generation
         public async Task GenerateChunk(IWorld world, ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
         {
             // GetBiomesForGeneration(_biomesForGeneration, x * 4 - 2, z * 4 - 2, 10, 10);
+            // 生物群系生成
+            // 生物群系先暂时初始化成这样，以后修改
+            _biomesForGeneration = new Biome[16, 16];
+            for (int i = 0; i < 16; ++i)
+            {
+                for (int j = 0; j < 16; ++j)
+                {
+                    _biomesForGeneration[i, j] = new BiomePlains(new BiomeProperties { BiomeName = "plains" }, settings);
+                }
+            }
+
+            // 基本地形生成
             await GenerateBasicTerrain(chunk, x, z, settings);
 
-            // Todo add biomes blocks
+            // 添加生物群系特有方块
             await ReplaceBiomeBlocks(settings, x, z, chunk, _biomesForGeneration);
 
             // Todo genrate structure
+
+            // 计算skylight
             await GenerateSkylightMap(chunk);
         }
 
@@ -104,7 +108,7 @@ namespace MineCase.Server.World.Generation
         {
             int blockX = x * 16;
             int blockZ = z * 16;
-            Biome chunkBiome = Biome.GetBiome(chunk.Biomes[7 * 16 + 7]);
+            Biome chunkBiome = Biome.GetBiome(chunk.Biomes[7 * 16 + 7], settings);
 
             await chunkBiome.Decorate(world, GrainFactory, chunk, _random, new BlockPos { X = blockX, Y = 0, Z = blockZ });
         }

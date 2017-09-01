@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.World.Generation;
 using MineCase.Server.World.Plants;
 using Orleans;
 
@@ -13,8 +14,8 @@ namespace MineCase.Server.World.Biomes
 
         private FlowersGenerator _flowersGenerator;
 
-        public BiomePlains(BiomeProperties properties)
-            : base(properties)
+        public BiomePlains(BiomeProperties properties, GeneratorSettings genSettings)
+            : base(properties, genSettings)
         {
             _grassGenerator = new GrassGenerator();
             _flowersGenerator = new FlowersGenerator();

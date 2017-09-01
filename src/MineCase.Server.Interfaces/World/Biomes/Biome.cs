@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Algorithm.Noise;
+using MineCase.Server.World.Generation;
+using MineCase.Server.World.Mine;
 using MineCase.Server.World.Plants;
 using Orleans;
 
@@ -29,6 +31,9 @@ namespace MineCase.Server.World.Biomes
 
     public abstract class Biome
     {
+        // Biome有关的生成器的设置
+        private GeneratorSettings _genSettings;
+
         private string _name;
         /** The base height of this biome. Default 0.1. */
         private float _baseHeight;
@@ -56,8 +61,24 @@ namespace MineCase.Server.World.Biomes
         protected static readonly OctavedNoise<PerlinNoise> _grassColorNoise =
             new OctavedNoise<PerlinNoise>(new PerlinNoise(2345), 4, 0.5F);
 
-        public Biome(BiomeProperties properties)
+        // 矿物生成器
+        private MinableGenerator _dirtGen; // 你没看错，这些当作矿物生成
+        private MinableGenerator _gravelOreGen;
+        private MinableGenerator _graniteGen;
+        private MinableGenerator _dioriteGen;
+        private MinableGenerator _andesiteGen;
+
+        private MinableGenerator _coalGen;
+        private MinableGenerator _ironGen;
+        private MinableGenerator _goldGen;
+        private MinableGenerator _redstoneGen;
+        private MinableGenerator _diamondGen;
+        private MinableGenerator _lapisGen;
+
+        public Biome(BiomeProperties properties, GeneratorSettings genSettings)
         {
+            _genSettings = genSettings;
+
             _name = properties.BiomeName;
             _baseHeight = properties.BaseHeight;
             _heightVariation = properties.HeightVariation;
@@ -66,6 +87,18 @@ namespace MineCase.Server.World.Biomes
             _waterColor = properties.WaterColor;
             _enableSnow = properties.EnableSnow;
             _enableRain = properties.EnableRain;
+
+            _dirtGen = new MinableGenerator(BlockStates.Dirt(), genSettings.DirtSize);
+            _gravelOreGen = new MinableGenerator(BlockStates.Gravel(), genSettings.GravelSize);
+            _graniteGen = new MinableGenerator(BlockStates.Stone(StoneType.Granite), genSettings.GraniteSize);
+            _dioriteGen = new MinableGenerator(BlockStates.Stone(StoneType.Diorite), genSettings.DioriteSize);
+            _andesiteGen = new MinableGenerator(BlockStates.Stone(StoneType.Andesite), genSettings.AndesiteSize);
+            _coalGen = new MinableGenerator(BlockStates.CoalOre(), genSettings.CoalSize);
+            _ironGen = new MinableGenerator(BlockStates.IronOre(), genSettings.IronSize);
+            _goldGen = new MinableGenerator(BlockStates.GoldOre(), genSettings.GoldSize);
+            _redstoneGen = new MinableGenerator(BlockStates.RedstoneOre(), genSettings.RedstoneSize);
+            _diamondGen = new MinableGenerator(BlockStates.DiamondOre(), genSettings.DiamondSize);
+            _lapisGen = new MinableGenerator(BlockStates.LapisLazuliOre(), genSettings.LapisSize);
         }
 
         public float GetBaseHeight()
@@ -78,7 +111,7 @@ namespace MineCase.Server.World.Biomes
             return _heightVariation;
         }
 
-        public static Biome GetBiome(int id)
+        public static Biome GetBiome(int id, GeneratorSettings settings)
         {
             BiomeId biomeId = (BiomeId)id;
             switch (biomeId)
@@ -86,7 +119,7 @@ namespace MineCase.Server.World.Biomes
                 case BiomeId.Ocean:
                 // return new BiomeOcean();
                 case BiomeId.Plains:
-                    return new BiomePlains(new BiomeProperties { BiomeName = "plains" });
+                    return new BiomePlains(new BiomeProperties { BiomeName = "plains" }, settings);
                 case BiomeId.Desert:
                 // return new BiomeDesert();
                 case BiomeId.ExtremeHills:

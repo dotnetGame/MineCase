@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game;
+using MineCase.Server.World.Generation;
 using Orleans;
 
 namespace MineCase.Server.World
@@ -22,5 +23,9 @@ namespace MineCase.Server.World
         Task OnGameTick(TimeSpan deltaTime);
 
         Task<IBlockAccessor> GetBlockAccessor();
+
+        Task<int> GetSeed();
+
+        Task<GeneratorSettings> GetGeneratorSettings();
     }
 }

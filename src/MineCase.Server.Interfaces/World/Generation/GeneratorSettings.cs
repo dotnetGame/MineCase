@@ -60,6 +60,47 @@ namespace MineCase.Server.World.Generation
 
         public int RiverSize { get; set; } = 4;
 
+        // ores like
+        public int DirtSize { get; set; } = 33;
+
+        public int DirtCount { get; set; } = 10;
+
+        public int DirtMinHeight { get; set; } = 0;
+
+        public int DirtMaxHeight { get; set; } = 256;
+
+        public int GravelSize { get; set; } = 33;
+
+        public int GravelCount { get; set; } = 8;
+
+        public int GravelMinHeight { get; set; } = 0;
+
+        public int GravelMaxHeight { get; set; } = 256;
+
+        public int GraniteSize { get; set; } = 33;
+
+        public int GraniteCount { get; set; } = 10;
+
+        public int GraniteMinHeight { get; set; } = 0;
+
+        public int GraniteMaxHeight { get; set; } = 80;
+
+        public int DioriteSize { get; set; } = 33;
+
+        public int DioriteCount { get; set; } = 10;
+
+        public int DioriteMinHeight { get; set; } = 0;
+
+        public int DioriteMaxHeight { get; set; } = 80;
+
+        public int AndesiteSize { get; set; } = 33;
+
+        public int AndesiteCount { get; set; } = 10;
+
+        public int AndesiteMinHeight { get; set; } = 0;
+
+        public int AndesiteMaxHeight { get; set; } = 80;
+
         // ores
         public int CoalSize { get; set; } = 17;
 
@@ -109,8 +150,11 @@ namespace MineCase.Server.World.Generation
 
         public int LapisSpread { get; set; } = 16;
 
-        public FlatGeneratorInfo FlatGeneratorInfo { get; set; }
+        public BlockState?[] FlatBlockId { get; set; } =
+            new BlockState?[] { BlockStates.Bedrock(), BlockStates.Stone(), BlockStates.Dirt(), BlockStates.Grass() };
 
-        public OverworldGeneratorInfo OverworldGeneratorInfo { get; set; }
+        // public FlatGeneratorInfo FlatGeneratorInfo { get; set; }
+
+        // public OverworldGeneratorInfo OverworldGeneratorInfo { get; set; }
     }
 }

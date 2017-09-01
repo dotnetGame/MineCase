@@ -26,10 +26,10 @@ namespace MineCase.Server.World.Generation
         private void GenerateChunk(IWorld world, ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
         {
             // 按照flat模式每层的设置给chunk赋值
-            for (int y = 0; y < settings.FlatGeneratorInfo.FlatBlockId.Length; ++y)
+            for (int y = 0; y < settings.FlatBlockId.Length; ++y)
             {
                 var section = chunk.Sections[y / 16];
-                var state = settings.FlatGeneratorInfo.FlatBlockId[y];
+                var state = settings.FlatBlockId[y];
                 if (state != null)
                 {
                     for (int j = 0; j < 16; ++j)
