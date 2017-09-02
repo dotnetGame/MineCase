@@ -99,5 +99,23 @@ namespace MineCase.Server.World
                 WorldToBlock(pos.Z),
                 state);
         }
+
+        public static async Task<int> GetHeight(this IWorld world, IGrainFactory grainFactory, BlockWorldPos pos)
+        {
+            var chunkColumnKey = world.MakeChunkColumnKey(WorldToChunk(pos.X), WorldToChunk(pos.Z));
+            var chunk = grainFactory.GetGrain<IChunkColumn>(chunkColumnKey);
+            int y;
+            int blockPosX = WorldToBlock(pos.X);
+            int blockPosZ = WorldToBlock(pos.Z);
+            for (y = 255; y >= 0; --y)
+            {
+                if (await chunk.GetBlockState(blockPosX, y, blockPosZ) != BlockStates.Air())
+                {
+                    break;
+                }
+            }
+
+            return y + 1;
+        }
     }
 }

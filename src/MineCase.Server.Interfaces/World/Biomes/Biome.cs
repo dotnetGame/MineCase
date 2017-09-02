@@ -75,6 +75,12 @@ namespace MineCase.Server.World.Biomes
         private MinableGenerator _diamondGen;
         private MinableGenerator _lapisGen;
 
+        // 植被设置
+        protected int _treesPerChunk;
+        protected float _extraTreeChance;
+        protected int _grassPerChunk;
+        protected int _flowersPerChunk;
+
         public Biome(BiomeProperties properties, GeneratorSettings genSettings)
         {
             _genSettings = genSettings;
@@ -143,6 +149,11 @@ namespace MineCase.Server.World.Biomes
                 genSettings.LapisSize,
                 genSettings.LapisCenterHeight + genSettings.LapisSpread,
                 genSettings.LapisCenterHeight - genSettings.LapisSpread);
+
+            _treesPerChunk = 0;
+            _extraTreeChance = 0.2F; // mc 0.05F
+            _grassPerChunk = 10;
+            _flowersPerChunk = 4;
         }
 
         public float GetBaseHeight()
@@ -190,6 +201,23 @@ namespace MineCase.Server.World.Biomes
             else
             {
                 return PlantsType.YellowFlower;
+            }
+        }
+
+        // 随机获得一个该生物群系可能出现的树
+        public virtual PlantsType GetRandomTree(Random rand)
+        {
+            int n = rand.Next(3);
+            switch (n)
+            {
+                case 0:
+                    return PlantsType.Oak;
+                case 1:
+                    return PlantsType.Spruce;
+                case 2:
+                    return PlantsType.Birch;
+                default:
+                    return PlantsType.Oak;
             }
         }
 

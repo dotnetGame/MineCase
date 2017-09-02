@@ -8,6 +8,9 @@ namespace MineCase.Server.World.Plants
     {
         TallGrass,
         YellowFlower,
-        RedFlower
+        RedFlower,
+        Oak,
+        Spruce,
+        Birch
     }
 }
