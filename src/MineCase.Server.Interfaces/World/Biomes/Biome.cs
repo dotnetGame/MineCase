@@ -85,6 +85,10 @@ namespace MineCase.Server.World.Biomes
         protected int _grassPerChunk;
         protected int _flowersPerChunk;
 
+        protected int _deadBushPerChunk;
+        protected int _reedsPerChunk;
+        protected int _cactiPerChunk;
+
         public Biome(BiomeProperties properties, GeneratorSettings genSettings)
         {
             _genSettings = genSettings;
@@ -137,6 +141,10 @@ namespace MineCase.Server.World.Biomes
             _extraTreeChance = 0.05F; // mc 0.05F
             _grassPerChunk = 10;
             _flowersPerChunk = 4;
+
+            _deadBushPerChunk = 2;
+            _reedsPerChunk = 50;
+            _cactiPerChunk = 10;
         }
 
         public BiomeId GetBiomeId()
