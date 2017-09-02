@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Formats;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.World
 {
@@ -17,6 +19,8 @@ namespace MineCase.Server.World
         Task<IReadOnlyCollection<ICollectable>> Collision(IEntity entity);
 
         Task<IReadOnlyCollection<ICollectable>> CollisionInChunk(IEntity entity);
+
+        Task SpawnPickup(Position location, Immutable<Slot[]> slots);
     }
 
     public static class CollectableFinderExtensions

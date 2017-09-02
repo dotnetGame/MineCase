@@ -47,5 +47,7 @@ namespace MineCase.Server.User
         Task SetPacketRouter(IPacketRouter packetRouter);
 
         Task SetViewDistance(int viewDistance);
+
+        Task<Slot[]> GetInventorySlots();
     }
 }

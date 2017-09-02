@@ -15,12 +15,17 @@ namespace MineCase.Server.Game.Entities
 
         public async Task CollectBy(IPlayer player)
         {
-            if (await player.Collect(EntityId, _metadata.Item))
+            var after = await player.Collect(EntityId, _metadata.Item);
+            if (after.IsEmpty)
             {
                 var chunkPos = GetChunkPosition();
                 await GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunkPos.x, chunkPos.z)).Unregister(this);
                 await GetBroadcastGenerator().DestroyEntities(new[] { EntityId });
                 DeactivateOnIdle();
+            }
+            else
+            {
+                await SetItem(after);
             }
         }
 

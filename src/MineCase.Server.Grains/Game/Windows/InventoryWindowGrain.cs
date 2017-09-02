@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Formats;
+using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Windows.SlotAreas;
 using MineCase.Server.Network.Play;
 using MineCase.Server.User;
 using Orleans;
@@ -14,6 +16,15 @@ namespace MineCase.Server.Game.Windows
         private IUser _user;
         private ClientPlayPacketGenerator _generator;
 
+        public InventoryWindowGrain()
+        {
+            SlotAreas.Add(new CraftingSlotArea(2, this));
+            SlotAreas.Add(new ArmorSlotArea(this));
+            SlotAreas.Add(new InventorySlotArea(this));
+            SlotAreas.Add(new HotbarSlotArea(this));
+            SlotAreas.Add(new OffhandSlotArea(this));
+        }
+
         public async Task<bool> AddItem(Slot item)
         {
             int index = -1;
@@ -22,7 +33,11 @@ namespace MineCase.Server.Game.Windows
                 if (Slots[i].BlockId == item.BlockId)
                 {
                     index = i;
-                    Slots[i].ItemCount += item.ItemCount;
+                    Slots[i] = new Slot
+                    {
+                        BlockId = item.BlockId,
+                        ItemCount = (byte)(Slots[i].ItemCount + item.ItemCount)
+                    };
                     break;
                 }
             }
@@ -41,6 +56,11 @@ namespace MineCase.Server.Game.Windows
         {
             _user = user;
             _generator = new ClientPlayPacketGenerator(await user.GetClientPacketSink());
+        }
+
+        public override Task<Slot> DistributeStack(IPlayer player, Slot item)
+        {
+            return DistributeStack(player, new[] { SlotAreas[3], SlotAreas[2] }, item, false);
         }
     }
 }

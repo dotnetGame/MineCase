@@ -1,19 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Formats;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.World
 {
     internal class CollectableFinder : Grain, ICollectableFinder
     {
+        private IWorld _world;
         private List<ICollectable> _collectables;
 
         public override Task OnActivateAsync()
         {
+            _world = GrainFactory.GetGrain<IWorld>(this.GetWorldAndChunkPosition().worldKey);
             _collectables = new List<ICollectable>();
             return base.OnActivateAsync();
         }
@@ -39,6 +44,19 @@ namespace MineCase.Server.World
         {
             _collectables.Remove(collectable);
             return Task.CompletedTask;
+        }
+
+        public async Task SpawnPickup(Position location, Immutable<Slot[]> slots)
+        {
+            foreach (var slot in slots.Value)
+            {
+                var pickup = GrainFactory.GetGrain<IPickup>(_world.MakeEntityKey(await _world.NewEntityId()));
+                await _world.AttachEntity(pickup);
+                await pickup.Spawn(
+                    Guid.NewGuid(),
+                    new Vector3(location.X + 0.5f, location.Y + 0.5f, location.Z + 0.5f));
+                await pickup.SetItem(slot);
+            }
         }
     }
 }
