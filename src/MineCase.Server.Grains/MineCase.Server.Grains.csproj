@@ -29,4 +29,8 @@
     <AdditionalFiles Include="..\..\build\stylecop.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\MineCase.Protocol\Serialization\BinaryWriterExtensions.cs" Link="BinaryWriterExtensions.cs" />
+  </ItemGroup>
+
 </Project>

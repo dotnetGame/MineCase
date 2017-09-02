@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using MineCase.Formats;
 
 namespace MineCase.Serialization
 {
@@ -107,6 +108,35 @@ namespace MineCase.Serialization
             var bytes = _span.ToArray();
             _span = ReadOnlySpan<byte>.Empty;
             return bytes;
+        }
+
+        public Position ReadAsPosition()
+        {
+            var value = _span.ReadBigEndian<ulong>();
+            Advance(sizeof(ulong));
+            return new Position
+            {
+                X = SignBy26(value >> 38),
+                Y = SignBy12((value >> 26) & 0xFFF),
+                Z = SignBy26(value << 38 >> 38)
+            };
+        }
+
+        private const ulong _26mask = (1u << 26) - 1;
+        private const ulong _12mask = (1u << 12) - 1;
+
+        private static int SignBy26(ulong value)
+        {
+            if ((value & 0b10_0000_0000_0000_0000_0000_0000) != 0)
+                return -(int)((~value & _26mask) + 1);
+            return (int)value;
+        }
+
+        private static int SignBy12(ulong value)
+        {
+            if ((value & 0b1000_0000_0000) != 0)
+                return -(int)((~value & _12mask) + 1);
+            return (int)value;
         }
 
         private ReadOnlySpan<byte> ReadBytes(int length)

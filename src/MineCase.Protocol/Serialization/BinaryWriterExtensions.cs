@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using MineCase.Formats;
 using MineCase.Protocol;
+using MineCase.Protocol.Play;
 
 namespace MineCase.Serialization
 {
@@ -90,6 +92,41 @@ namespace MineCase.Serialization
         {
             foreach (var item in array)
                 item.Serialize(bw);
+        }
+
+        public static void WriteAsPosition(this BinaryWriter bw, Position position)
+        {
+            Debug.Assert(IsValueInRangeInclusive(position.X, -33554432, 33554431), "position X value not in range.");
+            Debug.Assert(IsValueInRangeInclusive(position.Y, -2048, 2047), "position Y value not in range.");
+            Debug.Assert(IsValueInRangeInclusive(position.Z, -33554432, 33554431), "position Z value not in range.");
+
+            var value = (ulong)((uint)position.X & 0x3FFFFFF) << 38;
+            value |= (ulong)((uint)position.Y & 0xFFF) << 26;
+            value |= (ulong)((uint)position.Z & 0x3FFFFFF);
+            bw.WriteAsUnsignedLong(value);
+        }
+
+        private static bool IsValueInRangeInclusive(long value, long min, long max)
+        {
+            return (value >= min) && (value <= max);
+        }
+
+        public static void WriteAsSlot(this BinaryWriter bw, Slot slot)
+        {
+            bw.WriteAsShort(slot.BlockId);
+            if (!slot.IsEmpty)
+            {
+                bw.WriteAsByte(slot.ItemCount);
+                bw.WriteAsShort(slot.ItemDamage);
+                bw.WriteAsByte(0);
+            }
+        }
+
+        public static BinaryWriter WriteAsEntityMetadata(this BinaryWriter bw, byte index, EntityMetadataType type)
+        {
+            bw.WriteAsByte(index);
+            bw.WriteAsByte((byte)type);
+            return bw;
         }
     }
 

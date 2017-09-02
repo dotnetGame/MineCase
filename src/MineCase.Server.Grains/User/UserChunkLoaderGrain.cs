@@ -79,6 +79,7 @@ namespace MineCase.Server.User
             if (!_sentChunks.Contains((chunkX, chunkZ)) && _sendingChunks.Add((chunkX, chunkZ)))
             {
                 await trunkSender.PostChunk(chunkX, chunkZ, new[] { _sink }, new[] { this.AsReference<IUserChunkLoader>() });
+                await GrainFactory.GetGrain<IChunkTrackingHub>(_world.MakeChunkTrackingHubKey(chunkX, chunkZ)).Subscribe(_user);
                 return true;
             }
 
@@ -102,6 +103,7 @@ namespace MineCase.Server.User
                 var distance = Math.Abs(chunk.x - currentChunk.x) + Math.Abs(chunk.z - currentChunk.z);
                 if (distance > _viewDistance)
                 {
+                    await GrainFactory.GetGrain<IChunkTrackingHub>(_world.MakeChunkTrackingHubKey(chunk.x, chunk.z)).Unsubscribe(_user);
                     await _generator.UnloadChunk(chunk.x, chunk.z);
                     _sentChunks.Remove(chunk);
                 }
