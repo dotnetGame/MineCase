@@ -92,6 +92,15 @@ namespace MineCase.Server.World.Generation
                 }
             }
 
+            // 设置生物群系
+            for (int i = 0; i < 16; ++i)
+            {
+                for (int j = 0; j < 16; ++j)
+                {
+                    chunk.Biomes[i * 16 + j] = (byte)_biomesForGeneration[i, j].GetBiomeId();
+                }
+            }
+
             // 基本地形生成
             await GenerateBasicTerrain(chunk, x, z, settings);
 

@@ -17,6 +17,8 @@ namespace MineCase.Server.World.Biomes
         public BiomePlains(BiomeProperties properties, GeneratorSettings genSettings)
             : base(properties, genSettings)
         {
+            _name = "plains";
+            _biomeId = BiomeId.Plains;
             _grassGenerator = new GrassGenerator();
             _flowersGenerator = new FlowersGenerator();
         }

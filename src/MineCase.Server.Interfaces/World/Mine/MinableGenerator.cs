@@ -11,46 +11,13 @@ namespace MineCase.Server.World.Mine
 
         public int NumberOfBlocks { get; set; } // 每一坨矿物的数量
 
-        public int MaxHeight { get; set; }
-
-        public int MinHeight { get; set; }
-
-        public MinableGenerator(BlockState state, int blockCount, int maxHeight, int minHeight)
+        public MinableGenerator(BlockState state, int blockCount)
         {
             OreBlock = state;
             NumberOfBlocks = blockCount;
-            MaxHeight = maxHeight;
-            MinHeight = minHeight;
         }
 
-        public void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos position, int count)
-        {
-            if (MinHeight > MaxHeight)
-            {
-                int tmp = MinHeight;
-                MinHeight = MaxHeight;
-                MaxHeight = tmp;
-            }
-            else if (MaxHeight == MinHeight)
-            {
-                if (MinHeight < 255)
-                    ++MaxHeight;
-                else
-                    --MinHeight;
-            }
-
-            for (int j = 0; j < count; ++j)
-            {
-                BlockWorldPos blockpos = BlockWorldPos.Add(
-                    position,
-                    random.Next(16),
-                    random.Next(MaxHeight - MinHeight) + MinHeight,
-                    random.Next(16));
-                OreGenerate(world, grainFactory, chunk, random, blockpos);
-            }
-        }
-
-        private void OreGenerate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos position)
+        public void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos position)
         {
             // 在xz平面上的方向
             float angle = (float)rand.NextDouble() * (float)Math.PI;

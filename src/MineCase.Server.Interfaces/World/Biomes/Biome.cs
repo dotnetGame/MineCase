@@ -14,6 +14,8 @@ namespace MineCase.Server.World.Biomes
     {
         public string BiomeName { get; set; }
 
+        public BiomeId BiomeId { get; set; }
+
         public float BaseHeight { get; set; } = 0.1F;
 
         public float HeightVariation { get; set; } = 0.2F;
@@ -32,9 +34,11 @@ namespace MineCase.Server.World.Biomes
     public abstract class Biome
     {
         // Biome有关的生成器的设置
-        private GeneratorSettings _genSettings;
+        protected GeneratorSettings _genSettings;
 
-        private string _name;
+        protected string _name;
+
+        protected BiomeId _biomeId;
         /** The base height of this biome. Default 0.1. */
         private float _baseHeight;
         /** The variation from the base height of the biome. Default 0.3. */
@@ -86,6 +90,7 @@ namespace MineCase.Server.World.Biomes
             _genSettings = genSettings;
 
             _name = properties.BiomeName;
+            _biomeId = properties.BiomeId;
             _baseHeight = properties.BaseHeight;
             _heightVariation = properties.HeightVariation;
             _temperature = properties.Temperature;
@@ -96,64 +101,52 @@ namespace MineCase.Server.World.Biomes
 
             _dirtGen = new MinableGenerator(
                 BlockStates.Dirt(),
-                genSettings.DirtSize,
-                genSettings.DirtMaxHeight,
-                genSettings.DirtMinHeight);
+                genSettings.DirtSize);
             _gravelOreGen = new MinableGenerator(
                 BlockStates.Gravel(),
-                genSettings.GravelSize,
-                genSettings.GravelMaxHeight,
-                genSettings.GravelMinHeight);
+                genSettings.GravelSize);
             _graniteGen = new MinableGenerator(
                 BlockStates.Stone(StoneType.Granite),
-                genSettings.GraniteSize,
-                genSettings.GraniteMaxHeight,
-                genSettings.GraniteMinHeight);
+                genSettings.GraniteSize);
             _dioriteGen = new MinableGenerator(
                 BlockStates.Stone(StoneType.Diorite),
-                genSettings.DioriteSize,
-                genSettings.DioriteMaxHeight,
-                genSettings.DioriteMinHeight);
+                genSettings.DioriteSize);
             _andesiteGen = new MinableGenerator(
                 BlockStates.Stone(StoneType.Andesite),
-                genSettings.AndesiteSize,
-                genSettings.AndesiteMaxHeight,
-                genSettings.AndesiteMinHeight);
+                genSettings.AndesiteSize);
             _coalGen = new MinableGenerator(
                 BlockStates.CoalOre(),
-                genSettings.CoalSize,
-                genSettings.CoalMaxHeight,
-                genSettings.CoalMinHeight);
+                genSettings.CoalSize);
             _ironGen = new MinableGenerator(
                 BlockStates.IronOre(),
-                genSettings.IronSize,
-                genSettings.IronMaxHeight,
-                genSettings.IronMinHeight);
+                genSettings.IronSize);
             _goldGen = new MinableGenerator(
                 BlockStates.GoldOre(),
-                genSettings.GoldSize,
-                genSettings.GoldMaxHeight,
-                genSettings.GoldMinHeight);
+                genSettings.GoldSize);
             _redstoneGen = new MinableGenerator(
                 BlockStates.RedstoneOre(),
-                genSettings.RedstoneSize,
-                genSettings.RedstoneMaxHeight,
-                genSettings.RedstoneMinHeight);
+                genSettings.RedstoneSize);
             _diamondGen = new MinableGenerator(
                 BlockStates.DiamondOre(),
-                genSettings.DiamondSize,
-                genSettings.DiamondMaxHeight,
-                genSettings.DiamondMinHeight);
+                genSettings.DiamondSize);
             _lapisGen = new MinableGenerator(
                 BlockStates.LapisLazuliOre(),
-                genSettings.LapisSize,
-                genSettings.LapisCenterHeight + genSettings.LapisSpread,
-                genSettings.LapisCenterHeight - genSettings.LapisSpread);
+                genSettings.LapisSize);
 
-            _treesPerChunk = 0;
-            _extraTreeChance = 0.2F; // mc 0.05F
+            _treesPerChunk = 0; // mc 0
+            _extraTreeChance = 0.05F; // mc 0.05F
             _grassPerChunk = 10;
             _flowersPerChunk = 4;
+        }
+
+        public BiomeId GetBiomeId()
+        {
+            return _biomeId;
+        }
+
+        public string GetBiomeName()
+        {
+            return _name;
         }
 
         public float GetBaseHeight()
@@ -174,7 +167,7 @@ namespace MineCase.Server.World.Biomes
                 case BiomeId.Ocean:
                 // return new BiomeOcean();
                 case BiomeId.Plains:
-                    return new BiomePlains(new BiomeProperties { BiomeName = "plains" }, settings);
+                    return new BiomePlains(new BiomeProperties(), settings);
                 case BiomeId.Desert:
                 // return new BiomeDesert();
                 case BiomeId.ExtremeHills:
@@ -221,21 +214,48 @@ namespace MineCase.Server.World.Biomes
             }
         }
 
+        public void GenerateOre(MinableGenerator generator, IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos position, int count, int minHeight, int maxHeight)
+        {
+            if (minHeight > maxHeight)
+            {
+                int tmp = minHeight;
+                minHeight = maxHeight;
+                maxHeight = tmp;
+            }
+            else if (maxHeight == minHeight)
+            {
+                if (minHeight < 255)
+                    ++maxHeight;
+                else
+                    --minHeight;
+            }
+
+            for (int j = 0; j < count; ++j)
+            {
+                BlockWorldPos blockpos = BlockWorldPos.Add(
+                    position,
+                    random.Next(16),
+                    random.Next(maxHeight - minHeight) + minHeight,
+                    random.Next(16));
+                generator.Generate(world, grainFactory, chunk, random, blockpos);
+            }
+        }
+
         // 后期添加一些方块，Biome基类主要生成矿物
         public virtual Task Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
         {
-            _dirtGen.Generate(world, grainFactory, chunk, rand, pos, _genSettings.DirtCount);
-            _gravelOreGen.Generate(world, grainFactory, chunk, rand, pos, _genSettings.GravelCount);
-            _graniteGen.Generate(world, grainFactory, chunk, rand, pos, _genSettings.GraniteCount);
-            _dioriteGen.Generate(world, grainFactory, chunk, rand, pos, _genSettings.DioriteCount);
-            _andesiteGen.Generate(world, grainFactory, chunk, rand, pos, _genSettings.AndesiteCount);
+            GenerateOre(_dirtGen, world, grainFactory, chunk, rand, pos, _genSettings.DirtCount, _genSettings.DirtMaxHeight, _genSettings.DirtMinHeight);
+            GenerateOre(_gravelOreGen, world, grainFactory, chunk, rand, pos, _genSettings.GravelCount, _genSettings.GravelMaxHeight, _genSettings.GravelMinHeight);
+            GenerateOre(_graniteGen, world, grainFactory, chunk, rand, pos, _genSettings.GraniteCount, _genSettings.GraniteMaxHeight, _genSettings.GraniteMinHeight);
+            GenerateOre(_dioriteGen, world, grainFactory, chunk, rand, pos, _genSettings.DioriteCount, _genSettings.DioriteMaxHeight, _genSettings.DioriteMinHeight);
+            GenerateOre(_andesiteGen, world, grainFactory, chunk, rand, pos, _genSettings.AndesiteCount, _genSettings.AndesiteMaxHeight, _genSettings.AndesiteMinHeight);
 
-            _coalGen.Generate(world, grainFactory, chunk, rand, pos, _genSettings.CoalCount);
-            _ironGen.Generate(world, grainFactory, chunk, rand, pos, _genSettings.IronCount);
-            _goldGen.Generate(world, grainFactory, chunk, rand, pos, _genSettings.GoldCount);
-            _redstoneGen.Generate(world, grainFactory, chunk, rand, pos, _genSettings.RedstoneCount);
-            _diamondGen.Generate(world, grainFactory, chunk, rand, pos, _genSettings.DiamondCount);
-            _lapisGen.Generate(world, grainFactory, chunk, rand, pos, _genSettings.LapisCount);
+            GenerateOre(_coalGen, world, grainFactory, chunk, rand, pos, _genSettings.CoalCount, _genSettings.CoalMaxHeight, _genSettings.CoalMinHeight);
+            GenerateOre(_ironGen, world, grainFactory, chunk, rand, pos, _genSettings.IronCount, _genSettings.IronMaxHeight, _genSettings.IronMinHeight);
+            GenerateOre(_goldGen, world, grainFactory, chunk, rand, pos, _genSettings.GoldCount, _genSettings.GoldMaxHeight, _genSettings.GoldMinHeight);
+            GenerateOre(_redstoneGen, world, grainFactory, chunk, rand, pos, _genSettings.RedstoneCount, _genSettings.RedstoneMaxHeight, _genSettings.RedstoneMinHeight);
+            GenerateOre(_diamondGen, world, grainFactory, chunk, rand, pos, _genSettings.DiamondCount, _genSettings.DiamondMaxHeight, _genSettings.DiamondMinHeight);
+            GenerateOre(_lapisGen, world, grainFactory, chunk, rand, pos, _genSettings.LapisCount, _genSettings.LapisCenterHeight + _genSettings.LapisSpread, _genSettings.LapisCenterHeight - _genSettings.LapisSpread);
             return Task.CompletedTask;
         }
 
