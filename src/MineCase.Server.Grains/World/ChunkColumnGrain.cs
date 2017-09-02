@@ -124,7 +124,7 @@ namespace MineCase.Server.World
             GeneratorSettings settings = new GeneratorSettings
             {
             };
-            _state = await generator.Generate(_chunkX, _chunkZ, settings);
+            _state = await generator.Generate(_world, _chunkX, _chunkZ, settings);
         }
     }
 }

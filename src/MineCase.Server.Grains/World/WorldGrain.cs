@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game;
+using MineCase.Server.Settings;
+using MineCase.Server.World.Generation;
 using Orleans;
 using Orleans.Concurrency;
 
@@ -14,12 +16,20 @@ namespace MineCase.Server.World
         private Dictionary<uint, IEntity> _entities;
         private uint _nextAvailEId;
         private long _worldAge;
+        private IBlockAccessor _blockAccessor;
+        private GeneratorSettings _genSettings; // 生成设置
+        private string _seed; // 世界种子
 
-        public override Task OnActivateAsync()
+        public override async Task OnActivateAsync()
         {
+            IServerSettings serverSettings = GrainFactory.GetGrain<IServerSettings>(0);
             _nextAvailEId = 0;
             _entities = new Dictionary<uint, IEntity>();
-            return base.OnActivateAsync();
+            _blockAccessor = GrainFactory.GetGrain<IBlockAccessor>(this.GetPrimaryKeyString());
+            _genSettings = new GeneratorSettings();
+            await InitGeneratorSettings(_genSettings);
+            _seed = (await serverSettings.GetSettings()).LevelSeed;
+            await base.OnActivateAsync();
         }
 
         public Task AttachEntity(IEntity entity)
@@ -53,5 +63,34 @@ namespace MineCase.Server.World
         }
 
         public Task<long> GetAge() => Task.FromResult(_worldAge);
+
+        public Task<IBlockAccessor> GetBlockAccessor()
+        {
+            return Task.FromResult(_blockAccessor);
+        }
+
+        public Task<int> GetSeed()
+        {
+            int result = 0;
+            foreach (char c in _seed)
+            {
+                result = result * 127 + (int)c;
+            }
+
+            return Task.FromResult(result);
+        }
+
+        public Task<GeneratorSettings> GetGeneratorSettings()
+        {
+            return Task.FromResult(_genSettings);
+        }
+
+        private Task InitGeneratorSettings(GeneratorSettings settings)
+        {
+            IServerSettings serverSettings = GrainFactory.GetGrain<IServerSettings>(0);
+
+            // TODO move server settings to generator settings
+            return Task.CompletedTask;
+        }
     }
 }

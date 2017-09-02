@@ -1219,6 +1219,11 @@ namespace MineCase.Server.World
 
         public uint MetaValue { get; set; }
 
+        public bool IsSameId(BlockState other)
+        {
+            return Id == other.Id;
+        }
+
         public override bool Equals(object obj)
         {
             return obj is BlockState && Equals((BlockState)obj);
