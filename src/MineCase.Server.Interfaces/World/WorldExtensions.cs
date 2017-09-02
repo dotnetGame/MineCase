@@ -16,7 +16,7 @@ namespace MineCase.Server.World
         public static int WorldToChunk(int n)
         {
             int chunkPos = n / ChunkConstants.BlockEdgeWidthInSection;
-            if (chunkPos < 0) chunkPos -= 1;
+            if (n % ChunkConstants.BlockEdgeWidthInSection < 0) chunkPos -= 1;
             return chunkPos;
         }
 
@@ -42,11 +42,13 @@ namespace MineCase.Server.World
         /// <returns>方块类型</returns>
         public static Task<BlockState> GetBlockState(this IWorld world, IGrainFactory grainFactory, int x, int y, int z)
         {
-            var chunkColumnKey = world.MakeChunkColumnKey(WorldToChunk(x), WorldToChunk(z));
+            var xOffset = MakeRelativeBlockOffset(x);
+            var zOffset = MakeRelativeBlockOffset(z);
+            var chunkColumnKey = world.MakeChunkColumnKey(xOffset.chunk, zOffset.chunk);
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockState(
-                WorldToBlock(x),
+                xOffset.block,
                 y,
-                WorldToBlock(z));
+                zOffset.block);
         }
 
         /// <summary>
@@ -58,11 +60,13 @@ namespace MineCase.Server.World
         /// <returns>方块类型</returns>
         public static Task<BlockState> GetBlockState(this IWorld world, IGrainFactory grainFactory, BlockWorldPos pos)
         {
-            var chunkColumnKey = world.MakeChunkColumnKey(WorldToChunk(pos.X), WorldToChunk(pos.Z));
+            var xOffset = MakeRelativeBlockOffset(pos.X);
+            var zOffset = MakeRelativeBlockOffset(pos.Z);
+            var chunkColumnKey = world.MakeChunkColumnKey(xOffset.chunk, zOffset.chunk);
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockState(
-                WorldToBlock(pos.X),
+                xOffset.block,
                 pos.Y,
-                WorldToBlock(pos.Z));
+                zOffset.block);
         }
 
         /// <summary>
@@ -76,11 +80,13 @@ namespace MineCase.Server.World
         /// <param name="state">The state.</param>
         public static Task SetBlockState(this IWorld world, IGrainFactory grainFactory, int x, int y, int z, BlockState state)
         {
-            var chunkColumnKey = world.MakeChunkColumnKey(WorldToChunk(x), WorldToChunk(z));
+            var xOffset = MakeRelativeBlockOffset(x);
+            var zOffset = MakeRelativeBlockOffset(z);
+            var chunkColumnKey = world.MakeChunkColumnKey(xOffset.chunk, zOffset.chunk);
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).SetBlockState(
-                WorldToBlock(x),
+                xOffset.block,
                 y,
-                WorldToBlock(z),
+                zOffset.block,
                 state);
         }
 
@@ -93,24 +99,26 @@ namespace MineCase.Server.World
         /// <param name="state">The state.</param>
         public static Task SetBlockState(this IWorld world, IGrainFactory grainFactory, BlockWorldPos pos, BlockState state)
         {
-            var chunkColumnKey = world.MakeChunkColumnKey(WorldToChunk(pos.X), WorldToChunk(pos.Z));
+            var xOffset = MakeRelativeBlockOffset(pos.X);
+            var zOffset = MakeRelativeBlockOffset(pos.Z);
+            var chunkColumnKey = world.MakeChunkColumnKey(xOffset.chunk, zOffset.chunk);
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).SetBlockState(
-                WorldToBlock(pos.X),
+                xOffset.block,
                 pos.Y,
-                WorldToBlock(pos.Z),
+                zOffset.block,
                 state);
         }
 
         public static async Task<int> GetHeight(this IWorld world, IGrainFactory grainFactory, BlockWorldPos pos)
         {
-            var chunkColumnKey = world.MakeChunkColumnKey(WorldToChunk(pos.X), WorldToChunk(pos.Z));
+            var xOffset = MakeRelativeBlockOffset(pos.X);
+            var zOffset = MakeRelativeBlockOffset(pos.Z);
+            var chunkColumnKey = world.MakeChunkColumnKey(xOffset.chunk, zOffset.chunk);
             var chunk = grainFactory.GetGrain<IChunkColumn>(chunkColumnKey);
             int y;
-            int blockPosX = WorldToBlock(pos.X);
-            int blockPosZ = WorldToBlock(pos.Z);
             for (y = 255; y >= 0; --y)
             {
-                if (await chunk.GetBlockState(blockPosX, y, blockPosZ) != BlockStates.Air())
+                if (await chunk.GetBlockState(xOffset.block, y, zOffset.block) != BlockStates.Air())
                 {
                     break;
                 }
@@ -124,7 +132,7 @@ namespace MineCase.Server.World
             return (MakeRelativeBlockOffset(blockPosition.X).chunk, MakeRelativeBlockOffset(blockPosition.Z).chunk);
         }
 
-        private static (int chunk, int block) MakeRelativeBlockOffset(int value)
+        public static (int chunk, int block) MakeRelativeBlockOffset(int value)
         {
             var chunk = value / ChunkConstants.BlockEdgeWidthInSection;
             var block = value % ChunkConstants.BlockEdgeWidthInSection;
