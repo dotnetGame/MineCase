@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Formats;
 using Orleans;
 
 namespace MineCase.Server.World
@@ -116,6 +117,24 @@ namespace MineCase.Server.World
             }
 
             return y + 1;
+        }
+
+        public static (int chunkX, int chunkZ) GetChunk(this Position blockPosition)
+        {
+            return (MakeRelativeBlockOffset(blockPosition.X).chunk, MakeRelativeBlockOffset(blockPosition.Z).chunk);
+        }
+
+        private static (int chunk, int block) MakeRelativeBlockOffset(int value)
+        {
+            var chunk = value / ChunkConstants.BlockEdgeWidthInSection;
+            var block = value % ChunkConstants.BlockEdgeWidthInSection;
+            if (block < 0)
+            {
+                chunk--;
+                block += ChunkConstants.BlockEdgeWidthInSection;
+            }
+
+            return (chunk, block);
         }
     }
 }
