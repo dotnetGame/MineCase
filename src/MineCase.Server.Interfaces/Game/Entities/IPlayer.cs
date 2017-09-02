@@ -8,6 +8,7 @@ using MineCase.Protocol.Play;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Network;
 using MineCase.Server.User;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Game.Entities
 {
@@ -29,7 +30,7 @@ namespace MineCase.Server.Game.Entities
 
         Task SendExperience();
 
-        Task<bool> Collect(uint collectedEntityId, Slot item);
+        Task<Slot> Collect(uint collectedEntityId, Slot item);
 
         Task SendPlayerListAddPlayer(IReadOnlyList<IPlayer> player);
 
@@ -54,5 +55,9 @@ namespace MineCase.Server.Game.Entities
         Task PlaceBlock(Position location, EntityInteractHand hand, PlayerDiggingFace face, Vector3 cursorPosition);
 
         Task SetHeldItem(short slot);
+
+        Task<Slot> GetInventorySlot(int index);
+
+        Task SetInventorySlot(int index, Slot slot);
     }
 }

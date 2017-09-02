@@ -24,6 +24,7 @@ namespace MineCase.Server.Game.Entities
         private ClientPlayPacketGenerator _generator;
 
         private string _name;
+        private Slot[] _inventorySlots;
         private IInventoryWindow _inventory;
 
         public Task<IInventoryWindow> GetInventory() => Task.FromResult(_inventory);
@@ -56,7 +57,7 @@ namespace MineCase.Server.Game.Entities
 
         public async Task SendWholeInventory()
         {
-            var slots = await _inventory.GetSlots();
+            var slots = await _inventory.GetSlots(this);
             await _generator.WindowItems(0, slots);
         }
 
@@ -65,7 +66,6 @@ namespace MineCase.Server.Game.Entities
             _generator = new ClientPlayPacketGenerator(await user.GetClientPacketSink());
             _user = user;
             _health = MaxHealth;
-            await _inventory.SetUser(user);
         }
 
         public async Task SendHealth()
@@ -106,6 +106,7 @@ namespace MineCase.Server.Game.Entities
 
         public async Task NotifyLoggedIn()
         {
+            _inventorySlots = await _user.GetInventorySlots();
             await SendWholeInventory();
             await SendExperience();
             await SendPlayerListAddPlayer(new[] { this });
@@ -170,12 +171,8 @@ namespace MineCase.Server.Game.Entities
                 await GetBroadcastGenerator(chunk.chunkX, chunk.chunkZ).BlockChange(location, newState);
 
                 // 产生 Pickup
-                var pickup = GrainFactory.GetGrain<IPickup>(World.MakeEntityKey(await World.NewEntityId()));
-                await World.AttachEntity(pickup);
-                await pickup.Spawn(
-                    Guid.NewGuid(),
-                    new Vector3(location.X + 0.5f, location.Y + 0.5f, location.Z + 0.5f));
-                await pickup.SetItem(new Slot { BlockId = (short)oldState.Id, ItemDamage = (short)oldState.MetaValue, ItemCount = 1 });
+                var finder = GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunk.chunkX, chunk.chunkZ));
+                await finder.SpawnPickup(location, new[] { new Slot { BlockId = (short)oldState.Id, ItemDamage = (short)oldState.MetaValue, ItemCount = 1 } }.AsImmutable());
             }
         }
 
@@ -207,10 +204,10 @@ namespace MineCase.Server.Game.Entities
                                select c.CollectBy(this));
         }
 
-        public async Task<bool> Collect(uint collectedEntityId, Slot item)
+        public async Task<Slot> Collect(uint collectedEntityId, Slot item)
         {
             await GetBroadcastGenerator().CollectItem(collectedEntityId, EntityId, item.ItemCount);
-            return await _inventory.AddItem(item);
+            return await _inventory.DistributeStack(this, item);
         }
 
         public Task PlaceBlock(Position location, EntityInteractHand hand, PlayerDiggingFace face, Vector3 cursorPosition)
@@ -220,6 +217,17 @@ namespace MineCase.Server.Game.Entities
 
         public Task SetHeldItem(short slot)
         {
+            return Task.CompletedTask;
+        }
+
+        public Task<Slot> GetInventorySlot(int index)
+        {
+            return Task.FromResult(_inventorySlots[index]);
+        }
+
+        public Task SetInventorySlot(int index, Slot slot)
+        {
+            _inventorySlots[index] = slot;
             return Task.CompletedTask;
         }
     }

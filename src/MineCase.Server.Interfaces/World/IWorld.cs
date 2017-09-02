@@ -13,6 +13,8 @@ namespace MineCase.Server.World
     {
         Task<uint> NewEntityId();
 
+        Task<byte> NewWindowId();
+
         Task AttachEntity(IEntity entity);
 
         Task<IEntity> FindEntity(uint eid);
