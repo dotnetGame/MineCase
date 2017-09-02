@@ -120,7 +120,7 @@ namespace MineCase.Server.World
             };
             _state = await generator.Generate(_chunkX, _chunkZ, settings);
             */
-            var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(1);
+            var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(await _world.GetSeed());
             GeneratorSettings settings = new GeneratorSettings
             {
             };
