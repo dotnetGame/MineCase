@@ -2,35 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using MineCase.Formats;
 using MineCase.Serialization;
 using Orleans.Concurrency;
 
 namespace MineCase.Protocol.Play
 {
-    [Immutable]
-    public sealed class Slot : ISerializablePacket
-    {
-        [SerializeAs(DataType.Short)]
-        public short BlockId;
-
-        [SerializeAs(DataType.Byte)]
-        public byte? ItemCount;
-
-        [SerializeAs(DataType.Short)]
-        public short? ItemDamage;
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsShort(BlockId);
-            if (BlockId != -1)
-            {
-                bw.WriteAsByte(ItemCount.Value);
-                bw.WriteAsShort(ItemDamage.Value);
-                bw.WriteAsByte(0);
-            }
-        }
-    }
-
     [Immutable]
     [Packet(0x14)]
     public sealed class WindowItems : ISerializablePacket
@@ -48,7 +25,8 @@ namespace MineCase.Protocol.Play
         {
             bw.WriteAsByte(WindowId);
             bw.WriteAsShort(Count);
-            bw.WriteAsArray(Slots);
+            foreach (var slot in Slots)
+                bw.WriteAsSlot(slot);
         }
     }
 }

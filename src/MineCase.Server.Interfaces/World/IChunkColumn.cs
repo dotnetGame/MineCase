@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.Game.Entities;
 using Orleans;
 
 namespace MineCase.Server.World
@@ -9,6 +11,18 @@ namespace MineCase.Server.World
     public interface IChunkColumn : IGrainWithStringKey
     {
         Task<ChunkColumnStorage> GetState();
+
+        Task<BlockState> GetBlockState(int x, int y, int z);
+
+        Task SetBlockState(int x, int y, int z, BlockState blockState);
+
+        Task AttachPlayer(IPlayer player);
+
+        Task UpdatePlayerPosition(IPlayer player, Vector3 position);
+
+        Task DetachPlayer(IPlayer player);
+
+        Task<IReadOnlyCollection<(IPlayer player, Vector3 position)>> GetPlayers();
     }
 
     public static class ChunkColumnExtensions

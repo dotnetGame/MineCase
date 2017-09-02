@@ -60,8 +60,101 @@ namespace MineCase.Server.World.Generation
 
         public int RiverSize { get; set; } = 4;
 
-        public FlatGeneratorInfo FlatGeneratorInfo { get; set; }
+        // ores like
+        public int DirtSize { get; set; } = 33;
 
-        public OverworldGeneratorInfo OverworldGeneratorInfo { get; set; }
+        public int DirtCount { get; set; } = 10;
+
+        public int DirtMinHeight { get; set; } = 0;
+
+        public int DirtMaxHeight { get; set; } = 256;
+
+        public int GravelSize { get; set; } = 33;
+
+        public int GravelCount { get; set; } = 8;
+
+        public int GravelMinHeight { get; set; } = 0;
+
+        public int GravelMaxHeight { get; set; } = 256;
+
+        public int GraniteSize { get; set; } = 33;
+
+        public int GraniteCount { get; set; } = 10;
+
+        public int GraniteMinHeight { get; set; } = 0;
+
+        public int GraniteMaxHeight { get; set; } = 80;
+
+        public int DioriteSize { get; set; } = 33;
+
+        public int DioriteCount { get; set; } = 10;
+
+        public int DioriteMinHeight { get; set; } = 0;
+
+        public int DioriteMaxHeight { get; set; } = 80;
+
+        public int AndesiteSize { get; set; } = 33;
+
+        public int AndesiteCount { get; set; } = 10;
+
+        public int AndesiteMinHeight { get; set; } = 0;
+
+        public int AndesiteMaxHeight { get; set; } = 80;
+
+        // ores
+        public int CoalSize { get; set; } = 17;
+
+        public int CoalCount { get; set; } = 20;
+
+        public int CoalMinHeight { get; set; } = 0;
+
+        public int CoalMaxHeight { get; set; } = 128;
+
+        public int IronSize { get; set; } = 9;
+
+        public int IronCount { get; set; } = 20;
+
+        public int IronMinHeight { get; set; } = 0;
+
+        public int IronMaxHeight { get; set; } = 64;
+
+        public int GoldSize { get; set; } = 9;
+
+        public int GoldCount { get; set; } = 2;
+
+        public int GoldMinHeight { get; set; } = 0;
+
+        public int GoldMaxHeight { get; set; } = 32;
+
+        public int RedstoneSize { get; set; } = 8;
+
+        public int RedstoneCount { get; set; } = 8;
+
+        public int RedstoneMinHeight { get; set; } = 0;
+
+        public int RedstoneMaxHeight { get; set; } = 16;
+
+        public int DiamondSize { get; set; } = 8;
+
+        public int DiamondCount { get; set; } = 1;
+
+        public int DiamondMinHeight { get; set; } = 0;
+
+        public int DiamondMaxHeight { get; set; } = 16;
+
+        public int LapisSize { get; set; } = 7;
+
+        public int LapisCount { get; set; } = 1;
+
+        public int LapisCenterHeight { get; set; } = 16;
+
+        public int LapisSpread { get; set; } = 16;
+
+        public BlockState?[] FlatBlockId { get; set; } =
+            new BlockState?[] { BlockStates.Bedrock(), BlockStates.Stone(), BlockStates.Dirt(), BlockStates.Grass() };
+
+        // public FlatGeneratorInfo FlatGeneratorInfo { get; set; }
+
+        // public OverworldGeneratorInfo OverworldGeneratorInfo { get; set; }
     }
 }

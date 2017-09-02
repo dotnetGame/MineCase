@@ -12,24 +12,24 @@ namespace MineCase.Server.World.Generation
     [StatelessWorker]
     internal class ChunkGeneratorFlatGrain : Grain, IChunkGeneratorFlat
     {
-        public Task<ChunkColumnStorage> Generate(int x, int z, GeneratorSettings settings)
+        public Task<ChunkColumnStorage> Generate(IWorld world, int x, int z, GeneratorSettings settings)
         {
             var chunkColumn = new ChunkColumnStorage();
             for (int i = 0; i < chunkColumn.Sections.Length; ++i)
                 chunkColumn.Sections[i] = new ChunkSectionStorage(true);
 
-            GenerateChunk(chunkColumn, x, z, settings);
-            PopulateChunk(chunkColumn, x, z, settings);
+            GenerateChunk(world, chunkColumn, x, z, settings);
+            PopulateChunk(world, chunkColumn, x, z, settings);
             return Task.FromResult(chunkColumn);
         }
 
-        private void GenerateChunk(ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
+        private void GenerateChunk(IWorld world, ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
         {
             // 按照flat模式每层的设置给chunk赋值
-            for (int y = 0; y < settings.FlatGeneratorInfo.FlatBlockId.Length; ++y)
+            for (int y = 0; y < settings.FlatBlockId.Length; ++y)
             {
                 var section = chunk.Sections[y / 16];
-                var state = settings.FlatGeneratorInfo.FlatBlockId[y];
+                var state = settings.FlatBlockId[y];
                 if (state != null)
                 {
                     for (int j = 0; j < 16; ++j)
@@ -46,7 +46,7 @@ namespace MineCase.Server.World.Generation
             // todo biomes
         }
 
-        private void PopulateChunk(ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
+        private void PopulateChunk(IWorld world, ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
         {
             // TODO generator tree, grass, structures\
         }

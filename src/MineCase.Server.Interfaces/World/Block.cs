@@ -1188,16 +1188,6 @@ namespace MineCase.Server.World
         OnAWallFacingWest = 5
     }
 
-    public enum HeadForItemType : uint
-    {
-        SkeletonSkull = 0,
-        WitherSkeletonSkull = 1,
-        ZombieHead = 2,
-        Head = 3,
-        CreeperHead = 4,
-        DragonHead = 5
-    }
-
     public enum BlockOfQuartzType : uint
     {
         BlockOfQuartz = 0,
@@ -1207,45 +1197,20 @@ namespace MineCase.Server.World
         PillarQuartzBlockEastWest = 4
     }
 
-    public enum CoalType : uint
+    public enum AnvilForBlockType : uint
     {
-        Coal = 0,
-        Charcoal = 1
-    }
-
-    public enum DyeType : uint
-    {
-        InkSac = 0,
-        RoseRed = 1,
-        CactusGreen = 2,
-        CocoaBeans = 3,
-        LapisLazuli = 4,
-        PurpleDye = 5,
-        CyanDye = 6,
-        LightGrayDye = 7,
-        GrayDye = 8,
-        PinkDye = 9,
-        LimeDye = 10,
-        DandelionYellow = 11,
-        LightBlueDye = 12,
-        MagentaDye = 13,
-        OrangeDye = 14,
-        BoneMeal = 15
-    }
-
-    public enum FishType : uint
-    {
-        RawFishOrCookedFish = 0,
-        RawSalmonOrCookedSalmon = 1,
-        Clownfish = 2,
-        Pufferfish = 3
-    }
-
-    public enum AnvilForItemType : uint
-    {
-        Anvil = 0,
-        SlightlyDamagedAnvil = 1,
-        VeryDamagedAnvil = 2
+        AnvilNS = 0,
+        AnvilEW = 1,
+        AnvilSN = 2,
+        AnvilWE = 3,
+        SlightlyDamagedAnvilNS = 4,
+        SlightlyDamagedAnvilEW = 5,
+        SlightlyDamagedAnvilWE = 6,
+        SlightlyDamagedAnvilSN = 7,
+        VeryDamagedAnvilNS = 8,
+        VeryDamagedAnvilEW = 9,
+        VeryDamagedAnvilWE = 10,
+        VeryDamagedAnvilSN = 11
     }
 
     public struct BlockState : IEquatable<BlockState>
@@ -1253,6 +1218,11 @@ namespace MineCase.Server.World
         public uint Id { get; set; }
 
         public uint MetaValue { get; set; }
+
+        public bool IsSameId(BlockState other)
+        {
+            return Id == other.Id;
+        }
 
         public override bool Equals(object obj)
         {
@@ -1282,6 +1252,11 @@ namespace MineCase.Server.World
         public static bool operator !=(BlockState state1, BlockState state2)
         {
             return !(state1 == state2);
+        }
+
+        public uint ToUInt32()
+        {
+            return ChunkSectionStorage.SerializeBlockState(this);
         }
     }
 }

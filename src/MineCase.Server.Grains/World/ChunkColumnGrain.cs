@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.Game.Entities;
 using MineCase.Server.World.Generation;
 using Orleans;
 
@@ -15,6 +17,23 @@ namespace MineCase.Server.World
         private int _chunkZ;
 
         private ChunkColumnStorage _state;
+        private Dictionary<IPlayer, Vector3> _players;
+
+        public async Task AttachPlayer(IPlayer player)
+        {
+            _players.Add(player, await player.GetPosition());
+        }
+
+        public Task DetachPlayer(IPlayer player)
+        {
+            _players.Remove(player);
+            return Task.CompletedTask;
+        }
+
+        public Task<BlockState> GetBlockState(int x, int y, int z) => Task.FromResult(_state[x, y, z]);
+
+        public Task<IReadOnlyCollection<(IPlayer player, Vector3 position)>> GetPlayers() =>
+            Task.FromResult<IReadOnlyCollection<(IPlayer player, Vector3 position)>>(_players.Select(o => (o.Key, o.Value)).ToList());
 
         public Task<ChunkColumnStorage> GetState() => Task.FromResult(_state);
         /*
@@ -71,8 +90,21 @@ namespace MineCase.Server.World
             _world = GrainFactory.GetGrain<IWorld>(key.worldKey);
             _chunkX = key.x;
             _chunkZ = key.z;
+            _players = new Dictionary<IPlayer, Vector3>();
 
             await EnsureChunkGenerated();
+        }
+
+        public Task SetBlockState(int x, int y, int z, BlockState blockState)
+        {
+            _state[x, y, z] = blockState;
+            return Task.CompletedTask;
+        }
+
+        public Task UpdatePlayerPosition(IPlayer player, Vector3 position)
+        {
+            _players[player] = position;
+            return Task.CompletedTask;
         }
 
         private async Task EnsureChunkGenerated()
@@ -92,7 +124,7 @@ namespace MineCase.Server.World
             GeneratorSettings settings = new GeneratorSettings
             {
             };
-            _state = await generator.Generate(_chunkX, _chunkZ, settings);
+            _state = await generator.Generate(_world, _chunkX, _chunkZ, settings);
         }
     }
 }

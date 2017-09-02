@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MineCase.Algorithm\MineCase.Algorithm.csproj" />
     <ProjectReference Include="..\MineCase.Protocol\MineCase.Protocol.csproj" />
   </ItemGroup>
 
