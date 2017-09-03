@@ -10,37 +10,32 @@ namespace MineCase.Server.World.Biomes
 {
     public class BiomePlains : Biome
     {
-        private GrassGenerator _grassGenerator;
-
-        private FlowersGenerator _flowersGenerator;
-
         public BiomePlains(BiomeProperties properties, GeneratorSettings genSettings)
             : base(properties, genSettings)
         {
             _name = "plains";
             _biomeId = BiomeId.Plains;
-            _grassGenerator = new GrassGenerator();
-            _flowersGenerator = new FlowersGenerator();
         }
 
         // 添加其他东西
         public override async Task Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
         {
-            float d0 = (_grassColorNoise.Noise((pos.X + 8) / 200.0F, 0.0F, (pos.Z + 8) / 200.0F) - 0.5F) * 2;
+            float grassColor = (_grassColorNoise.Noise((pos.X + 8) / 200.0F, 0.0F, (pos.Z + 8) / 200.0F) - 0.5F) * 2;
 
-            if (d0 < -0.8F)
+            if (grassColor < -0.8F)
             {
-                _flowersGenerator.FlowersPerChunk = 15;
-                _grassGenerator.GrassPerChunk = 5 * 7;
+                _flowersPerChunk = 15;
+                _grassPerChunk = 5 * 7;
+                await GenDoubleFlowers(world, grainFactory, chunk, rand, pos);
             }
             else
             {
-                _flowersGenerator.FlowersPerChunk = 4;
-                _grassGenerator.GrassPerChunk = 10 * 7;
+                _flowersPerChunk = 4;
+                _grassPerChunk = 10 * 7;
             }
 
-            await _grassGenerator.Generate(world, grainFactory, chunk, this, rand, pos);
-            await _flowersGenerator.Generate(world, grainFactory, chunk, this, rand, pos);
+            await GenGrass(world, grainFactory, chunk, rand, pos);
+            await GenFlowers(world, grainFactory, chunk, rand, pos);
 
             int treesPerChunk = _treesPerChunk;
 
@@ -51,8 +46,8 @@ namespace MineCase.Server.World.Biomes
 
             for (int num = 0; num < treesPerChunk; ++num)
             {
-                int x = rand.Next(8) + 4;
-                int z = rand.Next(8) + 4;
+                int x = rand.Next(12) + 2;
+                int z = rand.Next(12) + 2;
 
                 TreeGenerator treeGenerator = new TreeGenerator(5, false, GetRandomTree(rand));
 
@@ -71,6 +66,62 @@ namespace MineCase.Server.World.Biomes
             }
 
             await base.Decorate(world, grainFactory, chunk, rand, pos);
+        }
+
+        private async Task GenGrass(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        {
+            int grassMaxNum = random.Next(_grassPerChunk);
+            GrassGenerator generator = new GrassGenerator();
+            for (int grassNum = 0; grassNum < grassMaxNum; ++grassNum)
+            {
+                int x = random.Next(16);
+                int z = random.Next(16);
+                for (int y = 255; y >= 1; --y)
+                {
+                    if (chunk[x, y, z] != BlockStates.Air())
+                    {
+                        await generator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, y + 1, pos.Z + z));
+                        break;
+                    }
+                }
+            }
+        }
+
+        private async Task GenFlowers(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        {
+            int flowersMaxNum = random.Next(_flowersPerChunk);
+            FlowersGenerator generator = new FlowersGenerator();
+            for (int flowersNum = 0; flowersNum < flowersMaxNum; ++flowersNum)
+            {
+                int x = random.Next(16);
+                int z = random.Next(16);
+                for (int y = 255; y >= 1; --y)
+                {
+                    if (chunk[x, y, z] != BlockStates.Air())
+                    {
+                        await generator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, y + 1, pos.Z + z));
+                        break;
+                    }
+                }
+            }
+        }
+
+        private async Task GenDoubleFlowers(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        {
+            DoubleFlowersGenerator generator = new DoubleFlowersGenerator(PlantsType.Sunflower);
+            for (int flowersNum = 0; flowersNum < 10; ++flowersNum)
+            {
+                int x = random.Next(16);
+                int z = random.Next(16);
+                for (int y = 255; y >= 1; --y)
+                {
+                    if (chunk[x, y, z] != BlockStates.Air())
+                    {
+                        await generator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, y + 1, pos.Z + z));
+                        break;
+                    }
+                }
+            }
         }
     }
 }
