@@ -10,15 +10,17 @@ namespace MineCase.Server.World.Plants
     public class DoubleFlowersGenerator : PlantsGenerator
     {
         private PlantsType _flowerType;
+        private int _flowersMaxNum;
 
-        public DoubleFlowersGenerator(PlantsType type)
+        public DoubleFlowersGenerator(PlantsType type, int maxNum = 16)
         {
             _flowerType = type;
+            _flowersMaxNum = maxNum;
         }
 
         public override Task Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
         {
-            int num = random.Next(64);
+            int num = random.Next(_flowersMaxNum);
             for (int i = 0; i < num; ++i)
             {
                 BlockWorldPos blockpos = BlockWorldPos.Add(pos, random.Next(8), random.Next(4), random.Next(8));
