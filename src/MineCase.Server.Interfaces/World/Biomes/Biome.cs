@@ -173,15 +173,15 @@ namespace MineCase.Server.World.Biomes
             switch (biomeId)
             {
                 case BiomeId.Ocean:
-                // return new BiomeOcean();
+                     return new BiomeOcean(new BiomeProperties(), settings);
                 case BiomeId.Plains:
-                    return new BiomePlains(new BiomeProperties(), settings);
+                     return new BiomePlains(new BiomeProperties(), settings);
                 case BiomeId.Desert:
-                // return new BiomeDesert();
+                     return new BiomeDesert(new BiomeProperties(), settings);
                 case BiomeId.ExtremeHills:
                 // return new BiomeExtremeHills();
                 default:
-                    return null;
+                     return null;
             }
         }
 

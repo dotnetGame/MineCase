@@ -27,7 +27,6 @@ namespace MineCase.Server.World.Biomes
                 _flowersPerChunk = 15;
                 _grassPerChunk = 5 * 7;
                 await GenDoubleFlowers(world, grainFactory, chunk, rand, pos);
-                await GenDoubleGrass(world, grainFactory, chunk, rand, pos);
             }
             else
             {
@@ -37,6 +36,7 @@ namespace MineCase.Server.World.Biomes
 
             await GenGrass(world, grainFactory, chunk, rand, pos);
             await GenFlowers(world, grainFactory, chunk, rand, pos);
+            await GenDoubleGrass(world, grainFactory, chunk, rand, pos);
 
             int treesPerChunk = _treesPerChunk;
 

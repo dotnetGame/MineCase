@@ -10,10 +10,6 @@ namespace MineCase.Server.World.Biomes
 {
     public class BiomeDesert : Biome
     {
-        private GrassGenerator _grassGenerator;
-
-        private FlowersGenerator _flowersGenerator;
-
         public BiomeDesert(BiomeProperties properties, GeneratorSettings genSettings)
             : base(properties, genSettings)
         {
@@ -26,16 +22,34 @@ namespace MineCase.Server.World.Biomes
             _deadBushPerChunk = 2;
             _reedsPerChunk = 50;
             _cactiPerChunk = 10;
-
-            _grassGenerator = new GrassGenerator();
-            _flowersGenerator = new FlowersGenerator();
         }
 
         // 添加其他东西
         public override async Task Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
         {
+            await GenCacti(world, grainFactory, chunk, rand, pos);
+
             // TODO 生成仙人掌和枯木
             await base.Decorate(world, grainFactory, chunk, rand, pos);
+        }
+
+        private async Task GenCacti(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        {
+            int cactiMaxNum = random.Next(_cactiPerChunk);
+            CactiGenerator generator = new CactiGenerator();
+            for (int cactiNum = 0; cactiNum < cactiMaxNum; ++cactiNum)
+            {
+                int x = random.Next(14) + 1;
+                int z = random.Next(14) + 1;
+                for (int y = 255; y >= 1; --y)
+                {
+                    if (chunk[x, y, z] != BlockStates.Air())
+                    {
+                        await generator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, y + 1, pos.Z + z));
+                        break;
+                    }
+                }
+            }
         }
     }
 }

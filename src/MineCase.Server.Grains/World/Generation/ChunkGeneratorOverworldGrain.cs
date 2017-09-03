@@ -88,7 +88,7 @@ namespace MineCase.Server.World.Generation
             {
                 for (int j = 0; j < 16; ++j)
                 {
-                    _biomesForGeneration[i, j] = new BiomePlains(new BiomeProperties { BiomeName = "plains" }, settings);
+                    _biomesForGeneration[i, j] = new BiomeDesert(new BiomeProperties(), settings);
                 }
             }
 
