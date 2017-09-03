@@ -23,5 +23,22 @@ namespace MineCase.Formats
         {
             return slot.BlockId == BlockId && ItemDamage == slot.ItemDamage;
         }
+
+        public Slot WithItemCount(byte count)
+        {
+            return new Slot
+            {
+                BlockId = BlockId,
+                ItemCount = count,
+                ItemDamage = ItemDamage,
+                NBT = NBT
+            };
+        }
+
+        public void MakeEmptyIfZero()
+        {
+            if (ItemCount == 0)
+                this = Empty;
+        }
     }
 }

@@ -68,7 +68,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
             Window.NotifySlotChanged(this, player, slotIndex, item);
         }
 
-        public async Task Click(IPlayer player, int slotIndex, ClickAction clickAction, Slot clickedItem)
+        public virtual async Task Click(IPlayer player, int slotIndex, ClickAction clickAction, Slot clickedItem)
         {
             var slot = await GetSlot(player, slotIndex);
             var draggedSlot = await player.GetDraggedSlot();
@@ -77,17 +77,56 @@ namespace MineCase.Server.Game.Windows.SlotAreas
                 case ClickAction.LeftMouseClick:
                     if (draggedSlot.IsEmpty || !draggedSlot.CanStack(slot))
                     {
+                        // 交换
                         await SetSlot(player, slotIndex, draggedSlot);
                         await player.SetDraggedSlot(slot);
                     }
                     else if (TryStackSlot(ref draggedSlot, ref slot))
                     {
+                        // 堆叠到最大
                         await SetSlot(player, slotIndex, slot);
                         await player.SetDraggedSlot(draggedSlot);
                     }
 
                     break;
                 case ClickAction.RightMouseClick:
+                    if (draggedSlot.IsEmpty)
+                    {
+                        // 取一半
+                        if (!slot.IsEmpty)
+                        {
+                            var takeCount = (byte)Math.Ceiling(slot.ItemCount / 2.0f);
+                            draggedSlot = slot.WithItemCount(takeCount);
+                            slot.ItemCount -= takeCount;
+                            slot.MakeEmptyIfZero();
+
+                            await SetSlot(player, slotIndex, slot);
+                            await player.SetDraggedSlot(draggedSlot);
+                        }
+                    }
+                    else if (slot.IsEmpty || draggedSlot.CanStack(slot))
+                    {
+                        // 放一个
+                        if (draggedSlot.ItemCount > 0 && (slot.IsEmpty || slot.ItemCount < MaxStackCount))
+                        {
+                            draggedSlot.ItemCount--;
+                            if (slot.IsEmpty)
+                                slot = draggedSlot.WithItemCount(1);
+                            else
+                                slot.ItemCount++;
+                            draggedSlot.MakeEmptyIfZero();
+
+                            await SetSlot(player, slotIndex, slot);
+                            await player.SetDraggedSlot(draggedSlot);
+                        }
+                    }
+                    else
+                    {
+                        // 交换
+                        await SetSlot(player, slotIndex, draggedSlot);
+                        await player.SetDraggedSlot(slot);
+                    }
+
                     break;
                 default:
                     break;
@@ -96,12 +135,12 @@ namespace MineCase.Server.Game.Windows.SlotAreas
 
         private bool TryStackSlot(ref Slot source, ref Slot target)
         {
-            if (target.ItemCount < MaxStackCount && target.CanStack(source))
+            if (target.ItemCount <= MaxStackCount && target.CanStack(source))
             {
                 var toStack = (byte)Math.Min(source.ItemCount, MaxStackCount - target.ItemCount);
                 target.ItemCount += toStack;
                 source.ItemCount -= toStack;
-                if (source.ItemCount == 0) source = Slot.Empty;
+                source.MakeEmptyIfZero();
                 return true;
             }
 
