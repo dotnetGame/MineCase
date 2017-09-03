@@ -85,6 +85,16 @@ namespace MineCase.Server.Network
                 case 0x20:
                     innerPacket = DeferPacket(UseItem.Deserialize(ref br));
                     break;
+
+                // Click Window
+                case 0x08:
+                    innerPacket = DeferPacket(ClickWindow.Deserialize(ref br));
+                    break;
+
+                // Close Window
+                case 0x09:
+                    innerPacket = DeferPacket(CloseWindow.Deserialize(ref br));
+                    break;
                 default:
                     throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X2}.");
             }
@@ -202,9 +212,44 @@ namespace MineCase.Server.Network
             return Task.CompletedTask;
         }
 
+        private async Task DispatchPacket(ClickWindow packet)
+        {
+            var player = await _user.GetPlayer();
+            player.ClickWindow(packet.WindowId, packet.Slot, ToClickAction(packet.Button, packet.Mode), packet.ActionNumber, packet.ClickedItem).Ignore();
+        }
+
+        private async Task DispatchPacket(CloseWindow packet)
+        {
+            var player = await _user.GetPlayer();
+            player.CloseWindow(packet.WindowId).Ignore();
+        }
+
         private Game.PlayerDiggingFace ConvertDiggingFace(Protocol.Play.PlayerDiggingFace face)
         {
             return (Game.PlayerDiggingFace)face;
+        }
+
+        private ClickAction ToClickAction(byte button, uint mode)
+        {
+            switch (mode)
+            {
+                case 0:
+                    switch (button)
+                    {
+                        case 0:
+                            return ClickAction.LeftMouseClick;
+                        case 1:
+                            return ClickAction.RightMouseClick;
+                        default:
+                            break;
+                    }
+
+                    break;
+                default:
+                    break;
+            }
+
+            throw new NotSupportedException("This button-mode is not supported");
         }
     }
 }

@@ -16,13 +16,15 @@ namespace MineCase.Server.Game.Windows
         private IUser _user;
         private ClientPlayPacketGenerator _generator;
 
-        public InventoryWindowGrain()
+        public override Task OnActivateAsync()
         {
-            SlotAreas.Add(new CraftingSlotArea(2, this));
-            SlotAreas.Add(new ArmorSlotArea(this));
-            SlotAreas.Add(new InventorySlotArea(this));
-            SlotAreas.Add(new HotbarSlotArea(this));
-            SlotAreas.Add(new OffhandSlotArea(this));
+            SlotAreas.Add(new CraftingSlotArea(2, this, GrainFactory));
+            SlotAreas.Add(new ArmorSlotArea(this, GrainFactory));
+            SlotAreas.Add(new InventorySlotArea(this, GrainFactory));
+            SlotAreas.Add(new HotbarSlotArea(this, GrainFactory));
+            SlotAreas.Add(new OffhandSlotArea(this, GrainFactory));
+
+            return base.OnActivateAsync();
         }
 
         public async Task<bool> AddItem(Slot item)

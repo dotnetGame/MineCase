@@ -11,12 +11,14 @@ namespace MineCase.Server.Game.Windows
 {
     public interface IWindow : IGrainWithGuidKey
     {
-        Task SetWorld(IWorld world);
-
         Task<uint> GetSlotCount();
 
         Task<IReadOnlyList<Slot>> GetSlots(IPlayer player);
 
         Task<Slot> DistributeStack(IPlayer player, Slot item);
+
+        Task Click(IPlayer player, int slotIndex, ClickAction clickAction, Slot clickedItem);
+
+        Task Close(IPlayer player);
     }
 }

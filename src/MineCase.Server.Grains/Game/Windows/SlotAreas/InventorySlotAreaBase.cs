@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Formats;
 using MineCase.Server.Game.Entities;
+using Orleans;
 using Orleans.Concurrency;
 
 namespace MineCase.Server.Game.Windows.SlotAreas
@@ -12,8 +13,8 @@ namespace MineCase.Server.Game.Windows.SlotAreas
     {
         protected int OffsetInContainer { get; }
 
-        public InventorySlotAreaBase(int slotsCount, int offsetInContainer, WindowGrain window)
-            : base(slotsCount, window)
+        public InventorySlotAreaBase(int slotsCount, int offsetInContainer, WindowGrain window, IGrainFactory grainFactory)
+            : base(slotsCount, window, grainFactory)
         {
             OffsetInContainer = offsetInContainer;
         }

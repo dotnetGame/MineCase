@@ -23,4 +23,8 @@
     <AdditionalFiles Include="..\..\build\stylecop.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MineCase.NBT\MineCase.Nbt.csproj" />
+  </ItemGroup>
+
 </Project>

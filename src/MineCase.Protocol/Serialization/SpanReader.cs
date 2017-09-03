@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using MineCase.Formats;
+using MineCase.Nbt;
 
 namespace MineCase.Serialization
 {
@@ -59,6 +60,12 @@ namespace MineCase.Serialization
         {
             var value = _span.ReadBigEndian<long>();
             Advance(sizeof(long));
+            return value;
+        }
+
+        public byte PeekAsByte()
+        {
+            var value = _span.ReadBigEndian<byte>();
             return value;
         }
 
@@ -137,6 +144,22 @@ namespace MineCase.Serialization
             if ((value & 0b1000_0000_0000) != 0)
                 return -(int)((~value & _12mask) + 1);
             return (int)value;
+        }
+
+        public Slot ReadAsSlot()
+        {
+            var slot = new Slot { BlockId = ReadAsShort() };
+            if (!slot.IsEmpty)
+            {
+                slot.ItemCount = ReadAsByte();
+                slot.ItemDamage = ReadAsShort();
+                if (PeekAsByte() == 0)
+                    Advance(1);
+                else
+                    slot.NBT = new NbtFile(new MemoryStream(ReadAsByteArray()), false);
+            }
+
+            return slot;
         }
 
         private ReadOnlySpan<byte> ReadBytes(int length)

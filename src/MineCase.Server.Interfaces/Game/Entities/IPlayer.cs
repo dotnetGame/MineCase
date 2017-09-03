@@ -59,5 +59,15 @@ namespace MineCase.Server.Game.Entities
         Task<Slot> GetInventorySlot(int index);
 
         Task SetInventorySlot(int index, Slot slot);
+
+        Task<byte> GetWindowId(IWindow window);
+
+        Task SetDraggedSlot(Slot item);
+
+        Task<Slot> GetDraggedSlot();
+
+        Task ClickWindow(byte windowId, short slot, ClickAction clickAction, short actionNumber, Slot clickedItem);
+
+        Task CloseWindow(byte windowId);
     }
 }
