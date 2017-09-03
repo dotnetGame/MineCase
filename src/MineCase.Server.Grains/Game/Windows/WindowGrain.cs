@@ -17,8 +17,6 @@ namespace MineCase.Server.Game.Windows
 
         protected List<SlotArea> SlotAreas { get; } = new List<SlotArea>();
 
-        public byte WindowId { get; private set; } = 0;
-
         protected IWorld World { get; private set; }
 
         public Task<uint> GetSlotCount()
@@ -38,17 +36,10 @@ namespace MineCase.Server.Game.Windows
             return slots;
         }
 
-        public async Task SetWorld(IWorld world)
-        {
-            World = world;
-            if (WindowId == 0 && !(this is InventoryWindowGrain))
-                WindowId = await World.NewWindowId();
-        }
-
         internal async void NotifySlotChanged(SlotArea slotArea, IPlayer player, int slotIndex, Slot item)
         {
             new ClientPlayPacketGenerator(await (await player.GetUser()).GetClientPacketSink())
-                .SetSlot(WindowId, (short)LocalSlotIndexToGlobal(slotArea, slotIndex), item).Ignore();
+                .SetSlot(await player.GetWindowId(this), (short)LocalSlotIndexToGlobal(slotArea, slotIndex), item).Ignore();
         }
 
         private int LocalSlotIndexToGlobal(SlotArea slotArea, int slotIndex)
@@ -63,6 +54,18 @@ namespace MineCase.Server.Game.Windows
             return slotIndex;
         }
 
+        private (SlotArea slotArea, int slotIndex) GlobalSlotIndexToLocal(int slotIndex)
+        {
+            for (int i = 0; i < SlotAreas.Count; i++)
+            {
+                if (slotIndex < SlotAreas[i].SlotsCount)
+                    return (SlotAreas[i], slotIndex);
+                slotIndex -= SlotAreas[i].SlotsCount;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(slotIndex));
+        }
+
         public virtual Task<Slot> DistributeStack(IPlayer player, Slot item)
         {
             return DistributeStack(player, SlotAreas, item, false);
@@ -70,13 +73,37 @@ namespace MineCase.Server.Game.Windows
 
         protected async Task<Slot> DistributeStack(IPlayer player, IReadOnlyList<SlotArea> slotAreas, Slot item, bool fillFromBack)
         {
-            foreach (var slotArea in slotAreas)
+            // 先使用已有的 Slot，再使用空 Slot
+            for (int pass = 0; pass < 2; pass++)
             {
-                item = await slotArea.DistributeStack(player, item, fillFromBack);
-                if (item.IsEmpty) break;
+                foreach (var slotArea in slotAreas)
+                {
+                    item = await slotArea.DistributeStack(player, item, pass == 1, fillFromBack);
+                    if (item.IsEmpty) break;
+                }
             }
 
             return item;
+        }
+
+        public async Task Click(IPlayer player, int slotIndex, ClickAction clickAction, Slot clickedItem)
+        {
+            switch (clickAction)
+            {
+                case ClickAction.LeftMouseClick:
+                case ClickAction.RightMouseClick:
+                    var slot = GlobalSlotIndexToLocal(slotIndex);
+                    await slot.slotArea.Click(player, slot.slotIndex, clickAction, clickedItem);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public async Task Close(IPlayer player)
+        {
+            foreach (var slotArea in SlotAreas)
+                await slotArea.Close(player);
         }
     }
 }

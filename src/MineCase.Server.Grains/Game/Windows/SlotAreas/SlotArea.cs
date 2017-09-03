@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Formats;
 using MineCase.Server.Game.Entities;
+using Orleans;
 using Orleans.Concurrency;
 
 namespace MineCase.Server.Game.Windows.SlotAreas
@@ -24,12 +25,15 @@ namespace MineCase.Server.Game.Windows.SlotAreas
 
         public int SlotsCount { get; }
 
-        private readonly WindowGrain _window;
+        protected WindowGrain Window { get; }
 
-        public SlotArea(int slotsCount, WindowGrain window)
+        protected IGrainFactory GrainFactory { get; }
+
+        public SlotArea(int slotsCount, WindowGrain window, IGrainFactory grainFactory)
         {
             SlotsCount = slotsCount;
-            _window = window;
+            Window = window;
+            GrainFactory = grainFactory;
         }
 
         public abstract Task<Slot> GetSlot(IPlayer player, int slotIndex);
@@ -38,23 +42,20 @@ namespace MineCase.Server.Game.Windows.SlotAreas
 
         private const byte MaxStackCount = 64;
 
-        public virtual async Task<Slot> DistributeStack(IPlayer player, Slot item, bool fillFromBack)
+        public virtual async Task<Slot> DistributeStack(IPlayer player, Slot item, bool canUseEmptySlot, bool fillFromBack)
         {
             for (int i = 0; i < SlotsCount && !item.IsEmpty; i++)
             {
                 int slotIndex = fillFromBack ? (SlotsCount - 1 - i) : i;
 
                 var targetSlot = await GetSlot(player, slotIndex);
-                if (targetSlot.IsEmpty)
+                if (canUseEmptySlot && targetSlot.IsEmpty)
                 {
                     await SetSlot(player, slotIndex, item);
                     return Slot.Empty;
                 }
-                else if (targetSlot.ItemCount < MaxStackCount && targetSlot.CanStack(item))
+                else if (TryStackSlot(ref item, ref targetSlot))
                 {
-                    var toStack = (byte)Math.Min(item.ItemCount, MaxStackCount - targetSlot.ItemCount);
-                    targetSlot.ItemCount += toStack;
-                    item.ItemCount -= toStack;
                     await SetSlot(player, slotIndex, targetSlot);
                 }
             }
@@ -64,7 +65,52 @@ namespace MineCase.Server.Game.Windows.SlotAreas
 
         protected void NotifySlotChanged(IPlayer player, int slotIndex, Slot item)
         {
-            _window.NotifySlotChanged(this, player, slotIndex, item);
+            Window.NotifySlotChanged(this, player, slotIndex, item);
+        }
+
+        public async Task Click(IPlayer player, int slotIndex, ClickAction clickAction, Slot clickedItem)
+        {
+            var slot = await GetSlot(player, slotIndex);
+            var draggedSlot = await player.GetDraggedSlot();
+            switch (clickAction)
+            {
+                case ClickAction.LeftMouseClick:
+                    if (draggedSlot.IsEmpty || !draggedSlot.CanStack(slot))
+                    {
+                        await SetSlot(player, slotIndex, draggedSlot);
+                        await player.SetDraggedSlot(slot);
+                    }
+                    else if (TryStackSlot(ref draggedSlot, ref slot))
+                    {
+                        await SetSlot(player, slotIndex, slot);
+                        await player.SetDraggedSlot(draggedSlot);
+                    }
+
+                    break;
+                case ClickAction.RightMouseClick:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private bool TryStackSlot(ref Slot source, ref Slot target)
+        {
+            if (target.ItemCount < MaxStackCount && target.CanStack(source))
+            {
+                var toStack = (byte)Math.Min(source.ItemCount, MaxStackCount - target.ItemCount);
+                target.ItemCount += toStack;
+                source.ItemCount -= toStack;
+                if (source.ItemCount == 0) source = Slot.Empty;
+                return true;
+            }
+
+            return false;
+        }
+
+        public virtual Task Close(IPlayer player)
+        {
+            return Task.CompletedTask;
         }
     }
 }

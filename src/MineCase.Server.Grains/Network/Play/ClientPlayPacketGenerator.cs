@@ -306,6 +306,16 @@ namespace MineCase.Server.Network.Play
                 BlockId = blockState.ToUInt32()
             });
         }
+
+        public Task ConfirmTransaction(byte windowId, short actionNumber, bool accepted)
+        {
+            return Sink.SendPacket(new ClientboundConfirmTransaction
+            {
+                WindowId = windowId,
+                ActionNumber = actionNumber,
+                Accepted = accepted
+            });
+        }
     }
 
     [Flags]

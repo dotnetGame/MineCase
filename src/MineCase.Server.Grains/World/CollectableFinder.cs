@@ -11,6 +11,7 @@ using Orleans.Concurrency;
 
 namespace MineCase.Server.World
 {
+    [Reentrant]
     internal class CollectableFinder : Grain, ICollectableFinder
     {
         private IWorld _world;
@@ -56,6 +57,7 @@ namespace MineCase.Server.World
                     Guid.NewGuid(),
                     new Vector3(location.X + 0.5f, location.Y + 0.5f, location.Z + 0.5f));
                 await pickup.SetItem(slot);
+                pickup.Register().Ignore();
             }
         }
     }

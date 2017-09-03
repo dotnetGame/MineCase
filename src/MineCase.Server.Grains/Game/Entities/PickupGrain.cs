@@ -9,7 +9,7 @@ using Orleans;
 
 namespace MineCase.Server.Game.Entities
 {
-    internal class PickupGrain : EntityGrain, IPickup, ICollectable
+    internal class PickupGrain : EntityGrain, IPickup
     {
         private EntityMetadata.Pickup _metadata;
 
@@ -23,7 +23,7 @@ namespace MineCase.Server.Game.Entities
                 await GetBroadcastGenerator().DestroyEntities(new[] { EntityId });
                 DeactivateOnIdle();
             }
-            else
+            else if (_metadata.Item.ItemCount != after.ItemCount)
             {
                 await SetItem(after);
             }
@@ -33,6 +33,12 @@ namespace MineCase.Server.Game.Entities
         {
             _metadata = new EntityMetadata.Pickup();
             return base.OnActivateAsync();
+        }
+
+        public async Task Register()
+        {
+            var chunkPos = GetChunkPosition();
+            await GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunkPos.x, chunkPos.z)).Register(this);
         }
 
         public async Task SetItem(Slot item)
@@ -46,9 +52,6 @@ namespace MineCase.Server.Game.Entities
             UUID = uuid;
             await SetPosition(position);
             await GetBroadcastGenerator().SpawnObject(EntityId, uuid, 2, position, 0, 0, 0);
-
-            var chunkPos = GetChunkPosition();
-            await GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunkPos.x, chunkPos.z)).Register(this);
         }
     }
 }

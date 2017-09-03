@@ -25,7 +25,9 @@ namespace MineCase.Server.Game.Entities
 
         private string _name;
         private Slot[] _inventorySlots;
+        private Slot _draggedSlot;
         private IInventoryWindow _inventory;
+        private Dictionary<byte, WindowContext> _windows;
 
         public Task<IInventoryWindow> GetInventory() => Task.FromResult(_inventory);
 
@@ -107,6 +109,11 @@ namespace MineCase.Server.Game.Entities
         public async Task NotifyLoggedIn()
         {
             _inventorySlots = await _user.GetInventorySlots();
+            _windows = new Dictionary<byte, WindowContext>
+            {
+                { 0, new WindowContext { Window = _inventory } }
+            };
+            _draggedSlot = Slot.Empty;
             await SendWholeInventory();
             await SendExperience();
             await SendPlayerListAddPlayer(new[] { this });
@@ -206,8 +213,10 @@ namespace MineCase.Server.Game.Entities
 
         public async Task<Slot> Collect(uint collectedEntityId, Slot item)
         {
-            await GetBroadcastGenerator().CollectItem(collectedEntityId, EntityId, item.ItemCount);
-            return await _inventory.DistributeStack(this, item);
+            var after = await _inventory.DistributeStack(this, item);
+            if (item.ItemCount != after.ItemCount)
+                await GetBroadcastGenerator().CollectItem(collectedEntityId, EntityId, (byte)(item.ItemCount - after.ItemCount));
+            return after;
         }
 
         public Task PlaceBlock(Position location, EntityInteractHand hand, PlayerDiggingFace face, Vector3 cursorPosition)
@@ -229,6 +238,44 @@ namespace MineCase.Server.Game.Entities
         {
             _inventorySlots[index] = slot;
             return Task.CompletedTask;
+        }
+
+        public Task<byte> GetWindowId(IWindow window)
+        {
+            return Task.FromResult(_windows.First(o => o.Value.Window.GetPrimaryKey() == window.GetPrimaryKey()).Key);
+        }
+
+        private WindowContext GetWindow(byte windowId)
+        {
+            return _windows[windowId];
+        }
+
+        public async Task SetDraggedSlot(Slot item)
+        {
+            _draggedSlot = item;
+            await _generator.SetSlot(0xFF, -1, item);
+        }
+
+        public Task<Slot> GetDraggedSlot() => Task.FromResult(_draggedSlot);
+
+        public async Task ClickWindow(byte windowId, short slot, ClickAction clickAction, short actionNumber, Slot clickedItem)
+        {
+            var window = GetWindow(windowId);
+            await window.Window.Click(this, slot, clickAction, clickedItem);
+            await _generator.ConfirmTransaction(windowId, window.ActionNumber++, true);
+        }
+
+        public async Task CloseWindow(byte windowId)
+        {
+            await GetWindow(windowId).Window.Close(this);
+            if (windowId != 0)
+                _windows.Remove(windowId);
+        }
+
+        private class WindowContext
+        {
+            public IWindow Window;
+            public short ActionNumber;
         }
     }
 }

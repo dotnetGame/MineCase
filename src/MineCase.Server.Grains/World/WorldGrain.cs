@@ -15,7 +15,6 @@ namespace MineCase.Server.World
     {
         private Dictionary<uint, IEntity> _entities;
         private uint _nextAvailEId;
-        private byte _nextAvaildWindowId;
         private long _worldAge;
         private GeneratorSettings _genSettings; // 生成设置
         private string _seed; // 世界种子
@@ -85,14 +84,6 @@ namespace MineCase.Server.World
 
             // TODO move server settings to generator settings
             return Task.CompletedTask;
-        }
-
-        public Task<byte> NewWindowId()
-        {
-            if (_nextAvaildWindowId == 0)
-                _nextAvaildWindowId = 1;
-            var id = _nextAvaildWindowId++;
-            return Task.FromResult(id);
         }
     }
 }
