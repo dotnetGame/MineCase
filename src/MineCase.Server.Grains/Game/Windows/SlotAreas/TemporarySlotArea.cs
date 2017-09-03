@@ -46,7 +46,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
         public override async Task Close(IPlayer player)
         {
             var slots = GetSlots(player);
-            var items = (from s in slots
+            var items = (from s in slots.Skip(1)
                          where !s.IsEmpty
                          select s).ToArray();
             if (items.Length != 0)
