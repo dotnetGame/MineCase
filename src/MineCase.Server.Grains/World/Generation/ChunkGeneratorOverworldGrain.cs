@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using MineCase.Algorithm;
 using MineCase.Algorithm.Noise;
 using MineCase.Server.World.Biomes;
+using MineCase.Server.World.Mine;
 using Newtonsoft.Json;
 using Orleans;
 using Orleans.Concurrency;
@@ -108,6 +109,12 @@ namespace MineCase.Server.World.Generation
             await ReplaceBiomeBlocks(settings, x, z, chunk, _biomesForGeneration);
 
             // Todo genrate structure
+            // 生成洞穴
+            if (settings.UseCaves)
+            {
+                CavesGenerator generator = new CavesGenerator(world);
+                await generator.Generate(world, x, z, chunk);
+            }
 
             // 计算skylight
             await GenerateSkylightMap(chunk);
