@@ -15,9 +15,9 @@ namespace MineCase.Server.World.Mine
         protected override void RecursiveGenerate(IWorld world, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, ChunkColumnStorage chunk)
         {
             // 之前根据chunkXZ设置种子了
-            int seedPointCount = _rand.Next(_rand.Next(_rand.Next(15) + 1) + 1);
+            int seedPointCount = _rand.Next(17);
 
-            // 1/7概率不生成洞穴
+            // 1/7概率生成洞穴
             if (_rand.Next(7) != 0)
             {
                 seedPointCount = 0;
@@ -27,8 +27,8 @@ namespace MineCase.Server.World.Mine
             {
                 // 在chunk内y=8~127随机选种子点
                 double seedPointX = (double)(chunkX * 16 + _rand.Next(16));
-                double seedPointY = (double)_rand.Next(_rand.Next(120) + 8);
-                double seedPointZ = (double)(chunkZ * 16 + this._rand.Next(16));
+                double seedPointY = (double)_rand.Next(128);
+                double seedPointZ = (double)(chunkZ * 16 + _rand.Next(16));
                 int directionCount = 1;
 
                 // 四分之一概率挖一个默认的洞
@@ -231,7 +231,7 @@ namespace MineCase.Server.World.Mine
                                     {
                                         // 先获取高度
                                         int height = 0;
-                                        for (int y = 255; y >= 0; ++y)
+                                        for (int y = 255; y >= 0; --y)
                                         {
                                             if (chunk[x, y, z] != BlockStates.Air())
                                             {
