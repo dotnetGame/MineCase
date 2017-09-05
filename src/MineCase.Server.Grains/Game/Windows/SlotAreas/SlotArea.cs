@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Formats;
+
 using MineCase.Server.Game.Entities;
 using Orleans;
 using Orleans.Concurrency;
@@ -40,7 +40,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
 
         public abstract Task SetSlot(IPlayer player, int slotIndex, Slot slot);
 
-        private const byte MaxStackCount = 64;
+        protected const byte MaxStackCount = 64;
 
         public virtual async Task<Slot> DistributeStack(IPlayer player, Slot item, bool canUseEmptySlot, bool fillFromBack)
         {
@@ -133,7 +133,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
             }
         }
 
-        private bool TryStackSlot(ref Slot source, ref Slot target)
+        protected bool TryStackSlot(ref Slot source, ref Slot target)
         {
             if (target.ItemCount <= MaxStackCount && target.CanStack(source))
             {

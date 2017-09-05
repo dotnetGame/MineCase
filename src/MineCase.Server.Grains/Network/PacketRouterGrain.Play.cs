@@ -4,7 +4,7 @@ using System.IO;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Formats;
+
 using MineCase.Protocol;
 using MineCase.Protocol.Play;
 using MineCase.Serialization;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace MineCase.Formats
+namespace MineCase
 {
     /// <summary>
     /// Available types for color of Compoent.

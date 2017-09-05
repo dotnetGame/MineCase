@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Formats;
+
 using MineCase.Server.Game.Entities;
 using Orleans;
 using Orleans.Concurrency;
@@ -13,6 +13,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
     internal class CraftingSlotArea : TemporarySlotArea
     {
         private readonly int _gridSize;
+        private Slot[,] _afterSlots;
 
         public CraftingSlotArea(int gridSize, WindowGrain window, IGrainFactory grainFactory)
             : base(gridSize * gridSize + 1, window, grainFactory)
@@ -22,19 +23,85 @@ namespace MineCase.Server.Game.Windows.SlotAreas
 
         public override async Task Click(IPlayer player, int slotIndex, ClickAction clickAction, Slot clickedItem)
         {
-            await base.Click(player, slotIndex, clickAction, clickedItem);
+            if (slotIndex == 0)
+            {
+                var draggedSlot = await player.GetDraggedSlot();
+                var result = await GetSlot(player, 0);
+                bool taken = false;
+                switch (clickAction)
+                {
+                    case ClickAction.LeftMouseClick:
+                    case ClickAction.RightMouseClick:
+                        if (draggedSlot.IsEmpty)
+                        {
+                            await player.SetDraggedSlot(result);
+                            taken = true;
+                        }
+                        else if (draggedSlot.CanStack(result) && draggedSlot.ItemCount + result.ItemCount <= MaxStackCount)
+                        {
+                            draggedSlot.ItemCount += result.ItemCount;
+                            await player.SetDraggedSlot(draggedSlot);
+                            taken = true;
+                        }
+
+                        break;
+                    default:
+                        break;
+                }
+
+                if (taken)
+                {
+                    await SetSlot(player, 0, Slot.Empty);
+                    await SetCraftingGrid(player, _afterSlots);
+                }
+            }
+            else
+            {
+                await base.Click(player, slotIndex, clickAction, clickedItem);
+            }
+
             await UpdateRecipe(player);
         }
 
-        private Task UpdateRecipe(IPlayer player)
+        private async Task UpdateRecipe(IPlayer player)
         {
             var grid = GetCraftingGrid(player);
-            return Task.CompletedTask;
+            var recipe = await GrainFactory.GetGrain<ICraftingRecipes>(0).FindRecipe(grid);
+            if (recipe != null)
+            {
+                _afterSlots = recipe.AfterTake;
+                await SetSlot(player, 0, recipe.Result);
+            }
         }
 
-        private Slot[] GetCraftingGrid(IPlayer player)
+        private Slot[,] GetCraftingGrid(IPlayer player)
         {
-            return GetSlots(player).Skip(1).ToArray();
+            var grid = new Slot[_gridSize, _gridSize];
+
+            int x = 0, y = 0;
+            foreach (var slot in GetSlots(player).Skip(1))
+            {
+                grid[x++, y] = slot;
+                if (x == _gridSize)
+                {
+                    x = 0;
+                    y++;
+                }
+            }
+
+            return grid;
+        }
+
+        private async Task SetCraftingGrid(IPlayer player, Slot[,] afterSlots)
+        {
+            int index = 1;
+            for (int y = 0; y < afterSlots.GetUpperBound(1) + 1; y++)
+            {
+                for (int x = 0; x < afterSlots.GetUpperBound(0) + 1; x++)
+                {
+                    await SetSlot(player, index++, afterSlots[x, y]);
+                }
+            }
         }
     }
 }

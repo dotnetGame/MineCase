@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MineCase.Formats;
 
 namespace MineCase.Server.Game.Entities.EntityMetadata
 {
