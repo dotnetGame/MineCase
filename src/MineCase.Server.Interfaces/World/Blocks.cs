@@ -51,7 +51,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState WoodPlanks(WoodPlankType type = WoodPlankType.OakWoodPlanks)
+        public static BlockState WoodPlanks(WoodPlankType type = WoodPlankType.Oak)
         {
             return new BlockState
             {
@@ -60,7 +60,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Sapling(SaplingsType type = SaplingsType.OakSapling)
+        public static BlockState Sapling(SaplingsType type = SaplingsType.Oak)
         {
             return new BlockState
             {
@@ -159,7 +159,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Wood(WoodType type = WoodType.OakWood)
+        public static BlockState Wood(WoodType type = WoodType.Oak)
         {
             return new BlockState
             {
@@ -168,7 +168,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Leaves(LeaveType type = LeaveType.OakLeaves)
+        public static BlockState Leaves(LeaveType type = LeaveType.Oak)
         {
             return new BlockState
             {
@@ -222,7 +222,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Sandstone(SandstoneType type = SandstoneType.Sandstone)
+        public static BlockState Sandstone(SandstoneType type = SandstoneType.Normal)
         {
             return new BlockState
             {
@@ -393,7 +393,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState DoubleStoneSlab(DoubleStoneSlabType type = DoubleStoneSlabType.DoubleStoneSlab)
+        public static BlockState DoubleStoneSlab(DoubleStoneSlabType type = DoubleStoneSlabType.Stone)
         {
             return new BlockState
             {
@@ -402,7 +402,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState StoneSlab(StoneSlabType type = StoneSlabType.StoneSlab)
+        public static BlockState StoneSlab(StoneSlabType type = StoneSlabType.Stone)
         {
             return new BlockState
             {
@@ -735,7 +735,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Cactus(CactusType type = CactusType.FreshlyPlantedCactus)
+        public static BlockState Cactus(CactusType type = CactusType.FreshlyPlanted)
         {
             return new BlockState
             {
@@ -753,7 +753,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState SugarCane(SugarCaneType type = SugarCaneType.FreshlyPlantedSugarCane)
+        public static BlockState SugarCane(SugarCaneType type = SugarCaneType.FreshlyPlanted)
         {
             return new BlockState
             {
@@ -888,7 +888,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState StoneBricks(StoneBrickType type = StoneBrickType.StoneBrick)
+        public static BlockState StoneBricks(StoneBrickType type = StoneBrickType.Normal)
         {
             return new BlockState
             {
@@ -1131,7 +1131,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState DoubleWoodenSlab(DoubleWoodenSlabType type = DoubleWoodenSlabType.DoubleOak)
+        public static BlockState DoubleWoodenSlab(DoubleWoodenSlabType type = DoubleWoodenSlabType.Oak)
         {
             return new BlockState
             {
@@ -1311,7 +1311,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Anvil(AnvilForBlockType type = AnvilForBlockType.AnvilNS)
+        public static BlockState Anvil(AnvilForBlockType type = AnvilForBlockType.NorthSouth)
         {
             return new BlockState
             {
@@ -1401,7 +1401,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState BlockOfQuartz(BlockOfQuartzType type = BlockOfQuartzType.BlockOfQuartz)
+        public static BlockState BlockOfQuartz(BlockOfQuartzType type = BlockOfQuartzType.Normal)
         {
             return new BlockState
             {
@@ -1455,7 +1455,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Leaves2(Leave2Type type = Leave2Type.AcaciaLeaves)
+        public static BlockState Leaves2(Leave2Type type = Leave2Type.Acacia)
         {
             return new BlockState
             {
@@ -1464,7 +1464,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Wood2(Wood2Type type = Wood2Type.AcaciaWood)
+        public static BlockState Wood2(Wood2Type type = Wood2Type.Acacia)
         {
             return new BlockState
             {
@@ -1617,7 +1617,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState RedSandstone(RedSandstoneType type = RedSandstoneType.RedSandstone)
+        public static BlockState RedSandstone(RedSandstoneType type = RedSandstoneType.Normal)
         {
             return new BlockState
             {
@@ -1635,7 +1635,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState DoubleRedSandstoneSlab(DoubleRedSandstoneSlabType type = DoubleRedSandstoneSlabType.DoubleRedSandstoneSlab)
+        public static BlockState DoubleRedSandstoneSlab(DoubleRedSandstoneSlabType type = DoubleRedSandstoneSlabType.Normal)
         {
             return new BlockState
             {
@@ -1644,7 +1644,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState RedSandstoneSlab(RedSandstoneSlabType type = RedSandstoneSlabType.RedSandstoneSlab)
+        public static BlockState RedSandstoneSlab(RedSandstoneSlabType type = RedSandstoneSlabType.Normal)
         {
             return new BlockState
             {
