@@ -337,10 +337,23 @@ namespace MineCase.Server.World
     [Flags]
     public enum WoodType : uint
     {
-        OakWoodOrAcaciaWood = 0,
-        SpruceWoodOrDarkOakWood = 1,
+        OakWood = 0,
+        SpruceWood = 1,
         BirchWood = 2,
         JungleWood = 3,
+
+        // 0x4 ~ 0x8 bits field specifying the orientation of the wood
+        FacingUpFlag = 0x0,
+        FacingEastFlag = 0x4,
+        FacingNorthFlag = 0x8,
+        OnlybarkFlag = 0xC
+    }
+
+    [Flags]
+    public enum Wood2Type : uint
+    {
+        AcaciaWood = 0,
+        DarkOakWood = 1,
 
         // 0x4 ~ 0x8 bits field specifying the orientation of the wood
         FacingUpFlag = 0x0,
@@ -367,6 +380,18 @@ namespace MineCase.Server.World
         SpruceLeavesNoDecayAndCheckDecay = 13,
         BirchLeavesNoDecayAndCheckDecay = 14,
         JungleLeavesNoDecayAndCheckDecay = 15
+    }
+
+    public enum Leave2Type : uint
+    {
+        AcaciaLeaves = 0,
+        DarkOakLeaves = 1,
+        AcaciaLeavesNoDecay = 4,
+        DarkOakLeavesNoDecay = 5,
+        AcaciaLeavesCheckDecay = 8,
+        DarkOakLeavesCheckDecay = 9,
+        AcaciaLeavesNoDecayAndCheckDecay = 12,
+        DarkOakLeavesNoDecayAndCheckDecay = 13
     }
 
     /// <summary>
@@ -413,7 +438,13 @@ namespace MineCase.Server.World
         DoubleQuartzSlab = 7,
         SmoothDoubleStoneSlab = 8,
         SmoothDoubleSandstoneSlab = 9,
-        TileDoubleQuartzSlab = 10
+        TileDoubleQuartzSlab = 15
+    }
+
+    public enum DoubleRedSandstoneSlabType : uint
+    {
+        DoubleRedSandstoneSlab = 0,
+        SmoothDoubleRedSandstoneSlab = 8
     }
 
     public enum StoneSlabType : uint
@@ -434,6 +465,12 @@ namespace MineCase.Server.World
         UpperStoneBrickSlab = 13,
         UpperNetherBrickSlab = 14,
         UpperQuartzSlab = 15
+    }
+
+    public enum RedSandstoneSlabType : uint
+    {
+        RedSandstoneSlab = 0,
+        UpperRedSandstoneSlab = 1
     }
 
     public enum DoubleWoodenSlabType : uint

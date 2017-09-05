@@ -159,7 +159,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Wood(WoodType type = WoodType.OakWoodOrAcaciaWood)
+        public static BlockState Wood(WoodType type = WoodType.OakWood)
         {
             return new BlockState
             {
@@ -321,7 +321,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Wool(WoodType type = WoodType.OakWoodOrAcaciaWood)
+        public static BlockState Wool(ColorType type = ColorType.White)
         {
             return new BlockState
             {
@@ -1455,7 +1455,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Leaves2(LeaveType type = LeaveType.OakLeaves)
+        public static BlockState Leaves2(Leave2Type type = Leave2Type.AcaciaLeaves)
         {
             return new BlockState
             {
@@ -1464,7 +1464,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState Wood2(WoodType type = WoodType.FacingUpFlag)
+        public static BlockState Wood2(Wood2Type type = Wood2Type.AcaciaWood)
         {
             return new BlockState
             {
@@ -1635,7 +1635,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState DoubleRedSandstoneSlab(DoubleStoneSlabType type = DoubleStoneSlabType.DoubleStoneSlab)
+        public static BlockState DoubleRedSandstoneSlab(DoubleRedSandstoneSlabType type = DoubleRedSandstoneSlabType.DoubleRedSandstoneSlab)
         {
             return new BlockState
             {
