@@ -17,7 +17,7 @@ namespace MineCase.Server.World.Mine
             // 之前根据chunkXZ设置种子了
             int seedPointCount = _rand.Next(17);
 
-            // 1/7概率生成洞穴
+            // 仅1/7概率生成洞穴
             if (_rand.Next(7) != 0)
             {
                 seedPointCount = 0;
@@ -25,9 +25,9 @@ namespace MineCase.Server.World.Mine
 
             for (int i = 0; i < seedPointCount; ++i)
             {
-                // 在chunk内y=8~127随机选种子点
+                // 在chunk内x=0-16,y=8~127,z=0-16随机选种子点
                 double seedPointX = (double)(chunkX * 16 + _rand.Next(16));
-                double seedPointY = (double)_rand.Next(128);
+                double seedPointY = (double)_rand.Next(120) + 8;
                 double seedPointZ = (double)(chunkZ * 16 + _rand.Next(16));
                 int directionCount = 1;
 
@@ -52,7 +52,7 @@ namespace MineCase.Server.World.Mine
                         rangeScale *= (float)(_rand.NextDouble() * _rand.NextDouble()) * 3.0F + 1.0F;
                     }
 
-                    AddTunnel( _rand.Next(), centerChunkX, centerChunkZ, chunk, seedPointX, seedPointX, seedPointZ, rangeScale, yawAngle, pitchAngle, 0, 0, 1.0D);
+                    AddTunnel(_rand.Next(), centerChunkX, centerChunkZ, chunk, seedPointX, seedPointX, seedPointZ, rangeScale, yawAngle, pitchAngle, 0, 0, 1.0D);
                 }
             }
         }
@@ -276,19 +276,18 @@ namespace MineCase.Server.World.Mine
         // 判断是否可以挖开这个方块
         protected bool CanReplaceBlock(BlockState curBlock, BlockState upBlock)
         {
-            return curBlock == BlockStates.Stone() ? true :
-                   (curBlock == BlockStates.Dirt() ? true :
-                   (curBlock == BlockStates.GrassBlock() ? true :
-                   (curBlock == BlockStates.HardenedClay() ? true :
-                   (curBlock.IsSameId(BlockStates.StainedClay()) ? true :
-                   (curBlock == BlockStates.Sandstone() ? true :
-                   (curBlock == BlockStates.RedSandstone() ? true :
-                   (curBlock == BlockStates.Mycelium() ? true :
-                   (curBlock == BlockStates.SnowLayer() ? true :
-                       (curBlock == BlockStates.Sand()
-                           || curBlock == BlockStates.Gravel())
-                       && upBlock != BlockStates.Water()
-                   ))))))));
+            return curBlock == BlockStates.Stone() ||
+                   curBlock == BlockStates.Dirt() ||
+                   curBlock == BlockStates.GrassBlock() ||
+                   curBlock == BlockStates.HardenedClay() ||
+                   curBlock.IsSameId(BlockStates.StainedClay()) ||
+                   curBlock == BlockStates.Sandstone() ||
+                   curBlock == BlockStates.RedSandstone() ||
+                   curBlock == BlockStates.Mycelium() ||
+                   curBlock == BlockStates.SnowLayer() ||
+                    ((curBlock == BlockStates.Sand()
+                        || curBlock == BlockStates.Gravel())
+                    && upBlock != BlockStates.Water());
         }
 
         // 挖洞，默认参数

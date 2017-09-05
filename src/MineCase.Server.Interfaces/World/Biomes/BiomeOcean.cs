@@ -15,6 +15,8 @@ namespace MineCase.Server.World.Biomes
         {
             _name = "ocean";
             _biomeId = BiomeId.Ocean;
+            _baseHeight = -1.0F;
+            _heightVariation = 0.1F;
         }
     }
 }

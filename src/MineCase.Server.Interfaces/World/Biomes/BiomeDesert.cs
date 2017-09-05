@@ -15,6 +15,11 @@ namespace MineCase.Server.World.Biomes
         {
             _name = "desert";
             _biomeId = BiomeId.Desert;
+            _baseHeight = 0.125F;
+            _heightVariation = 0.05F;
+            _temperature = 2.0F;
+            _rainfall = 0.0F;
+            _enableRain = false;
 
             _topBlock = BlockStates.Sand();
             _fillerBlock = BlockStates.Sand();

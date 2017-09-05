@@ -8,17 +8,18 @@ using Orleans;
 
 namespace MineCase.Server.World.Biomes
 {
-    public class BiomePlains : Biome
+    public class BiomeForest : Biome
     {
-        public BiomePlains(BiomeProperties properties, GeneratorSettings genSettings)
+        public BiomeForest(BiomeProperties properties, GeneratorSettings genSettings)
             : base(properties, genSettings)
         {
-            _name = "plains";
-            _biomeId = BiomeId.Plains;
-            _baseHeight = 0.125F;
-            _heightVariation = 0.05F;
-            _temperature = 0.8F;
-            _rainfall = 0.4F;
+            _name = "forest";
+            _biomeId = BiomeId.Forest;
+            _treesPerChunk = 10;
+            _grassPerChunk = 2;
+
+            _temperature = 0.7F;
+            _rainfall = 0.8F;
             _enableRain = true;
         }
 

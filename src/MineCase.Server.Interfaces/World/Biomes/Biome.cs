@@ -40,19 +40,19 @@ namespace MineCase.Server.World.Biomes
 
         protected BiomeId _biomeId;
         /** The base height of this biome. Default 0.1. */
-        private float _baseHeight;
+        protected float _baseHeight;
         /** The variation from the base height of the biome. Default 0.3. */
-        private float _heightVariation;
+        protected float _heightVariation;
         /** The temperature of this biome. */
-        private float _temperature;
+        protected float _temperature;
         /** The rainfall in this biome. */
-        private float _rainfall;
+        protected float _rainfall;
         /** Color tint applied to water depending on biome */
-        private int _waterColor;
+        protected int _waterColor;
         /** Set to true if snow is enabled for this biome. */
-        private bool _enableSnow;
+        protected bool _enableSnow;
         /** Is true (default) if the biome support rain (desert and nether can't have rain) */
-        private bool _enableRain;
+        protected bool _enableRain;
         /** The block expected to be on the top of this biome */
         public BlockState _topBlock = BlockStates.GrassBlock();
         /** The block to fill spots in when not on the top */
@@ -339,6 +339,7 @@ namespace MineCase.Server.World.Biomes
         Ocean = 0,
         Plains = 1,
         Desert = 2,
-        ExtremeHills = 3
+        ExtremeHills = 3,
+        Forest = 4
     }
 }
