@@ -1644,7 +1644,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static BlockState RedSandstoneSlab(StoneSlabType type = StoneSlabType.StoneSlab)
+        public static BlockState RedSandstoneSlab(RedSandstoneSlabType type = RedSandstoneSlabType.RedSandstoneSlab)
         {
             return new BlockState
             {
