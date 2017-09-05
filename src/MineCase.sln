@@ -32,6 +32,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D53C0015
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minecase.Core", "Minecase.Core\Minecase.Core.csproj", "{B7B1A959-72F3-42C6-B138-93C8D654F139}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{7DC8CDBD-087D-4F3C-B765-CA77783BECA5}"
+	ProjectSection(SolutionItems) = preProject
+		..\data\crafting.txt = ..\data\crafting.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
