@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase.Formats
+namespace MineCase
 {
     public enum ClickAction
     {

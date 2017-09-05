@@ -32,6 +32,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="..\..\data\crafting.txt" Link="crafting.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MineCase.Server.Grains\MineCase.Server.Grains.csproj" />
   </ItemGroup>
 

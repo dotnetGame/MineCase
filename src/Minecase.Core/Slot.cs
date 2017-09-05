@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using MineCase.Nbt;
 
-namespace MineCase.Formats
+namespace MineCase
 {
     public struct Slot
     {

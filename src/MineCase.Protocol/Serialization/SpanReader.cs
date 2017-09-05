@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
-using MineCase.Formats;
+
 using MineCase.Nbt;
 
 namespace MineCase.Serialization

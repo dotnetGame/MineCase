@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Formats;
+
 using MineCase.Protocol.Play;
 using MineCase.Server.Network.Play;
 using MineCase.Server.User;

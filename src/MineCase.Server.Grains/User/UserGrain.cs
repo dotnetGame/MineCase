@@ -4,7 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Formats;
+
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Windows.SlotAreas;

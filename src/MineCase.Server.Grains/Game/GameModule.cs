@@ -12,6 +12,7 @@ namespace MineCase.Server.Game
             builder.RegisterType<GameSession>();
             builder.RegisterType<ChunkSenderGrain>();
             builder.RegisterType<ChunkSenderJobWorker>();
+            builder.RegisterType<CraftingRecipesGrain>();
         }
     }
 }
