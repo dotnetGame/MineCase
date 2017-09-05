@@ -43,6 +43,18 @@ namespace MineCase.Algorithm
             return Next();
         }
 
+        public Int64 NextInt64()
+        {
+            Next();
+            return (Int64)_state;
+        }
+
+        public UInt64 NextUInt64()
+        {
+            Next();
+            return _state;
+        }
+
         public float NextFloat()
         {
             return Next() * 2.3283064365386962890625e-10f;
