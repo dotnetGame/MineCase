@@ -6,11 +6,31 @@ namespace MineCase.Algorithm
 {
     public struct UniformRNG
     {
+        // https://en.wikipedia.org/wiki/Linear_congruential_generator
+        // MMIX by Donald Knuth
+        private static readonly UInt64 _multiplier = 6364136223846793005;
+        private static readonly UInt64 _increment = 1442695040888963407;
+        private static readonly double _divisor = 4294967291.0;
+
         private UInt64 _state;
 
         public UniformRNG(UInt64 state)
         {
-            _state = state == 0 ? 0xFFFFFFFF : state;
+            if (state == 0)
+            {
+                DateTime time = DateTime.Now;
+                var seed = (UInt64)(time.Day << 25 | time.Hour << 20 | time.Minute << 14 | time.Second << 8 | time.Millisecond);
+                for (int i = 0; i < 4; ++i)
+                {
+                    seed = seed * _multiplier + _increment;
+                }
+
+                _state = seed;
+            }
+            else
+            {
+                _state = state;
+            }
         }
 
         public int NextInt()
@@ -44,23 +64,29 @@ namespace MineCase.Algorithm
             return a == b ? a : Next() % (b - a) + a;
         }
 
+        public Int64 Uniform(Int64 a, Int64 b)
+        {
+            return a == b ? a : Next() % (b - a) + a;
+        }
+
+        public UInt64 Uniform(UInt64 a, UInt64 b)
+        {
+            return a == b ? a : Next() % (b - a) + a;
+        }
+
         public float Uniform(float a, float b)
         {
-           return _state * (b - a) + a;
+            return Uniform(0, 4294967292) / (float)_divisor * (b - a) + a;
         }
 
         public double Uniform(double a, double b)
         {
-            return _state * (b - a) + a;
+            return Uniform(0, 4294967292) / (float)_divisor * (b - a) + a;
         }
 
         private uint Next()
         {
-            // _state ^= _state >> 13;
-            // _state ^= (_state << 7) | 0x9d2c5680;
-            // _state ^= (_state << 15) & 0xefc60000;
-            // _state = (_state << 32) | (_state >> 17) ^ 0xa3d40a0b;
-            _state = (UInt64)(uint)_state * 4164903690 + (uint)(_state >> 32);
+            _state = _state * _multiplier + _increment;
             return (uint)_state;
         }
     }
