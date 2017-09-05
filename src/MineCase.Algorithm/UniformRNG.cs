@@ -10,7 +10,6 @@ namespace MineCase.Algorithm
         // MMIX by Donald Knuth
         private static readonly UInt64 _multiplier = 6364136223846793005;
         private static readonly UInt64 _increment = 1442695040888963407;
-        private static readonly double _divisor = 4294967291.0;
 
         private UInt64 _state;
 
@@ -88,12 +87,12 @@ namespace MineCase.Algorithm
 
         public float Uniform(float a, float b)
         {
-            return Uniform(0, 4294967292) / (float)_divisor * (b - a) + a;
+            return NextFloat() * (b - a) + a;
         }
 
         public double Uniform(double a, double b)
         {
-            return Uniform(0, 4294967292) / _divisor * (b - a) + a;
+            return NextDouble() * (b - a) + a;
         }
 
         private uint Next()
