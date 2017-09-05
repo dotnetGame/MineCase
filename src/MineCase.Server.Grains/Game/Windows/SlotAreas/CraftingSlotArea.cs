@@ -72,6 +72,11 @@ namespace MineCase.Server.Game.Windows.SlotAreas
                 _afterSlots = recipe.AfterTake;
                 await SetSlot(player, 0, recipe.Result);
             }
+            else
+            {
+                _afterSlots = null;
+                await SetSlot(player, 0, Slot.Empty);
+            }
         }
 
         private Slot[,] GetCraftingGrid(IPlayer player)
