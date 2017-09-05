@@ -81,7 +81,7 @@ namespace MineCase.Algorithm
 
         public double Uniform(double a, double b)
         {
-            return Uniform(0, 4294967292) / (float)_divisor * (b - a) + a;
+            return Uniform(0, 4294967292) / _divisor * (b - a) + a;
         }
 
         private uint Next()
