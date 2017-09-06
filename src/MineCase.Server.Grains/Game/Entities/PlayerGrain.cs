@@ -5,8 +5,8 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-
 using MineCase.Protocol.Play;
+using MineCase.Server.Game.Blocks;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
@@ -223,7 +223,61 @@ namespace MineCase.Server.Game.Entities
 
         public async Task PlaceBlock(Position location, EntityInteractHand hand, PlayerDiggingFace face, Vector3 cursorPosition)
         {
-            await _inventory.UseHotbarItem(this, _heldSlot);
+            if (face != PlayerDiggingFace.Special)
+            {
+                var blockState = await World.GetBlockState(GrainFactory, location);
+                var blockHandler = BlockHandler.Create((BlockId)blockState.Id);
+                if (blockHandler != null && blockHandler.IsUsable)
+                {
+                    await blockHandler.UseBy(this, GrainFactory, location, cursorPosition);
+                }
+                else
+                {
+                    AddFace(ref location, face);
+                    blockState = await World.GetBlockState(GrainFactory, location);
+                    if ((BlockId)blockState.Id == BlockId.Air)
+                    {
+                        var slot = await _inventory.GetHotbarItem(this, _heldSlot);
+                        if (!slot.IsEmpty)
+                        {
+                            var newState = new BlockState { Id = (uint)slot.BlockId, MetaValue = (uint)slot.ItemDamage };
+                            var chunk = location.GetChunk();
+                            await _inventory.UseHotbarItem(this, _heldSlot);
+                            await World.SetBlockState(GrainFactory, location, newState);
+                            await GetBroadcastGenerator(chunk.chunkX, chunk.chunkZ).BlockChange(location, newState);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void AddFace(ref Position location, PlayerDiggingFace face, bool inverse = false)
+        {
+            switch (face)
+            {
+                case PlayerDiggingFace.Bottom:
+                    location.Y--;
+                    break;
+                case PlayerDiggingFace.Top:
+                    location.Y++;
+                    break;
+                case PlayerDiggingFace.North:
+                    location.Z--;
+                    break;
+                case PlayerDiggingFace.South:
+                    location.Z++;
+                    break;
+                case PlayerDiggingFace.West:
+                    location.X--;
+                    break;
+                case PlayerDiggingFace.East:
+                    location.X++;
+                    break;
+                case PlayerDiggingFace.Special:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(face));
+            }
         }
 
         public Task SetHeldItem(short slot)
@@ -273,6 +327,29 @@ namespace MineCase.Server.Game.Entities
             await GetWindow(windowId).Window.Close(this);
             if (windowId != 0)
                 _windows.Remove(windowId);
+        }
+
+        public Task OpenWindow(IWindow window)
+        {
+            var id = (from w in _windows
+                      where w.Value.Window.GetPrimaryKey() == window.GetPrimaryKey()
+                      select (byte?)w.Key).FirstOrDefault();
+            if (id == null)
+            {
+                for (byte i = 1; i <= byte.MaxValue; i++)
+                {
+                    if (!_windows.ContainsKey(i))
+                    {
+                        id = i;
+                        _windows.Add(i, new WindowContext { Window = window });
+                        break;
+                    }
+                }
+            }
+
+            if (id != null)
+                window.OpenWindow(this).Ignore();
+            return Task.CompletedTask;
         }
 
         private class WindowContext

@@ -15,14 +15,6 @@ namespace MineCase.Server.World
         Task<BlockState> GetBlockState(int x, int y, int z);
 
         Task SetBlockState(int x, int y, int z, BlockState blockState);
-
-        Task AttachPlayer(IPlayer player);
-
-        Task UpdatePlayerPosition(IPlayer player, Vector3 position);
-
-        Task DetachPlayer(IPlayer player);
-
-        Task<IReadOnlyCollection<(IPlayer player, Vector3 position)>> GetPlayers();
     }
 
     public static class ChunkColumnExtensions

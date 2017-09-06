@@ -316,6 +316,18 @@ namespace MineCase.Server.Network.Play
                 Accepted = accepted
             });
         }
+
+        public Task OpenWindow(byte windowId, string windowType, Chat windowTitle, byte numberOfSlots, byte? entityId)
+        {
+            return Sink.SendPacket(new OpenWindow
+            {
+                WindowId = windowId,
+                WindowType = windowType,
+                WindowTitle = windowTitle,
+                NumberOfSlots = numberOfSlots,
+                EntityId = entityId
+            });
+        }
     }
 
     [Flags]

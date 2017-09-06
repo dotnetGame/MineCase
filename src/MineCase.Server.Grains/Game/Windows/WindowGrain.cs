@@ -19,6 +19,12 @@ namespace MineCase.Server.Game.Windows
 
         protected IWorld World { get; private set; }
 
+        protected abstract string WindowType { get; }
+
+        protected abstract Chat Title { get; }
+
+        protected virtual byte? EntityId => null;
+
         public Task<uint> GetSlotCount()
         {
             return Task.FromResult((uint)Slots.Count);
@@ -104,6 +110,28 @@ namespace MineCase.Server.Game.Windows
         {
             foreach (var slotArea in SlotAreas)
                 await slotArea.Close(player);
+        }
+
+        private byte GetNonInventorySlotsCount()
+        {
+            byte num = 0;
+            foreach (var slotArea in SlotAreas)
+            {
+                if (slotArea is TemporarySlotArea || slotArea is InventorySlotAreaBase) continue;
+                num += (byte)slotArea.SlotsCount;
+            }
+
+            return num;
+        }
+
+        public async Task OpenWindow(IPlayer player)
+        {
+            var slots = await GetSlots(player);
+            var generator = new ClientPlayPacketGenerator(await (await player.GetUser()).GetClientPacketSink());
+
+            var id = await player.GetWindowId(this);
+            await generator.OpenWindow(id, WindowType, Title, GetNonInventorySlotsCount(), EntityId);
+            await generator.WindowItems(id, slots);
         }
     }
 }

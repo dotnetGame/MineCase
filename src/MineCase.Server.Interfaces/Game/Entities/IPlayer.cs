@@ -34,6 +34,8 @@ namespace MineCase.Server.Game.Entities
 
         Task SendPlayerListAddPlayer(IReadOnlyList<IPlayer> player);
 
+        Task OpenWindow(IWindow window);
+
         Task NotifyLoggedIn();
 
         Task SendPositionAndLook();
