@@ -20,5 +20,7 @@ namespace MineCase.Server.Game.Windows
         Task Click(IPlayer player, int slotIndex, ClickAction clickAction, Slot clickedItem);
 
         Task Close(IPlayer player);
+
+        Task OpenWindow(IPlayer player);
     }
 }

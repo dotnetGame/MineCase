@@ -48,6 +48,11 @@ namespace MineCase.Server.World
             Z = z;
         }
 
+        public static implicit operator BlockWorldPos(Position position)
+        {
+            return new BlockWorldPos(position.X, position.Y, position.Z);
+        }
+
         public BlockChunkPos ToBlockChunkPos()
         {
             int blockPosX = X % ChunkConstants.BlockEdgeWidthInSection;
@@ -97,7 +102,7 @@ namespace MineCase.Server.World
         }
     }
 
-    public struct BlockChunkPos
+    public struct BlockChunkPos : IEquatable<BlockChunkPos>
     {
         public int X { get; set; }
 
@@ -148,6 +153,43 @@ namespace MineCase.Server.World
             int y = pos1.Y - pos2.Y;
             int z = pos1.Z - pos2.Z;
             return Math.Sqrt(x * x + y * y + z * z);
+        }
+
+        public override string ToString()
+        {
+            return $"{X}, {Y}, {Z}";
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is BlockChunkPos && Equals((BlockChunkPos)obj);
+        }
+
+        public bool Equals(BlockChunkPos other)
+        {
+            return X == other.X &&
+                   Y == other.Y &&
+                   Z == other.Z;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -307843816;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + X.GetHashCode();
+            hashCode = hashCode * -1521134295 + Y.GetHashCode();
+            hashCode = hashCode * -1521134295 + Z.GetHashCode();
+            return hashCode;
+        }
+
+        public static bool operator ==(BlockChunkPos pos1, BlockChunkPos pos2)
+        {
+            return pos1.Equals(pos2);
+        }
+
+        public static bool operator !=(BlockChunkPos pos1, BlockChunkPos pos2)
+        {
+            return !(pos1 == pos2);
         }
     }
 
