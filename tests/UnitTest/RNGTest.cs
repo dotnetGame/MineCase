@@ -24,12 +24,12 @@ namespace MineCase.UnitTest
         [Fact]
         public void TestNext()
         {
-            UniformRNG rng = new UniformRNG(0);
-            int first = rng.NextInt(), second = rng.NextInt();
+            var rng = new UniformRNG(0);
+            int first = rng.NextInt32(), second = rng.NextInt32();
             for (int i = 0; i < 1000000; ++i)
             {
                 first = second;
-                second = rng.NextInt();
+                second = rng.NextInt32();
                 Assert.NotEqual(first, second);
             }
         }
@@ -37,7 +37,7 @@ namespace MineCase.UnitTest
         [Fact]
         public void TestUniform()
         {
-            UniformRNG rng = new UniformRNG(0);
+            var rng = new UniformRNG(0);
 
             var i1 = rng.Uniform(1, 2);
             Assert.Equal(1, i1);
@@ -52,7 +52,7 @@ namespace MineCase.UnitTest
         [Fact]
         public void TestFrequencyImg()
         {
-            UniformRNG rng = new UniformRNG(0);
+            var rng = new UniformRNG(0);
             int[] bucket = new int[100];
 
             const int xExtent = 100;
@@ -70,7 +70,7 @@ namespace MineCase.UnitTest
                 {
                     for (int j = 0; j < bucket[i]; ++j)
                     {
-                        image[i, yExtent - j] = new ImageSharp.PixelFormats.Rgb24((byte)0xFF, (byte)0x69, (byte)0xB4);
+                        image[i, yExtent - j] = new ImageSharp.PixelFormats.Rgb24(0xFF, 0x69, 0xB4);
                     }
                 }
 
@@ -81,7 +81,7 @@ namespace MineCase.UnitTest
         [Fact]
         public void TesIntNoiseImg()
         {
-            UniformRNG rng = new UniformRNG(0);
+            var rng = new UniformRNG(0);
 
             const int xExtent = 100;
             const int yExtent = 100;
@@ -105,7 +105,7 @@ namespace MineCase.UnitTest
         [Fact]
         public void TesFloatNoiseImg()
         {
-            UniformRNG rng = new UniformRNG(0);
+            var rng = new UniformRNG(0);
 
             const int xExtent = 100;
             const int yExtent = 100;
@@ -129,7 +129,7 @@ namespace MineCase.UnitTest
         [Fact]
         public void TesDoubleNoiseImg()
         {
-            UniformRNG rng = new UniformRNG(0);
+            var rng = new UniformRNG(0);
 
             const int xExtent = 100;
             const int yExtent = 100;
