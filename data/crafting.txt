@@ -43,19 +43,19 @@
 
 # Need to list each of the four log types, otherwise all logs would get converted into apple planks (^0)
 
-WoodPlanks^AcaciaWoodPlanks, 4  = Wood2^OakWoodOrAcaciaWood, *
-WoodPlanks^BirchWoodPlanks, 4   = Wood^BirchWood, *
-Chest							= WoodPlanks^-1, 1:1, 1:2, 1:3, 2:1, 2:3, 3:1, 3:2, 3:3
-WoodPlanks^DarkOakWoodPlanks, 4	= Wood2^SpruceWoodOrDarkOakWood, *
-EnderChest						= EyeofEnder,  2:2 | Obsidian, 1:1, 1:2, 1:3, 2:1, 2:3, 3:1, 3:2, 3:3
-Furnace							= Cobblestone, 1:1, 1:2, 1:3, 2:1, 2:3, 3:1, 3:2, 3:3
-WoodPlanks^JungleWoodPlanks, 4	= Wood^JungleWood, *
-WoodPlanks^OakWoodPlanks, 4		= Wood^OakWoodOrAcaciaWood, * 
-WoodPlanks^SpruceWoodPlanks, 4	= Wood^SpruceWoodOrDarkOakWood, *
-Stick, 4						= WoodPlanks^-1, 2:2, 2:3
-Torch, 4						= Stick, 1:2 | Coal^-1, 1:1
-TrappedChest					= TripwireHook, * | Chest, *
-CraftingTable					= WoodPlanks^-1, 1:1, 1:2, 2:1, 2:2
+WoodPlanks^Acacia, 4  = Wood2^Acacia, *
+WoodPlanks^Birch, 4   = Wood^Birch, *
+Chest				  = WoodPlanks^-1, 1:1, 1:2, 1:3, 2:1, 2:3, 3:1, 3:2, 3:3
+WoodPlanks^DarkOak, 4 = Wood2^DarkOak, *
+EnderChest			  = EyeofEnder,  2:2 | Obsidian, 1:1, 1:2, 1:3, 2:1, 2:3, 3:1, 3:2, 3:3
+Furnace				  = Cobblestone, 1:1, 1:2, 1:3, 2:1, 2:3, 3:1, 3:2, 3:3
+WoodPlanks^Jungle, 4  = Wood^Jungle, *
+WoodPlanks^Oak, 4	  = Wood^Oak, * 
+WoodPlanks^Spruce, 4  = Wood^Spruce, *
+Stick, 4			  = WoodPlanks^-1, 2:2, 2:3
+Torch, 4			  = Stick, 1:2 | Coal^-1, 1:1
+TrappedChest		  = TripwireHook, * | Chest, *
+CraftingTable		  = WoodPlanks^-1, 1:1, 1:2, 2:1, 2:2
 
 
 
