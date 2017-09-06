@@ -26,18 +26,18 @@ namespace MineCase.Server.World.Plants
             _treeType = treeType;
             if (treeType == PlantsType.Oak)
             {
-                _wood = BlockStates.Wood(WoodType.OakWoodOrAcaciaWood);
-                _leaves = BlockStates.Leaves(LeaveType.OakLeaves);
+                _wood = BlockStates.Wood(WoodType.Oak);
+                _leaves = BlockStates.Leaves(LeaveType.Oak);
             }
             else if (treeType == PlantsType.Spruce)
             {
-                _wood = BlockStates.Wood(WoodType.SpruceWoodOrDarkOakWood);
-                _leaves = BlockStates.Leaves(LeaveType.SpruceLeaves);
+                _wood = BlockStates.Wood(WoodType.Spruce);
+                _leaves = BlockStates.Leaves(LeaveType.Spruce);
             }
             else if (treeType == PlantsType.Birch)
             {
-                _wood = BlockStates.Wood(WoodType.BirchWood);
-                _leaves = BlockStates.Leaves(LeaveType.BirchLeaves);
+                _wood = BlockStates.Wood(WoodType.Birch);
+                _leaves = BlockStates.Leaves(LeaveType.Birch);
             }
         }
 

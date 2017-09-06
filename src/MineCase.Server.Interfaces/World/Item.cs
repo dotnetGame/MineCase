@@ -248,12 +248,18 @@ namespace MineCase.Server.World
         BoneMeal = 15
     }
 
-    public enum FishType : uint
+    public enum RawFishType : uint
     {
-        RawFishOrCookedFish = 0,
-        RawSalmonOrCookedSalmon = 1,
+        RawFish = 0,
+        RawSalmon = 1,
         Clownfish = 2,
         Pufferfish = 3
+    }
+
+    public enum CookedFishType : uint
+    {
+        CookedFish = 0,
+        CookedSalmon = 1
     }
 
     public enum HeadForItemType : uint
@@ -268,70 +274,70 @@ namespace MineCase.Server.World
 
     public enum PotionNameType : uint
     {
-        WaterBottleOrMundanePotion = 0,
-        PotionOfRegeneration1 = 1,
-        PotionOfSwiftness1 = 2,
-        PotionOfFireResistance1 = 3,
-        PotionOfPoison1 = 4,
-        PotionOfHealing1 = 5,
-        PotionOfNightVision1 = 6,
-        ClearPotion = 7,
-        PotionOfWeakness1 = 8,
-        PotionOfStrength1 = 9,
-        PotionOfSlowness1 = 10,
-        PotionOfLeaping1 = 11,
-        PotionOfHarming1 = 12,
-        PotionOfWaterBreathing1 = 13,
-        PotionOfInvisibility1 = 14,
-        ThinPotion = 15,
-        AwkwardPotion = 16,
-        PotionOfRegeneration2 = 17,
-        PotionOfSwiftness2 = 18,
-        PotionOfFireResistance2 = 19,
-        PotionOfPoison2 = 20,
-        PotionOfHealing2 = 21,
-        PotionOfNightVision2 = 22,
-        BunglingPotion = 23,
-        PotionOfWeakness2 = 24,
-        PotionOfStrength2 = 25,
-        PotionOfSlowness2 = 26,
-        PotionOfLeaping2 = 27,
-        PotionOfHarming2 = 28,
-        PotionOfWaterBreathing2 = 29,
-        PotionOfInvisibility2 = 30,
-        DebonairPotion = 31,
-        ThickPotion = 32,
-        PotionOfRegeneration3 = 33,
-        PotionOfSwiftness3 = 34,
-        PotionOfFireResistance3 = 35,
-        PotionOfPoison3 = 36,
-        PotionOfHealing3 = 37,
-        PotionOfNightVision3 = 38,
-        CharmingPotion = 39,
-        PotionOfWeakness3 = 40,
-        PotionOfStrength3 = 41,
-        PotionOfSlowness3 = 42,
-        PotionOfLeaping3 = 43,
-        PotionOfHarming3 = 44,
-        PotionOfWaterBreathing3 = 45,
-        PotionOfInvisibility3 = 46,
-        SparklingPotion = 47,
-        PotentPotion = 48,
-        PotionOfRegeneration4 = 49,
-        PotionOfSwiftness4 = 50,
-        PotionOfFireResistance4 = 51,
-        PotionOfPoison4 = 52,
-        PotionOfHealing4 = 53,
-        PotionOfNightVision4 = 54,
-        RankPotion = 55,
-        PotionOfWeakness4 = 56,
-        PotionOfStrength4 = 57,
-        PotionOfSlowness4 = 58,
-        PotionOfLeaping4 = 59,
-        PotionOfHarming4 = 60,
-        PotionOfWaterBreathing4 = 61,
-        PotionOfInvisibility4 = 62,
-        StinkyPotion = 63
+        WaterBottle = 0,
+        Regeneration1 = 1,
+        Swiftness1 = 2,
+        FireResistance1 = 3,
+        Poison1 = 4,
+        Healing1 = 5,
+        NightVision1 = 6,
+        Clear = 7,
+        Weakness1 = 8,
+        Strength1 = 9,
+        Slowness1 = 10,
+        Leaping1 = 11,
+        Harming1 = 12,
+        WaterBreathing1 = 13,
+        Invisibility1 = 14,
+        Thin = 15,
+        Awkward = 16,
+        Regeneration2 = 17,
+        Swiftness2 = 18,
+        FireResistance2 = 19,
+        Poison2 = 20,
+        Healing2 = 21,
+        NightVision2 = 22,
+        Bungling = 23,
+        Weakness2 = 24,
+        Strength2 = 25,
+        Slowness2 = 26,
+        Leaping2 = 27,
+        Harming2 = 28,
+        WaterBreathing2 = 29,
+        Invisibility2 = 30,
+        Debonair = 31,
+        Thick = 32,
+        Regeneration3 = 33,
+        Swiftness3 = 34,
+        FireResistance3 = 35,
+        Poison3 = 36,
+        Healing3 = 37,
+        NightVision3 = 38,
+        Charming = 39,
+        Weakness3 = 40,
+        Strength3 = 41,
+        Slowness3 = 42,
+        Leaping3 = 43,
+        Harming3 = 44,
+        WaterBreathing3 = 45,
+        Invisibility3 = 46,
+        Sparkling = 47,
+        Potent = 48,
+        Regeneration4 = 49,
+        Swiftness4 = 50,
+        FireResistance4 = 51,
+        Poison4 = 52,
+        Healing4 = 53,
+        NightVision4 = 54,
+        Rank = 55,
+        Weakness4 = 56,
+        Strength4 = 57,
+        Slowness4 = 58,
+        Leaping4 = 59,
+        Harming4 = 60,
+        WaterBreathing4 = 61,
+        Invisibility4 = 62,
+        Stinky = 63
     }
 
     public enum PotionEffectType : uint
@@ -358,7 +364,7 @@ namespace MineCase.Server.World
         LessDuration = 32
     }
 
-    public enum PotionExtendedDurationType : uint
+    public enum PotionExDurationType : uint
     {
         Base = 0,
         MoreDuration = 64

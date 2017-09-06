@@ -264,12 +264,12 @@ namespace MineCase.Server.World
 
     public enum WoodPlankType : uint
     {
-        OakWoodPlanks = 0,
-        SpruceWoodPlanks = 1,
-        BirchWoodPlanks = 2,
-        JungleWoodPlanks = 3,
-        AcaciaWoodPlanks = 4,
-        DarkOakWoodPlanks = 5
+        Oak = 0,
+        Spruce = 1,
+        Birch = 2,
+        Jungle = 3,
+        Acacia = 4,
+        DarkOak = 5
     }
 
     public enum StoneType : uint
@@ -293,12 +293,12 @@ namespace MineCase.Server.World
     [Flags]
     public enum SaplingsType : uint
     {
-        OakSapling = 0,
-        SpruceSapling = 1,
-        BirchSapling = 2,
-        JungleSapling = 3,
-        AcaciaSapling = 4,
-        DarkOakSapling = 5,
+        Oak = 0,
+        Spruce = 1,
+        Birch = 2,
+        Jungle = 3,
+        Acacia = 4,
+        DarkOak = 5,
 
         // 0x8 bit field : Set if sapling is ready to grow into a tree
         ReadyForTreeFlag = 0x8
@@ -337,10 +337,23 @@ namespace MineCase.Server.World
     [Flags]
     public enum WoodType : uint
     {
-        OakWoodOrAcaciaWood = 0,
-        SpruceWoodOrDarkOakWood = 1,
-        BirchWood = 2,
-        JungleWood = 3,
+        Oak = 0,
+        Spruce = 1,
+        Birch = 2,
+        Jungle = 3,
+
+        // 0x4 ~ 0x8 bits field specifying the orientation of the wood
+        FacingUpFlag = 0x0,
+        FacingEastFlag = 0x4,
+        FacingNorthFlag = 0x8,
+        OnlybarkFlag = 0xC
+    }
+
+    [Flags]
+    public enum Wood2Type : uint
+    {
+        Acacia = 0,
+        DarkOak = 1,
 
         // 0x4 ~ 0x8 bits field specifying the orientation of the wood
         FacingUpFlag = 0x0,
@@ -351,22 +364,34 @@ namespace MineCase.Server.World
 
     public enum LeaveType : uint
     {
-        OakLeaves = 0,
-        SpruceLeaves = 1,
-        BirchLeaves = 2,
-        JungleLeaves = 3,
-        OakLeavesNoDecay = 4,
-        SpruceLeavesNoDecay = 5,
-        BirchLeavesNoDecay = 6,
-        JungleLeavesNoDecay = 7,
-        OakLeavesCheckDecay = 8,
-        SpruceLeavesCheckDecay = 9,
-        BirchLeavesCheckDecay = 10,
-        JungleLeavesCheckDecay = 11,
-        OakLeavesNoDecayAndCheckDecay = 12,
-        SpruceLeavesNoDecayAndCheckDecay = 13,
-        BirchLeavesNoDecayAndCheckDecay = 14,
-        JungleLeavesNoDecayAndCheckDecay = 15
+        Oak = 0,
+        Spruce = 1,
+        Birch = 2,
+        Jungle = 3,
+        OakLeaves = 4,
+        SpruceNoDecay = 5,
+        BirchNoDecay = 6,
+        JungleNoDecay = 7,
+        OakCheckDecay = 8,
+        SpruceCheckDecay = 9,
+        BirchCheckDecay = 10,
+        JungleCheckDecay = 11,
+        OakNoDecayAndCheckDecay = 12,
+        SpruceNoDecayAndCheckDecay = 13,
+        BirchNoDecayAndCheckDecay = 14,
+        JungleNoDecayAndCheckDecay = 15
+    }
+
+    public enum Leave2Type : uint
+    {
+        Acacia = 0,
+        DarkOak = 1,
+        AcaciaNoDecay = 4,
+        DarkOakNoDecay = 5,
+        AcaciaCheckDecay = 8,
+        DarkOakCheckDecay = 9,
+        AcaciaNoDecayAndCheckDecay = 12,
+        DarkOakNoDecayAndCheckDecay = 13
     }
 
     /// <summary>
@@ -403,47 +428,59 @@ namespace MineCase.Server.World
 
     public enum DoubleStoneSlabType : uint
     {
-        DoubleStoneSlab = 0,
-        DoubleSandstoneSlab = 1,
-        DoubleWoodenSlab = 2,
-        DoubleCobblestoneSlab = 3,
-        DoubleBricksSlab = 4,
-        DoubleStoneBrickSlab = 5,
-        DoubleNetherBrickSlab = 6,
-        DoubleQuartzSlab = 7,
-        SmoothDoubleStoneSlab = 8,
-        SmoothDoubleSandstoneSlab = 9,
-        TileDoubleQuartzSlab = 10
+        Stone = 0,
+        Sandstone = 1,
+        Wooden = 2,
+        Cobblestone = 3,
+        Bricks = 4,
+        StoneBrick = 5,
+        NetherBrick = 6,
+        Quartz = 7,
+        SmoothStone = 8,
+        SmoothSandstone = 9,
+        TileQuartz = 15
+    }
+
+    public enum DoubleRedSandstoneSlabType : uint
+    {
+        Normal = 0,
+        Smooth = 8
     }
 
     public enum StoneSlabType : uint
     {
-        StoneSlab = 0,
-        SandstoneSlab = 1,
-        WoodenSlab = 2,
-        CobblestoneSlab = 3,
-        BricksSlab = 4,
-        StoneBrickSlab = 5,
-        NetherBrickSlab = 6,
-        QuartzSlab = 7,
-        UpperStoneSlab = 8,
-        UpperSandstoneSlab = 9,
-        UpperWoodenSlab = 10,
-        UpperCobblestoneSlab = 11,
-        UpperBricksSlab = 12,
-        UpperStoneBrickSlab = 13,
-        UpperNetherBrickSlab = 14,
-        UpperQuartzSlab = 15
+        Stone = 0,
+        Sandstone = 1,
+        Wooden = 2,
+        Cobblestone = 3,
+        Bricks = 4,
+        StoneBrick = 5,
+        NetherBrick = 6,
+        Quartz = 7,
+        UpperStone = 8,
+        UpperSandstone = 9,
+        UpperWooden = 10,
+        UpperCobblestone = 11,
+        UpperBricks = 12,
+        UpperStoneBrick = 13,
+        UpperNetherBrick = 14,
+        UpperQuartz = 15
+    }
+
+    public enum RedSandstoneSlabType : uint
+    {
+        Normal = 0,
+        Upper = 1
     }
 
     public enum DoubleWoodenSlabType : uint
     {
-        DoubleOak = 0,
-        DoubleSpruce = 1,
-        DoubleBirch = 2,
-        DoubleJungle = 3,
-        DoubleAcacia = 4,
-        DoubleDarkOak = 5
+        Oak = 0,
+        Spruce = 1,
+        Birch = 2,
+        Jungle = 3,
+        Acacia = 4,
+        DarkOak = 5
     }
 
     public enum WoodenSlabType : uint
@@ -470,16 +507,16 @@ namespace MineCase.Server.World
 
     public enum SandstoneType : uint
     {
-        Sandstone = 0,
-        ChiseledSandstone = 1,
-        SmoothSandstone = 2
+        Normal = 0,
+        Chiseled = 1,
+        Smooth = 2
     }
 
     public enum RedSandstoneType : uint
     {
-        RedSandstone = 0,
-        ChiseledRedSandstone = 1,
-        SmoothRedSandstone = 2
+        Normal = 0,
+        Chiseled = 1,
+        Smooth = 2
     }
 
     [Flags]
@@ -875,7 +912,7 @@ namespace MineCase.Server.World
 
     public enum CactusType : uint
     {
-        FreshlyPlantedCactus = 0,
+        FreshlyPlanted = 0,
         Interval1 = 1,
         Interval2 = 2,
         Interval3 = 3,
@@ -895,7 +932,7 @@ namespace MineCase.Server.World
 
     public enum SugarCaneType : uint
     {
-        FreshlyPlantedSugarCane = 0,
+        FreshlyPlanted = 0,
         Interval1 = 1,
         Interval2 = 2,
         Interval3 = 3,
@@ -957,10 +994,10 @@ namespace MineCase.Server.World
         FacingWest = 3,
 
         // 0x4 ~ 0x8 bit field specifying the redstone repeater's delay
-        RedstoneTick1Flag = 0x0,
-        RedstoneTick2Flag = 0x4,
-        RedstoneTick3Flag = 0x8,
-        RedstoneTick4Flag = 0xC
+        Tick1Flag = 0x0,
+        Tick2Flag = 0x4,
+        Tick3Flag = 0x8,
+        Tick4Flag = 0xC
     }
 
     [Flags]
@@ -1005,10 +1042,10 @@ namespace MineCase.Server.World
 
     public enum StoneBrickType : uint
     {
-        StoneBrick = 0,
-        MossyStoneBrick = 1,
-        CrackedStoneBrick = 2,
-        ChiseledStoneBrick = 3
+        Normal = 0,
+        Mossy = 1,
+        Cracked = 2,
+        Chiseled = 3
     }
 
     public enum PrismarineType : uint
@@ -1182,35 +1219,35 @@ namespace MineCase.Server.World
     public enum HeadForBlockType : uint
     {
         OnTheFloor = 1,
-        OnAWallFacingNorth = 2,
-        OnAWallFacingSouth = 3,
-        OnAWallFacingEast = 4,
-        OnAWallFacingWest = 5
+        OnWallFacingNorth = 2,
+        OnWallFacingSouth = 3,
+        OnWallFacingEast = 4,
+        OnWallFacingWest = 5
     }
 
     public enum BlockOfQuartzType : uint
     {
-        BlockOfQuartz = 0,
-        ChiseledQuartzBlock = 1,
-        PillarQuartzBlockVertical = 2,
-        PillarQuartzBlockNorthSouth = 3,
-        PillarQuartzBlockEastWest = 4
+        Normal = 0,
+        Chiseled = 1,
+        Vertical = 2,
+        NorthSouth = 3,
+        EastWest = 4
     }
 
     public enum AnvilForBlockType : uint
     {
-        AnvilNS = 0,
-        AnvilEW = 1,
-        AnvilSN = 2,
-        AnvilWE = 3,
-        SlightlyDamagedAnvilNS = 4,
-        SlightlyDamagedAnvilEW = 5,
-        SlightlyDamagedAnvilWE = 6,
-        SlightlyDamagedAnvilSN = 7,
-        VeryDamagedAnvilNS = 8,
-        VeryDamagedAnvilEW = 9,
-        VeryDamagedAnvilWE = 10,
-        VeryDamagedAnvilSN = 11
+        NorthSouth = 0,
+        EastWest = 1,
+        SouthNorth = 2,
+        WestEast = 3,
+        SlightlyDamagedNS = 4,
+        SlightlyDamagedEW = 5,
+        SlightlyDamagedWE = 6,
+        SlightlyDamagedSN = 7,
+        VeryDamagedNS = 8,
+        VeryDamagedEW = 9,
+        VeryDamagedWE = 10,
+        VeryDamagedSN = 11
     }
 
     public struct BlockState : IEquatable<BlockState>
