@@ -64,5 +64,10 @@ namespace MineCase.Server.Game.Windows
         {
             return DistributeStack(player, new[] { SlotAreas[3], SlotAreas[2] }, item, false);
         }
+
+        public async Task UseHotbarItem(IPlayer player, int slotIndex)
+        {
+            await SlotAreas[3].TryUseItem(player, slotIndex);
+        }
     }
 }
