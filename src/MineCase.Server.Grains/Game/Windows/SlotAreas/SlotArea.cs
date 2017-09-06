@@ -63,6 +63,17 @@ namespace MineCase.Server.Game.Windows.SlotAreas
             return item;
         }
 
+        public virtual async Task TryUseItem(IPlayer player, int slotIndex)
+        {
+            var slot = await GetSlot(player, slotIndex);
+            if (!slot.IsEmpty && slot.ItemCount >= 1)
+            {
+                slot.ItemCount--;
+                slot.MakeEmptyIfZero();
+                await SetSlot(player, slotIndex, slot);
+            }
+        }
+
         protected void NotifySlotChanged(IPlayer player, int slotIndex, Slot item)
         {
             Window.NotifySlotChanged(this, player, slotIndex, item);

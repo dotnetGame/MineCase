@@ -26,6 +26,7 @@ namespace MineCase.Server.Game.Entities
         private string _name;
         private Slot[] _inventorySlots;
         private Slot _draggedSlot;
+        private short _heldSlot;
         private IInventoryWindow _inventory;
         private Dictionary<byte, WindowContext> _windows;
 
@@ -114,6 +115,7 @@ namespace MineCase.Server.Game.Entities
                 { 0, new WindowContext { Window = _inventory } }
             };
             _draggedSlot = Slot.Empty;
+            _heldSlot = 0;
             await SendWholeInventory();
             await SendExperience();
             await SendPlayerListAddPlayer(new[] { this });
@@ -219,13 +221,14 @@ namespace MineCase.Server.Game.Entities
             return after;
         }
 
-        public Task PlaceBlock(Position location, EntityInteractHand hand, PlayerDiggingFace face, Vector3 cursorPosition)
+        public async Task PlaceBlock(Position location, EntityInteractHand hand, PlayerDiggingFace face, Vector3 cursorPosition)
         {
-            return Task.CompletedTask;
+            await _inventory.UseHotbarItem(this, _heldSlot);
         }
 
         public Task SetHeldItem(short slot)
         {
+            _heldSlot = slot;
             return Task.CompletedTask;
         }
 

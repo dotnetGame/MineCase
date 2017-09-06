@@ -15,4 +15,8 @@
     <AdditionalFiles Include="..\..\build\stylecop.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Minecase.Core\Minecase.Core.csproj" />
+  </ItemGroup>
+
 </Project>

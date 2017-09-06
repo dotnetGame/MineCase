@@ -66,7 +66,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
         private async Task UpdateRecipe(IPlayer player)
         {
             var grid = GetCraftingGrid(player);
-            var recipe = await GrainFactory.GetGrain<ICraftingRecipes>(0).FindRecipe(grid);
+            var recipe = await GrainFactory.GetGrain<ICraftingRecipes>(0).FindRecipe(grid.AsImmutable());
             if (recipe != null)
             {
                 _afterSlots = recipe.AfterTake;

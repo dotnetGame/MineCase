@@ -11,5 +11,6 @@ namespace MineCase.Server.Game.Windows
 {
     public interface IInventoryWindow : IWindow
     {
+        Task UseHotbarItem(IPlayer player, int slotIndex);
     }
 }
