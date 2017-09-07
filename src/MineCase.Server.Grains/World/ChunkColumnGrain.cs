@@ -4,8 +4,8 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.Game.BlockEntities;
 using MineCase.Server.Game.Entities;
-using MineCase.Server.Settings;
 using MineCase.Server.World.Generation;
 using Orleans;
 
@@ -19,6 +19,7 @@ namespace MineCase.Server.World
 
         private bool _generated = false;
         private ChunkColumnStorage _state;
+        private Dictionary<BlockChunkPos, IBlockEntity> _blockEntities;
 
         public async Task<BlockState> GetBlockState(int x, int y, int z)
         {
@@ -38,6 +39,7 @@ namespace MineCase.Server.World
             _world = GrainFactory.GetGrain<IWorld>(key.worldKey);
             _chunkX = key.x;
             _chunkZ = key.z;
+            _blockEntities = new Dictionary<BlockChunkPos, IBlockEntity>();
             return Task.CompletedTask;
         }
 
@@ -45,23 +47,39 @@ namespace MineCase.Server.World
         {
             await EnsureChunkGenerated();
             _state[x, y, z] = blockState;
+
+            var chunkPos = new BlockChunkPos(x, y, z);
+            var blockWorldPos = chunkPos.ToBlockWorldPos(new ChunkWorldPos(_chunkX, _chunkZ));
+            await GetBroadcastGenerator().BlockChange(blockWorldPos, blockState);
+
+            // 删除旧的 BlockEntity
+            if (_blockEntities.TryGetValue(chunkPos, out var entity))
+            {
+                await entity.Destroy();
+                _blockEntities.Remove(chunkPos);
+            }
+
+            // 添加新的 BlockEntity
+            entity = BlockEntity.Create(GrainFactory, _world, blockWorldPos, (BlockId)blockState.Id);
+            if (entity != null)
+                _blockEntities.Add(chunkPos, entity);
         }
 
         private async Task EnsureChunkGenerated()
         {
-            var serverSetting = GrainFactory.GetGrain<IServerSettings>(0);
-            string worldType = (await serverSetting.GetSettings()).LevelType;
-            if (worldType == "DEFAULT" || worldType == "default")
+            if (!_generated)
             {
-                var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(await _world.GetSeed());
-                GeneratorSettings settings = new GeneratorSettings
+                var serverSetting = GrainFactory.GetGrain<IServerSettings>(0);
+                string worldType = (await serverSetting.GetSettings()).LevelType;
+                if (worldType == "DEFAULT" || worldType == "default")
                 {
-                };
-                _state = await generator.Generate(_world, _chunkX, _chunkZ, settings);
-            }
-            else if (worldType == "FLAT" || worldType == "flat")
-            {
-                if (!_generated)
+                    var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(await _world.GetSeed());
+                    GeneratorSettings settings = new GeneratorSettings
+                    {
+                    };
+                    _state = await generator.Generate(_world, _chunkX, _chunkZ, settings);
+                }
+                else if (worldType == "FLAT" || worldType == "flat")
                 {
                     var serverSetting = GrainFactory.GetGrain<IServerSettings>(0);
                     string worldType = (await serverSetting.GetSettings()).LevelType;

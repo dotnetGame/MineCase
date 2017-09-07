@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.Game.Blocks;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Network.Play;
@@ -62,21 +63,29 @@ namespace MineCase.Server.Game.Items
                     var slot = await inventoryWindow.GetSlot(player, slotIndex);
                     if (!slot.IsEmpty)
                     {
-                        var newState = new BlockState { Id = (uint)slot.BlockId, MetaValue = (uint)slot.ItemDamage };
-                        var chunk = position.GetChunk();
-                        await world.SetBlockState(grainFactory, position, newState);
-                        await GetBroadcastGenerator(grainFactory, world, chunk.chunkX, chunk.chunkZ).BlockChange(position, newState);
+                        var newState = await ConvertToBlock(player, slot);
+                        var blockHandler = BlockHandler.Create((BlockId)newState.Id);
+                        if (await blockHandler.CanBeAt(position, grainFactory, world))
+                        {
+                            var chunk = position.GetChunk();
+                            await world.SetBlockState(grainFactory, position, newState);
 
-                        slot.ItemCount--;
-                        slot.MakeEmptyIfZero();
-                        await inventoryWindow.SetSlot(player, slotIndex, slot);
+                            slot.ItemCount--;
+                            slot.MakeEmptyIfZero();
+                            await inventoryWindow.SetSlot(player, slotIndex, slot);
 
-                        return true;
+                            return true;
+                        }
                     }
                 }
             }
 
             return false;
+        }
+
+        protected virtual Task<BlockState> ConvertToBlock(IPlayer player, Slot slot)
+        {
+            return Task.FromResult(new BlockState { Id = (uint)slot.BlockId, MetaValue = (uint)slot.ItemDamage });
         }
 
         private void AddFace(ref BlockWorldPos location, PlayerDiggingFace face, bool inverse = false)
@@ -106,11 +115,6 @@ namespace MineCase.Server.Game.Items
                 default:
                     throw new ArgumentOutOfRangeException(nameof(face));
             }
-        }
-
-        internal ClientPlayPacketGenerator GetBroadcastGenerator(IGrainFactory grainFactory, IWorld world, int chunkX, int chunkZ)
-        {
-            return new ClientPlayPacketGenerator(grainFactory.GetGrain<IChunkTrackingHub>(world.MakeChunkTrackingHubKey(chunkX, chunkZ)));
         }
     }
 
