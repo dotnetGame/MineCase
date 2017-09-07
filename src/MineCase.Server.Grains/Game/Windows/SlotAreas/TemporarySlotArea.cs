@@ -28,8 +28,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
         public override Task SetSlot(IPlayer player, int slotIndex, Slot slot)
         {
             GetSlots(player)[slotIndex] = slot;
-            NotifySlotChanged(player, slotIndex, slot);
-            return Task.CompletedTask;
+            return NotifySlotChanged(player, slotIndex, slot);
         }
 
         protected Slot[] GetSlots(IPlayer player)
@@ -63,7 +62,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
                 _tempSlotsMap.Remove(player);
 
                 for (int i = 0; i < slots.Length; i++)
-                    NotifySlotChanged(player, i, Slot.Empty);
+                    await NotifySlotChanged(player, i, Slot.Empty);
             }
         }
     }

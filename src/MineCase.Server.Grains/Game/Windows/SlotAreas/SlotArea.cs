@@ -74,9 +74,9 @@ namespace MineCase.Server.Game.Windows.SlotAreas
             }
         }
 
-        protected void NotifySlotChanged(IPlayer player, int slotIndex, Slot item)
+        protected Task NotifySlotChanged(IPlayer player, int slotIndex, Slot item)
         {
-            Window.NotifySlotChanged(this, player, slotIndex, item);
+            return Window.NotifySlotChanged(this, player, slotIndex, item);
         }
 
         public virtual async Task Click(IPlayer player, int slotIndex, ClickAction clickAction, Slot clickedItem)

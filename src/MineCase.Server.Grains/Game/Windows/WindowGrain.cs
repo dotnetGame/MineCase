@@ -42,7 +42,7 @@ namespace MineCase.Server.Game.Windows
             return slots;
         }
 
-        internal async void NotifySlotChanged(SlotArea slotArea, IPlayer player, int slotIndex, Slot item)
+        internal async Task NotifySlotChanged(SlotArea slotArea, IPlayer player, int slotIndex, Slot item)
         {
             new ClientPlayPacketGenerator(await (await player.GetUser()).GetClientPacketSink())
                 .SetSlot(await player.GetWindowId(this), (short)LocalSlotIndexToGlobal(slotArea, slotIndex), item).Ignore();

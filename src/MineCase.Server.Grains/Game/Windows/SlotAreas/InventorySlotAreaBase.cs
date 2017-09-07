@@ -27,7 +27,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
         public override async Task SetSlot(IPlayer player, int slotIndex, Slot slot)
         {
             await player.SetInventorySlot(slotIndex + OffsetInContainer, slot);
-            NotifySlotChanged(player, slotIndex, slot);
+            await NotifySlotChanged(player, slotIndex, slot);
         }
     }
 }
