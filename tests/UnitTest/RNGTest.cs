@@ -6,6 +6,7 @@ using System.Text;
 using ImageSharp;
 using MineCase.Algorithm;
 using Xunit;
+using System.Diagnostics;
 
 namespace MineCase.UnitTest
 {
@@ -79,7 +80,7 @@ namespace MineCase.UnitTest
         }
 
         [Fact]
-        public void TesIntNoiseImg()
+        public void TestIntNoiseImg()
         {
             var rng = new UniformRNG(0);
 
@@ -103,7 +104,7 @@ namespace MineCase.UnitTest
         }
 
         [Fact]
-        public void TesFloatNoiseImg()
+        public void TestFloatNoiseImg()
         {
             var rng = new UniformRNG(0);
 
@@ -127,7 +128,7 @@ namespace MineCase.UnitTest
         }
 
         [Fact]
-        public void TesDoubleNoiseImg()
+        public void TestDoubleNoiseImg()
         {
             var rng = new UniformRNG(0);
 
@@ -148,6 +149,36 @@ namespace MineCase.UnitTest
 
                 image.SaveAsBmp(file);
             }
+        }
+
+        [Fact]
+        public void TestRNGPerformance()
+        {
+            var rng = new UniformRNG(0);
+            var random = new Random();
+            Stopwatch sw = new Stopwatch();
+
+            sw.Start();
+            int res = 0;
+            for (int i = 0; i < 10000000; ++i)
+            {
+                res += rng.NextInt32();
+            }
+
+            sw.Stop();
+            var t1 = sw.ElapsedMilliseconds;
+
+            sw.Start();
+            res = 0;
+            for (int i = 0; i < 10000000; ++i)
+            {
+                res += random.Next();
+            }
+
+            sw.Stop();
+            var t2 = sw.ElapsedMilliseconds;
+
+            Assert.True(t1 < t2);
         }
     }
 }

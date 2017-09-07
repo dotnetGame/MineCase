@@ -12,9 +12,11 @@ namespace MineCase.Algorithm
         private static readonly ulong _increment = 1442695040888963407;
 
         private ulong _state;
+        private uint _count;
 
         public UniformRNG(ulong state)
         {
+            _count = 101;
             if (state == 0)
             {
                 var time = DateTime.Now;
@@ -97,10 +99,21 @@ namespace MineCase.Algorithm
 
         private uint Next()
         {
-            _state ^= _state >> 13;
-            _state ^= (_state << 7) | 0x9d2c5680;
-            _state ^= (_state << 15) & 0xefc67a5b;
-            _state = _state * _multiplier + _increment;
+            --_count;
+            if (_count == 0)
+            {
+                for (int i = 0; i < 4; ++i)
+                {
+                    _state = _state * _multiplier + _increment;
+                }
+
+                _count = 101;
+            }
+
+            _state ^= _state >> 21;
+            _state ^= (_state << 13) | 0x73a4b9de9d2c5680;
+            _state ^= (_state << 29) & 0x5b3e6da7efc67a5b;
+            _state ^= _state >> 33;
             return (uint)_state;
         }
     }
