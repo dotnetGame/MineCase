@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MineCase.Server.World.Biomes;
 
 namespace MineCase.Server.World.Layer
 {
@@ -20,8 +21,13 @@ namespace MineCase.Server.World.Layer
                 for (int j = 0; j < areaWidth; ++j)
                 {
                     Random random = new Random((areaY + i) * 16384 + areaX + j);
-                    result[i, j] = random.Next(2) == 1 ? 1 : 0;
+                    result[i, j] = random.Next(2) == 0 ? 1 : 0;
                 }
+            }
+
+            if (-areaWidth < areaX && areaX <= 0 && -areaHeight < areaY && areaY <= 0)
+            {
+                result[-areaY, -areaX] = (int)BiomeId.Plains;
             }
 
             return result;

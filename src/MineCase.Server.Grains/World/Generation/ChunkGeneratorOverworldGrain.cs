@@ -102,17 +102,52 @@ namespace MineCase.Server.World.Generation
             }
             */
 
+            // 获取生物群系
+            int[,] biomeIds = _genlayer.GetInts(x * 16 - 8, z * 16 - 8, 32, 32);
+
+            /*
+            System.Console.WriteLine("pre: " + x + "," + z);
+            for (int i = 0; i < 32; ++i)
+            {
+                for (int j = 0; j < 32; ++j)
+                {
+                    System.Console.Write(biomeIds[i, j] + " ");
+                }
+
+                System.Console.WriteLine();
+            }
+            */
+
+            // System.Console.WriteLine("a: " + x + "," + z);
+            for (int i = 0; i < 10; ++i)
+            {
+                for (int j = 0; j < 10; ++j)
+                {
+                    _biomesForGeneration[j, i] = Biome.GetBiome(biomeIds[(int)(0.861111F * j * 4), (int)(0.861111F * i * 4)], settings);
+
+                    // System.Console.Write((int)_biomesForGeneration[i, j].GetBiomeId() + " ");
+                }
+
+                // System.Console.WriteLine();
+            }
+
             // 基本地形生成
             await GenerateBasicTerrain(chunk, x, z, settings);
 
             // 获取生物群系
-            int[,] biomeIds = _genlayer.GetInts(x, z, 16, 16);
+            biomeIds = _genlayer.GetInts(x * 16, z * 16, 16, 16);
+
+            // System.Console.WriteLine("b: " + x + "," + z);
             for (int i = 0; i < 16; ++i)
             {
                 for (int j = 0; j < 16; ++j)
                 {
-                    _biomesForGeneration[i, j] = Biome.GetBiome(biomeIds[i, j], settings);
+                    _biomesForGeneration[j, i] = Biome.GetBiome(biomeIds[j, i], settings);
+
+                    // System.Console.Write((int)_biomesForGeneration[i, j].GetBiomeId() + " ");
                 }
+
+                // System.Console.WriteLine();
             }
 
             // 设置生物群系
@@ -120,7 +155,7 @@ namespace MineCase.Server.World.Generation
             {
                 for (int j = 0; j < 16; ++j)
                 {
-                    chunk.Biomes[i * 16 + j] = (byte)_biomesForGeneration[i, j].GetBiomeId();
+                    chunk.Biomes[j * 16 + i] = (byte)_biomesForGeneration[j, i].GetBiomeId();
                 }
             }
 
@@ -150,16 +185,6 @@ namespace MineCase.Server.World.Generation
 
         private async Task GenerateBasicTerrain(ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
         {
-            // 获取生物群系
-            int[,] biomeIds = _genlayer.GetInts(x * 4 - 2, z * 4 - 2, 10, 10);
-            for (int i = 0; i < 10; ++i)
-            {
-                for (int j = 0; j < 10; ++j)
-                {
-                    _biomesForGeneration[i, j] = Biome.GetBiome(biomeIds[i, j], settings);
-                }
-            }
-
             // this.biomesForGeneration = this.world.getBiomeProvider().getBiomesForGeneration(this.biomesForGeneration, x * 4 - 2, z * 4 - 2, 10, 10);
             await GenerateDensityMap(_densityMap, x * 4, 0, z * 4, settings);
 
@@ -274,19 +299,19 @@ namespace MineCase.Server.World.Generation
                     float totalWeight = 0.0F;
 
                     // 中心点生物群系
-                    Biome centerBiome = _biomesForGeneration[x1 + 2, z1 + 2];
+                    Biome centerBiome = _biomesForGeneration[z1 + 2, x1 + 2];
 
                     // 求scale和groundYOffset的加权平均值
                     for (int x2 = 0; x2 < 5; ++x2)
                     {
                         for (int z2 = 0; z2 < 5; ++z2)
                         {
-                            Biome biome = _biomesForGeneration[x1 + x2, z1 + z2];
+                            Biome biome = _biomesForGeneration[z1 + z2, x1 + x2];
                             float curGroundYOffset = settings.BiomeDepthOffSet + biome.GetBaseHeight() * settings.BiomeDepthWeight; // biomeDepthOffSet=0
                             float curScale = settings.BiomeScaleOffset + biome.GetHeightVariation() * settings.BiomeScaleWeight; // biomeScaleOffset=0
 
                             // parabolicField为 10 / √(该点到中心点的距离^2 + 0.2)
-                            float weight = _biomeWeights[x2, z2] / (curGroundYOffset + 2.0F);
+                            float weight = _biomeWeights[z2, x2] / (curGroundYOffset + 2.0F);
 
                             if (biome.GetBaseHeight() > centerBiome.GetBaseHeight())
                             {
@@ -305,7 +330,7 @@ namespace MineCase.Server.World.Generation
                     groundYOffset = (groundYOffset * 4.0F - 1.0F) / 8.0F;
 
                     // 取一个-0.36~0.125的随机数，这个随机数决定了起伏的地表
-                    float random = (_depthMap[x1, 0, z1] - 0.5F) * 20 / 8000.0F;
+                    float random = (_depthMap[x1, 0, z1] - 0.5F) * 2 / 8000.0F;
                     if (random < 0.0F)
                     {
                         random = -random * 0.3F;
