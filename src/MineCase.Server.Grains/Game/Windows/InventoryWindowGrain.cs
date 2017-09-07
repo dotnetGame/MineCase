@@ -33,14 +33,20 @@ namespace MineCase.Server.Game.Windows
             return DistributeStack(player, new[] { SlotAreas[3], SlotAreas[2] }, item, false);
         }
 
-        public async Task UseHotbarItem(IPlayer player, int slotIndex)
+        public Task UseItem(IPlayer player, int slotIndex)
         {
-            await SlotAreas[3].TryUseItem(player, slotIndex);
+            var slotArea = GlobalSlotIndexToLocal(slotIndex);
+            return slotArea.slotArea.TryUseItem(player, slotArea.slotIndex);
         }
 
         public Task<Slot> GetHotbarItem(IPlayer player, int slotIndex)
         {
             return SlotAreas[3].GetSlot(player, slotIndex);
+        }
+
+        public Task<int> GetHotbarGlobalIndex(IPlayer player, int slotIndex)
+        {
+            return Task.FromResult(LocalSlotIndexToGlobal(SlotAreas[3], slotIndex));
         }
     }
 }

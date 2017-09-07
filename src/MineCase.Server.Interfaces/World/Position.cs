@@ -53,6 +53,11 @@ namespace MineCase.Server.World
             return new BlockWorldPos(position.X, position.Y, position.Z);
         }
 
+        public static implicit operator Position(BlockWorldPos position)
+        {
+            return new Position { X = position.X, Y = position.Y, Z = position.Z };
+        }
+
         public BlockChunkPos ToBlockChunkPos()
         {
             int blockPosX = X % ChunkConstants.BlockEdgeWidthInSection;

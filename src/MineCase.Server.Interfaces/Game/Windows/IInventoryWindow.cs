@@ -13,6 +13,8 @@ namespace MineCase.Server.Game.Windows
     {
         Task<Slot> GetHotbarItem(IPlayer player, int slotIndex);
 
-        Task UseHotbarItem(IPlayer player, int slotIndex);
+        Task UseItem(IPlayer player, int slotIndex);
+
+        Task<int> GetHotbarGlobalIndex(IPlayer player, int slotIndex);
     }
 }

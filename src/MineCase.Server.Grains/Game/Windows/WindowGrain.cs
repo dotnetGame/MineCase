@@ -48,7 +48,7 @@ namespace MineCase.Server.Game.Windows
                 .SetSlot(await player.GetWindowId(this), (short)LocalSlotIndexToGlobal(slotArea, slotIndex), item).Ignore();
         }
 
-        private int LocalSlotIndexToGlobal(SlotArea slotArea, int slotIndex)
+        protected int LocalSlotIndexToGlobal(SlotArea slotArea, int slotIndex)
         {
             for (int i = 0; i < SlotAreas.Count; i++)
             {
@@ -60,7 +60,7 @@ namespace MineCase.Server.Game.Windows
             return slotIndex;
         }
 
-        private (SlotArea slotArea, int slotIndex) GlobalSlotIndexToLocal(int slotIndex)
+        protected (SlotArea slotArea, int slotIndex) GlobalSlotIndexToLocal(int slotIndex)
         {
             for (int i = 0; i < SlotAreas.Count; i++)
             {
@@ -132,6 +132,18 @@ namespace MineCase.Server.Game.Windows
             var id = await player.GetWindowId(this);
             await generator.OpenWindow(id, WindowType, Title, GetNonInventorySlotsCount(), EntityId);
             await generator.WindowItems(id, slots);
+        }
+
+        public Task<Slot> GetSlot(IPlayer player, int slotIndex)
+        {
+            var area = GlobalSlotIndexToLocal(slotIndex);
+            return area.slotArea.GetSlot(player, area.slotIndex);
+        }
+
+        public Task SetSlot(IPlayer player, int slotIndex, Slot item)
+        {
+            var area = GlobalSlotIndexToLocal(slotIndex);
+            return area.slotArea.SetSlot(player, area.slotIndex, item);
         }
     }
 }

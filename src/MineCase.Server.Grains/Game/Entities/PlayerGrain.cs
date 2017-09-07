@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using MineCase.Protocol.Play;
 using MineCase.Server.Game.Blocks;
+using MineCase.Server.Game.Items;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
@@ -227,56 +228,21 @@ namespace MineCase.Server.Game.Entities
             {
                 var blockState = await World.GetBlockState(GrainFactory, location);
                 var blockHandler = BlockHandler.Create((BlockId)blockState.Id);
-                if (blockHandler != null && blockHandler.IsUsable)
+                if (blockHandler.IsUsable)
                 {
                     await blockHandler.UseBy(this, GrainFactory, location, cursorPosition);
                 }
                 else
                 {
-                    AddFace(ref location, face);
-                    blockState = await World.GetBlockState(GrainFactory, location);
-                    if ((BlockId)blockState.Id == BlockId.Air)
+                    var slotIndex = await _inventory.GetHotbarGlobalIndex(this, _heldSlot);
+                    var slot = await _inventory.GetSlot(this, slotIndex);
+                    if (!slot.IsEmpty)
                     {
-                        var slot = await _inventory.GetHotbarItem(this, _heldSlot);
-                        if (!slot.IsEmpty)
-                        {
-                            var newState = new BlockState { Id = (uint)slot.BlockId, MetaValue = (uint)slot.ItemDamage };
-                            var chunk = location.GetChunk();
-                            await _inventory.UseHotbarItem(this, _heldSlot);
-                            await World.SetBlockState(GrainFactory, location, newState);
-                            await GetBroadcastGenerator(chunk.chunkX, chunk.chunkZ).BlockChange(location, newState);
-                        }
+                        var itemHandler = ItemHandler.Create((uint)slot.BlockId);
+                        if (itemHandler.IsPlaceable)
+                            await itemHandler.PlaceBy(this, GrainFactory, World, location, _inventory, slotIndex, face, cursorPosition);
                     }
                 }
-            }
-        }
-
-        private void AddFace(ref Position location, PlayerDiggingFace face, bool inverse = false)
-        {
-            switch (face)
-            {
-                case PlayerDiggingFace.Bottom:
-                    location.Y--;
-                    break;
-                case PlayerDiggingFace.Top:
-                    location.Y++;
-                    break;
-                case PlayerDiggingFace.North:
-                    location.Z--;
-                    break;
-                case PlayerDiggingFace.South:
-                    location.Z++;
-                    break;
-                case PlayerDiggingFace.West:
-                    location.X--;
-                    break;
-                case PlayerDiggingFace.East:
-                    location.X++;
-                    break;
-                case PlayerDiggingFace.Special:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(face));
             }
         }
 

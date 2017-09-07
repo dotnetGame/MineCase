@@ -132,6 +132,11 @@ namespace MineCase.Server.World
             return (MakeRelativeBlockOffset(blockPosition.X).chunk, MakeRelativeBlockOffset(blockPosition.Z).chunk);
         }
 
+        public static (int chunkX, int chunkZ) GetChunk(this BlockWorldPos blockPosition)
+        {
+            return (MakeRelativeBlockOffset(blockPosition.X).chunk, MakeRelativeBlockOffset(blockPosition.Z).chunk);
+        }
+
         public static (int chunk, int block) MakeRelativeBlockOffset(int value)
         {
             var chunk = value / ChunkConstants.BlockEdgeWidthInSection;
