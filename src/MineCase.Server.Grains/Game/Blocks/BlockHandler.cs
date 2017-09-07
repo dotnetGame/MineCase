@@ -51,6 +51,11 @@ namespace MineCase.Server.Game.Blocks
         {
             return Task.CompletedTask;
         }
+
+        public virtual Task<bool> CanBeAt(BlockWorldPos position, IGrainFactory grainFactory, IWorld world)
+        {
+            return Task.FromResult(true);
+        }
     }
 
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]

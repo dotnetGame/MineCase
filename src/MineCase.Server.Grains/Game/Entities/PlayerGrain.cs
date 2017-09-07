@@ -178,7 +178,6 @@ namespace MineCase.Server.Game.Entities
                 await World.SetBlockState(GrainFactory, location.X, location.Y, location.Z, newState);
 
                 var chunk = location.GetChunk();
-                await GetBroadcastGenerator(chunk.chunkX, chunk.chunkZ).BlockChange(location, newState);
 
                 // 产生 Pickup
                 var finder = GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunk.chunkX, chunk.chunkZ));

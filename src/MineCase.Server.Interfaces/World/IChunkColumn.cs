@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.Game.BlockEntities;
 using MineCase.Server.Game.Entities;
 using Orleans;
 
@@ -15,6 +16,8 @@ namespace MineCase.Server.World
         Task<BlockState> GetBlockState(int x, int y, int z);
 
         Task SetBlockState(int x, int y, int z, BlockState blockState);
+
+        Task<IBlockEntity> GetBlockEntity(int x, int y, int z);
     }
 
     public static class ChunkColumnExtensions
