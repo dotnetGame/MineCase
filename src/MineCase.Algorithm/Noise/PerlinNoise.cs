@@ -13,7 +13,7 @@ namespace MineCase.Algorithm.Noise
         /// <summary>
         /// Permutation
         /// </summary>
-        private readonly int[] _p = new int[512];
+        private readonly byte[] _p = new byte[512];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PerlinNoise"/> class.
@@ -21,9 +21,9 @@ namespace MineCase.Algorithm.Noise
         /// <param name="seed">Seed for generating permutaion.</param>
         public PerlinNoise(int seed)
         {
-            var random = new Random(seed);
+            var random = new UniformRNG((ulong)seed);
             for (int i = 0; i < 256; i++)
-                _p[i + 256] = _p[i] = random.Next(0, 256);
+                _p[i + 256] = _p[i] = (byte)(random.NextUInt32() % 256);
         }
 
         public float Noise(float x, float y, float z)
