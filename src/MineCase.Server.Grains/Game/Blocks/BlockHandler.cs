@@ -20,15 +20,15 @@ namespace MineCase.Server.Game.Blocks
 
         public BlockHandler(BlockId blockId)
         {
-            BlockId = BlockId;
+            BlockId = blockId;
         }
 
         private static readonly Dictionary<BlockId, Type> _blockHandlerTypes;
         private static readonly ConcurrentDictionary<BlockId, BlockHandler> _blockHandlers = new ConcurrentDictionary<BlockId, BlockHandler>();
+        private static readonly BlockHandler _defaultBlockHandler = new DefaultBlockHandler();
 
         static BlockHandler()
         {
-            var ctorTypes = new[] { typeof(BlockId) };
             _blockHandlerTypes = (from t in typeof(BlockHandler).Assembly.DefinedTypes
                                   where !t.IsAbstract && t.IsSubclassOf(typeof(BlockHandler))
                                   let attrs = t.GetCustomAttributes<BlockHandlerAttribute>()
@@ -44,7 +44,7 @@ namespace MineCase.Server.Game.Blocks
         {
             if (_blockHandlerTypes.TryGetValue(blockId, out var type))
                 return _blockHandlers.GetOrAdd(blockId, k => (BlockHandler)Activator.CreateInstance(type, k));
-            return null;
+            return _defaultBlockHandler;
         }
 
         public virtual Task UseBy(IPlayer player, IGrainFactory grainFactory, BlockWorldPos blockPosition, Vector3 cursorPosition)
@@ -58,7 +58,6 @@ namespace MineCase.Server.Game.Blocks
     {
         public BlockId BlockId { get; }
 
-        // This is a positional argument
         public BlockHandlerAttribute(BlockId blockId)
         {
             BlockId = blockId;

@@ -13,6 +13,10 @@ namespace MineCase.Server.Game.Windows
     {
         Task<uint> GetSlotCount();
 
+        Task<Slot> GetSlot(IPlayer player, int slotIndex);
+
+        Task SetSlot(IPlayer player, int slotIndex, Slot item);
+
         Task<IReadOnlyList<Slot>> GetSlots(IPlayer player);
 
         Task<Slot> DistributeStack(IPlayer player, Slot item);
