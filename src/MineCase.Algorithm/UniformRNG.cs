@@ -97,6 +97,9 @@ namespace MineCase.Algorithm
 
         private uint Next()
         {
+            _state ^= _state >> 13;
+            _state ^= (_state << 7) | 0x9d2c5680;
+            _state ^= (_state << 15) & 0xefc67a5b;
             _state = _state * _multiplier + _increment;
             return (uint)_state;
         }
