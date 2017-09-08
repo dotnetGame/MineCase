@@ -35,7 +35,7 @@ namespace MineCase.Server.World.Mine
                 if (_rand.Next(4) == 0)
                 {
                     // 使用默认参数挖出一个洞
-                    AddTunnel( _rand.Next(), centerChunkX, centerChunkZ, chunk, seedPointX, seedPointX, seedPointZ);
+                    AddTunnel( _rand.Next(), centerChunkX, centerChunkZ, chunk, seedPointX, seedPointY, seedPointZ);
                     directionCount += _rand.Next(4);
                 }
 
@@ -52,7 +52,7 @@ namespace MineCase.Server.World.Mine
                         rangeScale *= (float)(_rand.NextDouble() * _rand.NextDouble()) * 3.0F + 1.0F;
                     }
 
-                    AddTunnel(_rand.Next(), centerChunkX, centerChunkZ, chunk, seedPointX, seedPointX, seedPointZ, rangeScale, yawAngle, pitchAngle, 0, 0, 1.0D);
+                    AddTunnel(_rand.Next(), centerChunkX, centerChunkZ, chunk, seedPointX, seedPointY, seedPointZ, rangeScale, yawAngle, pitchAngle, 0, 0, 1.0D);
                 }
             }
         }
