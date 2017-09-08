@@ -61,14 +61,19 @@ namespace MineCase.Server.Network
                     innerPacket = DeferPacket(PlayerLook.Deserialize(ref br));
                     break;
 
-                // Held Item Change
-                case 0x1A:
-                    innerPacket = DeferPacket(ServerboundHeldItemChange.Deserialize(ref br));
-                    break;
-
                 // Player Digging
                 case 0x14:
                     innerPacket = DeferPacket(PlayerDigging.Deserialize(ref br));
+                    break;
+
+                // Entity Action
+                case 0x15:
+                    innerPacket = DeferPacket(PlayerDigging.Deserialize(ref br));
+                    break;
+
+                // Held Item Change
+                case 0x1A:
+                    innerPacket = DeferPacket(ServerboundHeldItemChange.Deserialize(ref br));
                     break;
 
                 // Animation
