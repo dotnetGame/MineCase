@@ -26,5 +26,7 @@ namespace MineCase.Server.Game.Windows
         Task Close(IPlayer player);
 
         Task OpenWindow(IPlayer player);
+
+        Task Destroy();
     }
 }

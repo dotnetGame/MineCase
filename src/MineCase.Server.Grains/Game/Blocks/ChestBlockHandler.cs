@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.Game.BlockEntities;
+using MineCase.Server.Game.Entities;
 using MineCase.Server.World;
 using Orleans;
 
@@ -38,6 +41,12 @@ namespace MineCase.Server.Game.Blocks
             }
 
             return await base.CanBeAt(position, grainFactory, world);
+        }
+
+        public override async Task UseBy(IPlayer player, IGrainFactory grainFactory, IWorld world, BlockWorldPos blockPosition, Vector3 cursorPosition)
+        {
+            var entity = (await world.GetBlockEntity(grainFactory, blockPosition)).Cast<IChestBlockEntity>();
+            await entity.UseBy(player);
         }
     }
 }

@@ -328,6 +328,14 @@ namespace MineCase.Server.Network.Play
                 EntityId = entityId
             });
         }
+
+        public Task CloseWindow(byte windowId)
+        {
+            return Sink.SendPacket(new ClientboundCloseWindow
+            {
+                WindowId = windowId
+            });
+        }
     }
 
     [Flags]
