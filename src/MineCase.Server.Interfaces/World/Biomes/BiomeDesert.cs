@@ -41,17 +41,21 @@ namespace MineCase.Server.World.Biomes
         private async Task GenCacti(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
         {
             int cactiMaxNum = random.Next(_cactiPerChunk);
-            CactiGenerator generator = new CactiGenerator();
-            for (int cactiNum = 0; cactiNum < cactiMaxNum; ++cactiNum)
+
+            if (random.Next(64) == 0)
             {
-                int x = random.Next(14) + 1;
-                int z = random.Next(14) + 1;
-                for (int y = 255; y >= 1; --y)
+                CactiGenerator generator = new CactiGenerator();
+                for (int cactiNum = 0; cactiNum < cactiMaxNum; ++cactiNum)
                 {
-                    if (chunk[x, y, z] != BlockStates.Air())
+                    int x = random.Next(14) + 1;
+                    int z = random.Next(14) + 1;
+                    for (int y = 255; y >= 1; --y)
                     {
-                        await generator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, y + 1, pos.Z + z));
-                        break;
+                        if (chunk[x, y, z] != BlockStates.Air())
+                        {
+                            await generator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, y + 1, pos.Z + z));
+                            break;
+                        }
                     }
                 }
             }

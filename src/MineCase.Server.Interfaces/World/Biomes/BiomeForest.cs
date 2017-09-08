@@ -134,7 +134,7 @@ namespace MineCase.Server.World.Biomes
         private async Task GenDoubleGrass(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
         {
             DoubleGrassGenerator generator = new DoubleGrassGenerator(PlantsType.DoubleTallgrass);
-            for (int grassNum = 0; grassNum < 10; ++grassNum)
+            for (int grassNum = 0; grassNum < 2; ++grassNum)
             {
                 int x = random.Next(16);
                 int z = random.Next(16);

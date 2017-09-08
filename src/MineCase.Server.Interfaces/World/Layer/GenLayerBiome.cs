@@ -20,8 +20,22 @@ namespace MineCase.Server.World.Layer
                 for (int j = 0; j < areaWidth; ++j)
                 {
                     Random random = new Random(GetChunkSeed(areaX + j, areaY + i));
-                    if (random.Next(20) == 0)
-                        parentResult[i, j] = (int)BiomeId.Desert;
+                    if (parentResult[i, j] == (int)BiomeId.Plains)
+                    {
+                        int r = random.Next(10);
+                        if (r >= 0 && r < 2)
+                        {
+                            parentResult[i, j] = (int)BiomeId.Forest;
+                        }
+                        else if (r >= 2 && r < 4)
+                        {
+                            parentResult[i, j] = (int)BiomeId.ExtremeHills;
+                        }
+                        else if (r >= 4 && r < 6)
+                        {
+                            parentResult[i, j] = (int)BiomeId.Desert;
+                        }
+                    }
                 }
             }
 

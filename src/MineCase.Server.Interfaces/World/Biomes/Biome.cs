@@ -179,7 +179,9 @@ namespace MineCase.Server.World.Biomes
                 case BiomeId.Desert:
                      return new BiomeDesert(new BiomeProperties(), settings);
                 case BiomeId.ExtremeHills:
-                // return new BiomeExtremeHills();
+                     return new BiomeHill(BiomeHillType.Normal, new BiomeProperties(), settings);
+                case BiomeId.Forest:
+                     return new BiomeForest(new BiomeProperties(), settings);
                 default:
                      return null;
             }
@@ -268,7 +270,7 @@ namespace MineCase.Server.World.Biomes
         }
 
         // 产生生物群系特有的方块
-        public void GenerateBiomeTerrain(int seaLevel, Random rand, ChunkColumnStorage chunk, int chunk_x, int chunk_z, int x_in_chunk, int z_in_chunk, double noiseVal)
+        public virtual void GenerateBiomeTerrain(int seaLevel, Random rand, ChunkColumnStorage chunk, int chunk_x, int chunk_z, int x_in_chunk, int z_in_chunk, double noiseVal)
         {
             BlockState topBlockstate = _topBlock;
             BlockState fillerBlockstate = _fillerBlock;

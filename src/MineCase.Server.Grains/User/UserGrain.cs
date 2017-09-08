@@ -88,7 +88,7 @@ namespace MineCase.Server.User
             // _worldTimeSyncTimer = RegisterTimer(OnSyncWorldTime, null, TimeSpan.Zero, )
 
             // 设置出生点
-            await _player.Spawn(this.GetPrimaryKey(), new Vector3(0, 200, 0), 0.0f, 0.0f);
+            await _player.Spawn(this.GetPrimaryKey(), new Vector3(1000, 200, 1000), 0.0f, 0.0f);
         }
 
         private async Task SendTimeUpdate()

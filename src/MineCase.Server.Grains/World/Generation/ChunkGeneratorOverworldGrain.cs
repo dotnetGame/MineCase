@@ -417,8 +417,8 @@ namespace MineCase.Server.World.Generation
             {
                 for (int z1 = 0; z1 < 16; ++z1)
                 {
-                    Biome biome = biomesIn[x1, z1];
-                    biome.GenerateBiomeTerrain(settings.SeaLevel, _random, chunk, x, z, x1, z1, _surfaceMap[x1, 0, z1]);
+                    Biome biome = biomesIn[z1, x1];
+                    biome.GenerateBiomeTerrain(settings.SeaLevel, _random, chunk, x, z, x1, z1, (_surfaceMap[x1, 0, z1] - 0.5) * 2);
                 }
             }
 
