@@ -843,7 +843,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static ItemState RawFish(FishType type = FishType.RawFishOrCookedFish)
+        public static ItemState RawFish(RawFishType type = RawFishType.RawFish)
         {
             return new ItemState
             {
@@ -852,7 +852,7 @@ namespace MineCase.Server.World
             };
         }
 
-        public static ItemState CookedFish(FishType type = FishType.RawFishOrCookedFish)
+        public static ItemState CookedFish(CookedFishType type = CookedFishType.CookedFish)
         {
             return new ItemState
             {
@@ -1061,7 +1061,7 @@ namespace MineCase.Server.World
 
         public static ItemState Potion(
             PotionNameType name,
-            PotionExtendedDurationType ex = PotionExtendedDurationType.Base,
+            PotionExDurationType ex = PotionExDurationType.Base,
             SplashPotionType splash = SplashPotionType.DrinkablePotion)
         {
             return new ItemState
@@ -1074,7 +1074,7 @@ namespace MineCase.Server.World
         public static ItemState Potion(
             PotionEffectType effect,
             PotionTierType tier = PotionTierType.Base,
-            PotionExtendedDurationType ex = PotionExtendedDurationType.Base,
+            PotionExDurationType ex = PotionExDurationType.Base,
             SplashPotionType splash = SplashPotionType.DrinkablePotion)
         {
             return new ItemState
