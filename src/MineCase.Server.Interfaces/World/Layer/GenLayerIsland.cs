@@ -20,7 +20,7 @@ namespace MineCase.Server.World.Layer
             {
                 for (int j = 0; j < areaWidth; ++j)
                 {
-                    Random random = new Random((areaY + i) * 16384 + areaX + j);
+                    Random random = new Random(GetChunkSeed(areaX + j, areaY + i));
                     result[i, j] = random.Next(2) == 0 ? 1 : 0;
                 }
             }

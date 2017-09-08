@@ -19,7 +19,7 @@ namespace MineCase.Server.World.Layer
             {
                 for (int j = 0; j < areaWidth; ++j)
                 {
-                    Random random = new Random((areaY + i) * 16384 + areaX + j);
+                    Random random = new Random(GetChunkSeed(areaX + j, areaY + i));
                     if (random.Next(20) == 0)
                         parentResult[i, j] = (int)BiomeId.Desert;
                 }

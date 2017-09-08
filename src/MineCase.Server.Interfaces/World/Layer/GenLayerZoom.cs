@@ -14,8 +14,8 @@ namespace MineCase.Server.World.Layer
         public override int[,] GetInts(int areaX, int areaY, int areaWidth, int areaHeight)
         {
             // parent尺度是本层的1/2
-            int parentAreaX = areaX / 2;
-            int parentAreaY = areaY / 2;
+            int parentAreaX = areaX > 0 ? areaX / 2 : (areaX - 1) / 2;
+            int parentAreaY = areaY > 0 ? areaY / 2 : (areaY - 1) / 2;
 
             // +2添加边界
             int parentWidth = areaWidth / 2 + 2;
@@ -31,9 +31,6 @@ namespace MineCase.Server.World.Layer
 
             for (int parentY = 0; parentY < parentHeight - 1; ++parentY)
             {
-                // tmp中当前点索引
-                // int tmpIndex = (parentY * 2) * tmpWidth;
-
                 // parent当前点的值
                 int parentValue = parentRes[parentY, 0];
 
@@ -42,7 +39,7 @@ namespace MineCase.Server.World.Layer
 
                 for (int parentX = 0; parentX < parentWidth - 1; ++parentX)
                 {
-                    int randomSeed = (parentY + parentAreaY) * 2 * 16384 + (parentX + parentAreaX) * 2;
+                    int randomSeed = GetChunkSeed((parentX + parentAreaX) * 2, (parentY + parentAreaY) * 2);
 
                     // parent当前点x+1点的值
                     int parentValueX1 = parentRes[parentY, parentX + 1];
@@ -80,15 +77,6 @@ namespace MineCase.Server.World.Layer
                 {
                     result[resultY, resultX] = tmp[resultY + areaOffsetY, resultX + areaOffsetX];
                 }
-
-                /*
-                int resultX = 0;
-                for (int x = areaX & 2; resultX < areaWidth; ++x)
-                {
-                    result[resultY, resultX] = tmp[resultY + areaY & 2, x];
-                    resultX++;
-                }
-                */
             }
 
             return result;

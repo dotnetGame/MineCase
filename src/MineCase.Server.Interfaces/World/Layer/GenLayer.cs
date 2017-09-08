@@ -23,18 +23,16 @@ namespace MineCase.Server.World.Layer
         public static GenLayer InitAllLayer(int seed)
         {
             GenLayer addIsland0 = new GenLayerIsland(seed, null);
-
-            // GenLayer zoomed0 = new GenLayerZoom(seed, addIsland0);
             /*
-            GenLayer addIsland1 = new GenLayerAddIsland(2, zoomed0);
+            GenLayer zoomed0 = new GenLayerZoom(seed, addIsland0);
+            GenLayer biomesAdded = new GenLayerBiome(seed, zoomed0);
+            GenLayer addIsland1 = new GenLayerAddIsland(2, biomesAdded);
             GenLayer zoomed1 = new GenLayerZoom(seed, addIsland1);
             GenLayer addIsland2 = new GenLayerAddIsland(50, zoomed1);
-            GenLayer addIsland3 = new GenLayerAddIsland(70, addIsland2);
             */
 
             // GenLayer zoomed2 = new GenLayerZoom(seed, zoomed0);
-            // GenLayer biomesAdded = new GenLayerBiome(seed, zoomed2);
-            GenLayer result = GenLayerZoom.Magnify(seed, addIsland0, 7);
+            GenLayer result = GenLayerZoom.Magnify(seed, addIsland0, 5);
 
             // GenLayer biomesAdded = new GenLayerBiome(seed, zoomed0);
             // GenLayer zoomed2 = new GenLayerZoom(seed, zoomed1);
@@ -64,6 +62,11 @@ namespace MineCase.Server.World.Layer
             {
                 return SelectRandom(seed, a, b, c, d);
             }
+        }
+
+        public static int GetChunkSeed(int x, int z)
+        {
+            return z * 16384 + x;
         }
     }
 }
