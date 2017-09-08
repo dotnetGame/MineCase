@@ -229,7 +229,7 @@ namespace MineCase.Server.Game.Entities
                 var blockHandler = BlockHandler.Create((BlockId)blockState.Id);
                 if (blockHandler.IsUsable)
                 {
-                    await blockHandler.UseBy(this, GrainFactory, location, cursorPosition);
+                    await blockHandler.UseBy(this, GrainFactory, World, location, cursorPosition);
                 }
                 else
                 {

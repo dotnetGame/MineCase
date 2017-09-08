@@ -20,7 +20,7 @@ namespace MineCase.Server.Game.Blocks
 
         public override bool IsUsable => true;
 
-        public override async Task UseBy(IPlayer player, IGrainFactory grainFactory, BlockWorldPos blockPosition, Vector3 cursorPosition)
+        public override async Task UseBy(IPlayer player, IGrainFactory grainFactory, IWorld world, BlockWorldPos blockPosition, Vector3 cursorPosition)
         {
             var window = grainFactory.GetGrain<ICraftingWindow>(Guid.NewGuid());
             await player.OpenWindow(window);

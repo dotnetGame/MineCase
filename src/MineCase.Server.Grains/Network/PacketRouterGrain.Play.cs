@@ -93,7 +93,7 @@ namespace MineCase.Server.Network
 
                 // Close Window
                 case 0x09:
-                    innerPacket = DeferPacket(CloseWindow.Deserialize(ref br));
+                    innerPacket = DeferPacket(ServerboundCloseWindow.Deserialize(ref br));
                     break;
                 default:
                     throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X2}.");
@@ -218,7 +218,7 @@ namespace MineCase.Server.Network
             player.ClickWindow(packet.WindowId, packet.Slot, ToClickAction(packet.Button, packet.Mode), packet.ActionNumber, packet.ClickedItem).Ignore();
         }
 
-        private async Task DispatchPacket(CloseWindow packet)
+        private async Task DispatchPacket(ServerboundCloseWindow packet)
         {
             var player = await _user.GetPlayer();
             player.CloseWindow(packet.WindowId).Ignore();

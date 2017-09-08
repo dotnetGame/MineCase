@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.DependencyInjection;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Windows.SlotAreas;
+using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
 using MineCase.Server.World;
 using Orleans;
@@ -24,6 +26,14 @@ namespace MineCase.Server.Game.Windows
         protected abstract Chat Title { get; }
 
         protected virtual byte? EntityId => null;
+
+        private Dictionary<IPlayer, IClientboundPacketSink> _players;
+
+        public override Task OnActivateAsync()
+        {
+            _players = new Dictionary<IPlayer, IClientboundPacketSink>();
+            return base.OnActivateAsync();
+        }
 
         public Task<uint> GetSlotCount()
         {
@@ -46,6 +56,19 @@ namespace MineCase.Server.Game.Windows
         {
             new ClientPlayPacketGenerator(await (await player.GetUser()).GetClientPacketSink())
                 .SetSlot(await player.GetWindowId(this), (short)LocalSlotIndexToGlobal(slotArea, slotIndex), item).Ignore();
+        }
+
+        internal Task BroadcastSlotChanged(SlotArea slotArea, int slotIndex, Slot item)
+        {
+            var globalIndex = (short)LocalSlotIndexToGlobal(slotArea, slotIndex);
+            async Task SendSetSlot(IPlayer player, IClientboundPacketSink sink)
+            {
+                var id = await player.GetWindowId(this);
+                await new ClientPlayPacketGenerator(sink).SetSlot(id, globalIndex, item);
+            }
+
+            Task.WhenAll(from p in _players select SendSetSlot(p.Key, p.Value)).Ignore();
+            return Task.CompletedTask;
         }
 
         protected int LocalSlotIndexToGlobal(SlotArea slotArea, int slotIndex)
@@ -110,6 +133,7 @@ namespace MineCase.Server.Game.Windows
         {
             foreach (var slotArea in SlotAreas)
                 await slotArea.Close(player);
+            _players.Remove(player);
         }
 
         private byte GetNonInventorySlotsCount()
@@ -127,11 +151,13 @@ namespace MineCase.Server.Game.Windows
         public async Task OpenWindow(IPlayer player)
         {
             var slots = await GetSlots(player);
-            var generator = new ClientPlayPacketGenerator(await (await player.GetUser()).GetClientPacketSink());
+            var sink = await (await player.GetUser()).GetClientPacketSink();
+            var generator = new ClientPlayPacketGenerator(sink);
 
             var id = await player.GetWindowId(this);
             await generator.OpenWindow(id, WindowType, Title, GetNonInventorySlotsCount(), EntityId);
             await generator.WindowItems(id, slots);
+            _players.Add(player, sink);
         }
 
         public Task<Slot> GetSlot(IPlayer player, int slotIndex)
@@ -144,6 +170,18 @@ namespace MineCase.Server.Game.Windows
         {
             var area = GlobalSlotIndexToLocal(slotIndex);
             return area.slotArea.SetSlot(player, area.slotIndex, item);
+        }
+
+        public async Task Destroy()
+        {
+            async Task SendCloseWindow(IPlayer player, IClientboundPacketSink sink)
+            {
+                var id = await player.GetWindowId(this);
+                await new ClientPlayPacketGenerator(sink).CloseWindow(id);
+            }
+
+            await Task.WhenAll(from p in _players select SendCloseWindow(p.Key, p.Value));
+            await Task.WhenAll(from p in _players.Keys select Close(p));
         }
     }
 }

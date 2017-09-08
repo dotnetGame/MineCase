@@ -47,7 +47,7 @@ namespace MineCase.Server.Game.Blocks
             return _defaultBlockHandler;
         }
 
-        public virtual Task UseBy(IPlayer player, IGrainFactory grainFactory, BlockWorldPos blockPosition, Vector3 cursorPosition)
+        public virtual Task UseBy(IPlayer player, IGrainFactory grainFactory, IWorld world, BlockWorldPos blockPosition, Vector3 cursorPosition)
         {
             return Task.CompletedTask;
         }
