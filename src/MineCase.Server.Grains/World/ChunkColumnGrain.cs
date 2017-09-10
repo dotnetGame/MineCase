@@ -83,31 +83,28 @@ namespace MineCase.Server.World
                 }
                 else if (worldType == "FLAT" || worldType == "flat")
                 {
-                    if (worldType == "DEFAULT" || worldType == "default")
+                    var generator = GrainFactory.GetGrain<IChunkGeneratorFlat>(await _world.GetSeed());
+                    GeneratorSettings settings = new GeneratorSettings
                     {
-                        var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(await _world.GetSeed());
-                        GeneratorSettings settings = new GeneratorSettings
+                        FlatBlockId = new BlockState?[]
                         {
-                        };
-                        _state = await generator.Generate(_world, _chunkX, _chunkZ, settings);
-                    }
-                    else if (worldType == "FLAT" || worldType == "flat")
+                            BlockStates.Bedrock(),
+                            BlockStates.Stone(),
+                            BlockStates.Stone(),
+                            BlockStates.Dirt(),
+                            BlockStates.Dirt(),
+                            BlockStates.Grass()
+                        }
+                    };
+                    _state = await generator.Generate(_world, _chunkX, _chunkZ, settings);
+                }
+                else
+                {
+                    var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(await _world.GetSeed());
+                    GeneratorSettings settings = new GeneratorSettings
                     {
-                        var generator = GrainFactory.GetGrain<IChunkGeneratorFlat>(await _world.GetSeed());
-                        GeneratorSettings settings = new GeneratorSettings
-                        {
-                            FlatBlockId = new BlockState?[] { BlockStates.Stone(), BlockStates.Dirt(), BlockStates.Grass() }
-                        };
-                        _state = await generator.Generate(_world, _chunkX, _chunkZ, settings);
-                    }
-                    else
-                    {
-                        var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(await _world.GetSeed());
-                        GeneratorSettings settings = new GeneratorSettings
-                        {
-                        };
-                        _state = await generator.Generate(_world, _chunkX, _chunkZ, settings);
-                    }
+                    };
+                    _state = await generator.Generate(_world, _chunkX, _chunkZ, settings);
                 }
 
                 _generated = true;
