@@ -140,10 +140,10 @@ namespace MineCase.Server.Network
             player.SetLook(packet.Yaw, packet.Pitch, packet.OnGround).Ignore();
         }
 
-        private Task DispatchPacket(PlayerOnGround packet)
+        private async Task DispatchPacket(PlayerOnGround packet)
         {
-            // TODO set player state
-            return Task.CompletedTask;
+            var player = await _user.GetPlayer();
+            await player.SetOnGround(packet.OnGround);
         }
 
         private async Task DispatchPacket(PlayerPosition packet)

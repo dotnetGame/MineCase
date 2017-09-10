@@ -43,7 +43,6 @@ namespace MineCase.Server.Game.Entities
         private (Position, BlockState)? _diggingBlock;
 
         private bool _isOnGround;
-        private ActionId _action;
 
         public override Task OnActivateAsync()
         {
@@ -224,6 +223,12 @@ namespace MineCase.Server.Game.Entities
 
         public Task SetHeldItem(short slot)
         {
+            return Task.CompletedTask;
+        }
+
+        public Task SetOnGround(bool state)
+        {
+            _isOnGround = state;
             return Task.CompletedTask;
         }
     }
