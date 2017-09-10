@@ -326,7 +326,7 @@ namespace MineCase.Server.World.Generation
                     groundYOffset1 = groundYOffset1 * settings.BaseSize / 8.0F;
 
                     // 这个是大概的地面y坐标
-                    float groundY = settings.BaseSize + groundYOffset1 * 4.0F;// baseSize=8.5，应该代表了平均地表高度68
+                    float groundY = settings.BaseSize + groundYOffset1 * 4.0F; // baseSize=8.5，应该代表了平均地表高度68
 
                     // 注意这个y*8才是最终的y坐标
                     for (int y = 0; y < 33; ++y)
