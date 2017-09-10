@@ -7,7 +7,6 @@ namespace MineCase.Server.World.Layer
 {
     public abstract class GenLayer
     {
-        /** base seed to the LCG prng provided via the constructor */
         protected int _baseSeed;
 
         protected GenLayer _parent;

@@ -88,47 +88,16 @@ namespace MineCase.Server.World.Generation
 
         public async Task GenerateChunk(IWorld world, ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
         {
-            // GetBiomesForGeneration(_biomesForGeneration, x * 4 - 2, z * 4 - 2, 10, 10);
             // 生物群系生成
-            // 生物群系先暂时初始化成这样，以后修改
-            /*
-            _biomesForGeneration = new Biome[16, 16];
-            for (int i = 0; i < 16; ++i)
-            {
-                for (int j = 0; j < 16; ++j)
-                {
-                    _biomesForGeneration[i, j] = new BiomeDesert(new BiomeProperties(), settings);
-                }
-            }
-            */
-
             // 获取生物群系
             int[,] biomeIds = _genlayer.GetInts(x * 16 - 8, z * 16 - 8, 32, 32);
 
-            /*
-            System.Console.WriteLine("pre: " + x + "," + z);
-            for (int i = 0; i < 32; ++i)
-            {
-                for (int j = 0; j < 32; ++j)
-                {
-                    System.Console.Write(biomeIds[i, j] + " ");
-                }
-
-                System.Console.WriteLine();
-            }
-            */
-
-            // System.Console.WriteLine("a: " + x + "," + z);
             for (int i = 0; i < 10; ++i)
             {
                 for (int j = 0; j < 10; ++j)
                 {
                     _biomesForGeneration[j, i] = Biome.GetBiome(biomeIds[(int)(0.861111F * j * 4), (int)(0.861111F * i * 4)], settings);
-
-                    // System.Console.Write((int)_biomesForGeneration[i, j].GetBiomeId() + " ");
                 }
-
-                // System.Console.WriteLine();
             }
 
             // 基本地形生成
@@ -137,17 +106,12 @@ namespace MineCase.Server.World.Generation
             // 获取生物群系
             biomeIds = _genlayer.GetInts(x * 16, z * 16, 16, 16);
 
-            // System.Console.WriteLine("b: " + x + "," + z);
             for (int i = 0; i < 16; ++i)
             {
                 for (int j = 0; j < 16; ++j)
                 {
                     _biomesForGeneration[j, i] = Biome.GetBiome(biomeIds[j, i], settings);
-
-                    // System.Console.Write((int)_biomesForGeneration[i, j].GetBiomeId() + " ");
                 }
-
-                // System.Console.WriteLine();
             }
 
             // 设置生物群系
@@ -185,48 +149,43 @@ namespace MineCase.Server.World.Generation
 
         private async Task GenerateBasicTerrain(ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
         {
-            // this.biomesForGeneration = this.world.getBiomeProvider().getBiomesForGeneration(this.biomesForGeneration, x * 4 - 2, z * 4 - 2, 10, 10);
+            // 产生高度图
             await GenerateDensityMap(_densityMap, x * 4, 0, z * 4, settings);
 
+            // 进行线性插值
             for (int xHigh = 0; xHigh < 4; ++xHigh)
             {
-                // int xPart1 = xHigh * 5;
-                // int xPart2 = (xHigh + 1) * 5;
                 for (int zHigh = 0; zHigh < 4; ++zHigh)
                 {
-                    // int zPart11 = (xPart1 + zHigh) * 33;
-                    // int zPart12 = (xPart1 + zHigh + 1) * 33;
-                    // int zPart21 = (xPart2 + zHigh) * 33;
-                    // int zPart22 = (xPart2 + zHigh + 1) * 33;
                     for (int yHigh = 0; yHigh < 32; ++yHigh)
                     {
                         double yPart111 = _densityMap[xHigh, yHigh, zHigh];
                         double yPart121 = _densityMap[xHigh, yHigh, zHigh + 1];
                         double yPart211 = _densityMap[xHigh + 1, yHigh, zHigh];
                         double yPart221 = _densityMap[xHigh + 1, yHigh, zHigh + 1];
-                        double yDensityDif11 = (_densityMap[xHigh, yHigh + 1, zHigh] - yPart111) * 0.125;
-                        double yDensityDif12 = (_densityMap[xHigh, yHigh + 1, zHigh + 1] - yPart121) * 0.125;
-                        double yDensityDif21 = (_densityMap[xHigh + 1, yHigh + 1, zHigh] - yPart211) * 0.125;
-                        double yDensityDif22 = (_densityMap[xHigh + 1, yHigh + 1, zHigh + 1] - yPart221) * 0.125;
+                        double yDensityStep11 = (_densityMap[xHigh, yHigh + 1, zHigh] - yPart111) * 0.125;
+                        double yDensityStep12 = (_densityMap[xHigh, yHigh + 1, zHigh + 1] - yPart121) * 0.125;
+                        double yDensityStep21 = (_densityMap[xHigh + 1, yHigh + 1, zHigh] - yPart211) * 0.125;
+                        double yDensityStep22 = (_densityMap[xHigh + 1, yHigh + 1, zHigh + 1] - yPart221) * 0.125;
 
                         for (int yLow = 0; yLow < 8; ++yLow)
                         {
                             double density111 = yPart111;
                             double density121 = yPart121;
-                            double xDensityDif11 = (yPart211 - yPart111) * 0.25;
-                            double xDensityDif21 = (yPart221 - yPart121) * 0.25;
+                            double xDensityStep11 = (yPart211 - yPart111) * 0.25;
+                            double xDensityStep21 = (yPart221 - yPart121) * 0.25;
 
                             for (int xLow = 0; xLow < 4; ++xLow)
                             {
-                                double zDensityDif11 = (density121 - density111) * 0.25;
-                                double blockValue = density111 - zDensityDif11;
+                                double zDensityStep11 = (density121 - density111) * 0.25;
+                                double blockValue = density111 - zDensityStep11;
 
                                 for (int zLow = 0; zLow < 4; ++zLow)
                                 {
                                     int posX = xHigh * 4 + xLow;
                                     int posY = yHigh * 8 + yLow;
                                     int posZ = zHigh * 4 + zLow;
-                                    if ((blockValue += zDensityDif11) > 0.0)
+                                    if ((blockValue += zDensityStep11) > 0.0)
                                     {
                                         chunk[posX, posY, posZ] = BlockStates.Stone();
                                     }
@@ -240,14 +199,14 @@ namespace MineCase.Server.World.Generation
                                     }
                                 }
 
-                                density111 += xDensityDif11;
-                                density121 += xDensityDif21;
+                                density111 += xDensityStep11;
+                                density121 += xDensityStep21;
                             }
 
-                            yPart111 += yDensityDif11;
-                            yPart121 += yDensityDif12;
-                            yPart211 += yDensityDif21;
-                            yPart221 += yDensityDif22;
+                            yPart111 += yDensityStep11;
+                            yPart121 += yDensityStep12;
+                            yPart211 += yDensityStep21;
+                            yPart221 += yDensityStep22;
                         }
                     }
                 }
@@ -365,10 +324,9 @@ namespace MineCase.Server.World.Generation
                     // groundYOffset有-0.072~0.025的变动量
                     groundYOffset1 = groundYOffset1 + random * 0.2F;
                     groundYOffset1 = groundYOffset1 * settings.BaseSize / 8.0F;
-                    float groundY = settings.BaseSize + groundYOffset1 * 4.0F;
 
-                    // 这个是大概的地面y坐标，实际上也没有保证不会出现浮空岛...
-                    // float groundY = settings.BaseSize * (1.0F + groundYOffset1 / 2.0F); // baseSize=8.5，应该代表了平均地表高度68
+                    // 这个是大概的地面y坐标
+                    float groundY = settings.BaseSize + groundYOffset1 * 4.0F;// baseSize=8.5，应该代表了平均地表高度68
 
                     // 注意这个y*8才是最终的y坐标
                     for (int y = 0; y < 33; ++y)

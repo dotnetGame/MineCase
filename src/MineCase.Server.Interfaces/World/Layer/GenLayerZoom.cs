@@ -72,7 +72,6 @@ namespace MineCase.Server.World.Layer
             int areaOffsetY = Math.Abs(areaY % 2);
             for (int resultY = 0; resultY < areaHeight; ++resultY)
             {
-                // System.Array.Copy(tmp, (resultY + areaY % 2) * tmpWidth + areaX % 2, result, resultY * areaWidth, areaWidth);
                 for (int resultX = 0; resultX < areaWidth; ++resultX)
                 {
                     result[resultY, resultX] = tmp[resultY + areaOffsetY, resultX + areaOffsetX];
