@@ -54,5 +54,7 @@ namespace MineCase.Server.Game.Entities
         Task PlaceBlock(Position location, EntityInteractHand hand, PlayerDiggingFace face, Vector3 cursorPosition);
 
         Task SetHeldItem(short slot);
+
+        Task SetOnGround(bool state);
     }
 }
