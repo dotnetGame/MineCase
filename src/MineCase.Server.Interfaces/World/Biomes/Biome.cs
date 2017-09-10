@@ -40,19 +40,19 @@ namespace MineCase.Server.World.Biomes
 
         protected BiomeId _biomeId;
         /** The base height of this biome. Default 0.1. */
-        private float _baseHeight;
+        protected float _baseHeight;
         /** The variation from the base height of the biome. Default 0.3. */
-        private float _heightVariation;
+        protected float _heightVariation;
         /** The temperature of this biome. */
-        private float _temperature;
+        protected float _temperature;
         /** The rainfall in this biome. */
-        private float _rainfall;
+        protected float _rainfall;
         /** Color tint applied to water depending on biome */
-        private int _waterColor;
+        protected int _waterColor;
         /** Set to true if snow is enabled for this biome. */
-        private bool _enableSnow;
+        protected bool _enableSnow;
         /** Is true (default) if the biome support rain (desert and nether can't have rain) */
-        private bool _enableRain;
+        protected bool _enableRain;
         /** The block expected to be on the top of this biome */
         public BlockState _topBlock = BlockStates.GrassBlock();
         /** The block to fill spots in when not on the top */
@@ -84,6 +84,10 @@ namespace MineCase.Server.World.Biomes
         protected float _extraTreeChance;
         protected int _grassPerChunk;
         protected int _flowersPerChunk;
+
+        protected int _deadBushPerChunk;
+        protected int _reedsPerChunk;
+        protected int _cactiPerChunk;
 
         public Biome(BiomeProperties properties, GeneratorSettings genSettings)
         {
@@ -137,6 +141,10 @@ namespace MineCase.Server.World.Biomes
             _extraTreeChance = 0.05F; // mc 0.05F
             _grassPerChunk = 10;
             _flowersPerChunk = 4;
+
+            _deadBushPerChunk = 2;
+            _reedsPerChunk = 50;
+            _cactiPerChunk = 10;
         }
 
         public BiomeId GetBiomeId()
@@ -165,15 +173,17 @@ namespace MineCase.Server.World.Biomes
             switch (biomeId)
             {
                 case BiomeId.Ocean:
-                // return new BiomeOcean();
+                     return new BiomeOcean(new BiomeProperties(), settings);
                 case BiomeId.Plains:
-                    return new BiomePlains(new BiomeProperties(), settings);
+                     return new BiomePlains(new BiomeProperties(), settings);
                 case BiomeId.Desert:
-                // return new BiomeDesert();
+                     return new BiomeDesert(new BiomeProperties(), settings);
                 case BiomeId.ExtremeHills:
-                // return new BiomeExtremeHills();
+                     return new BiomeHill(BiomeHillType.Normal, new BiomeProperties(), settings);
+                case BiomeId.Forest:
+                     return new BiomeForest(new BiomeProperties(), settings);
                 default:
-                    return null;
+                     return null;
             }
         }
 
@@ -260,7 +270,7 @@ namespace MineCase.Server.World.Biomes
         }
 
         // 产生生物群系特有的方块
-        public void GenerateBiomeTerrain(int seaLevel, Random rand, ChunkColumnStorage chunk, int chunk_x, int chunk_z, int x_in_chunk, int z_in_chunk, double noiseVal)
+        public virtual void GenerateBiomeTerrain(int seaLevel, Random rand, ChunkColumnStorage chunk, int chunk_x, int chunk_z, int x_in_chunk, int z_in_chunk, double noiseVal)
         {
             BlockState topBlockstate = _topBlock;
             BlockState fillerBlockstate = _fillerBlock;
@@ -331,6 +341,7 @@ namespace MineCase.Server.World.Biomes
         Ocean = 0,
         Plains = 1,
         Desert = 2,
-        ExtremeHills = 3
+        ExtremeHills = 3,
+        Forest = 4
     }
 }

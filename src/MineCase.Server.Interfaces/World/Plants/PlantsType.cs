@@ -9,8 +9,17 @@ namespace MineCase.Server.World.Plants
         TallGrass,
         YellowFlower,
         RedFlower,
+
         Oak,
         Spruce,
-        Birch
+        Birch,
+
+        Sunflower,
+        Lilac,
+        RoseBush,
+        Peony,
+
+        DoubleTallgrass,
+        LargeFern
     }
 }
