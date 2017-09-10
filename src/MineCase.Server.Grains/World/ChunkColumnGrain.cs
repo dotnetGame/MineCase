@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game.BlockEntities;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Network.Play;
+using MineCase.Server.Settings;
 using MineCase.Server.World.Generation;
 using Orleans;
 
@@ -81,8 +83,6 @@ namespace MineCase.Server.World
                 }
                 else if (worldType == "FLAT" || worldType == "flat")
                 {
-                    var serverSetting = GrainFactory.GetGrain<IServerSettings>(0);
-                    string worldType = (await serverSetting.GetSettings()).LevelType;
                     if (worldType == "DEFAULT" || worldType == "default")
                     {
                         var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(await _world.GetSeed());
@@ -108,8 +108,22 @@ namespace MineCase.Server.World
                         };
                         _state = await generator.Generate(_world, _chunkX, _chunkZ, settings);
                     }
-                    _generated = true;
                 }
+
+                _generated = true;
             }
         }
+
+        protected ClientPlayPacketGenerator GetBroadcastGenerator()
+        {
+            return new ClientPlayPacketGenerator(GrainFactory.GetGrain<IChunkTrackingHub>(_world.MakeChunkTrackingHubKey(_chunkX, _chunkZ)));
+        }
+
+        public Task<IBlockEntity> GetBlockEntity(int x, int y, int z)
+        {
+            if (_blockEntities.TryGetValue(new BlockChunkPos(x, y, z), out var entity))
+                return Task.FromResult(entity);
+            return Task.FromResult<IBlockEntity>(null);
+        }
     }
+}
