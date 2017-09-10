@@ -6,23 +6,39 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
+    public enum ActionId : int
+    {
+        StartSneaking = 0,
+        StopSneaking = 1,
+        LeaveBed = 2,
+        StartSprinting = 3,
+        StopSprinting = 4,
+        StartJumpWithHorse = 5,
+        StopJumpWithHorse = 6,
+        OpenHorseInventory = 7,
+        StartFlyingWithElytra = 8
+    }
+
     [Packet(0x15)]
-    public sealed class EntityAction : ISerializablePacket
+    public sealed class EntityAction
     {
         [SerializeAs(DataType.VarInt)]
         public uint EntityId;
 
         [SerializeAs(DataType.VarInt)]
-        public uint ActionId;
+        public ActionId ActionId;
 
         [SerializeAs(DataType.VarInt)]
         public uint JumpBoost;
 
-        public void Serialize(BinaryWriter bw)
+        public static EntityAction Deserialize(ref SpanReader br)
         {
-            bw.WriteAsVarInt(EntityId, out _);
-            bw.WriteAsVarInt((uint)ActionId, out _);
-            bw.WriteAsVarInt(JumpBoost, out _);
+            return new EntityAction
+            {
+                EntityId = br.ReadAsVarInt(out _),
+                ActionId = (ActionId)br.ReadAsVarInt(out _),
+                JumpBoost = br.ReadAsVarInt(out _)
+            };
         }
     }
 }

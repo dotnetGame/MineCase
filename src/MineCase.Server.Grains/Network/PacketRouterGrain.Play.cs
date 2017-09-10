@@ -46,14 +46,19 @@ namespace MineCase.Server.Network
                     innerPacket = ServerboundKeepAlive.Deserialize(ref br);
                     break;
 
-                // Position And Look
-                case 0x0F:
-                    innerPacket = DeferPacket(ServerboundPositionAndLook.Deserialize(ref br));
+                // Player On Ground
+                case 0x0D:
+                    innerPacket = DeferPacket(PlayerOnGround.Deserialize(ref br));
                     break;
 
                 // Player Position
                 case 0x0E:
                     innerPacket = DeferPacket(PlayerPosition.Deserialize(ref br));
+                    break;
+
+                // Position And Look
+                case 0x0F:
+                    innerPacket = DeferPacket(ServerboundPositionAndLook.Deserialize(ref br));
                     break;
 
                 // Player Look
@@ -68,7 +73,7 @@ namespace MineCase.Server.Network
 
                 // Entity Action
                 case 0x15:
-                    innerPacket = DeferPacket(PlayerDigging.Deserialize(ref br));
+                    innerPacket = DeferPacket(EntityAction.Deserialize(ref br));
                     break;
 
                 // Held Item Change
@@ -135,6 +140,12 @@ namespace MineCase.Server.Network
             player.SetLook(packet.Yaw, packet.Pitch, packet.OnGround).Ignore();
         }
 
+        private Task DispatchPacket(PlayerOnGround packet)
+        {
+            // TODO set player state
+            return Task.CompletedTask;
+        }
+
         private async Task DispatchPacket(PlayerPosition packet)
         {
             var player = await _user.GetPlayer();
@@ -188,6 +199,12 @@ namespace MineCase.Server.Network
                 default:
                     break;
             }
+        }
+
+        private Task DispatchPacket(EntityAction packet)
+        {
+            // TODO set player action
+            return Task.CompletedTask;
         }
 
         private Task DispatchPacket(ServerboundAnimation packet)
