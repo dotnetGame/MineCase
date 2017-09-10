@@ -23,8 +23,6 @@ namespace MineCase.Server.World
 
         Task OnGameTick(TimeSpan deltaTime);
 
-        Task<IBlockAccessor> GetBlockAccessor();
-
         Task<int> GetSeed();
 
         Task<GeneratorSettings> GetGeneratorSettings();

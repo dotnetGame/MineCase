@@ -16,7 +16,6 @@ namespace MineCase.Server.World
         private Dictionary<uint, IEntity> _entities;
         private uint _nextAvailEId;
         private long _worldAge;
-        private IBlockAccessor _blockAccessor;
         private GeneratorSettings _genSettings; // 生成设置
         private string _seed; // 世界种子
 
@@ -25,7 +24,6 @@ namespace MineCase.Server.World
             IServerSettings serverSettings = GrainFactory.GetGrain<IServerSettings>(0);
             _nextAvailEId = 0;
             _entities = new Dictionary<uint, IEntity>();
-            _blockAccessor = GrainFactory.GetGrain<IBlockAccessor>(this.GetPrimaryKeyString());
             _genSettings = new GeneratorSettings();
             await InitGeneratorSettings(_genSettings);
             _seed = (await serverSettings.GetSettings()).LevelSeed;
@@ -63,11 +61,6 @@ namespace MineCase.Server.World
         }
 
         public Task<long> GetAge() => Task.FromResult(_worldAge);
-
-        public Task<IBlockAccessor> GetBlockAccessor()
-        {
-            return Task.FromResult(_blockAccessor);
-        }
 
         public Task<int> GetSeed()
         {
