@@ -203,7 +203,7 @@ namespace MineCase.Server.Network
 
         private Task DispatchPacket(EntityAction packet)
         {
-            // TODO set player action
+            // TODO Set Entity Action
             return Task.CompletedTask;
         }
 

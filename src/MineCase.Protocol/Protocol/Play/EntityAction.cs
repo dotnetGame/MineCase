@@ -6,7 +6,7 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
-    public enum ActionId : int
+    public enum ActionId : uint
     {
         StartSneaking = 0,
         StopSneaking = 1,
