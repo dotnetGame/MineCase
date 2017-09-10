@@ -15,15 +15,23 @@ namespace MineCase.Server.Game.BlockEntities
 
         static BlockEntity()
         {
+            var genGetGrain = typeof(BlockEntity).GetMethod(nameof(GetBlockEntity), BindingFlags.NonPublic | BindingFlags.Static);
+
             _blockEntityTypes = (from t in typeof(IBlockEntity).Assembly.DefinedTypes
-                                 where t.IsInterface && t.IsSubclassOf(typeof(IBlockEntity))
+                                 where t.IsInterface && t.ImplementedInterfaces.Contains(typeof(IBlockEntity))
                                  let attrs = t.GetCustomAttributes<BlockEntityAttribute>()
                                  from attr in attrs
                                  select new
                                  {
                                      BlockId = attr.BlockId,
-                                     Method = typeof(IGrainFactory).GetMethod("GetGrain").MakeGenericMethod(t)
+                                     Method = genGetGrain.MakeGenericMethod(t)
                                  }).ToDictionary(o => o.BlockId, o => o.Method);
+        }
+
+        private static IBlockEntity GetBlockEntity<TGrain>(IGrainFactory grainFactory, string key)
+            where TGrain : IBlockEntity
+        {
+            return grainFactory.GetGrain<TGrain>(key).Cast<IBlockEntity>();
         }
 
         public static IBlockEntity Create(IGrainFactory grainFactory, IWorld world, BlockWorldPos position, BlockId blockId)
@@ -31,7 +39,7 @@ namespace MineCase.Server.Game.BlockEntities
             if (_blockEntityTypes.TryGetValue(blockId, out var method))
             {
                 var key = world.MakeBlockEntityKey(position);
-                return ((IAddressable)method.Invoke(grainFactory, new[] { key })).Cast<IBlockEntity>();
+                return (IBlockEntity)method.Invoke(null, new object[] { grainFactory, key });
             }
 
             return null;

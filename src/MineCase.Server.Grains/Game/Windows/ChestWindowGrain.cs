@@ -20,6 +20,8 @@ namespace MineCase.Server.Game.Windows
 
             foreach (var entity in entities.Value)
                 SlotAreas.Add(new ChestSlotArea(entity, this, GrainFactory));
+            SlotAreas.Add(new InventorySlotArea(this, GrainFactory));
+            SlotAreas.Add(new HotbarSlotArea(this, GrainFactory));
             return Task.CompletedTask;
         }
     }

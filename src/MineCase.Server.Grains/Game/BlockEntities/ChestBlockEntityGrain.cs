@@ -11,6 +11,7 @@ using Orleans.Concurrency;
 
 namespace MineCase.Server.Game.BlockEntities
 {
+    [Reentrant]
     internal class ChestBlockEntityGrain : BlockEntityGrain, IChestBlockEntity
     {
         private Slot[] _slots;
@@ -42,7 +43,7 @@ namespace MineCase.Server.Game.BlockEntities
                 await _chestWindow.SetEntities(new[] { this.AsReference<IChestBlockEntity>() }.AsImmutable());
             }
 
-            await _chestWindow.OpenWindow(player);
+            await player.OpenWindow(_chestWindow);
         }
 
         public override async Task Destroy()
