@@ -13,7 +13,7 @@ namespace MineCase.Server.World
             builder.RegisterType<WorldAccessorGrain>();
             builder.RegisterType<ChunkColumnGrain>();
             builder.RegisterType<ChunkTrackingHub>();
-            builder.RegisterType<CollectableFinder>();
+            builder.RegisterType<EntityFinder>();
         }
     }
 }

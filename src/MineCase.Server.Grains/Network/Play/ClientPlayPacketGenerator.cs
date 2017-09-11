@@ -41,6 +41,14 @@ namespace MineCase.Server.Network.Play
             });
         }
 
+        public Task SpawnMob(uint entityId, Guid uuid, byte entityType, Vector3 position, float pitch, float yaw, Entity metadata)
+        {
+            return Sink.SendPacket(CreateSpawnMob(entityId, uuid, entityType, position, pitch, yaw, metadata, bw =>
+                 {
+                     WriteEntityMetadata(bw, metadata);
+                 }));
+        }
+
         public Task SetSlot(byte windowId, short slot, Slot slotData)
         {
             return Sink.SendPacket(new SetSlot
@@ -131,6 +139,31 @@ namespace MineCase.Server.Network.Play
                 }
 
                 return new EntityMetadata { EntityId = entityId, Metadata = stream.ToArray() };
+            }
+        }
+
+        private static SpawnMob CreateSpawnMob<T>(uint entityId, Guid uuid, byte entityType, Vector3 position, float pitch, float yaw, T metadata, Action<BinaryWriter> action)
+        {
+            using (var stream = new MemoryStream())
+            {
+                using (var bw = new BinaryWriter(stream, Encoding.UTF8, true))
+                {
+                    action(bw);
+                    bw.WriteAsByte(0xFF);
+                }
+
+                return new SpawnMob
+                {
+                    EID = entityId,
+                    EntityUUID = uuid,
+                    Type = entityType,
+                    X = position.X,
+                    Y = position.Y,
+                    Z = position.Z,
+                    Pitch = 0,
+                    Yaw = 0,
+                    Metadata = stream.ToArray()
+                };
             }
         }
 

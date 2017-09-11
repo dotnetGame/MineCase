@@ -18,7 +18,7 @@ namespace MineCase.Server.Game.Entities
             if (await player.Collect(EntityId, _metadata.Item))
             {
                 var chunkPos = GetChunkPosition();
-                await GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunkPos.x, chunkPos.z)).Unregister(this);
+                await GrainFactory.GetGrain<IEntityFinder>(World.MakeEntityFinderKey(chunkPos.x, chunkPos.z)).Unregister(this);
                 await GetBroadcastGenerator().DestroyEntities(new[] { EntityId });
                 DeactivateOnIdle();
             }
@@ -43,7 +43,7 @@ namespace MineCase.Server.Game.Entities
             await GetBroadcastGenerator().SpawnObject(EntityId, uuid, 2, position, 0, 0, 0);
 
             var chunkPos = GetChunkPosition();
-            await GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunkPos.x, chunkPos.z)).Register(this);
+            await GrainFactory.GetGrain<IEntityFinder>(World.MakeEntityFinderKey(chunkPos.x, chunkPos.z)).Register(this);
         }
     }
 }
