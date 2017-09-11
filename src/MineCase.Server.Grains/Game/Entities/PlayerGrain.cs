@@ -211,7 +211,7 @@ namespace MineCase.Server.Game.Entities
         private async Task CollectCollectables()
         {
             var chunkPos = GetChunkPosition();
-            var collectables = await GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunkPos.x, chunkPos.z)).Collision(this);
+            var collectables = await GrainFactory.GetGrain<IEntityFinder>(World.MakeEntityFinderKey(chunkPos.x, chunkPos.z)).CollisionCollectable(this);
             await Task.WhenAll(from c in collectables
                                select c.CollectBy(this));
         }
