@@ -58,8 +58,8 @@ namespace MineCase.Protocol.Play
             bw.WriteAsDouble(X);
             bw.WriteAsDouble(Y);
             bw.WriteAsDouble(Z);
-            bw.WriteAsByte(Pitch);
             bw.WriteAsByte(Yaw);
+            bw.WriteAsByte(Pitch);
             bw.WriteAsByte(HeadPitch);
             bw.WriteAsShort(VelocityX);
             bw.WriteAsShort(VelocityY);
