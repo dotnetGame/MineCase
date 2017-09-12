@@ -6,6 +6,6 @@ namespace MineCase.Server.Game
 {
     public interface ITickable : IGrainWithStringKey
     {
-        Task OnGameTick(TimeSpan deltaTime);
+        Task OnGameTick(TimeSpan deltaTime, long worldAge);
     }
 }

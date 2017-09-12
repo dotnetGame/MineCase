@@ -90,7 +90,7 @@ namespace MineCase.Server.Game.BlockEntities
             await tracker.Unsubscribe(this);
         }
 
-        public async Task OnGameTick(TimeSpan deltaTime)
+        public async Task OnGameTick(TimeSpan deltaTime, long worldAge)
         {
             if (_currentRecipe != null)
             {
@@ -124,7 +124,7 @@ namespace MineCase.Server.Game.BlockEntities
             }
 
             if (_furnaceWindow != null)
-                await _furnaceWindow.OnGameTick(deltaTime);
+                await _furnaceWindow.OnGameTick(deltaTime, worldAge);
         }
 
         private async Task TakeFuel()

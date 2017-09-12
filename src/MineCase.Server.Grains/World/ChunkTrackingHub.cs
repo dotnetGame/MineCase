@@ -35,12 +35,12 @@ namespace MineCase.Server.World
             return base.OnActivateAsync();
         }
 
-        public Task OnGameTick(TimeSpan deltaTime)
+        public Task OnGameTick(TimeSpan deltaTime, long worldAge)
         {
             if (_tickables.Count != 0)
             {
                 return Task.WhenAll(from t in _tickables
-                                    select t.OnGameTick(deltaTime));
+                                    select t.OnGameTick(deltaTime, worldAge));
             }
 
             return Task.CompletedTask;

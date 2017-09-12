@@ -10,6 +10,6 @@ namespace MineCase.Server.Game.Windows
     {
         Task SetEntity(IFurnaceBlockEntity furnaceEntity);
 
-        Task OnGameTick(TimeSpan deltaTime);
+        Task OnGameTick(TimeSpan deltaTime, long worldAge);
     }
 }

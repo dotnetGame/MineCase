@@ -95,11 +95,12 @@ namespace MineCase.Server.Game
             var deltaTime = now - _lastGameTickTime;
             _lastGameTickTime = now;
 
+            var worldAge = await _world.GetAge();
             await _world.OnGameTick(deltaTime);
             await Task.WhenAll(from u in _users.Keys
                                select u.OnGameTick(deltaTime));
             await Task.WhenAll(from u in _tickables
-                               select u.OnGameTick(deltaTime));
+                               select u.OnGameTick(deltaTime, worldAge));
         }
 
         private Task<Chat> CreateStandardChatMessage(string name, string message)
