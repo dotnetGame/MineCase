@@ -336,6 +336,16 @@ namespace MineCase.Server.Network.Play
                 WindowId = windowId
             });
         }
+
+        public Task WindowProperty(byte windowId, short property, short value)
+        {
+            return Sink.SendPacket(new WindowProperty
+            {
+                WindowId = windowId,
+                Property = property,
+                Value = value
+            });
+        }
     }
 
     [Flags]

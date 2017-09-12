@@ -195,5 +195,17 @@ namespace MineCase.Server.Game.Windows
             Task.WhenAll(from p in _players select SendSetSlot(p.Key, p.Value)).Ignore();
             return Task.CompletedTask;
         }
+
+        protected Task BroadcastWindowProperty(short property, short value)
+        {
+            async Task SendWindowProperty(IPlayer player, IClientboundPacketSink sink)
+            {
+                var id = await player.GetWindowId(this);
+                await new ClientPlayPacketGenerator(sink).WindowProperty(id, property, value);
+            }
+
+            Task.WhenAll(from p in _players select SendWindowProperty(p.Key, p.Value)).Ignore();
+            return Task.CompletedTask;
+        }
     }
 }

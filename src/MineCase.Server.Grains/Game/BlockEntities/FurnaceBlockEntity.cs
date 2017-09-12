@@ -54,7 +54,10 @@ namespace MineCase.Server.Game.BlockEntities
             if (recipe != null)
             {
                 if (_slots[2].IsEmpty || _slots[2].CanStack(recipe.Recipe.Output))
+                {
                     _currentRecipe = recipe;
+                    return;
+                }
             }
 
             _currentRecipe = null;
@@ -104,13 +107,16 @@ namespace MineCase.Server.Game.BlockEntities
                     else
                         _slots[2].ItemCount += _currentRecipe.Recipe.Output.ItemCount;
                     if (_furnaceWindow != null)
-                        await _furnaceWindow.BroadcastSlotChanged(0, _slots[2]);
+                        await _furnaceWindow.BroadcastSlotChanged(2, _slots[2]);
                     _cookProgress = 0;
                     await UpdateRecipe();
                 }
 
-                _cookProgress++;
-                _fuelLeft--;
+                if (_currentRecipe != null)
+                {
+                    _cookProgress++;
+                    _fuelLeft--;
+                }
             }
             else if (_isCooking)
             {

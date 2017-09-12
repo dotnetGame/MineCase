@@ -236,8 +236,14 @@ namespace MineCase.Server.Network
 
         private async Task DispatchPacket(ClickWindow packet)
         {
-            var player = await _user.GetPlayer();
-            player.ClickWindow(packet.WindowId, packet.Slot, ToClickAction(packet.Button, packet.Mode), packet.ActionNumber, packet.ClickedItem).Ignore();
+            try
+            {
+                var player = await _user.GetPlayer();
+                player.ClickWindow(packet.WindowId, packet.Slot, ToClickAction(packet.Button, packet.Mode), packet.ActionNumber, packet.ClickedItem).Ignore();
+            }
+            catch
+            {
+            }
         }
 
         private async Task DispatchPacket(ServerboundCloseWindow packet)

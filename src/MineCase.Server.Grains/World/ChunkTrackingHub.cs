@@ -12,6 +12,7 @@ using Orleans.Concurrency;
 
 namespace MineCase.Server.World
 {
+    [Reentrant]
     internal class ChunkTrackingHub : Grain, IChunkTrackingHub
     {
         private readonly IPacketPackager _packetPackager;

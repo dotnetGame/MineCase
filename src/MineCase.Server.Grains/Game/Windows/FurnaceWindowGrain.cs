@@ -14,9 +14,15 @@ namespace MineCase.Server.Game.Windows
 
         protected override Chat Title { get; } = new Chat("Furnace");
 
-        public Task OnGameTick(TimeSpan deltaTime)
+        private IFurnaceBlockEntity _furnaceEntity;
+
+        public async Task OnGameTick(TimeSpan deltaTime)
         {
-            return Task.CompletedTask;
+            var properties = await _furnaceEntity.GetCookingState();
+            await BroadcastWindowProperty(0, (short)properties.fuelLeft);
+            await BroadcastWindowProperty(1, (short)properties.maxFuelTime);
+            await BroadcastWindowProperty(2, (short)properties.cookProgress);
+            await BroadcastWindowProperty(3, (short)properties.maxProgress);
         }
 
         public Task SetEntity(IFurnaceBlockEntity furnaceEntity)
@@ -26,6 +32,7 @@ namespace MineCase.Server.Game.Windows
             SlotAreas.Add(new FurnaceSlotArea(furnaceEntity, this, GrainFactory));
             SlotAreas.Add(new InventorySlotArea(this, GrainFactory));
             SlotAreas.Add(new HotbarSlotArea(this, GrainFactory));
+            _furnaceEntity = furnaceEntity;
             return Task.CompletedTask;
         }
     }
