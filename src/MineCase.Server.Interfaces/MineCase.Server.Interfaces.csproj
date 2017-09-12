@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MineCase.Algorithm\MineCase.Algorithm.csproj" />
-    <ProjectReference Include="..\Minecase.Core\Minecase.Core.csproj" />
+    <ProjectReference Include="..\Minecase.Core\MineCase.Core.csproj" />
     <ProjectReference Include="..\MineCase.Protocol\MineCase.Protocol.csproj" />
   </ItemGroup>
 

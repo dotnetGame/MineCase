@@ -183,5 +183,17 @@ namespace MineCase.Server.Game.Windows
             await Task.WhenAll(from p in _players select SendCloseWindow(p.Key, p.Value));
             await Task.WhenAll(from p in _players.Keys select Close(p));
         }
+
+        public Task BroadcastSlotChanged(int slotIndex, Slot item)
+        {
+            async Task SendSetSlot(IPlayer player, IClientboundPacketSink sink)
+            {
+                var id = await player.GetWindowId(this);
+                await new ClientPlayPacketGenerator(sink).SetSlot(id, (short)slotIndex, item);
+            }
+
+            Task.WhenAll(from p in _players select SendSetSlot(p.Key, p.Value)).Ignore();
+            return Task.CompletedTask;
+        }
     }
 }

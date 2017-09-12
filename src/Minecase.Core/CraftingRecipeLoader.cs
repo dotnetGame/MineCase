@@ -41,6 +41,7 @@ namespace MineCase
             }
 
             var normLine = new Span<char>(buffer, bufLen);
+            if (normLine.IsEmpty) return;
             var splitter = normLine.IndexOf('=');
 
             var resultSpan = normLine.Slice(0, splitter);
@@ -50,13 +51,13 @@ namespace MineCase
             var resultSplitter = resultSpan.IndexOf(',');
             if (resultSplitter == -1)
             {
-                ParseItem(resultSpan, ref recipe.Result);
-                recipe.Result.ItemCount = 1;
+                ParseItem(resultSpan, ref recipe.Output);
+                recipe.Output.ItemCount = 1;
             }
             else
             {
-                ParseItem(resultSpan.Slice(0, resultSplitter), ref recipe.Result);
-                recipe.Result.ItemCount = byte.Parse(ToString(resultSpan.Slice(resultSplitter + 1)));
+                ParseItem(resultSpan.Slice(0, resultSplitter), ref recipe.Output);
+                recipe.Output.ItemCount = byte.Parse(ToString(resultSpan.Slice(resultSplitter + 1)));
             }
 
             var restSpan = ingredientsSpan;
@@ -129,7 +130,7 @@ namespace MineCase
                     distributionSpan = distributionSpan.Slice(positionSplitter + 1);
             }
             while (true);
-            recipe.Slots = recipeSlots.ToArray();
+            recipe.Inputs = recipeSlots.ToArray();
             NormalizeIngredients(recipe);
         }
 
@@ -138,9 +139,9 @@ namespace MineCase
             int minX = 2, minY = 2;
             int maxX = 0, maxY = 0;
 
-            for (int i = 0; i < recipe.Slots.Length; i++)
+            for (int i = 0; i < recipe.Inputs.Length; i++)
             {
-                ref var recipeSlot = ref recipe.Slots[i];
+                ref var recipeSlot = ref recipe.Inputs[i];
                 if (recipeSlot.X >= 0)
                 {
                     minX = Math.Min(minX, recipeSlot.X);
@@ -155,9 +156,9 @@ namespace MineCase
             }
 
             // 移动到左上角
-            for (int i = 0; i < recipe.Slots.Length; i++)
+            for (int i = 0; i < recipe.Inputs.Length; i++)
             {
-                ref var recipeSlot = ref recipe.Slots[i];
+                ref var recipeSlot = ref recipe.Inputs[i];
                 if (recipeSlot.X >= 0)
                     recipeSlot.X -= minX;
 
@@ -226,9 +227,9 @@ namespace MineCase
 
     public class CraftingRecipe
     {
-        public CraftingRecipeSlot[] Slots;
+        public CraftingRecipeSlot[] Inputs;
         public int Width;
         public int Height;
-        public Slot Result;
+        public Slot Output;
     }
 }

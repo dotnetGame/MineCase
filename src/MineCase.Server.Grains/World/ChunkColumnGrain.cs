@@ -68,19 +68,27 @@ namespace MineCase.Server.World
 
                 if (oldState.Id != blockState.Id)
                 {
+                    bool replaceOld = true;
+                    var newEntity = BlockEntity.Create(GrainFactory, _world, blockWorldPos, (BlockId)blockState.Id);
+
                     // 删除旧的 BlockEntity
                     if (_blockEntities.TryGetValue(chunkPos, out var entity))
                     {
-                        await entity.Destroy();
-                        _blockEntities.Remove(chunkPos);
+                        if (newEntity != null && entity.GetPrimaryKeyString() == newEntity.GetPrimaryKeyString())
+                            replaceOld = false;
+
+                        if (replaceOld)
+                        {
+                            await entity.Destroy();
+                            _blockEntities.Remove(chunkPos);
+                        }
                     }
 
                     // 添加新的 BlockEntity
-                    entity = BlockEntity.Create(GrainFactory, _world, blockWorldPos, (BlockId)blockState.Id);
-                    if (entity != null)
+                    if (newEntity != null && replaceOld)
                     {
-                        _blockEntities.Add(chunkPos, entity);
-                        await entity.OnCreated();
+                        _blockEntities.Add(chunkPos, newEntity);
+                        await newEntity.OnCreated();
                     }
                 }
 

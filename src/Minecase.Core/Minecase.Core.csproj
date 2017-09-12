@@ -2,10 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>Minecase</RootNamespace>
+    <RootNamespace>MineCase</RootNamespace>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
+    <AssemblyName>MineCase.Core</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

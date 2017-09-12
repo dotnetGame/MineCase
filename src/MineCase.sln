@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.3
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Server", "MineCase.Server\MineCase.Server.csproj", "{8E71CBEC-5804-4125-B651-C78426E57C8C}"
 EndProject
@@ -30,11 +30,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Algorithm", "MineC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D53C0015-5761-4018-A50A-63C919C00D35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minecase.Core", "Minecase.Core\Minecase.Core.csproj", "{B7B1A959-72F3-42C6-B138-93C8D654F139}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Core", "Minecase.Core\MineCase.Core.csproj", "{B7B1A959-72F3-42C6-B138-93C8D654F139}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{7DC8CDBD-087D-4F3C-B765-CA77783BECA5}"
 	ProjectSection(SolutionItems) = preProject
 		..\data\crafting.txt = ..\data\crafting.txt
+		..\data\furnace.txt = ..\data\furnace.txt
 	EndProjectSection
 EndProject
 Global

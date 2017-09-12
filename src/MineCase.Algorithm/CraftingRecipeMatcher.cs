@@ -84,9 +84,9 @@ namespace MineCase.Algorithm
 
             var hasMatched = new bool[gridWidth, gridHeight];
             var after = (Slot[,])craftingGrid.Clone();
-            for (int i = 0; i < recipe.Slots.Length; i++)
+            for (int i = 0; i < recipe.Inputs.Length; i++)
             {
-                ref var recipeSlot = ref recipe.Slots[i];
+                ref var recipeSlot = ref recipe.Inputs[i];
 
                 // Anywhere, 稍后处理
                 if (recipeSlot.X < 0 || recipeSlot.Y < 0) continue;
@@ -105,9 +105,9 @@ namespace MineCase.Algorithm
             }
 
             // 处理 Anywhere
-            for (int i = 0; i < recipe.Slots.Length; i++)
+            for (int i = 0; i < recipe.Inputs.Length; i++)
             {
-                ref var recipeSlot = ref recipe.Slots[i];
+                ref var recipeSlot = ref recipe.Inputs[i];
 
                 // Anywhere, 稍后处理
                 if (recipeSlot.X >= 0 && recipeSlot.Y >= 0) continue;
@@ -153,7 +153,7 @@ namespace MineCase.Algorithm
 
             return new FindCraftingRecipeResult
             {
-                Result = recipe.Result,
+                Result = recipe.Output,
                 AfterTake = after
             };
         }

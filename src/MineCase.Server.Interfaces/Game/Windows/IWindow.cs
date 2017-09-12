@@ -28,5 +28,7 @@ namespace MineCase.Server.Game.Windows
         Task OpenWindow(IPlayer player);
 
         Task Destroy();
+
+        Task BroadcastSlotChanged(int slotIndex, Slot item);
     }
 }
