@@ -2,7 +2,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/w9h243k1lqee2ke5/branch/master?svg=true)](https://ci.appveyor.com/project/sunnycase/minecase/branch/master)
 ===
 
-![Build status](screenshots/mc1.jpg)
+![Screenshots](screenshots/mc5.png)
 
 ## 介绍
 `MineCase` 是一个分布式的 `minecraft` 服务端应用。`MineCase` 采用 `.net core` 编写，使用 `Orleans` 框架。<br>
@@ -22,7 +22,7 @@
 
 ## 开始
 
->注：本项目还在施工阶段，所以还不能把游戏跑起来。
+>注：本项目还在施工阶段，还没有完成所有的功能。
 
 1. 获取源码
 ```bash
@@ -43,7 +43,7 @@ Press Ctrl+C to terminate...
 | 模块 | 完成情况 |
 |:---:|:---:|
 |握手协议|:white_check_mark:|
-|登陆|:white_check_mark:|
+|登陆游戏|:white_check_mark:|
 |进入世界|:white_check_mark:|
 |地图生成|:x:|
 |怪物生成|:x:|
@@ -73,7 +73,7 @@ Currently supported version of `minecraft`:
 
 ## Getting Start
 
->Note: This project is still in the construction phase, so the game can not run.
+>Note: This project is still in the construction phase, has not completed all the feature.
 
 1. Get source
 ```bash

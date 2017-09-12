@@ -71,5 +71,7 @@ namespace MineCase.Server.Game.Entities
         Task ClickWindow(byte windowId, short slot, ClickAction clickAction, short actionNumber, Slot clickedItem);
 
         Task CloseWindow(byte windowId);
+
+        Task SetOnGround(bool state);
     }
 }

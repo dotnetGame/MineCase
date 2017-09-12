@@ -47,6 +47,8 @@ namespace MineCase.Server.Game.Entities
 
         private (Position, BlockState)? _diggingBlock;
 
+        private bool _isOnGround;
+
         public override Task OnActivateAsync()
         {
             _inventory = GrainFactory.GetGrain<IInventoryWindow>(Guid.NewGuid());
@@ -55,6 +57,7 @@ namespace MineCase.Server.Game.Entities
             _level = 0;
             _teleportId = 0;
             _levelMaxExp = 7;
+            _isOnGround = true;
 
             return base.OnActivateAsync();
         }
@@ -314,6 +317,12 @@ namespace MineCase.Server.Game.Entities
 
             if (id != null)
                 window.OpenWindow(this).Ignore();
+            return Task.CompletedTask;
+        }
+
+        public Task SetOnGround(bool state)
+        {
+            _isOnGround = state;
             return Task.CompletedTask;
         }
 
