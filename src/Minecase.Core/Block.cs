@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase.Server.World
+namespace MineCase
 {
     public enum BlockId : uint
     {
@@ -397,7 +397,7 @@ namespace MineCase.Server.World
     /// <summary>
     /// Specifies the color of the wool, stained terracotta, stained glass and carpet.
     /// </summary>
-    public enum ColorType : uint
+    public enum BlockColorType : uint
     {
         White = 0,
         Orange = 1,
@@ -1289,11 +1289,6 @@ namespace MineCase.Server.World
         public static bool operator !=(BlockState state1, BlockState state2)
         {
             return !(state1 == state2);
-        }
-
-        public uint ToUInt32()
-        {
-            return ChunkSectionStorage.SerializeBlockState(this);
         }
     }
 }

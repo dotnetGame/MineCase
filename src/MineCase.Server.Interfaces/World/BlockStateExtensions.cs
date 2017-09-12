@@ -70,5 +70,10 @@ namespace MineCase.Server.World
                 return true;
             }
         }
+
+        public static uint ToUInt32(this BlockState blockState)
+        {
+            return ChunkSectionStorage.ToUInt32(ref blockState);
+        }
     }
 }

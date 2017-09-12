@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Formats;
+
 using MineCase.Protocol.Play;
 using MineCase.Server.Network.Play;
 using MineCase.Server.User;
@@ -21,11 +21,14 @@ namespace MineCase.Server.Game
         private IDisposable _gameTick;
         private DateTime _lastGameTickTime;
 
+        private HashSet<ITickable> _tickables;
+
         public override async Task OnActivateAsync()
         {
             _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(this.GetPrimaryKeyString());
             _chunkSender = GrainFactory.GetGrain<IChunkSender>(this.GetPrimaryKeyString());
             _lastGameTickTime = DateTime.UtcNow;
+            _tickables = new HashSet<ITickable>();
             _gameTick = RegisterTimer(OnGameTick, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(50));
         }
 
@@ -92,9 +95,12 @@ namespace MineCase.Server.Game
             var deltaTime = now - _lastGameTickTime;
             _lastGameTickTime = now;
 
+            var worldAge = await _world.GetAge();
             await _world.OnGameTick(deltaTime);
             await Task.WhenAll(from u in _users.Keys
                                select u.OnGameTick(deltaTime));
+            await Task.WhenAll(from u in _tickables
+                               select u.OnGameTick(deltaTime, worldAge));
         }
 
         private Task<Chat> CreateStandardChatMessage(string name, string message)
@@ -114,6 +120,18 @@ namespace MineCase.Server.Game
 
             Chat jsonData = new Chat(new TranslationComponent("chat.type.text", list));
             return Task.FromResult(jsonData);
+        }
+
+        public Task Subscribe(ITickable tickable)
+        {
+            _tickables.Add(tickable);
+            return Task.CompletedTask;
+        }
+
+        public Task Unsubscribe(ITickable tickable)
+        {
+            _tickables.Remove(tickable);
+            return Task.CompletedTask;
         }
 
         private class UserContext

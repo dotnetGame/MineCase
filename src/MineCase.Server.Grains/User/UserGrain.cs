@@ -4,9 +4,10 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Formats;
+
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Windows.SlotAreas;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
 using MineCase.Server.World;
@@ -39,6 +40,8 @@ namespace MineCase.Server.User
 
         private IPlayer _player;
 
+        private Slot[] _slots;
+
         public override async Task OnActivateAsync()
         {
             if (string.IsNullOrEmpty(_worldId))
@@ -50,6 +53,11 @@ namespace MineCase.Server.User
 
             _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(_worldId);
             _chunkLoader = GrainFactory.GetGrain<IUserChunkLoader>(this.GetPrimaryKey());
+            _slots = new[]
+            {
+                new Slot { BlockId = (short)BlockId.Furnace, ItemCount = 1 },
+                new Slot { BlockId = (short)BlockId.Wood, ItemCount = 8 }
+            }.Concat(Enumerable.Repeat(Slot.Empty, SlotArea.UserSlotsCount - 2)).ToArray();
         }
 
         public Task<IClientboundPacketSink> GetClientPacketSink()
@@ -213,6 +221,8 @@ namespace MineCase.Server.User
         {
             return _chunkLoader.SetViewDistance(viewDistance);
         }
+
+        public Task<Slot[]> GetInventorySlots() => Task.FromResult(_slots);
 
         private enum UserState : uint
         {

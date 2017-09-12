@@ -3,24 +3,29 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Formats;
+
 using MineCase.Server.World;
 using Orleans;
 
 namespace MineCase.Server.Game.Entities
 {
-    internal class PickupGrain : EntityGrain, IPickup, ICollectable
+    internal class PickupGrain : EntityGrain, IPickup
     {
         private EntityMetadata.Pickup _metadata;
 
         public async Task CollectBy(IPlayer player)
         {
-            if (await player.Collect(EntityId, _metadata.Item))
+            var after = await player.Collect(EntityId, _metadata.Item);
+            if (after.IsEmpty)
             {
                 var chunkPos = GetChunkPosition();
                 await GrainFactory.GetGrain<IEntityFinder>(World.MakeEntityFinderKey(chunkPos.x, chunkPos.z)).Unregister(this);
                 await GetBroadcastGenerator().DestroyEntities(new[] { EntityId });
                 DeactivateOnIdle();
+            }
+            else if (_metadata.Item.ItemCount != after.ItemCount)
+            {
+                await SetItem(after);
             }
         }
 
@@ -28,6 +33,12 @@ namespace MineCase.Server.Game.Entities
         {
             _metadata = new EntityMetadata.Pickup();
             return base.OnActivateAsync();
+        }
+
+        public async Task Register()
+        {
+            var chunkPos = GetChunkPosition();
+            await GrainFactory.GetGrain<IEntityFinder>(World.MakeEntityFinderKey(chunkPos.x, chunkPos.z)).Register(this);
         }
 
         public async Task SetItem(Slot item)
@@ -41,9 +52,6 @@ namespace MineCase.Server.Game.Entities
             UUID = uuid;
             await SetPosition(position);
             await GetBroadcastGenerator().SpawnObject(EntityId, uuid, 2, position, 0, 0, 0);
-
-            var chunkPos = GetChunkPosition();
-            await GrainFactory.GetGrain<IEntityFinder>(World.MakeEntityFinderKey(chunkPos.x, chunkPos.z)).Register(this);
         }
     }
 }
