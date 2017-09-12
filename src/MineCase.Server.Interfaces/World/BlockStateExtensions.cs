@@ -9,15 +9,43 @@ namespace MineCase.Server.World
     public static class BlockStateExtensions
     {
         // 一些特性
-        public static float IsLightOpacity(this BlockState state)
+        public static int IsLightOpacity(this BlockState state)
         {
-            if (state.Id == (uint)BlockId.Glass)
+            if (state.IsSameId(BlockStates.Air()))
             {
-                return 1.0F;
+                return 255;
+            }
+            else if (state.IsSameId(BlockStates.Water()))
+            {
+                return 255;
+            }
+            else if (state.IsSameId(BlockStates.Lava()))
+            {
+                return 255;
+            }
+            else if (state.IsSameId(BlockStates.Glass()))
+            {
+                return 255;
+            }
+            else if (state.IsSameId(BlockStates.Grass()))
+            {
+                return 255;
+            }
+            else if (state.IsSameId(BlockStates.Poppy()))
+            {
+                return 255;
+            }
+            else if (state.IsSameId(BlockStates.Dandelion()))
+            {
+                return 255;
+            }
+            else if (state.IsSameId(BlockStates.LargeFlowers()))
+            {
+                return 255;
             }
             else
             {
-                return 0.0F;
+                return 0;
             }
         }
 

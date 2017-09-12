@@ -8,13 +8,13 @@ using Orleans;
 
 namespace MineCase.Server.World.EntitySpawner
 {
-    public class MonsterSpawner
+    public class PassiveMobSpawner
     {
         private int _groupMaxNum;
 
         private MobType _mobType;
 
-        public MonsterSpawner(MobType mobType, int groupMaxNum)
+        public PassiveMobSpawner(MobType mobType, int groupMaxNum)
         {
             _mobType = mobType;
             _groupMaxNum = groupMaxNum;
@@ -28,13 +28,23 @@ namespace MineCase.Server.World.EntitySpawner
                 int x = random.Next(16);
                 int z = random.Next(16);
 
-                if (CanMobStand(world, grainFactory, chunk, random, pos.ToBlockChunkPos()))
+                int height;
+                for (height = 255; height >= 0; height--)
+                {
+                    if (chunk[x, height, z] != BlockStates.Air())
+                    {
+                        break;
+                    }
+                }
+
+                BlockWorldPos standPos = new BlockWorldPos(pos.X + x, height + 1, pos.Z + z);
+                if (CanMobStand(world, grainFactory, chunk, random, standPos.ToBlockChunkPos()))
                 {
                     // 添加一个生物
                     var eid = await world.NewEntityId();
                     var entity = grainFactory.GetGrain<IPassiveMob>(world.MakeEntityKey(eid));
                     await world.AttachEntity(entity);
-                    await entity.Spawn(Guid.NewGuid(), new Vector3(pos.X, pos.Y, pos.Z), _mobType);
+                    await entity.Spawn(Guid.NewGuid(), new Vector3(pos.X + x, height + 1, pos.Z + z), _mobType);
                 }
             }
         }
@@ -42,6 +52,11 @@ namespace MineCase.Server.World.EntitySpawner
         public bool CanMobStand(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockChunkPos pos)
         {
             // TODO 以后结合boundbox判断
+            if (pos.Y <= 0 || pos.Y >= 255)
+            {
+                return false;
+            }
+
             BlockChunkPos downPos = new BlockChunkPos(pos.X, pos.Y - 1, pos.Z);
             if (chunk[pos.X, pos.Y - 1, pos.Z].IsLightOpacity() == 0)
             {
