@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Network.Play;
+using MineCase.Server.World;
 
 namespace MineCase.Server.Game.Entities
 {
@@ -63,6 +64,7 @@ namespace MineCase.Server.Game.Entities
             await GetBroadcastGenerator().SpawnMob(EntityId, uuid, (byte)_mobType, position, 0, 0, new EntityMetadata.Entity { });
 
             var chunkPos = GetChunkPosition();
+            await GrainFactory.GetGrain<IEntityFinder>(World.MakeEntityFinderKey(chunkPos.x, chunkPos.z)).Register(this);
         }
     }
 }
