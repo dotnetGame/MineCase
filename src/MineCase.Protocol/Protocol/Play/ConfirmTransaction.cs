@@ -30,4 +30,25 @@ namespace MineCase.Protocol.Play
             };
         }
     }
+
+    [Immutable]
+    [Packet(0x11)]
+    public sealed class ClientboundConfirmTransaction : ISerializablePacket
+    {
+        [SerializeAs(DataType.Byte)]
+        public byte WindowId;
+
+        [SerializeAs(DataType.Short)]
+        public short ActionNumber;
+
+        [SerializeAs(DataType.Boolean)]
+        public bool Accepted;
+
+        public void Serialize(BinaryWriter bw)
+        {
+            bw.WriteAsByte(WindowId);
+            bw.WriteAsShort(ActionNumber);
+            bw.WriteAsBoolean(Accepted);
+        }
+    }
 }

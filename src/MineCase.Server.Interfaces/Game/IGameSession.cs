@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Formats;
+
 using MineCase.Protocol.Play;
 using MineCase.Server.User;
 using Orleans;
@@ -18,5 +18,9 @@ namespace MineCase.Server.Game
         Task SendChatMessage(IUser sender, String message);
 
         Task SendChatMessage(IUser sender, IUser receiver, String messages);
+
+        Task Subscribe(ITickable tickable);
+
+        Task Unsubscribe(ITickable tickable);
     }
 }

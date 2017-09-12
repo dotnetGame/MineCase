@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
-using MineCase.Formats;
+
 using MineCase.Protocol;
 using MineCase.Protocol.Play;
 
@@ -118,7 +118,10 @@ namespace MineCase.Serialization
             {
                 bw.WriteAsByte(slot.ItemCount);
                 bw.WriteAsShort(slot.ItemDamage);
-                bw.WriteAsByte(0);
+                if (slot.NBT != null)
+                    slot.NBT.WriteTo(bw.BaseStream);
+                else
+                    bw.WriteAsByte(0);
             }
         }
 

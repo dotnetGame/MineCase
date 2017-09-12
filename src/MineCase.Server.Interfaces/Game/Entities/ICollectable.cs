@@ -8,5 +8,7 @@ namespace MineCase.Server.Game.Entities
     public interface ICollectable : IEntity
     {
         Task CollectBy(IPlayer player);
+
+        Task Register();
     }
 }
