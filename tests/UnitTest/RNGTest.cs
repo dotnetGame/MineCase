@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using ImageSharp;
 using MineCase.Algorithm;
 using Xunit;
-using System.Diagnostics;
 
 namespace MineCase.UnitTest
 {
