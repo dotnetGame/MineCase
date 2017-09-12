@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Algorithm.Noise;
+using MineCase.Server.Game.Entities;
 using MineCase.Server.World.Generation;
 using MineCase.Server.World.Mine;
 using MineCase.Server.World.Plants;
@@ -89,6 +90,10 @@ namespace MineCase.Server.World.Biomes
         protected int _reedsPerChunk;
         protected int _cactiPerChunk;
 
+        // 生物种类
+        protected List<MobType> _passiveMobList;
+        protected List<MobType> _monsterList;
+
         public Biome(BiomeProperties properties, GeneratorSettings genSettings)
         {
             _genSettings = genSettings;
@@ -145,6 +150,9 @@ namespace MineCase.Server.World.Biomes
             _deadBushPerChunk = 2;
             _reedsPerChunk = 50;
             _cactiPerChunk = 10;
+
+            _passiveMobList = new List<MobType>();
+            _monsterList = new List<MobType>();
         }
 
         public BiomeId GetBiomeId()
@@ -268,6 +276,9 @@ namespace MineCase.Server.World.Biomes
             GenerateOre(_lapisGen, world, grainFactory, chunk, rand, pos, _genSettings.LapisCount, _genSettings.LapisCenterHeight + _genSettings.LapisSpread, _genSettings.LapisCenterHeight - _genSettings.LapisSpread);
             return Task.CompletedTask;
         }
+
+        // 添加生物群系特有的生物
+        public abstract Task SpawnMob(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos);
 
         // 产生生物群系特有的方块
         public virtual void GenerateBiomeTerrain(int seaLevel, Random rand, ChunkColumnStorage chunk, int chunk_x, int chunk_z, int x_in_chunk, int z_in_chunk, double noiseVal)

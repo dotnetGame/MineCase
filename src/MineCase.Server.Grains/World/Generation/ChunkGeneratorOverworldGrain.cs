@@ -147,12 +147,7 @@ namespace MineCase.Server.World.Generation
             Biome chunkBiome = Biome.GetBiome(chunk.Biomes[7 * 16 + 7], settings);
 
             await chunkBiome.Decorate(world, GrainFactory, chunk, _random, new BlockWorldPos { X = blockX, Y = 0, Z = blockZ });
-
-            // 添加一个怪物
-            var monsterEid = await world.NewEntityId();
-            var monster = GrainFactory.GetGrain<IMonster>(world.MakeEntityKey(monsterEid));
-            await world.AttachEntity(monster);
-            await monster.Spawn(Guid.NewGuid(), new Vector3(1000, 64, 1000), MobType.Creeper);
+            await chunkBiome.SpawnMob(world, GrainFactory, chunk, _random, new BlockWorldPos { X = blockX, Y = 0, Z = blockZ });
         }
 
         private async Task GenerateBasicTerrain(ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
