@@ -14,5 +14,9 @@ namespace MineCase.Server.Game.BlockEntities
         Task SetSlot(int slotIndex, Slot item);
 
         Task UseBy(IPlayer player);
+
+        Task ClearNeighborEntity();
+
+        Task SetNeighborEntity(IChestBlockEntity chestEntity);
     }
 }

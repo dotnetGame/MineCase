@@ -18,6 +18,8 @@ namespace MineCase.Server.World
         Task SetBlockState(int x, int y, int z, BlockState blockState);
 
         Task<IBlockEntity> GetBlockEntity(int x, int y, int z);
+
+        Task OnBlockNeighborChanged(int x, int y, int z, BlockWorldPos neighborPosition, BlockState oldState, BlockState newState);
     }
 
     public static class ChunkColumnExtensions

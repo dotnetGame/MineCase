@@ -63,7 +63,7 @@ namespace MineCase.Server.Game.Items
                     var slot = await inventoryWindow.GetSlot(player, slotIndex);
                     if (!slot.IsEmpty)
                     {
-                        var newState = await ConvertToBlock(player, slot);
+                        var newState = await ConvertToBlock(player, grainFactory, world, position, slot);
                         var blockHandler = BlockHandler.Create((BlockId)newState.Id);
                         if (await blockHandler.CanBeAt(position, grainFactory, world))
                         {
@@ -74,6 +74,7 @@ namespace MineCase.Server.Game.Items
                             slot.MakeEmptyIfZero();
                             await inventoryWindow.SetSlot(player, slotIndex, slot);
 
+                            await blockHandler.OnPlaced(player, grainFactory, world, position, newState);
                             return true;
                         }
                     }
@@ -83,7 +84,7 @@ namespace MineCase.Server.Game.Items
             return false;
         }
 
-        protected virtual Task<BlockState> ConvertToBlock(IPlayer player, Slot slot)
+        protected virtual Task<BlockState> ConvertToBlock(IPlayer player, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, Slot slot)
         {
             return Task.FromResult(new BlockState { Id = (uint)slot.BlockId, MetaValue = (uint)slot.ItemDamage });
         }

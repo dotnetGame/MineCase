@@ -184,7 +184,7 @@ namespace MineCase.Server.Game.Entities
 
                 // 产生 Pickup
                 var finder = GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunk.chunkX, chunk.chunkZ));
-                await finder.SpawnPickup(location, new[] { new Slot { BlockId = (short)oldState.Id, ItemDamage = (short)oldState.MetaValue, ItemCount = 1 } }.AsImmutable());
+                await finder.SpawnPickup(location, new[] { new Slot { BlockId = (short)oldState.Id, ItemCount = 1 } }.AsImmutable());
             }
         }
 
@@ -324,6 +324,11 @@ namespace MineCase.Server.Game.Entities
         {
             _isOnGround = state;
             return Task.CompletedTask;
+        }
+
+        public Task<(float pitch, float yaw)> GetLook()
+        {
+            return Task.FromResult((_pitch, _yaw));
         }
 
         private class WindowContext

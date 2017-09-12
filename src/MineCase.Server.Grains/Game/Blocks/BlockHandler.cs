@@ -56,6 +56,16 @@ namespace MineCase.Server.Game.Blocks
         {
             return Task.FromResult(true);
         }
+
+        public virtual Task OnNeighborChanged(BlockWorldPos selfPosition, BlockWorldPos neighborPosition, BlockState oldState, BlockState newState, IGrainFactory grainFactory, IWorld world)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task OnPlaced(IPlayer player, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, BlockState blockState)
+        {
+            return Task.CompletedTask;
+        }
     }
 
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]

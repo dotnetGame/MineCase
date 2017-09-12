@@ -53,7 +53,7 @@ namespace MineCase.Server.User
 
             _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(_worldId);
             _chunkLoader = GrainFactory.GetGrain<IUserChunkLoader>(this.GetPrimaryKey());
-            _slots = Enumerable.Repeat(Slot.Empty, SlotArea.UserSlotsCount).ToArray();
+            _slots = new[] { new Slot { BlockId = (short)BlockId.Wood, ItemCount = 64 } }.Concat(Enumerable.Repeat(Slot.Empty, SlotArea.UserSlotsCount - 1)).ToArray();
         }
 
         public Task<IClientboundPacketSink> GetClientPacketSink()

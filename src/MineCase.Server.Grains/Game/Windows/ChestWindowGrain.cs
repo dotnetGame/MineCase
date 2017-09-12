@@ -12,7 +12,9 @@ namespace MineCase.Server.Game.Windows
     {
         protected override string WindowType => "minecraft:chest";
 
-        protected override Chat Title { get; } = new Chat("Chest");
+        private Chat _title;
+
+        protected override Chat Title => _title;
 
         public Task SetEntities(Immutable<IChestBlockEntity[]> entities)
         {
@@ -22,6 +24,11 @@ namespace MineCase.Server.Game.Windows
                 SlotAreas.Add(new ChestSlotArea(entity, this, GrainFactory));
             SlotAreas.Add(new InventorySlotArea(this, GrainFactory));
             SlotAreas.Add(new HotbarSlotArea(this, GrainFactory));
+
+            if (entities.Value.Length < 2)
+                _title = new Chat("Chest");
+            else
+                _title = new Chat("Large chest");
             return Task.CompletedTask;
         }
     }

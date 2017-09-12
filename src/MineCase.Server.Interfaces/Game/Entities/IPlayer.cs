@@ -46,6 +46,8 @@ namespace MineCase.Server.Game.Entities
 
         Task SetLook(float yaw, float pitch, bool onGround);
 
+        Task<(float pitch, float yaw)> GetLook();
+
         Task StartDigging(Position location, PlayerDiggingFace face);
 
         Task CancelDigging(Position location, PlayerDiggingFace face);

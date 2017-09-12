@@ -5,14 +5,17 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game.BlockEntities;
+using MineCase.Server.Game.Blocks;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Network.Play;
 using MineCase.Server.Settings;
 using MineCase.Server.World.Generation;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.World
 {
+    [Reentrant]
     internal class ChunkColumnGrain : Grain, IChunkColumn
     {
         private IWorld _world;
@@ -45,26 +48,48 @@ namespace MineCase.Server.World
             return Task.CompletedTask;
         }
 
+        public static readonly (int x, int z)[] CrossCoords = new[]
+        {
+            (-1, 0), (0, -1), (1, 0), (0, 1)
+        };
+
         public async Task SetBlockState(int x, int y, int z, BlockState blockState)
         {
             await EnsureChunkGenerated();
-            _state[x, y, z] = blockState;
+            var oldState = _state[x, y, z];
 
-            var chunkPos = new BlockChunkPos(x, y, z);
-            var blockWorldPos = chunkPos.ToBlockWorldPos(new ChunkWorldPos(_chunkX, _chunkZ));
-            await GetBroadcastGenerator().BlockChange(blockWorldPos, blockState);
-
-            // 删除旧的 BlockEntity
-            if (_blockEntities.TryGetValue(chunkPos, out var entity))
+            if (oldState != blockState)
             {
-                await entity.Destroy();
-                _blockEntities.Remove(chunkPos);
-            }
+                _state[x, y, z] = blockState;
 
-            // 添加新的 BlockEntity
-            entity = BlockEntity.Create(GrainFactory, _world, blockWorldPos, (BlockId)blockState.Id);
-            if (entity != null)
-                _blockEntities.Add(chunkPos, entity);
+                var chunkPos = new BlockChunkPos(x, y, z);
+                var blockWorldPos = chunkPos.ToBlockWorldPos(new ChunkWorldPos(_chunkX, _chunkZ));
+                await GetBroadcastGenerator().BlockChange(blockWorldPos, blockState);
+
+                // 删除旧的 BlockEntity
+                if (_blockEntities.TryGetValue(chunkPos, out var entity))
+                {
+                    await entity.Destroy();
+                    _blockEntities.Remove(chunkPos);
+                }
+
+                // 添加新的 BlockEntity
+                entity = BlockEntity.Create(GrainFactory, _world, blockWorldPos, (BlockId)blockState.Id);
+                if (entity != null)
+                    _blockEntities.Add(chunkPos, entity);
+
+                // 通知周围 Block 更改
+                await Task.WhenAll(CrossCoords.Select(crossCoord =>
+               {
+                   var neighborPos = blockWorldPos;
+                   neighborPos.X += crossCoord.x;
+                   neighborPos.Z += crossCoord.z;
+                   var chunk = neighborPos.GetChunk();
+                   var blockChunkPos = neighborPos.ToBlockChunkPos();
+                   return GrainFactory.GetGrain<IChunkColumn>(_world.MakeChunkColumnKey(chunk.chunkX, chunk.chunkZ)).OnBlockNeighborChanged(
+                       blockChunkPos.X, blockChunkPos.Y, blockChunkPos.Z, blockWorldPos, oldState, blockState);
+               }));
+            }
         }
 
         private async Task EnsureChunkGenerated()
@@ -121,6 +146,14 @@ namespace MineCase.Server.World
             if (_blockEntities.TryGetValue(new BlockChunkPos(x, y, z), out var entity))
                 return Task.FromResult(entity);
             return Task.FromResult<IBlockEntity>(null);
+        }
+
+        public Task OnBlockNeighborChanged(int x, int y, int z, BlockWorldPos neighborPosition, BlockState oldState, BlockState newState)
+        {
+            var block = _state[x, y, z];
+            var blockHandler = BlockHandler.Create((BlockId)block.Id);
+            var selfPosition = new BlockChunkPos(x, y, z).ToBlockWorldPos(new ChunkWorldPos(_chunkX, _chunkZ));
+            return blockHandler.OnNeighborChanged(selfPosition, neighborPosition, oldState, newState, GrainFactory, _world);
         }
     }
 }
