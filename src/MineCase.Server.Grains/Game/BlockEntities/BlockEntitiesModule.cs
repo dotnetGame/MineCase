@@ -10,6 +10,7 @@ namespace MineCase.Server.Game.BlockEntities
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<ChestBlockEntityGrain>();
+            builder.RegisterType<FurnaceBlockEntity>();
         }
     }
 }

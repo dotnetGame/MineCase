@@ -25,5 +25,10 @@ namespace MineCase.Server.Game.BlockEntities
         {
             return Task.CompletedTask;
         }
+
+        public virtual Task OnCreated()
+        {
+            return Task.CompletedTask;
+        }
     }
 }

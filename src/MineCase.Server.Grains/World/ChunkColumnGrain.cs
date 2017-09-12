@@ -66,17 +66,23 @@ namespace MineCase.Server.World
                 var blockWorldPos = chunkPos.ToBlockWorldPos(new ChunkWorldPos(_chunkX, _chunkZ));
                 await GetBroadcastGenerator().BlockChange(blockWorldPos, blockState);
 
-                // 删除旧的 BlockEntity
-                if (_blockEntities.TryGetValue(chunkPos, out var entity))
+                if (oldState.Id != blockState.Id)
                 {
-                    await entity.Destroy();
-                    _blockEntities.Remove(chunkPos);
-                }
+                    // 删除旧的 BlockEntity
+                    if (_blockEntities.TryGetValue(chunkPos, out var entity))
+                    {
+                        await entity.Destroy();
+                        _blockEntities.Remove(chunkPos);
+                    }
 
-                // 添加新的 BlockEntity
-                entity = BlockEntity.Create(GrainFactory, _world, blockWorldPos, (BlockId)blockState.Id);
-                if (entity != null)
-                    _blockEntities.Add(chunkPos, entity);
+                    // 添加新的 BlockEntity
+                    entity = BlockEntity.Create(GrainFactory, _world, blockWorldPos, (BlockId)blockState.Id);
+                    if (entity != null)
+                    {
+                        _blockEntities.Add(chunkPos, entity);
+                        await entity.OnCreated();
+                    }
+                }
 
                 // 通知周围 Block 更改
                 await Task.WhenAll(CrossCoords.Select(crossCoord =>

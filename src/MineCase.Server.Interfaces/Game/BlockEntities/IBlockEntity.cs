@@ -9,6 +9,8 @@ namespace MineCase.Server.Game.BlockEntities
 {
     public interface IBlockEntity : IGrainWithStringKey
     {
+        Task OnCreated();
+
         Task Destroy();
     }
 

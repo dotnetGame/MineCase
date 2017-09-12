@@ -11,6 +11,7 @@ namespace MineCase.Server.Game.Windows
         {
             builder.RegisterType<InventoryWindowGrain>();
             builder.RegisterType<CraftingWindowGrain>();
+            builder.RegisterType<FurnaceWindowGrain>();
         }
     }
 }
