@@ -38,7 +38,7 @@ namespace MineCase.Server.Game.Entities
         public async Task Register()
         {
             var chunkPos = GetChunkPosition();
-            await GrainFactory.GetGrain<IEntityFinder>(World.MakeCollectableFinderKey(chunkPos.x, chunkPos.z)).Register(this);
+            await GrainFactory.GetGrain<IEntityFinder>(World.MakeEntityFinderKey(chunkPos.x, chunkPos.z)).Register(this);
         }
 
         public async Task SetItem(Slot item)
@@ -52,7 +52,6 @@ namespace MineCase.Server.Game.Entities
             UUID = uuid;
             await SetPosition(position);
             await GetBroadcastGenerator().SpawnObject(EntityId, uuid, 2, position, 0, 0, 0);
-
         }
     }
 }

@@ -55,7 +55,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
                 var world = GrainFactory.GetGrain<IWorld>(player.GetWorldAndEntityId().worldKey);
 
                 // 产生 Pickup
-                var finder = GrainFactory.GetGrain<ICollectableFinder>(world.MakeCollectableFinderKey(chunk.x, chunk.z));
+                var finder = GrainFactory.GetGrain<IEntityFinder>(world.MakeEntityFinderKey(chunk.x, chunk.z));
                 await finder.SpawnPickup(
                     new Position { X = (int)position.X, Y = (int)position.Y, Z = (int)position.Z },
                     items.AsImmutable());

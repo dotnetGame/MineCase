@@ -183,7 +183,7 @@ namespace MineCase.Server.Game.Entities
                 var chunk = location.GetChunk();
 
                 // 产生 Pickup
-                var finder = GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunk.chunkX, chunk.chunkZ));
+                var finder = GrainFactory.GetGrain<IEntityFinder>(World.MakeEntityFinderKey(chunk.chunkX, chunk.chunkZ));
                 await finder.SpawnPickup(location, new[] { new Slot { BlockId = (short)oldState.Id, ItemCount = 1 } }.AsImmutable());
             }
         }
