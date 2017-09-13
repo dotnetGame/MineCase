@@ -8,25 +8,24 @@ namespace MineCase.Server.World.Mine
 {
     public class CavesGenerator : MapGenerator
     {
-        private bool[] _canReplaceList;
+        private HashSet<uint> _canReplaceSet;
 
         public CavesGenerator(MapGenerationInfo info, int range = 8)
             : base(info, range)
         {
-            _canReplaceList = new bool[256];
-
-            _canReplaceList[(uint)BlockId.Stone] = true;
-            _canReplaceList[(uint)BlockId.Dirt] = true;
-            _canReplaceList[(uint)BlockId.GrassBlock] = true;
-            _canReplaceList[(uint)BlockId.HardenedClay] = true;
-            _canReplaceList[(uint)BlockId.StainedClay] = true;
-            _canReplaceList[(uint)BlockId.Sandstone] = true;
-            _canReplaceList[(uint)BlockId.RedSandstone] = true;
-            _canReplaceList[(uint)BlockId.Mycelium] = true;
-            _canReplaceList[(uint)BlockId.SnowLayer] = true;
+            _canReplaceSet = new HashSet<uint>();
+            _canReplaceSet.Add((uint)BlockId.Stone);
+            _canReplaceSet.Add((uint)BlockId.Dirt);
+            _canReplaceSet.Add((uint)BlockId.GrassBlock);
+            _canReplaceSet.Add((uint)BlockId.HardenedClay);
+            _canReplaceSet.Add((uint)BlockId.StainedClay);
+            _canReplaceSet.Add((uint)BlockId.Sandstone);
+            _canReplaceSet.Add((uint)BlockId.RedSandstone);
+            _canReplaceSet.Add((uint)BlockId.Mycelium);
+            _canReplaceSet.Add((uint)BlockId.SnowLayer);
         }
 
-        protected override void RecursiveGenerate(MapGenerationInfo info, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, ChunkColumnStorage chunk)
+        protected override void RecursiveGenerate(MapGenerationInfo info, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, ChunkColumnStorage chunk, Biome biome)
         {
             // 之前根据chunkXZ设置种子了
             int seedPointCount = _rand.Next(17);
@@ -49,7 +48,7 @@ namespace MineCase.Server.World.Mine
                 if (_rand.Next(4) == 0)
                 {
                     // 使用默认参数挖出一个洞
-                    AddTunnel( _rand.Next(), centerChunkX, centerChunkZ, chunk, seedPointX, seedPointY, seedPointZ);
+                    AddTunnel( _rand.Next(), centerChunkX, centerChunkZ, chunk, biome, seedPointX, seedPointY, seedPointZ);
                     directionCount += _rand.Next(4);
                 }
 
@@ -66,13 +65,13 @@ namespace MineCase.Server.World.Mine
                         rangeScale *= (float)(_rand.NextDouble() * _rand.NextDouble()) * 3.0F + 1.0F;
                     }
 
-                    AddTunnel(_rand.Next(), centerChunkX, centerChunkZ, chunk, seedPointX, seedPointY, seedPointZ, rangeScale, yawAngle, pitchAngle, 0, 0, 1.0D);
+                    AddTunnel(_rand.Next(), centerChunkX, centerChunkZ, chunk, biome, seedPointX, seedPointY, seedPointZ, rangeScale, yawAngle, pitchAngle, 0, 0, 1.0D);
                 }
             }
         }
 
         // 挖洞
-        protected void AddTunnel(int seed, int centerChunkX, int centerChunkZ, ChunkColumnStorage chunk, double seedPointX, double seedPointY, double seedPointZ, float rangeScale, float yawAngle, float pitchAngle, int smallRange, int bigRange, double heightScale)
+        protected void AddTunnel(int seed, int centerChunkX, int centerChunkZ, ChunkColumnStorage chunk, Biome biome, double seedPointX, double seedPointY, double seedPointZ, float rangeScale, float yawAngle, float pitchAngle, int smallRange, int bigRange, double heightScale)
         {
             double centerBlockX = (double)(centerChunkX * 16 + 8);
             double centerBlockZ = (double)(centerChunkZ * 16 + 8);
@@ -136,8 +135,8 @@ namespace MineCase.Server.World.Mine
                     && bigRange > 0)
                 {
                     // 向左右两边扩展
-                    AddTunnel(random.Next(), centerChunkX, centerChunkZ, chunk, seedPointX, seedPointY, seedPointZ, (float)random.NextDouble() * 0.5F + 0.5F, yawAngle - ((float)Math.PI / 2F), pitchAngle / 3.0F, smallRange, bigRange, 1.0D);
-                    AddTunnel(random.Next(), centerChunkX, centerChunkZ, chunk, seedPointX, seedPointY, seedPointZ, (float)random.NextDouble() * 0.5F + 0.5F, yawAngle + ((float)Math.PI / 2F), pitchAngle / 3.0F, smallRange, bigRange, 1.0D);
+                    AddTunnel(random.Next(), centerChunkX, centerChunkZ, chunk, biome, seedPointX, seedPointY, seedPointZ, (float)random.NextDouble() * 0.5F + 0.5F, yawAngle - ((float)Math.PI / 2F), pitchAngle / 3.0F, smallRange, bigRange, 1.0D);
+                    AddTunnel(random.Next(), centerChunkX, centerChunkZ, chunk, biome, seedPointX, seedPointY, seedPointZ, (float)random.NextDouble() * 0.5F + 0.5F, yawAngle + ((float)Math.PI / 2F), pitchAngle / 3.0F, smallRange, bigRange, 1.0D);
                     return;
                 }
 
@@ -270,7 +269,7 @@ namespace MineCase.Server.World.Mine
                                                 }
 
                                                 // 把这个方块替换为空气或岩浆
-                                                DigBlock(chunk, x, y, z, centerChunkX, centerChunkZ, isTopBlock, curBlock, upBlock);
+                                                DigBlock(chunk, biome, x, y, z, centerChunkX, centerChunkZ, isTopBlock, curBlock, upBlock);
                                             }
                                         }
                                     }
@@ -290,25 +289,22 @@ namespace MineCase.Server.World.Mine
         // 判断是否可以挖开这个方块
         protected bool CanReplaceBlock(BlockState curBlock, BlockState upBlock)
         {
-            return _canReplaceList[curBlock.Id] ||
+            return _canReplaceSet.Contains(curBlock.Id) ||
                     ((curBlock.Id == (uint)BlockId.Sand
                         || curBlock.Id == (uint)BlockId.Gravel)
                     && upBlock.Id != (uint)BlockId.Water);
         }
 
         // 挖洞，默认参数
-        protected void AddTunnel(int seed, int centerChunkX, int centerChunkZ, ChunkColumnStorage chunk, double seedPointX, double seedPointY, double seedPointZ)
+        protected void AddTunnel(int seed, int centerChunkX, int centerChunkZ, ChunkColumnStorage chunk, Biome biome, double seedPointX, double seedPointY, double seedPointZ)
         {
-            AddTunnel(seed, centerChunkX, centerChunkZ, chunk, seedPointX, seedPointY, seedPointZ, 1.0F + (float)_rand.NextDouble() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5D);
+            AddTunnel(seed, centerChunkX, centerChunkZ, chunk, biome, seedPointX, seedPointY, seedPointZ, 1.0F + (float)_rand.NextDouble() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5D);
         }
 
-        protected void DigBlock(ChunkColumnStorage chunk, int x, int y, int z, int chunkX, int chunkZ, bool foundTop, BlockState state, BlockState up)
+        protected void DigBlock(ChunkColumnStorage chunk, Biome biome, int x, int y, int z, int chunkX, int chunkZ, bool foundTop, BlockState state, BlockState up)
         {
-            // Biome biome = worldObj.getBiomeGenForCoords(new BlockPos(x + chunkX * 16, 0, z + chunkZ * 16));
-            Biome biome = new BiomePlains(new BiomeProperties(), new Generation.GeneratorSettings());
             BlockState top = biome._topBlock;
             BlockState filler = biome._fillerBlock;
-
             if (this.CanReplaceBlock(state, up)
                 || state == top
                 || state == filler)

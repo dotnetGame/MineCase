@@ -137,7 +137,7 @@ namespace MineCase.Server.World.Generation
             if (settings.UseCaves)
             {
                 CavesGenerator generator = new CavesGenerator(info);
-                generator.Generate(info, x, z, chunk);
+                generator.Generate(info, x, z, chunk, _biomesForGeneration[8, 8]);
             }
 
             // 计算skylight
