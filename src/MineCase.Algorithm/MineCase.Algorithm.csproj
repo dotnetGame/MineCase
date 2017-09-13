@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Minecase.Core\MineCase.Core.csproj" />
+    <ProjectReference Include="..\MineCase.Core\MineCase.Core.csproj" />
   </ItemGroup>
 
 </Project>

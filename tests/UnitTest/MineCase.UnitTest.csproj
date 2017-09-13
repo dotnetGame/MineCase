@@ -21,7 +21,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\..\src\MineCase.Algorithm\MineCase.Algorithm.csproj" />
-    <ProjectReference Include="..\..\src\MineCase.NBT\MineCase.Nbt.csproj" />
+    <ProjectReference Include="..\..\src\MineCase.Nbt\MineCase.Nbt.csproj" />
     <ProjectReference Include="..\..\src\MineCase.Protocol\MineCase.Protocol.csproj" />
     <ProjectReference Include="..\..\src\MineCase.Server.Interfaces\MineCase.Server.Interfaces.csproj" />
   </ItemGroup>

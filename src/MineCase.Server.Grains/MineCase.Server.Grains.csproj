@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MineCase.Algorithm\MineCase.Algorithm.csproj" />
-    <ProjectReference Include="..\Minecase.Core\MineCase.Core.csproj" />
+    <ProjectReference Include="..\MineCase.Core\MineCase.Core.csproj" />
     <ProjectReference Include="..\MineCase.Protocol\MineCase.Protocol.csproj" />
     <ProjectReference Include="..\MineCase.Server.Interfaces\MineCase.Server.Interfaces.csproj" />
   </ItemGroup>
