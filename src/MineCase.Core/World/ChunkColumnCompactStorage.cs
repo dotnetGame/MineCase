@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace MineCase.Server.World
+namespace MineCase.World
 {
     public static class ChunkConstants
     {
@@ -14,7 +14,7 @@ namespace MineCase.Server.World
         public const int BlocksInSection = BlockEdgeWidthInSection * BlockEdgeWidthInSection * BlockEdgeWidthInSection;
     }
 
-    public sealed class ChunkColumnStorage
+    public sealed class ChunkColumnCompactStorage
     {
         public uint SectionBitMask
         {
@@ -32,7 +32,7 @@ namespace MineCase.Server.World
             }
         }
 
-        public ChunkSectionStorage[] Sections { get; } = new ChunkSectionStorage[ChunkConstants.SectionsPerChunk];
+        public ChunkSectionCompactStorage[] Sections { get; } = new ChunkSectionCompactStorage[ChunkConstants.SectionsPerChunk];
 
         public byte[] Biomes { get; } = new byte[256];
 
@@ -43,14 +43,14 @@ namespace MineCase.Server.World
         }
     }
 
-    public sealed class ChunkSectionStorage
+    public sealed class ChunkSectionCompactStorage
     {
         private const byte _bitsId = 9;
         private const byte _bitsMeta = 4;
         private const byte _bitsPerBlock = _bitsId + _bitsMeta;
         private const uint _idMask = (1u << _bitsId) - 1;
         private const uint _metaMask = (1u << _bitsMeta) - 1;
-        private const ulong _blockMask = (1u << _bitsPerBlock) - 1;
+        public const ulong BlockMask = (1u << _bitsPerBlock) - 1;
 
         public byte BitsPerBlock => _bitsPerBlock;
 
@@ -60,7 +60,7 @@ namespace MineCase.Server.World
 
         public NibbleArray SkyLight { get; }
 
-        public ChunkSectionStorage(bool hasSkylight)
+        public ChunkSectionCompactStorage(bool hasSkylight)
         {
             if (hasSkylight)
                 SkyLight = new NibbleArray();
@@ -88,7 +88,7 @@ namespace MineCase.Server.World
                     var stgValue = ((ulong)value.Id << _bitsMeta) | (value.MetaValue & _metaMask);
                     var offset = GetOffset(x, y, z);
                     var tmpValue = Storage[offset.indexOffset];
-                    var mask = _blockMask << offset.bitOffset;
+                    var mask = BlockMask << offset.bitOffset;
                     var toWrite = Math.Min(_bitsPerBlock, 64 - offset.bitOffset);
                     Storage[offset.indexOffset] = (tmpValue & ~mask) | (stgValue << offset.bitOffset);
                     var rest = _bitsPerBlock - toWrite;
@@ -139,7 +139,7 @@ namespace MineCase.Server.World
             return ((y * ChunkConstants.BlockEdgeWidthInSection) + z) * ChunkConstants.BlockEdgeWidthInSection + x;
         }
 
-        internal static uint SerializeBlockState(BlockState blockState)
+        public static uint ToUInt32(ref BlockState blockState)
         {
             return ((blockState.Id & _idMask) << _bitsMeta) | (blockState.MetaValue & _metaMask);
         }

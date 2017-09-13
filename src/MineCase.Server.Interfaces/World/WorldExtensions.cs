@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Formats;
+using MineCase.Server.Game.BlockEntities;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.World
@@ -132,6 +133,11 @@ namespace MineCase.Server.World
             return (MakeRelativeBlockOffset(blockPosition.X).chunk, MakeRelativeBlockOffset(blockPosition.Z).chunk);
         }
 
+        public static (int chunkX, int chunkZ) GetChunk(this BlockWorldPos blockPosition)
+        {
+            return (MakeRelativeBlockOffset(blockPosition.X).chunk, MakeRelativeBlockOffset(blockPosition.Z).chunk);
+        }
+
         public static (int chunk, int block) MakeRelativeBlockOffset(int value)
         {
             var chunk = value / ChunkConstants.BlockEdgeWidthInSection;
@@ -143,6 +149,44 @@ namespace MineCase.Server.World
             }
 
             return (chunk, block);
+        }
+
+        /// <summary>
+        /// Gets the state of the block.
+        /// </summary>
+        /// <param name="world">The world Grain.</param>
+        /// <param name="grainFactory">The grain factory.</param>
+        /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
+        /// <param name="z">The z.</param>
+        /// <returns>方块类型</returns>
+        public static Task<IBlockEntity> GetBlockEntity(this IWorld world, IGrainFactory grainFactory, int x, int y, int z)
+        {
+            var xOffset = MakeRelativeBlockOffset(x);
+            var zOffset = MakeRelativeBlockOffset(z);
+            var chunkColumnKey = world.MakeChunkColumnKey(xOffset.chunk, zOffset.chunk);
+            return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockEntity(
+                xOffset.block,
+                y,
+                zOffset.block);
+        }
+
+        /// <summary>
+        /// Gets the state of the block.
+        /// </summary>
+        /// <param name="world">The world Grain.</param>
+        /// <param name="grainFactory">The grain factory.</param>
+        /// <param name="pos">The position.</param>
+        /// <returns>方块类型</returns>
+        public static Task<IBlockEntity> GetBlockEntity(this IWorld world, IGrainFactory grainFactory, BlockWorldPos pos)
+        {
+            var xOffset = MakeRelativeBlockOffset(pos.X);
+            var zOffset = MakeRelativeBlockOffset(pos.Z);
+            var chunkColumnKey = world.MakeChunkColumnKey(xOffset.chunk, zOffset.chunk);
+            return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockEntity(
+                xOffset.block,
+                pos.Y,
+                zOffset.block);
         }
     }
 }

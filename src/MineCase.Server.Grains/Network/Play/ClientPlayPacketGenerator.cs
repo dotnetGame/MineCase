@@ -5,13 +5,13 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Formats;
 using MineCase.Protocol.Play;
 using MineCase.Serialization;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.EntityMetadata;
 using MineCase.Server.World;
+using MineCase.World;
 using Orleans.Concurrency;
 
 namespace MineCase.Server.Network.Play
@@ -247,7 +247,7 @@ namespace MineCase.Server.Network.Play
             });
         }
 
-        public Task ChunkData(Dimension dimension, int chunkX, int chunkZ, ChunkColumnStorage chunkColumn)
+        public Task ChunkData(Dimension dimension, int chunkX, int chunkZ, ChunkColumnCompactStorage chunkColumn)
         {
             return Sink.SendPacket(new ChunkData
             {
@@ -304,6 +304,46 @@ namespace MineCase.Server.Network.Play
             {
                 Location = location,
                 BlockId = blockState.ToUInt32()
+            });
+        }
+
+        public Task ConfirmTransaction(byte windowId, short actionNumber, bool accepted)
+        {
+            return Sink.SendPacket(new ClientboundConfirmTransaction
+            {
+                WindowId = windowId,
+                ActionNumber = actionNumber,
+                Accepted = accepted
+            });
+        }
+
+        public Task OpenWindow(byte windowId, string windowType, Chat windowTitle, byte numberOfSlots, byte? entityId)
+        {
+            return Sink.SendPacket(new OpenWindow
+            {
+                WindowId = windowId,
+                WindowType = windowType,
+                WindowTitle = windowTitle,
+                NumberOfSlots = numberOfSlots,
+                EntityId = entityId
+            });
+        }
+
+        public Task CloseWindow(byte windowId)
+        {
+            return Sink.SendPacket(new ClientboundCloseWindow
+            {
+                WindowId = windowId
+            });
+        }
+
+        public Task WindowProperty(byte windowId, short property, short value)
+        {
+            return Sink.SendPacket(new WindowProperty
+            {
+                WindowId = windowId,
+                Property = property,
+                Value = value
             });
         }
     }

@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.World.Generation;
 using MineCase.Server.World.Plants;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.World.Biomes
@@ -48,9 +49,9 @@ namespace MineCase.Server.World.Biomes
         }
 
         // 添加其他东西
-        public override async Task Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
+        public override void Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
         {
-            await GenTrees(world, grainFactory, chunk, rand, pos);
+            GenTrees(world, grainFactory, chunk, rand, pos);
         }
 
         public override void GenerateBiomeTerrain(int seaLevel, Random rand, ChunkColumnStorage chunk, int chunk_x, int chunk_z, int x_in_chunk, int z_in_chunk, double noiseVal)
@@ -72,7 +73,7 @@ namespace MineCase.Server.World.Biomes
             base.GenerateBiomeTerrain(seaLevel, rand, chunk, chunk_x, chunk_z, x_in_chunk, z_in_chunk, noiseVal);
         }
 
-        public async Task GenTrees(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        public void GenTrees(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
         {
             int treesPerChunk = _treesPerChunk;
 
@@ -99,7 +100,7 @@ namespace MineCase.Server.World.Biomes
                     }
                 }
 
-                await treeGenerator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, h, pos.Z + z));
+                treeGenerator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, h, pos.Z + z));
             }
         }
     }

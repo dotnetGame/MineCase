@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.World.Biomes;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.World.Plants
@@ -18,7 +19,7 @@ namespace MineCase.Server.World.Plants
             _flowersMaxNum = maxNum;
         }
 
-        public override Task Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
+        public override void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
         {
             int num = random.Next(_flowersMaxNum);
             for (int i = 0; i < num; ++i)
@@ -33,8 +34,6 @@ namespace MineCase.Server.World.Plants
                     chunk[chunkpos.X, chunkpos.Y + 1, chunkpos.Z] = BlockStates.LargeFlowers(LargeFlowerType.TopHalfFlag);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
         public bool CanFlowerGrow(PlantsType type, ChunkColumnStorage chunk, BlockChunkPos pos)

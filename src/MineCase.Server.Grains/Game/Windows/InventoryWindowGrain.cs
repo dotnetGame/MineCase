@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Formats;
+
+using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Windows.SlotAreas;
 using MineCase.Server.Network.Play;
 using MineCase.Server.User;
 using Orleans;
@@ -11,36 +13,40 @@ namespace MineCase.Server.Game.Windows
 {
     internal class InventoryWindowGrain : WindowGrain, IInventoryWindow
     {
-        private IUser _user;
-        private ClientPlayPacketGenerator _generator;
+        protected override string WindowType => string.Empty;
 
-        public async Task<bool> AddItem(Slot item)
+        protected override Chat Title { get; } = new Chat("Inventory");
+
+        public override Task OnActivateAsync()
         {
-            int index = -1;
-            for (int i = 0; i < Slots.Count; i++)
-            {
-                if (Slots[i].BlockId == item.BlockId)
-                {
-                    index = i;
-                    Slots[i].ItemCount += item.ItemCount;
-                    break;
-                }
-            }
+            SlotAreas.Add(new CraftingSlotArea(2, this, GrainFactory));
+            SlotAreas.Add(new ArmorSlotArea(this, GrainFactory));
+            SlotAreas.Add(new InventorySlotArea(this, GrainFactory));
+            SlotAreas.Add(new HotbarSlotArea(this, GrainFactory));
+            SlotAreas.Add(new OffhandSlotArea(this, GrainFactory));
 
-            if (index == -1)
-            {
-                Slots.Add(item);
-                index = Slots.Count - 1;
-            }
-
-            await _generator.SetSlot(0, (short)(index + 36), Slots[index]);
-            return true;
+            return base.OnActivateAsync();
         }
 
-        public async Task SetUser(IUser user)
+        public override Task<Slot> DistributeStack(IPlayer player, Slot item)
         {
-            _user = user;
-            _generator = new ClientPlayPacketGenerator(await user.GetClientPacketSink());
+            return DistributeStack(player, new[] { SlotAreas[3], SlotAreas[2] }, item, false);
+        }
+
+        public Task UseItem(IPlayer player, int slotIndex)
+        {
+            var slotArea = GlobalSlotIndexToLocal(slotIndex);
+            return slotArea.slotArea.TryUseItem(player, slotArea.slotIndex);
+        }
+
+        public Task<Slot> GetHotbarItem(IPlayer player, int slotIndex)
+        {
+            return SlotAreas[3].GetSlot(player, slotIndex);
+        }
+
+        public Task<int> GetHotbarGlobalIndex(IPlayer player, int slotIndex)
+        {
+            return Task.FromResult(LocalSlotIndexToGlobal(SlotAreas[3], slotIndex));
         }
     }
 }

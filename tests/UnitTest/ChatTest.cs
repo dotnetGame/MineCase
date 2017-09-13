@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using MineCase.Formats;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;

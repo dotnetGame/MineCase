@@ -1,4 +1,4 @@
-﻿namespace MineCase.Formats
+﻿namespace MineCase
 {
     public enum SwingHandState : byte
     {
