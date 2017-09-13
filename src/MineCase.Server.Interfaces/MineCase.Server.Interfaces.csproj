@@ -21,7 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Game\Commands\Vanilla\" />
     <Folder Include="Network\Handshaking\" />
     <Folder Include="Play\" />
 

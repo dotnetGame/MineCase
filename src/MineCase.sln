@@ -38,7 +38,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{7DC8CDBD-0
 		..\data\furnace.txt = ..\data\furnace.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Commands", "MineCase.Commands\MineCase.Commands.csproj", "{A56AEC13-918A-4A54-94DA-7CE8F01C378B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Server.Commands", "MineCase.Server.Commands\MineCase.Server.Commands.csproj", "{FA7A21DF-BC1B-4DD4-A7CF-0F023FE709F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,10 +82,10 @@ Global
 		{B7B1A959-72F3-42C6-B138-93C8D654F139}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7B1A959-72F3-42C6-B138-93C8D654F139}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7B1A959-72F3-42C6-B138-93C8D654F139}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A56AEC13-918A-4A54-94DA-7CE8F01C378B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A56AEC13-918A-4A54-94DA-7CE8F01C378B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A56AEC13-918A-4A54-94DA-7CE8F01C378B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A56AEC13-918A-4A54-94DA-7CE8F01C378B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA7A21DF-BC1B-4DD4-A7CF-0F023FE709F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA7A21DF-BC1B-4DD4-A7CF-0F023FE709F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA7A21DF-BC1B-4DD4-A7CF-0F023FE709F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA7A21DF-BC1B-4DD4-A7CF-0F023FE709F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
