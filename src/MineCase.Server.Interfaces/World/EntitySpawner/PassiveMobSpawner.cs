@@ -44,7 +44,7 @@ namespace MineCase.Server.World.EntitySpawner
                     var eid = await world.NewEntityId();
                     var entity = grainFactory.GetGrain<IPassiveMob>(world.MakeEntityKey(eid));
                     await world.AttachEntity(entity);
-                    await entity.Spawn(Guid.NewGuid(), new Vector3(pos.X + x, height + 1, pos.Z + z), _mobType);
+                    await entity.Spawn(Guid.NewGuid(), new Vector3(pos.X + x + 0.5F, height + 1, pos.Z + z + 0.5F), _mobType);
                 }
             }
         }

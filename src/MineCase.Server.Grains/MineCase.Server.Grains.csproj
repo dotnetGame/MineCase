@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Game\CreatureEntities\" />
     <Folder Include="World\Generation\" />
 
     <AdditionalFiles Include="..\..\build\stylecop.json" />

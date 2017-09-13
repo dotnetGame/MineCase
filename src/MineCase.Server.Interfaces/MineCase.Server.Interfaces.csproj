@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Game\CreatureEntities\" />
     <Folder Include="Network\Handshaking\" />
     <Folder Include="Play\" />
 
