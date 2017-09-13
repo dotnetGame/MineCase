@@ -10,10 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MineCase.Nbt\MineCase.Nbt.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" PrivateAssets="All" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.4.0" />
@@ -23,6 +19,10 @@
 
   <ItemGroup>
     <AdditionalFiles Include="..\..\build\stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MineCase.Nbt\MineCase.Nbt.csproj" />
   </ItemGroup>
 
 </Project>
