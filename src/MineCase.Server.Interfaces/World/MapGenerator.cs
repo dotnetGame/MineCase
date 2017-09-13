@@ -2,9 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.World;
 
 namespace MineCase.Server.World
 {
+    public class MapGenerationInfo
+    {
+        public int Seed { get; set; }
+    }
+
     /// <summary>
     /// 该类一般用于实现大型的世界结构
     /// </summary>
@@ -15,20 +21,20 @@ namespace MineCase.Server.World
         /** The RNG used by the MapGen classes. */
         protected Random _rand;
         /** This world object. */
-        protected IWorld _world;
+        protected MapGenerationInfo _info;
 
-        public MapGenerator(IWorld world, int range = 8)
+        public MapGenerator(MapGenerationInfo info, int range = 8)
         {
             _range = range;
             _rand = null;
-            _world = world;
+            _info = info;
         }
 
-        public async Task Generate(IWorld world, int chunkX, int chunkZ, ChunkColumnStorage chunk)
+        public void Generate(MapGenerationInfo info, int chunkX, int chunkZ, ChunkColumnStorage chunk)
         {
             int range = _range;
-            _world = world;
-            _rand = new Random(await world.GetSeed());
+            _info = info;
+            _rand = new Random(info.Seed);
             int rand1 = _rand.Next();
             int rand2 = _rand.Next();
 
@@ -39,14 +45,14 @@ namespace MineCase.Server.World
                 {
                     int randX = x * rand1;
                     int randZ = z * rand2;
-                    _rand = new Random(randX ^ randZ ^ await world.GetSeed());
+                    _rand = new Random(randX ^ randZ ^ info.Seed);
 
                     // 调用子类方法
-                    RecursiveGenerate(world, x, z, chunkX, chunkZ, chunk);
+                    RecursiveGenerate(info, x, z, chunkX, chunkZ, chunk);
                 }
             }
         }
 
-        protected abstract void RecursiveGenerate(IWorld worldIn, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, ChunkColumnStorage chunk);
+        protected abstract void RecursiveGenerate(MapGenerationInfo info, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, ChunkColumnStorage chunk);
     }
 }

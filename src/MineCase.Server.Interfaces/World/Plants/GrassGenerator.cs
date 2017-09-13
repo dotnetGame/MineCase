@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.World.Biomes;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.World.Plants
@@ -13,7 +14,7 @@ namespace MineCase.Server.World.Plants
         {
         }
 
-        public override Task Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
+        public override void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
         {
             BlockChunkPos chunkPos = pos.ToBlockChunkPos();
             int x = chunkPos.X;
@@ -26,8 +27,6 @@ namespace MineCase.Server.World.Plants
             {
                 chunk[x, y, z] = BlockStates.Grass(GrassType.TallGrass);
             }
-
-            return Task.CompletedTask;
         }
     }
 }

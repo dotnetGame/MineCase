@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game.BlockEntities;
 using MineCase.Server.Game.Entities;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.World
 {
     public interface IChunkColumn : IGrainWithStringKey
     {
-        Task<ChunkColumnStorage> GetState();
+        Task<ChunkColumnCompactStorage> GetState();
 
         Task<BlockState> GetBlockState(int x, int y, int z);
 
