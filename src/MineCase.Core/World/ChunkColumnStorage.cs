@@ -87,6 +87,12 @@ namespace MineCase.World
                             data[++indexOffset] = blockValue & mask;
                             bitOffset = rest;
                         }
+
+                        if (bitOffset == 64)
+                        {
+                            indexOffset++;
+                            bitOffset = 0;
+                        }
                     }
                 }
             }
