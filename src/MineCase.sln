@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Server.Grains", "M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.UnitTest", "..\tests\UnitTest\MineCase.UnitTest.csproj", "{35618D69-85F0-4C38-8224-04A2D75825B6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Nbt", "MineCase.NBT\MineCase.Nbt.csproj", "{199335D6-9726-42E1-94F2-7D95932D4DDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Nbt", "MineCase.Nbt\MineCase.Nbt.csproj", "{199335D6-9726-42E1-94F2-7D95932D4DDC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A0B013BF-4BEB-4044-AA59-A9ED3AFBF99D}"
 	ProjectSection(SolutionItems) = preProject
@@ -30,7 +30,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Algorithm", "MineC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D53C0015-5761-4018-A50A-63C919C00D35}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Core", "Minecase.Core\MineCase.Core.csproj", "{B7B1A959-72F3-42C6-B138-93C8D654F139}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Core", "MineCase.Core\MineCase.Core.csproj", "{B7B1A959-72F3-42C6-B138-93C8D654F139}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{7DC8CDBD-087D-4F3C-B765-CA77783BECA5}"
 	ProjectSection(SolutionItems) = preProject

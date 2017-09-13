@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MineCase.NBT\MineCase.Nbt.csproj" />
+    <ProjectReference Include="..\MineCase.Nbt\MineCase.Nbt.csproj" />
   </ItemGroup>
 
   <ItemGroup>
