@@ -41,7 +41,7 @@ namespace MineCase.Server.World.Plants
             }
         }
 
-        public Task<bool> CanTreeGrow(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos, int height)
+        public bool CanTreeGrow(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos, int height)
         {
             bool result = true;
 
@@ -86,30 +86,30 @@ namespace MineCase.Server.World.Plants
                 }
             }
 
-            return Task.FromResult(result);
+            return result;
         }
 
-        public static Task<bool> CanSustainTree(PlantsType type, BlockState state)
+        public static bool CanSustainTree(PlantsType type, BlockState state)
         {
             if (state == BlockStates.Dirt() ||
                 state == BlockStates.GrassBlock())
             {
-                return Task.FromResult(true);
+                return true;
             }
             else
             {
-                return Task.FromResult(false);
+                return false;
             }
         }
 
-        public override async Task Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
+        public override void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
         {
             int height = random.Next(3) + _minTreeHeight;
 
             // 不超出世界边界
             if (pos.Y >= 1 && pos.Y + height + 1 <= 256)
             {
-                bool canTreeGrow = await CanTreeGrow(world, grainFactory, chunk, biome, random, pos, height);
+                bool canTreeGrow = CanTreeGrow(world, grainFactory, chunk, biome, random, pos, height);
                 if (canTreeGrow)
                 {
                     BlockWorldPos downPos = new BlockWorldPos(pos.X, pos.Y - 1, pos.Z);
@@ -117,7 +117,7 @@ namespace MineCase.Server.World.Plants
                     BlockState downBlock = chunk[chunkDownPos.X, chunkDownPos.Y, chunkDownPos.Z];
 
                     // 是可生成树的土壤
-                    bool isSoil = await CanSustainTree(_treeType, downBlock);
+                    bool isSoil = CanSustainTree(_treeType, downBlock);
 
                     if (isSoil && pos.Y < 256 - height - 1)
                     {

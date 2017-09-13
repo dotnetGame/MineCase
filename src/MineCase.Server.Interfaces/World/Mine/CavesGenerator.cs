@@ -7,12 +7,12 @@ namespace MineCase.Server.World.Mine
 {
     public class CavesGenerator : MapGenerator
     {
-        public CavesGenerator(IWorld world, int range = 8)
-            : base(world, range)
+        public CavesGenerator(MapGenerationInfo info, int range = 8)
+            : base(info, range)
         {
         }
 
-        protected override void RecursiveGenerate(IWorld world, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, ChunkColumnStorage chunk)
+        protected override void RecursiveGenerate(MapGenerationInfo info, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, ChunkColumnStorage chunk)
         {
             // 之前根据chunkXZ设置种子了
             int seedPointCount = _rand.Next(17);

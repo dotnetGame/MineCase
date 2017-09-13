@@ -25,4 +25,8 @@
     <AdditionalFiles Include="..\..\build\stylecop.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="World\" />
+  </ItemGroup>
+
 </Project>

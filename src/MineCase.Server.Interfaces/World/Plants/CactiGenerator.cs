@@ -16,7 +16,7 @@ namespace MineCase.Server.World.Plants
             _minCactiHeight = cactiHeight;
         }
 
-        public Task<bool> CanCactiGrow(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos, int height)
+        public bool CanCactiGrow(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos, int height)
         {
             bool result = true;
 
@@ -47,22 +47,22 @@ namespace MineCase.Server.World.Plants
                 }
             }
 
-            return Task.FromResult(result);
+            return result;
         }
 
-        public static Task<bool> CanSustainCacti(BlockState state)
+        public static bool CanSustainCacti(BlockState state)
         {
             if (state == BlockStates.Sand())
             {
-                return Task.FromResult(true);
+                return true;
             }
             else
             {
-                return Task.FromResult(false);
+                return false;
             }
         }
 
-        public override async Task Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
+        public override void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
         {
             int height = random.Next(3) + _minCactiHeight;
             BlockChunkPos chunkPos = pos.ToBlockChunkPos();
@@ -70,10 +70,10 @@ namespace MineCase.Server.World.Plants
             // 不超出世界边界
             if (pos.Y >= 1 && pos.Y + height + 1 <= 256)
             {
-                if (await CanCactiGrow(world, grainFactory, chunk, biome, random, pos, height))
+                if (CanCactiGrow(world, grainFactory, chunk, biome, random, pos, height))
                 {
                     BlockState state = chunk[chunkPos.X, chunkPos.Y - 1, chunkPos.Z];
-                    if (await CanSustainCacti(state))
+                    if (CanSustainCacti(state))
                     {
                         for (int y = 0; y < height; ++y)
                         {

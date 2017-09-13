@@ -23,7 +23,7 @@ namespace MineCase.Server.World.Biomes
         }
 
         // 添加其他东西
-        public override async Task Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
+        public override void Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
         {
             float grassColor = (_grassColorNoise.Noise((pos.X + 8) / 200.0F, 0.0F, (pos.Z + 8) / 200.0F) - 0.5F) * 2;
 
@@ -31,7 +31,7 @@ namespace MineCase.Server.World.Biomes
             {
                 _flowersPerChunk = 15;
                 _grassPerChunk = 5 * 7;
-                await GenDoubleFlowers(world, grainFactory, chunk, rand, pos);
+                GenDoubleFlowers(world, grainFactory, chunk, rand, pos);
             }
             else
             {
@@ -39,9 +39,9 @@ namespace MineCase.Server.World.Biomes
                 _grassPerChunk = 10 * 7;
             }
 
-            await GenGrass(world, grainFactory, chunk, rand, pos);
-            await GenFlowers(world, grainFactory, chunk, rand, pos);
-            await GenDoubleGrass(world, grainFactory, chunk, rand, pos);
+            GenGrass(world, grainFactory, chunk, rand, pos);
+            GenFlowers(world, grainFactory, chunk, rand, pos);
+            GenDoubleGrass(world, grainFactory, chunk, rand, pos);
 
             int treesPerChunk = _treesPerChunk;
 
@@ -68,13 +68,13 @@ namespace MineCase.Server.World.Biomes
                     }
                 }
 
-                await treeGenerator.Generate(world, grainFactory, chunk, this, rand, new BlockWorldPos(pos.X + x, h, pos.Z + z));
+                treeGenerator.Generate(world, grainFactory, chunk, this, rand, new BlockWorldPos(pos.X + x, h, pos.Z + z));
             }
 
-            await base.Decorate(world, grainFactory, chunk, rand, pos);
+            base.Decorate(world, grainFactory, chunk, rand, pos);
         }
 
-        private async Task GenGrass(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        private void GenGrass(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
         {
             int grassMaxNum = random.Next(_grassPerChunk);
             GrassGenerator generator = new GrassGenerator();
@@ -86,14 +86,14 @@ namespace MineCase.Server.World.Biomes
                 {
                     if (chunk[x, y, z] != BlockStates.Air())
                     {
-                        await generator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, y + 1, pos.Z + z));
+                        generator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, y + 1, pos.Z + z));
                         break;
                     }
                 }
             }
         }
 
-        private async Task GenFlowers(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        private void GenFlowers(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
         {
             int flowersMaxNum = random.Next(_flowersPerChunk);
             FlowersGenerator generator = new FlowersGenerator();
@@ -105,14 +105,14 @@ namespace MineCase.Server.World.Biomes
                 {
                     if (chunk[x, y, z] != BlockStates.Air())
                     {
-                        await generator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, y + 1, pos.Z + z));
+                        generator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, y + 1, pos.Z + z));
                         break;
                     }
                 }
             }
         }
 
-        private async Task GenDoubleFlowers(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        private void GenDoubleFlowers(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
         {
             DoubleFlowersGenerator generator = new DoubleFlowersGenerator(PlantsType.Sunflower);
             for (int flowersNum = 0; flowersNum < 10; ++flowersNum)
@@ -123,14 +123,14 @@ namespace MineCase.Server.World.Biomes
                 {
                     if (chunk[x, y, z] != BlockStates.Air())
                     {
-                        await generator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, y + 1, pos.Z + z));
+                        generator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, y + 1, pos.Z + z));
                         break;
                     }
                 }
             }
         }
 
-        private async Task GenDoubleGrass(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        private void GenDoubleGrass(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
         {
             DoubleGrassGenerator generator = new DoubleGrassGenerator(PlantsType.DoubleTallgrass);
             for (int grassNum = 0; grassNum < 2; ++grassNum)
@@ -141,7 +141,7 @@ namespace MineCase.Server.World.Biomes
                 {
                     if (chunk[x, y, z] != BlockStates.Air())
                     {
-                        await generator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, y + 1, pos.Z + z));
+                        generator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, y + 1, pos.Z + z));
                         break;
                     }
                 }

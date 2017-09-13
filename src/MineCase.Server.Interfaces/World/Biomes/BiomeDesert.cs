@@ -30,15 +30,15 @@ namespace MineCase.Server.World.Biomes
         }
 
         // 添加其他东西
-        public override async Task Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
+        public override void Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
         {
-            await GenCacti(world, grainFactory, chunk, rand, pos);
+            GenCacti(world, grainFactory, chunk, rand, pos);
 
             // TODO 生成仙人掌和枯木
-            await base.Decorate(world, grainFactory, chunk, rand, pos);
+            base.Decorate(world, grainFactory, chunk, rand, pos);
         }
 
-        private async Task GenCacti(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        private void GenCacti(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
         {
             int cactiMaxNum = random.Next(_cactiPerChunk);
 
@@ -53,7 +53,7 @@ namespace MineCase.Server.World.Biomes
                     {
                         if (chunk[x, y, z] != BlockStates.Air())
                         {
-                            await generator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, y + 1, pos.Z + z));
+                            generator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, y + 1, pos.Z + z));
                             break;
                         }
                     }

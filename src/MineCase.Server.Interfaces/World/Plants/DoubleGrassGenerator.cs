@@ -18,7 +18,7 @@ namespace MineCase.Server.World.Plants
             _grassMaxNum = maxNum;
         }
 
-        public override Task Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
+        public override void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
         {
             int num = random.Next(_grassMaxNum);
             for (int i = 0; i < num; ++i)
@@ -33,8 +33,6 @@ namespace MineCase.Server.World.Plants
                     chunk[chunkpos.X, chunkpos.Y + 1, chunkpos.Z] = BlockStates.LargeFlowers(LargeFlowerType.TopHalfFlag);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
         public bool CanGrassGrow(PlantsType type, ChunkColumnStorage chunk, BlockChunkPos pos)
