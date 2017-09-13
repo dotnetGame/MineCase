@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using MineCase.Protocol.Play;
+using MineCase.Server.Game.Commands;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Network;
 using MineCase.Server.User;

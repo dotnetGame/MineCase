@@ -43,6 +43,11 @@ namespace MineCase.Server.World
             return Task.FromException<IEntity>(new EntityNotFoundException());
         }
 
+        public Task<IEnumerable<IEntity>> GetEntities()
+        {
+            return Task.FromResult((IEnumerable<IEntity>)_entities.Values);
+        }
+
         public Task<(long age, long timeOfDay)> GetTime()
         {
             return Task.FromResult((_worldAge, _worldAge % 24000));

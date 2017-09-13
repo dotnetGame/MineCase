@@ -34,6 +34,24 @@ namespace MineCase.Server.Game
             _gameTick = RegisterTimer(OnGameTick, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(50));
         }
 
+        public Task<IEnumerable<IUser>> GetUsers()
+        {
+            return Task.FromResult((IEnumerable<IUser>)_users.Keys);
+        }
+
+        public async Task<IUser> FindUserByName(string name)
+        {
+            foreach (var user in _users)
+            {
+                if (await user.Key.GetName() == name)
+                {
+                    return user.Key;
+                }
+            }
+
+            return null;
+        }
+
         public async Task JoinGame(IUser user)
         {
             var sink = await user.GetClientPacketSink();
@@ -97,8 +115,8 @@ namespace MineCase.Server.Game
             var senderName = await sender.GetName();
             var receiverName = await receiver.GetName();
 
-            Chat jsonData = await CreateStandardChatMessage(senderName, message);
-            byte position = 0; // It represents user message in chat box
+            var jsonData = await CreateStandardChatMessage(senderName, message);
+            const byte position = 0; // It represents user message in chat box
             foreach (var item in _users.Keys)
             {
                 if (await item.GetName() == receiverName ||
@@ -123,20 +141,23 @@ namespace MineCase.Server.Game
 
         private Task<Chat> CreateStandardChatMessage(string name, string message)
         {
-            StringComponent nameComponent = new StringComponent(name);
-            nameComponent.ClickEvent = new ChatClickEvent(ClickEventType.SuggestCommand, "/msg " + name);
-            nameComponent.HoverEvent = new ChatHoverEvent(HoverEventType.ShowEntity, name);
-            nameComponent.Insertion = name;
+            var nameComponent = new StringComponent(name)
+            {
+                ClickEvent = new ChatClickEvent(ClickEventType.SuggestCommand, "/msg " + name),
+                HoverEvent = new ChatHoverEvent(HoverEventType.ShowEntity, name),
+                Insertion = name
+            };
 
             // construct message
-            StringComponent messageComponent = new StringComponent(message);
+            var messageComponent = new StringComponent(message);
 
             // list
-            List<ChatComponent> list = new List<ChatComponent>();
-            list.Add(nameComponent);
-            list.Add(messageComponent);
+            var list = new List<ChatComponent>
+            {
+                nameComponent, messageComponent
+            };
 
-            Chat jsonData = new Chat(new TranslationComponent("chat.type.text", list));
+            var jsonData = new Chat(new TranslationComponent("chat.type.text", list));
             return Task.FromResult(jsonData);
         }
 

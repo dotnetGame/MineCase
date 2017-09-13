@@ -54,7 +54,7 @@ namespace MineCase.Server.Game.Commands
     /// <summary>
     /// 命令执行过程中可能发生的异常的基类
     /// </summary>
-    /// <remarks>派生自此类的异常在 <see cref="M:MineCase.Server.Game.Commands.CommandMap.Dispatch(MineCase.Server.Game.Commands.ICommandSender,System.String)" /> 中将会被吃掉，不会传播到外部</remarks>
+    /// <remarks>派生自此类的异常在 <see cref="CommandMap.Dispatch(ICommandSender, string)" /> 中将会被吃掉，不会传播到外部</remarks>
     public class CommandException : Exception
     {
         public ICommand Command { get; }
