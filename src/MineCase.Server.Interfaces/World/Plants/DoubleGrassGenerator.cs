@@ -26,7 +26,7 @@ namespace MineCase.Server.World.Plants
             {
                 BlockWorldPos blockpos = BlockWorldPos.Add(pos, random.Next(8), random.Next(4), random.Next(8));
                 BlockChunkPos chunkpos = blockpos.ToBlockChunkPos();
-                if (chunk[chunkpos.X, chunkpos.Y, chunkpos.Z] == BlockStates.Air() &&
+                if (chunk[chunkpos.X, chunkpos.Y, chunkpos.Z].IsAir() &&
                     blockpos.Y < 254 &&
                     CanGrassGrow(_grassType, chunk, chunkpos))
                 {

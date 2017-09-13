@@ -234,7 +234,7 @@ namespace MineCase.Server.World.Mine
                                         int height = 0;
                                         for (int y = 255; y >= 0; --y)
                                         {
-                                            if (chunk[x, y, z] != BlockStates.Air())
+                                            if (!chunk[x, y, z].IsAir())
                                             {
                                                 height = y + 1;
                                                 break;
@@ -277,18 +277,18 @@ namespace MineCase.Server.World.Mine
         // 判断是否可以挖开这个方块
         protected bool CanReplaceBlock(BlockState curBlock, BlockState upBlock)
         {
-            return curBlock == BlockStates.Stone() ||
-                   curBlock == BlockStates.Dirt() ||
-                   curBlock == BlockStates.GrassBlock() ||
-                   curBlock == BlockStates.HardenedClay() ||
-                   curBlock.IsSameId(BlockStates.StainedClay()) ||
-                   curBlock == BlockStates.Sandstone() ||
-                   curBlock == BlockStates.RedSandstone() ||
-                   curBlock == BlockStates.Mycelium() ||
-                   curBlock == BlockStates.SnowLayer() ||
-                    ((curBlock == BlockStates.Sand()
-                        || curBlock == BlockStates.Gravel())
-                    && upBlock != BlockStates.Water());
+            return curBlock.Id == (uint)BlockId.Stone ||
+                   curBlock.Id == (uint)BlockId.Dirt ||
+                   curBlock.Id == (uint)BlockId.GrassBlock ||
+                   curBlock.Id == (uint)BlockId.HardenedClay ||
+                   curBlock.Id == (uint)BlockId.StainedClay ||
+                   curBlock.Id == (uint)BlockId.Sandstone ||
+                   curBlock.Id == (uint)BlockId.RedSandstone ||
+                   curBlock.Id == (uint)BlockId.Mycelium ||
+                   curBlock.Id == (uint)BlockId.SnowLayer ||
+                    ((curBlock.Id == (uint)BlockId.Sand
+                        || curBlock.Id == (uint)BlockId.Gravel)
+                    && upBlock.Id != (uint)BlockId.Water);
         }
 
         // 挖洞，默认参数

@@ -72,7 +72,7 @@ namespace MineCase.Server.World.Plants
                         {
                             BlockChunkPos chunkPos = pos.ToBlockChunkPos();
                             BlockState state = chunk[chunkPos.X, chunkPos.Y, chunkPos.Z];
-                            if (state != BlockStates.Air() &&
+                            if (!state.IsAir() &&
                                 state.IsSameId(BlockStates.Leaves()) &&
                                 state.IsSameId(BlockStates.Leaves2()))
                             {
@@ -145,7 +145,7 @@ namespace MineCase.Server.World.Plants
                                         BlockChunkPos chunkBlockPos = blockpos.ToBlockChunkPos();
                                         BlockState block = chunk[chunkBlockPos.X, chunkBlockPos.Y, chunkBlockPos.Z];
 
-                                        if (block == BlockStates.Air()
+                                        if (block.IsAir()
                                             || block.IsSameId(BlockStates.Leaves())
                                             || block.IsSameId(BlockStates.Vines()))
                                         {
@@ -163,7 +163,7 @@ namespace MineCase.Server.World.Plants
                             BlockChunkPos chunkUpPos = upPos.ToBlockChunkPos();
                             BlockState upBlock = chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z];
 
-                            if (upBlock == BlockStates.Air()
+                            if (upBlock.IsAir()
                                             || upBlock.IsSameId(BlockStates.Leaves())
                                             || upBlock.IsSameId(BlockStates.Vines()))
                             {

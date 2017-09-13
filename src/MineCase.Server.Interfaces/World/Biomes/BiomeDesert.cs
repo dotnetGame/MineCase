@@ -52,7 +52,7 @@ namespace MineCase.Server.World.Biomes
                     int z = random.Next(14) + 1;
                     for (int y = 255; y >= 1; --y)
                     {
-                        if (chunk[x, y, z] != BlockStates.Air())
+                        if (!chunk[x, y, z].IsAir())
                         {
                             generator.Generate(world, grainFactory, chunk, this, random, new BlockWorldPos(pos.X + x, y + 1, pos.Z + z));
                             break;
