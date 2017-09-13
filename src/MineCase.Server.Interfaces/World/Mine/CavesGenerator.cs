@@ -8,9 +8,22 @@ namespace MineCase.Server.World.Mine
 {
     public class CavesGenerator : MapGenerator
     {
+        private bool[] _canReplaceList;
+
         public CavesGenerator(MapGenerationInfo info, int range = 8)
             : base(info, range)
         {
+            _canReplaceList = new bool[256];
+
+            _canReplaceList[(uint)BlockId.Stone] = true;
+            _canReplaceList[(uint)BlockId.Dirt] = true;
+            _canReplaceList[(uint)BlockId.GrassBlock] = true;
+            _canReplaceList[(uint)BlockId.HardenedClay] = true;
+            _canReplaceList[(uint)BlockId.StainedClay] = true;
+            _canReplaceList[(uint)BlockId.Sandstone] = true;
+            _canReplaceList[(uint)BlockId.RedSandstone] = true;
+            _canReplaceList[(uint)BlockId.Mycelium] = true;
+            _canReplaceList[(uint)BlockId.SnowLayer] = true;
         }
 
         protected override void RecursiveGenerate(MapGenerationInfo info, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, ChunkColumnStorage chunk)
@@ -277,15 +290,7 @@ namespace MineCase.Server.World.Mine
         // 判断是否可以挖开这个方块
         protected bool CanReplaceBlock(BlockState curBlock, BlockState upBlock)
         {
-            return curBlock.Id == (uint)BlockId.Stone ||
-                   curBlock.Id == (uint)BlockId.Dirt ||
-                   curBlock.Id == (uint)BlockId.GrassBlock ||
-                   curBlock.Id == (uint)BlockId.HardenedClay ||
-                   curBlock.Id == (uint)BlockId.StainedClay ||
-                   curBlock.Id == (uint)BlockId.Sandstone ||
-                   curBlock.Id == (uint)BlockId.RedSandstone ||
-                   curBlock.Id == (uint)BlockId.Mycelium ||
-                   curBlock.Id == (uint)BlockId.SnowLayer ||
+            return _canReplaceList[curBlock.Id] ||
                     ((curBlock.Id == (uint)BlockId.Sand
                         || curBlock.Id == (uint)BlockId.Gravel)
                     && upBlock.Id != (uint)BlockId.Water);
