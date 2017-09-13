@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.World.Mine

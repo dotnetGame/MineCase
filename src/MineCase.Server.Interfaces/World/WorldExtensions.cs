@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game.BlockEntities;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.World

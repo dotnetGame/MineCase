@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using MineCase.Server.World.Biomes;
+using MineCase.World;
 
 namespace MineCase.Server.World.Mine
 {

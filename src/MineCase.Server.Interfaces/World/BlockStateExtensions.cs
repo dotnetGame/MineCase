@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.World
@@ -45,7 +46,7 @@ namespace MineCase.Server.World
 
         public static uint ToUInt32(this BlockState blockState)
         {
-            return ChunkSectionStorage.ToUInt32(ref blockState);
+            return ChunkSectionCompactStorage.ToUInt32(ref blockState);
         }
     }
 }

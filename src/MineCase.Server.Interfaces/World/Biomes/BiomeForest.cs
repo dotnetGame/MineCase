@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.World.Generation;
 using MineCase.Server.World.Plants;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.World.Biomes

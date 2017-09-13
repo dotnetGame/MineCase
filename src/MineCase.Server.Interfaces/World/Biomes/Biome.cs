@@ -6,6 +6,7 @@ using MineCase.Algorithm.Noise;
 using MineCase.Server.World.Generation;
 using MineCase.Server.World.Mine;
 using MineCase.Server.World.Plants;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.World.Biomes

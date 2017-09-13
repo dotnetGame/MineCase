@@ -10,6 +10,7 @@ using MineCase.Algorithm.Noise;
 using MineCase.Server.World.Biomes;
 using MineCase.Server.World.Layer;
 using MineCase.Server.World.Mine;
+using MineCase.World;
 using Newtonsoft.Json;
 using Orleans;
 using Orleans.Concurrency;
@@ -76,7 +77,7 @@ namespace MineCase.Server.World.Generation
             return Task.CompletedTask;
         }
 
-        public async Task<ChunkColumnStorage> Generate(IWorld world, int x, int z, GeneratorSettings settings)
+        public async Task<ChunkColumnCompactStorage> Generate(IWorld world, int x, int z, GeneratorSettings settings)
         {
             var chunkColumn = new ChunkColumnStorage();
             for (int i = 0; i < chunkColumn.Sections.Length; ++i)
@@ -88,7 +89,7 @@ namespace MineCase.Server.World.Generation
             };
             GenerateChunk(info, chunkColumn, x, z, settings);
             PopulateChunk(world, chunkColumn, x, z, settings);
-            return chunkColumn;
+            return chunkColumn.Compact();
         }
 
         private void GenerateChunk(MapGenerationInfo info, ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
@@ -387,11 +388,19 @@ namespace MineCase.Server.World.Generation
 
         private void GenerateSkylightMap(ChunkColumnStorage chunk)
         {
-            for (int y = 0; y < 256; ++y)
+            for (int i = 0; i < ChunkConstants.SectionsPerChunk; ++i)
             {
-                var section = chunk.Sections[y / 16];
-                for (int i = 0; i < section.SkyLight.Storage.Length; i++)
-                    section.SkyLight.Storage[i] = 0xFF;
+                var skyLight = chunk.Sections[i].SkyLight;
+                for (int y = 0; y < ChunkConstants.BlockEdgeWidthInSection; y++)
+                {
+                    for (int z = 0; z < ChunkConstants.BlockEdgeWidthInSection; z++)
+                    {
+                        for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; x++)
+                        {
+                            skyLight[x, y, z] = 0xF;
+                        }
+                    }
+                }
             }
         }
 
