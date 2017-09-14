@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using MineCase.Server.World.Layer;
+using MineCase.Algorithm.World.Layer;
 using Xunit;
 
 namespace MineCase.UnitTest

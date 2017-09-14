@@ -10,6 +10,8 @@ using MineCase.Server.Game.Entities;
 using MineCase.Server.Network.Play;
 using MineCase.Server.Settings;
 using MineCase.Server.World.Generation;
+using MineCase.World;
+using MineCase.World.Generation;
 using Orleans;
 using Orleans.Concurrency;
 
@@ -23,7 +25,7 @@ namespace MineCase.Server.World
         private int _chunkZ;
 
         private bool _generated = false;
-        private ChunkColumnStorage _state;
+        private ChunkColumnCompactStorage _state;
         private Dictionary<BlockChunkPos, IBlockEntity> _blockEntities;
 
         public async Task<BlockState> GetBlockState(int x, int y, int z)
@@ -32,7 +34,7 @@ namespace MineCase.Server.World
             return _state[x, y, z];
         }
 
-        public async Task<ChunkColumnStorage> GetState()
+        public async Task<ChunkColumnCompactStorage> GetState()
         {
             await EnsureChunkGenerated();
             return _state;

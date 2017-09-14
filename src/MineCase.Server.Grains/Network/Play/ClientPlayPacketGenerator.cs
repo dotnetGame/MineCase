@@ -5,13 +5,13 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-
 using MineCase.Protocol.Play;
 using MineCase.Serialization;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.EntityMetadata;
 using MineCase.Server.World;
+using MineCase.World;
 using Orleans.Concurrency;
 
 namespace MineCase.Server.Network.Play
@@ -280,7 +280,7 @@ namespace MineCase.Server.Network.Play
             });
         }
 
-        public Task ChunkData(Dimension dimension, int chunkX, int chunkZ, ChunkColumnStorage chunkColumn)
+        public Task ChunkData(Dimension dimension, int chunkX, int chunkZ, ChunkColumnCompactStorage chunkColumn)
         {
             return Sink.SendPacket(new ChunkData
             {

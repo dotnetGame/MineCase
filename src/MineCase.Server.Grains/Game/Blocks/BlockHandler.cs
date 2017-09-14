@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.World;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.Game.Blocks

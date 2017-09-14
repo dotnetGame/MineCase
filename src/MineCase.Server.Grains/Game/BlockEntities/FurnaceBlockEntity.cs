@@ -18,7 +18,8 @@ namespace MineCase.Server.Game.BlockEntities
         private Slot[] _slots;
 
         private bool _isCooking;
-        private FindFurnaceRecipeResult _currentRecipe;
+        private FurnaceRecipe _currentRecipe;
+        private FurnaceFuel _currentFuel;
         private int _fuelLeft;
         private int _maxFuelTime;
         private int _cookProgress;
@@ -44,16 +45,23 @@ namespace MineCase.Server.Game.BlockEntities
         public async Task SetSlot(int slotIndex, Slot item)
         {
             _slots[slotIndex] = item;
-            if (_currentRecipe == null)
+            if (_currentRecipe == null && slotIndex == 0)
                 await UpdateRecipe();
+            if (slotIndex == 1)
+                await UpdateFuel();
+        }
+
+        private async Task UpdateFuel()
+        {
+            _currentFuel = await GrainFactory.GetGrain<IFurnaceRecipes>(0).FindFuel(_slots[1]);
         }
 
         private async Task UpdateRecipe()
         {
-            var recipe = await GrainFactory.GetGrain<IFurnaceRecipes>(0).FindRecipe(_slots[0], _slots[1]);
+            var recipe = await GrainFactory.GetGrain<IFurnaceRecipes>(0).FindRecipe(_slots[0]);
             if (recipe != null)
             {
-                if (_slots[2].IsEmpty || _slots[2].CanStack(recipe.Recipe.Output))
+                if (_slots[2].IsEmpty || _slots[2].CanStack(recipe.Output))
                 {
                     _currentRecipe = recipe;
                     return;
@@ -90,9 +98,11 @@ namespace MineCase.Server.Game.BlockEntities
             await tracker.Unsubscribe(this);
         }
 
+        private bool CanCook() => _currentRecipe != null && (_fuelLeft > 0 || _currentFuel != null);
+
         public async Task OnGameTick(TimeSpan deltaTime, long worldAge)
         {
-            if (_currentRecipe != null)
+            if (CanCook())
             {
                 if (!_isCooking)
                     await StartCooking();
@@ -100,50 +110,58 @@ namespace MineCase.Server.Game.BlockEntities
                     await TakeIngredient();
                 if (_fuelLeft == 0)
                     await TakeFuel();
-                if (_cookProgress == _maxProgress)
-                {
-                    if (_slots[2].IsEmpty)
-                        _slots[2] = _currentRecipe.Recipe.Output;
-                    else
-                        _slots[2].ItemCount += _currentRecipe.Recipe.Output.ItemCount;
-                    if (_furnaceWindow != null)
-                        await _furnaceWindow.BroadcastSlotChanged(2, _slots[2]);
-                    _cookProgress = 0;
-                    await UpdateRecipe();
-                }
 
                 if (_currentRecipe != null)
                 {
                     _cookProgress++;
                     _fuelLeft--;
                 }
+
+                if (_cookProgress == _maxProgress)
+                    await Produce();
             }
             else if (_isCooking)
             {
                 await StopCooking();
             }
 
-            if (_furnaceWindow != null)
+            if (_furnaceWindow != null && worldAge % 100 == 0)
                 await _furnaceWindow.OnGameTick(deltaTime, worldAge);
+        }
+
+        private async Task Produce()
+        {
+            if (_slots[2].IsEmpty)
+                _slots[2] = _currentRecipe.Output;
+            else
+                _slots[2].ItemCount += _currentRecipe.Output.ItemCount;
+            if (_furnaceWindow != null)
+                await _furnaceWindow.BroadcastSlotChanged(2, _slots[2]);
+            _cookProgress = 0;
         }
 
         private async Task TakeFuel()
         {
-            _slots[1].ItemCount -= _currentRecipe.Fuel.Slot.ItemCount;
+            _slots[1].ItemCount -= _currentFuel.Slot.ItemCount;
             _slots[1].MakeEmptyIfZero();
-            _maxFuelTime = _fuelLeft = _currentRecipe.Fuel.Time;
+            _maxFuelTime = _fuelLeft = _currentFuel.Time;
             if (_furnaceWindow != null)
-                await _furnaceWindow.BroadcastSlotChanged(0, _slots[1]);
+                await _furnaceWindow.BroadcastSlotChanged(1, _slots[1]);
+            await UpdateFuel();
         }
 
         private async Task TakeIngredient()
         {
-            _slots[0].ItemCount -= _currentRecipe.Recipe.Input.ItemCount;
-            _slots[0].MakeEmptyIfZero();
-            _cookProgress = 0;
-            _maxProgress = _currentRecipe.Recipe.Time;
-            if (_furnaceWindow != null)
-                await _furnaceWindow.BroadcastSlotChanged(0, _slots[0]);
+            await UpdateRecipe();
+            if (_currentRecipe != null)
+            {
+                _slots[0].ItemCount -= _currentRecipe.Input.ItemCount;
+                _slots[0].MakeEmptyIfZero();
+                _cookProgress = 0;
+                _maxProgress = _currentRecipe.Time;
+                if (_furnaceWindow != null)
+                    await _furnaceWindow.BroadcastSlotChanged(0, _slots[0]);
+            }
         }
 
         private async Task StartCooking()

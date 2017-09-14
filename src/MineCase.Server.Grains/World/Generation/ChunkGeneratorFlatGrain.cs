@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using MineCase.World;
+using MineCase.World.Generation;
 using Newtonsoft.Json;
 using Orleans;
 using Orleans.Concurrency;
@@ -12,18 +14,18 @@ namespace MineCase.Server.World.Generation
     [StatelessWorker]
     internal class ChunkGeneratorFlatGrain : Grain, IChunkGeneratorFlat
     {
-        public Task<ChunkColumnStorage> Generate(IWorld world, int x, int z, GeneratorSettings settings)
+        public Task<ChunkColumnCompactStorage> Generate(IWorld world, int x, int z, GeneratorSettings settings)
         {
-            var chunkColumn = new ChunkColumnStorage();
+            var chunkColumn = new ChunkColumnCompactStorage();
             for (int i = 0; i < chunkColumn.Sections.Length; ++i)
-                chunkColumn.Sections[i] = new ChunkSectionStorage(true);
+                chunkColumn.Sections[i] = new ChunkSectionCompactStorage(true);
 
             GenerateChunk(world, chunkColumn, x, z, settings);
             PopulateChunk(world, chunkColumn, x, z, settings);
             return Task.FromResult(chunkColumn);
         }
 
-        private void GenerateChunk(IWorld world, ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
+        private void GenerateChunk(IWorld world, ChunkColumnCompactStorage chunk, int x, int z, GeneratorSettings settings)
         {
             // 按照flat模式每层的设置给chunk赋值
             for (int y = 0; y < settings.FlatBlockId.Length; ++y)
@@ -46,7 +48,7 @@ namespace MineCase.Server.World.Generation
             // todo biomes
         }
 
-        private void PopulateChunk(IWorld world, ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
+        private void PopulateChunk(IWorld world, ChunkColumnCompactStorage chunk, int x, int z, GeneratorSettings settings)
         {
             // TODO generator tree, grass, structures\
         }

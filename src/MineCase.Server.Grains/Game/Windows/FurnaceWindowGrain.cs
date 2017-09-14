@@ -18,14 +18,11 @@ namespace MineCase.Server.Game.Windows
 
         public async Task OnGameTick(TimeSpan deltaTime, long worldAge)
         {
-            if (worldAge % 100 == 0)
-            {
-                var properties = await _furnaceEntity.GetCookingState();
-                await BroadcastWindowProperty(0, (short)properties.fuelLeft);
-                await BroadcastWindowProperty(1, (short)properties.maxFuelTime);
-                await BroadcastWindowProperty(2, (short)properties.cookProgress);
-                await BroadcastWindowProperty(3, (short)properties.maxProgress);
-            }
+            var properties = await _furnaceEntity.GetCookingState();
+            await BroadcastWindowProperty(0, (short)properties.fuelLeft);
+            await BroadcastWindowProperty(1, (short)properties.maxFuelTime);
+            await BroadcastWindowProperty(2, (short)properties.cookProgress);
+            await BroadcastWindowProperty(3, (short)properties.maxProgress);
         }
 
         public Task SetEntity(IFurnaceBlockEntity furnaceEntity)

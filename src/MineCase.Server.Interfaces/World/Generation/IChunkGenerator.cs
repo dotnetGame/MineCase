@@ -1,11 +1,12 @@
-using System;
 using System.Threading.Tasks;
-using Orleans;
+using MineCase.Server.World;
+using MineCase.World;
+using MineCase.World.Generation;
 
 namespace MineCase.Server.World.Generation
 {
     public interface IChunkGenerator
     {
-        Task<ChunkColumnStorage> Generate(IWorld world, int x, int z, GeneratorSettings settings);
+        Task<ChunkColumnCompactStorage> Generate(IWorld world, int x, int z, GeneratorSettings settings);
     }
 }
