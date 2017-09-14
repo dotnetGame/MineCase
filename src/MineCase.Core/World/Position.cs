@@ -3,37 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using MineCase.World;
 
-namespace MineCase.Server.World
+namespace MineCase.World
 {
-    public class Vector3i
-    {
-        public int X { get; set; }
-
-        public int Y { get; set; }
-
-        public int Z { get; set; }
-
-        public Vector3i(int x, int y, int z)
-        {
-            X = x;
-            Y = y;
-            Z = z;
-        }
-    }
-
-    public struct Vector2i
-    {
-        public int X { get; set; }
-
-        public int Z { get; set; }
-
-        public Vector2i(int x, int z)
-        {
-            X = x;
-            Z = z;
-        }
-    }
-
     public struct BlockWorldPos
     {
         public int X { get; set; }

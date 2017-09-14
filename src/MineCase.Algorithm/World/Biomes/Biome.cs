@@ -1,37 +1,15 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using MineCase.Algorithm.Noise;
-using MineCase.Server.World.Generation;
-using MineCase.Server.World.Mine;
-using MineCase.Server.World.Plants;
+using MineCase.Algorithm.World.Mine;
+using MineCase.Algorithm.World.Plants;
+using MineCase.Server.World;
 using MineCase.World;
+using MineCase.World.Biomes;
+using MineCase.World.Generation;
 using Orleans;
 
-namespace MineCase.Server.World.Biomes
+namespace MineCase.Algorithm.World.Biomes
 {
-    public class BiomeProperties
-    {
-        public string BiomeName { get; set; }
-
-        public BiomeId BiomeId { get; set; }
-
-        public float BaseHeight { get; set; } = 0.1F;
-
-        public float HeightVariation { get; set; } = 0.2F;
-
-        public float Temperature { get; set; } = 0.5F;
-
-        public float Rainfall { get; set; } = 0.5F;
-
-        public int WaterColor { get; set; } = 16777215;
-
-        public bool EnableSnow { get; set; } = false;
-
-        public bool EnableRain { get; set; } = true;
-    }
-
     public abstract class Biome
     {
         // Biome有关的生成器的设置
@@ -334,14 +312,5 @@ namespace MineCase.Server.World.Biomes
                 }
             }
         }
-    }
-
-    public enum BiomeId : byte
-    {
-        Ocean = 0,
-        Plains = 1,
-        Desert = 2,
-        ExtremeHills = 3,
-        Forest = 4
     }
 }

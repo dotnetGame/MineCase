@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace MineCase.Algorithm
 {
     public class MathHelper

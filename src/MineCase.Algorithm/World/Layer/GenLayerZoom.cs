@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace MineCase.Server.World.Layer
+namespace MineCase.Algorithm.World.Layer
 {
     public class GenLayerZoom : GenLayer
     {

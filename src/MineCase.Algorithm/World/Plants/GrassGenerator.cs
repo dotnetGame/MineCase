@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using MineCase.Server.World.Biomes;
+using MineCase.Algorithm.World.Biomes;
+using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
 
-namespace MineCase.Server.World.Plants
+namespace MineCase.Algorithm.World.Plants
 {
     public class GrassGenerator : PlantsGenerator
     {

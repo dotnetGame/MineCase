@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using MineCase.Server.World.Biomes;
+using MineCase.World.Biomes;
 
-namespace MineCase.Server.World.Layer
+namespace MineCase.Algorithm.World.Layer
 {
     public class GenLayerBiome : GenLayer
     {

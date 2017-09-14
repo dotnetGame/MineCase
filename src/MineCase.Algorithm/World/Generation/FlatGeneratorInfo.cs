@@ -1,6 +1,4 @@
-using System;
-
-namespace MineCase.Server.World.Generation
+namespace MineCase.Algorithm.World.Generation
 {
     public class FlatGeneratorInfo
     {

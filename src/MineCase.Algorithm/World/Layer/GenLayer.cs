@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using MineCase.Server.World.Generation;
 
-namespace MineCase.Server.World.Layer
+namespace MineCase.Algorithm.World.Layer
 {
     public abstract class GenLayer
     {

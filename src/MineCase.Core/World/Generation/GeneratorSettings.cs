@@ -1,6 +1,6 @@
 using System;
 
-namespace MineCase.Server.World.Generation
+namespace MineCase.World.Generation
 {
     public class GeneratorSettings
     {

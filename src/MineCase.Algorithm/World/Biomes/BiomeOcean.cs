@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using MineCase.Server.World.Generation;
-using MineCase.Server.World.Plants;
-using Orleans;
+using MineCase.World.Biomes;
+using MineCase.World.Generation;
 
-namespace MineCase.Server.World.Biomes
+namespace MineCase.Algorithm.World.Biomes
 {
     public class BiomeOcean : Biome
     {

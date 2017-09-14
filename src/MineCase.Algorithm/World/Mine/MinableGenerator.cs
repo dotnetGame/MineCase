@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
 
-namespace MineCase.Server.World.Mine
+namespace MineCase.Algorithm.World.Mine
 {
     public class MinableGenerator
     {

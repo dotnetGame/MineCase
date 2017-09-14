@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using MineCase.Server.World.Biomes;
+using MineCase.Algorithm.World.Biomes;
 using MineCase.World;
+using MineCase.World.Biomes;
+using MineCase.World.Generation;
 
-namespace MineCase.Server.World.Mine
+namespace MineCase.Algorithm.World.Mine
 {
     public class CavesGenerator : MapGenerator
     {
@@ -300,7 +300,7 @@ namespace MineCase.Server.World.Mine
         protected void DigBlock(ChunkColumnStorage chunk, int x, int y, int z, int chunkX, int chunkZ, bool foundTop, BlockState state, BlockState up)
         {
             // Biome biome = worldObj.getBiomeGenForCoords(new BlockPos(x + chunkX * 16, 0, z + chunkZ * 16));
-            Biome biome = new BiomePlains(new BiomeProperties(), new Generation.GeneratorSettings());
+            Biome biome = new BiomePlains(new BiomeProperties(), new GeneratorSettings());
             BlockState top = biome._topBlock;
             BlockState filler = biome._fillerBlock;
 
