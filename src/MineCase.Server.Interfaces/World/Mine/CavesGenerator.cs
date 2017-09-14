@@ -8,10 +8,9 @@ namespace MineCase.Server.World.Mine
 {
     public class CavesGenerator : MapGenerator
     {
-        private HashSet<uint> _canReplaceSet;
+        private static HashSet<uint> _canReplaceSet;
 
-        public CavesGenerator(MapGenerationInfo info, int range = 8)
-            : base(info, range)
+        static CavesGenerator()
         {
             _canReplaceSet = new HashSet<uint>();
             _canReplaceSet.Add((uint)BlockId.Stone);
@@ -23,6 +22,11 @@ namespace MineCase.Server.World.Mine
             _canReplaceSet.Add((uint)BlockId.RedSandstone);
             _canReplaceSet.Add((uint)BlockId.Mycelium);
             _canReplaceSet.Add((uint)BlockId.SnowLayer);
+        }
+
+        public CavesGenerator(MapGenerationInfo info, int range = 8)
+            : base(info, range)
+        {
         }
 
         protected override void RecursiveGenerate(MapGenerationInfo info, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, ChunkColumnStorage chunk, Biome biome)
