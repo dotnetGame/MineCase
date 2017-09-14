@@ -115,7 +115,7 @@ namespace MineCase.Server.Game.Windows
             return item;
         }
 
-        public async Task Click(IPlayer player, int slotIndex, ClickAction clickAction, Slot clickedItem)
+        public virtual async Task Click(IPlayer player, int slotIndex, ClickAction clickAction, Slot clickedItem)
         {
             switch (clickAction)
             {
@@ -148,7 +148,7 @@ namespace MineCase.Server.Game.Windows
             return num;
         }
 
-        public async Task OpenWindow(IPlayer player)
+        public virtual async Task OpenWindow(IPlayer player)
         {
             var slots = await GetSlots(player);
             var sink = await (await player.GetUser()).GetClientPacketSink();
@@ -196,7 +196,8 @@ namespace MineCase.Server.Game.Windows
             return Task.CompletedTask;
         }
 
-        protected Task BroadcastWindowProperty(short property, short value)
+        protected Task BroadcastWindowProperty<T>(T property, short value)
+            where T : struct
         {
             async Task SendWindowProperty(IPlayer player, IClientboundPacketSink sink)
             {
@@ -206,6 +207,13 @@ namespace MineCase.Server.Game.Windows
 
             Task.WhenAll(from p in _players select SendWindowProperty(p.Key, p.Value)).Ignore();
             return Task.CompletedTask;
+        }
+
+        protected async Task NotifyWindowProperty<T>(IPlayer player, T property, short value)
+            where T : struct
+        {
+            var id = await player.GetWindowId(this);
+            await new ClientPlayPacketGenerator(_players[player]).WindowProperty(id, property, value);
         }
     }
 }

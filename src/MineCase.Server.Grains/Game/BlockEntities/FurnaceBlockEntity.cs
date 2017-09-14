@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Algorithm;
+using MineCase.Game.Windows;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Game.Windows.SlotAreas;
@@ -49,6 +50,8 @@ namespace MineCase.Server.Game.BlockEntities
                 await UpdateRecipe();
             if (slotIndex == 1)
                 await UpdateFuel();
+            if (!_isCooking && CanCook())
+                await Register();
         }
 
         private async Task UpdateFuel()
@@ -86,16 +89,13 @@ namespace MineCase.Server.Game.BlockEntities
 
         public override async Task OnCreated()
         {
-            var chunkPos = Position.ToChunkWorldPos();
-            var tracker = GrainFactory.GetGrain<IChunkTrackingHub>(World.MakeChunkTrackingHubKey(chunkPos.X, chunkPos.Z));
-            await tracker.Subscribe(this);
+            _isCooking = (await World.GetBlockState(GrainFactory, Position)).IsSameId(BlockStates.BurningFurnace());
         }
 
         public override async Task Destroy()
         {
-            var chunkPos = Position.ToChunkWorldPos();
-            var tracker = GrainFactory.GetGrain<IChunkTrackingHub>(World.MakeChunkTrackingHubKey(chunkPos.X, chunkPos.Z));
-            await tracker.Unsubscribe(this);
+            _isCooking = false;
+            await Unregister();
         }
 
         private bool CanCook() => _currentRecipe != null && (_fuelLeft > 0 || _currentFuel != null);
@@ -115,6 +115,12 @@ namespace MineCase.Server.Game.BlockEntities
                 {
                     _cookProgress++;
                     _fuelLeft--;
+
+                    if (_furnaceWindow != null && worldAge % 10 == 0)
+                    {
+                        await _furnaceWindow.SetProperty(FurnaceWindowProperty.ProgressArrow, (short)_cookProgress);
+                        await _furnaceWindow.SetProperty(FurnaceWindowProperty.FireIcon, (short)_fuelLeft);
+                    }
                 }
 
                 if (_cookProgress == _maxProgress)
@@ -124,9 +130,6 @@ namespace MineCase.Server.Game.BlockEntities
             {
                 await StopCooking();
             }
-
-            if (_furnaceWindow != null && worldAge % 100 == 0)
-                await _furnaceWindow.OnGameTick(deltaTime, worldAge);
         }
 
         private async Task Produce()
@@ -135,9 +138,12 @@ namespace MineCase.Server.Game.BlockEntities
                 _slots[2] = _currentRecipe.Output;
             else
                 _slots[2].ItemCount += _currentRecipe.Output.ItemCount;
-            if (_furnaceWindow != null)
-                await _furnaceWindow.BroadcastSlotChanged(2, _slots[2]);
             _cookProgress = 0;
+            if (_furnaceWindow != null)
+            {
+                await _furnaceWindow.BroadcastSlotChanged(2, _slots[2]);
+                await _furnaceWindow.SetProperty(FurnaceWindowProperty.ProgressArrow, (short)_cookProgress);
+            }
         }
 
         private async Task TakeFuel()
@@ -146,7 +152,12 @@ namespace MineCase.Server.Game.BlockEntities
             _slots[1].MakeEmptyIfZero();
             _maxFuelTime = _fuelLeft = _currentFuel.Time;
             if (_furnaceWindow != null)
+            {
                 await _furnaceWindow.BroadcastSlotChanged(1, _slots[1]);
+                await _furnaceWindow.SetProperty(FurnaceWindowProperty.MaximumFuelBurnTime, (short)_maxFuelTime);
+                await _furnaceWindow.SetProperty(FurnaceWindowProperty.FireIcon, (short)_fuelLeft);
+            }
+
             await UpdateFuel();
         }
 
@@ -160,7 +171,11 @@ namespace MineCase.Server.Game.BlockEntities
                 _cookProgress = 0;
                 _maxProgress = _currentRecipe.Time;
                 if (_furnaceWindow != null)
+                {
                     await _furnaceWindow.BroadcastSlotChanged(0, _slots[0]);
+                    await _furnaceWindow.SetProperty(FurnaceWindowProperty.ProgressArrow, (short)_cookProgress);
+                    await _furnaceWindow.SetProperty(FurnaceWindowProperty.MaximumProgress, (short)_maxProgress);
+                }
             }
         }
 
@@ -176,11 +191,21 @@ namespace MineCase.Server.Game.BlockEntities
             _isCooking = false;
             var facing = (FacingDirectionType)(await World.GetBlockState(GrainFactory, Position)).MetaValue;
             await World.SetBlockState(GrainFactory, Position, BlockStates.Furnace(facing));
+            await Unregister();
         }
 
-        public Task<(int fuelLeft, int maxFuelTime, int cookProgress, int maxProgress)> GetCookingState()
+        private async Task Register()
         {
-            return Task.FromResult((_fuelLeft, _maxFuelTime, _cookProgress, _maxProgress));
+            var chunkPos = Position.ToChunkWorldPos();
+            var tracker = GrainFactory.GetGrain<IChunkTrackingHub>(World.MakeChunkTrackingHubKey(chunkPos.X, chunkPos.Z));
+            await tracker.Subscribe(this);
+        }
+
+        private async Task Unregister()
+        {
+            var chunkPos = Position.ToChunkWorldPos();
+            var tracker = GrainFactory.GetGrain<IChunkTrackingHub>(World.MakeChunkTrackingHubKey(chunkPos.X, chunkPos.Z));
+            await tracker.Unsubscribe(this);
         }
     }
 }

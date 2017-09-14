@@ -99,12 +99,6 @@ namespace MineCase.Server.User
             await _player.Spawn(this.GetPrimaryKey(), new Vector3(1000, 200, 1000), 0.0f, 0.0f);
         }
 
-        private async Task SendTimeUpdate()
-        {
-            var time = await (await GetWorld()).GetTime();
-            await _generator.TimeUpdate(time.age, time.timeOfDay);
-        }
-
         public Task UseEntity(uint targetEid, EntityUsage type, Vector3? targetPosition, EntityInteractHand? hand)
         {
             return Task.CompletedTask;
@@ -154,7 +148,6 @@ namespace MineCase.Server.User
             _isOnline = true;
             _keepAliveWaiters = new HashSet<uint>();
 
-            await SendTimeUpdate();
             await _player.NotifyLoggedIn();
             _state = UserState.DownloadingWorld;
         }
@@ -198,7 +191,7 @@ namespace MineCase.Server.User
             return Task.FromResult(ping);
         }
 
-        public async Task OnGameTick(TimeSpan deltaTime)
+        public async Task OnGameTick(TimeSpan deltaTime, long worldAge)
         {
             _packetRouter?.OnGameTick();
             if (_state == UserState.DownloadingWorld)
@@ -208,7 +201,7 @@ namespace MineCase.Server.User
             }
 
             if (_state >= UserState.JoinedGame && _state < UserState.Destroying)
-                await _chunkLoader.OnGameTick();
+                await _chunkLoader.OnGameTick(worldAge);
         }
 
         public Task SetPacketRouter(IPacketRouter packetRouter)
