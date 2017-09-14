@@ -33,7 +33,7 @@ namespace MineCase.Server.World
             List<ICollectable> result = new List<ICollectable>();
             foreach (IEntity eachEntity in collection)
             {
-                if (eachEntity.GetType() == typeof(ICollectable))
+                if (eachEntity is ICollectable)
                 {
                     result.Add((ICollectable)eachEntity);
                 }
@@ -48,7 +48,7 @@ namespace MineCase.Server.World
             List<ICreature> result = new List<ICreature>();
             foreach (IEntity eachEntity in collection)
             {
-                if (eachEntity.GetType() == typeof(ICreature))
+                if (eachEntity is ICreature)
                 {
                     result.Add((ICreature)eachEntity);
                 }
@@ -66,6 +66,7 @@ namespace MineCase.Server.World
         {
             if (!_entities.Contains(entity))
                 _entities.Add(entity);
+
             return Task.CompletedTask;
         }
 
