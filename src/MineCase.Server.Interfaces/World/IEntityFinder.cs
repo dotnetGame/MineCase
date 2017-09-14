@@ -19,6 +19,8 @@ namespace MineCase.Server.World
 
         Task<IReadOnlyCollection<ICollectable>> CollisionCollectable(IEntity entity);
 
+        Task<IReadOnlyCollection<ICreature>> CollisionCreature(IEntity entity);
+
         Task<IReadOnlyCollection<IEntity>> CollisionInChunk(IEntity entity);
 
         Task SpawnPickup(Position location, Immutable<Slot[]> slots);

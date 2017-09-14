@@ -42,6 +42,21 @@ namespace MineCase.Server.World
             return result;
         }
 
+        public async Task<IReadOnlyCollection<ICreature>> CollisionCreature(IEntity entity)
+        {
+            var collection = await CollisionInChunk(entity);
+            List<ICreature> result = new List<ICreature>();
+            foreach (IEntity eachEntity in collection)
+            {
+                if (eachEntity.GetType() == typeof(ICreature))
+                {
+                    result.Add((ICreature)eachEntity);
+                }
+            }
+
+            return result;
+        }
+
         public Task<IReadOnlyCollection<IEntity>> CollisionInChunk(IEntity entity)
         {
             return Task.FromResult<IReadOnlyCollection<IEntity>>(_entities);

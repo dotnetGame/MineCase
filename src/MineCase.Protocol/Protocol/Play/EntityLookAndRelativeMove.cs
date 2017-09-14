@@ -24,10 +24,10 @@ namespace MineCase.Protocol.Play
         public short DeltaZ;
 
         [SerializeAs(DataType.Angle)]
-        public float Yaw;
+        public byte Yaw;
 
         [SerializeAs(DataType.Angle)]
-        public float Pitch;
+        public byte Pitch;
 
         [SerializeAs(DataType.Boolean)]
         public bool OnGround;
@@ -38,8 +38,8 @@ namespace MineCase.Protocol.Play
             bw.WriteAsShort(DeltaX);
             bw.WriteAsShort(DeltaY);
             bw.WriteAsShort(DeltaZ);
-            bw.WriteAsFloat(Yaw);
-            bw.WriteAsFloat(Pitch);
+            bw.WriteAsByte(Yaw);
+            bw.WriteAsByte(Pitch);
             bw.WriteAsBoolean(OnGround);
         }
     }

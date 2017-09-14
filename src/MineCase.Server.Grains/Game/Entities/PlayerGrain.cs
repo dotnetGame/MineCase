@@ -13,6 +13,7 @@ using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
 using MineCase.Server.User;
 using MineCase.Server.World;
+using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
 
@@ -190,9 +191,18 @@ namespace MineCase.Server.Game.Entities
 
         public Task<IUser> GetUser() => Task.FromResult(_user);
 
-        public Task SetPosition(double x, double feetY, double z, bool onGround)
+        public async Task SetPosition(double x, double feetY, double z, bool onGround)
         {
-            return SetPosition(new Vector3((float)x, (float)feetY, (float)z));
+            // 通知周围creature entity看着玩家
+            ChunkWorldPos pos = new EntityWorldPos((float)x, (float)feetY, (float)z).ToChunkWorldPos();
+            var finder = GrainFactory.GetGrain<IEntityFinder>(World.MakeEntityFinderKey(pos.X, pos.Z));
+            var list = await finder.CollisionCreature(this);
+            foreach (ICreature each in list)
+            {
+                await each.Look(await GetPosition());
+            }
+
+            await SetPosition(new Vector3((float)x, (float)feetY, (float)z));
         }
 
         public async Task Spawn(Guid uuid, Vector3 position, float pitch, float yaw)

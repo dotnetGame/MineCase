@@ -41,7 +41,7 @@ namespace MineCase.Server.Network.Play
             });
         }
 
-        public Task SpawnMob(uint entityId, Guid uuid, byte entityType, Vector3 position, float pitch, float yaw, Entity metadata)
+        public Task SpawnMob(uint entityId, Guid uuid, byte entityType, Vector3 position, float pitch, float yaw, Game.Entities.EntityMetadata.Entity metadata)
         {
             return Sink.SendPacket(CreateSpawnMob(entityId, uuid, entityType, position, pitch, yaw, metadata, bw =>
                  {
@@ -68,7 +68,7 @@ namespace MineCase.Server.Network.Play
             });
         }
 
-        public Task EntityMetadata(uint entityId, Entity metadata)
+        public Task EntityMetadata(uint entityId, Game.Entities.EntityMetadata.Entity metadata)
         {
             return Sink.SendPacket(CreateEntityMetadata(entityId, metadata, bw =>
             {
@@ -80,12 +80,12 @@ namespace MineCase.Server.Network.Play
         {
             return Sink.SendPacket(CreateEntityMetadata(entityId, metadata, bw =>
             {
-                WriteEntityMetadata(bw, (Entity)metadata);
+                WriteEntityMetadata(bw, (Game.Entities.EntityMetadata.Entity)metadata);
                 WriteEntityMetadata(bw, metadata);
             }));
         }
 
-        private static void WriteEntityMetadata(BinaryWriter bw, Entity metadata)
+        private static void WriteEntityMetadata(BinaryWriter bw, Game.Entities.EntityMetadata.Entity metadata)
         {
             byte flag = 0;
             {
@@ -178,6 +178,52 @@ namespace MineCase.Server.Network.Play
                 LevelType = levelType,
                 MaxPlayers = maxPlayers,
                 ReducedDebugInfo = reducedDebugInfo
+            });
+        }
+
+        public Task EntityRelativeMove(uint eid, short deltaX, short deltaY, short deltaZ, bool onGround)
+        {
+            return Sink.SendPacket(new EntityRelativeMove
+            {
+                EID = eid,
+                DeltaX = deltaX,
+                DeltaY = deltaY,
+                DeltaZ = deltaZ,
+                OnGround = onGround
+            });
+        }
+
+        public Task EntityLookAndRelativeMove(uint eid, short deltaX, short deltaY, short deltaZ, byte yaw, byte pitch, bool onGround)
+        {
+            return Sink.SendPacket(new EntityLookAndRelativeMove
+            {
+                EID = eid,
+                DeltaX = deltaX,
+                DeltaY = deltaY,
+                DeltaZ = deltaZ,
+                Yaw = yaw,
+                Pitch = pitch,
+                OnGround = onGround
+            });
+        }
+
+        public Task EntityLook(uint eid, byte yaw, byte pitch, bool onGround)
+        {
+            return Sink.SendPacket(new EntityLook
+            {
+                EID = eid,
+                Yaw = yaw,
+                Pitch = pitch,
+                OnGround = onGround
+            });
+        }
+
+        public Task EntityHeadLook(uint eid, byte yaw)
+        {
+            return Sink.SendPacket(new EntityHeadLook
+            {
+                EID = eid,
+                Yaw = yaw
             });
         }
 

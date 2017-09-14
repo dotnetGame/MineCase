@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace MineCase.Server.Game.Entities
 {
-    public interface IPassiveMob : IEntity
+    public interface IPassiveMob : ICreature
     {
-        Task Spawn(Guid uuid, Vector3 position, MobType type);
     }
 }

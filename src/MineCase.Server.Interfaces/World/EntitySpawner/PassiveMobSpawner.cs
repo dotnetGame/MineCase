@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Text;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.World.EntitySpawner
@@ -44,7 +45,9 @@ namespace MineCase.Server.World.EntitySpawner
                     var eid = await world.NewEntityId();
                     var entity = grainFactory.GetGrain<IPassiveMob>(world.MakeEntityKey(eid));
                     await world.AttachEntity(entity);
+
                     await entity.Spawn(Guid.NewGuid(), new Vector3(pos.X + x + 0.5F, height + 1, pos.Z + z + 0.5F), _mobType);
+                    await entity.OnCreated();
                 }
             }
         }

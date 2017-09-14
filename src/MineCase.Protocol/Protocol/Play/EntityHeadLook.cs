@@ -8,8 +8,8 @@ using Orleans.Concurrency;
 namespace MineCase.Protocol.Play
 {
     [Immutable]
-    [Packet(0x28)]
-    public sealed class EntityLook : ISerializablePacket
+    [Packet(0x35)]
+    public sealed class EntityHeadLook : ISerializablePacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint EID;
@@ -17,18 +17,10 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.Angle)]
         public byte Yaw;
 
-        [SerializeAs(DataType.Angle)]
-        public byte Pitch;
-
-        [SerializeAs(DataType.Boolean)]
-        public bool OnGround;
-
         public void Serialize(BinaryWriter bw)
         {
             bw.WriteAsVarInt(EID, out _);
             bw.WriteAsByte(Yaw);
-            bw.WriteAsByte(Pitch);
-            bw.WriteAsBoolean(OnGround);
         }
     }
 }

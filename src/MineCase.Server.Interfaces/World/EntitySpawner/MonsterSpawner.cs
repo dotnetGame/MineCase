@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Text;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.World.EntitySpawner
@@ -28,13 +29,25 @@ namespace MineCase.Server.World.EntitySpawner
                 int x = random.Next(16);
                 int z = random.Next(16);
 
-                if (CanMobStand(world, grainFactory, chunk, random, pos.ToBlockChunkPos()))
+                int height;
+                for (height = 255; height >= 0; height--)
+                {
+                    if (chunk[x, height, z] != BlockStates.Air())
+                    {
+                        break;
+                    }
+                }
+
+                BlockWorldPos standPos = new BlockWorldPos(pos.X + x, height + 1, pos.Z + z);
+                if (CanMobStand(world, grainFactory, chunk, random, standPos.ToBlockChunkPos()))
                 {
                     // 添加一个生物
                     var eid = await world.NewEntityId();
                     var entity = grainFactory.GetGrain<IPassiveMob>(world.MakeEntityKey(eid));
                     await world.AttachEntity(entity);
-                    await entity.Spawn(Guid.NewGuid(), new Vector3(pos.X, pos.Y, pos.Z), _mobType);
+
+                    await entity.Spawn(Guid.NewGuid(), new Vector3(pos.X + x + 0.5F, height + 1, pos.Z + z + 0.5F), _mobType);
+                    await entity.OnCreated();
                 }
             }
         }

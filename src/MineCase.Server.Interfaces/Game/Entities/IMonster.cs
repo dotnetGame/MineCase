@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace MineCase.Server.Game.Entities
 {
-    public interface IMonster : IEntity
+    public interface IMonster : ICreature
     {
-        Task Spawn(Guid uuid, Vector3 position, MobType type);
     }
 }
