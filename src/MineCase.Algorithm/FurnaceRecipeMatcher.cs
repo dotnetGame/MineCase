@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace MineCase.Algorithm
 {
-    public class FindFurnaceRecipeResult
-    {
-        public FurnaceRecipe Recipe { get; set; }
-
-        public FurnaceFuel Fuel { get; set; }
-    }
-
     public class FurnaceRecipeMatcher
     {
         private List<FurnaceRecipe> _recipes;
@@ -22,35 +13,34 @@ namespace MineCase.Algorithm
             _fuels = fuels;
         }
 
-        public FindFurnaceRecipeResult FindRecipe(Slot input, Slot fuel)
+        public FurnaceRecipe FindRecipe(Slot input)
         {
-            if (input.IsEmpty || fuel.IsEmpty) return null;
+            if (input.IsEmpty) return null;
 
-            FurnaceRecipe recipe = null;
             foreach (var item in _recipes)
             {
                 if (item.Input.BlockId == input.BlockId
                     && (item.Input.ItemDamage == -1 || item.Input.ItemDamage == input.ItemDamage)
                     && item.Input.ItemCount <= input.ItemCount)
                 {
-                    recipe = item;
-                    break;
+                    return item;
                 }
             }
 
-            if (recipe == null) return null;
+            return null;
+        }
+
+        public FurnaceFuel FindFuel(Slot fuel)
+        {
+            if (fuel.IsEmpty) return null;
 
             foreach (var item in _fuels)
             {
-                if (item.Slot.BlockId == input.BlockId
-                    && (item.Slot.ItemDamage == -1 || item.Slot.ItemDamage == input.ItemDamage)
-                    && item.Slot.ItemCount <= input.ItemCount)
+                if (item.Slot.BlockId == fuel.BlockId
+                    && (item.Slot.ItemDamage == -1 || item.Slot.ItemDamage == fuel.ItemDamage)
+                    && item.Slot.ItemCount <= fuel.ItemCount)
                 {
-                    return new FindFurnaceRecipeResult
-                    {
-                        Recipe = recipe,
-                        Fuel = item
-                    };
+                    return item;
                 }
             }
 

@@ -48,12 +48,13 @@ namespace MineCase.UnitTest
 
             var matcher = new FurnaceRecipeMatcher(loader.Recipes, loader.Fuels);
             var recipe = matcher.FindRecipe(
-                new Slot { BlockId = (short)BlockStates.Wood().Id, ItemCount = 1 },
+                new Slot { BlockId = (short)BlockStates.Wood().Id, ItemCount = 1 });
+            var fuel = matcher.FindFuel(
                 new Slot { BlockId = (short)BlockStates.Wood().Id, ItemCount = 1 });
 
             Assert.NotNull(recipe);
-            Assert.Equal(ItemStates.Coal(CoalType.Charcoal), new ItemState { Id = (uint)recipe.Recipe.Output.BlockId, MetaValue = (uint)recipe.Recipe.Output.ItemDamage });
-            Assert.Equal((short)BlockStates.Wood().Id, recipe.Fuel.Slot.BlockId);
+            Assert.Equal(ItemStates.Coal(CoalType.Charcoal), new ItemState { Id = (uint)recipe.Output.BlockId, MetaValue = (uint)recipe.Output.ItemDamage });
+            Assert.Equal((short)BlockStates.Wood().Id, fuel.Slot.BlockId);
         }
     }
 }

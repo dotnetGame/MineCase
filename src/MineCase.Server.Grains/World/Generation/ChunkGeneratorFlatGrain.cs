@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MineCase.World;
+using MineCase.World.Generation;
 using Newtonsoft.Json;
 using Orleans;
 using Orleans.Concurrency;

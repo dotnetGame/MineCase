@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MineCase.Server.Game;
 using MineCase.Server.Settings;
 using MineCase.Server.World.Generation;
+using MineCase.World.Generation;
 using Orleans;
 using Orleans.Concurrency;
 

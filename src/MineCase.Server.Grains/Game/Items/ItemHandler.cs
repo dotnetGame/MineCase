@@ -11,6 +11,7 @@ using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Network.Play;
 using MineCase.Server.World;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.Game.Items
