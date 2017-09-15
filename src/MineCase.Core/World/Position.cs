@@ -226,6 +226,14 @@ namespace MineCase.World
             return new ChunkWorldPos((int)chunkX, (int)chunkZ);
         }
 
+        public BlockWorldPos ToBlockWorldPos()
+        {
+            int x = (int)Math.Floor(X);
+            int y = (int)Math.Floor(Y);
+            int z = (int)Math.Floor(Z);
+            return new BlockWorldPos(x, y, z);
+        }
+
         public EntityChunkPos ToEntityChunkPos()
         {
             float entityX = X % ChunkConstants.BlockEdgeWidthInSection;

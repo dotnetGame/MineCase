@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Network.Play;
 using MineCase.Server.World;
+using MineCase.Server.World.EntitySpawner;
 using MineCase.World;
 
 namespace MineCase.Server.Game.Entities
@@ -23,12 +24,16 @@ namespace MineCase.Server.Game.Entities
 
         private MobType _mobType;
 
+        private Queue<CreatureTask> _tasks;
+
         public override Task OnActivateAsync()
         {
             _prevPosition = Position;
             _pitch = 0;
             _yaw = 0;
             _onGround = false;
+
+            _tasks = new Queue<CreatureTask>();
             return base.OnActivateAsync();
         }
 
@@ -128,6 +133,18 @@ namespace MineCase.Server.Game.Entities
                         Vector3.Multiply(current, 32),
                         Vector3.Multiply(prev, 32)),
                     128));
+        }
+
+        public Task AddTask(CreatureTask task)
+        {
+            _tasks.Enqueue(task);
+            return Task.CompletedTask;
+        }
+
+        public Task RemoveAllTask()
+        {
+            _tasks.Clear();
+            return Task.CompletedTask;
         }
     }
 }

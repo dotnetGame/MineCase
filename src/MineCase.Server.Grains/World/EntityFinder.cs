@@ -13,6 +13,7 @@ namespace MineCase.Server.World
     internal class EntityFinder : Grain, IEntityFinder
     {
         private IWorld _world;
+        private List<IPlayer> _playerEntities;
         private List<ICollectable> _collectableEntities;
         private List<ICreature> _creatureEntities;
 
@@ -27,6 +28,11 @@ namespace MineCase.Server.World
         public Task<IReadOnlyCollection<IEntity>> Collision(IEntity entity)
         {
             return CollisionInChunk(entity);
+        }
+
+        public Task<IReadOnlyCollection<IPlayer>> CollisionPlayer(IEntity entity)
+        {
+            return Task.FromResult<IReadOnlyCollection<IPlayer>>(_playerEntities);
         }
 
         public Task<IReadOnlyCollection<ICollectable>> CollisionCollectable(IEntity entity)
@@ -55,6 +61,14 @@ namespace MineCase.Server.World
             return Task.FromResult<IReadOnlyCollection<IEntity>>(result);
         }
 
+        public Task Register(IPlayer entity)
+        {
+            if (!_playerEntities.Contains(entity))
+                _playerEntities.Add(entity);
+
+            return Task.CompletedTask;
+        }
+
         public Task Register(ICollectable entity)
         {
             if (!_collectableEntities.Contains(entity))
@@ -68,6 +82,12 @@ namespace MineCase.Server.World
             if (!_creatureEntities.Contains(entity))
                 _creatureEntities.Add(entity);
 
+            return Task.CompletedTask;
+        }
+
+        public Task Unregister(IPlayer entity)
+        {
+            _playerEntities.Remove(entity);
             return Task.CompletedTask;
         }
 

@@ -11,15 +11,21 @@ namespace MineCase.Server.World
 {
     public interface IEntityFinder : IGrainWithStringKey
     {
+        Task Register(IPlayer entity);
+
         Task Register(ICollectable entity);
 
         Task Register(ICreature entity);
+
+        Task Unregister(IPlayer entity);
 
         Task Unregister(ICollectable entity);
 
         Task Unregister(ICreature entity);
 
         Task<IReadOnlyCollection<IEntity>> Collision(IEntity entity);
+
+        Task<IReadOnlyCollection<IPlayer>> CollisionPlayer(IEntity entity);
 
         Task<IReadOnlyCollection<ICollectable>> CollisionCollectable(IEntity entity);
 

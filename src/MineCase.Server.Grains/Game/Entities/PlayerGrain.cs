@@ -193,15 +193,6 @@ namespace MineCase.Server.Game.Entities
 
         public async Task SetPosition(double x, double feetY, double z, bool onGround)
         {
-            // 通知周围creature entity看着玩家
-            ChunkWorldPos pos = new EntityWorldPos((float)x, (float)feetY, (float)z).ToChunkWorldPos();
-            var finder = GrainFactory.GetGrain<IEntityFinder>(World.MakeEntityFinderKey(pos.X, pos.Z));
-            var list = await finder.CollisionCreature(this);
-            foreach (ICreature each in list)
-            {
-                await each.Look(await GetPosition());
-            }
-
             await SetPosition(new Vector3((float)x, (float)feetY, (float)z));
         }
 

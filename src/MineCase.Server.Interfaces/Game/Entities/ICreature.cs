@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.World.EntitySpawner;
 
 namespace MineCase.Server.Game.Entities
 {
@@ -17,5 +18,9 @@ namespace MineCase.Server.Game.Entities
         Task Move(Vector3 pos);
 
         Task Look(Vector3 pos);
+
+        Task AddTask(CreatureTask task);
+
+        Task RemoveAllTask();
     }
 }
