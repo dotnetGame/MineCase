@@ -57,7 +57,7 @@ namespace MineCase.Server.World
 
         public Task OnGameTick(TimeSpan deltaTime)
         {
-            _worldAge += 20;
+            _worldAge++;
             return Task.CompletedTask;
         }
 

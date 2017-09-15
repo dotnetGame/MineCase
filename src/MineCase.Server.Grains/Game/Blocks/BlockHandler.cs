@@ -67,6 +67,18 @@ namespace MineCase.Server.Game.Blocks
         {
             return Task.CompletedTask;
         }
+
+        public virtual Slot DropBlock(uint itemId, BlockState blockState)
+        {
+            switch ((BlockId)blockState.Id)
+            {
+                case BlockId.Air:
+                case BlockId.Water:
+                    return Slot.Empty;
+                default:
+                    return new Slot { BlockId = (short)blockState.Id, ItemCount = 1 };
+            }
+        }
     }
 
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace MineCase
@@ -11,6 +12,11 @@ namespace MineCase
         public int Y { get; set; }
 
         public int Z { get; set; }
+
+        public static implicit operator Vector3(Position position)
+        {
+            return new Vector3(position.X, position.Y, position.Z);
+        }
 
         public override bool Equals(object obj)
         {

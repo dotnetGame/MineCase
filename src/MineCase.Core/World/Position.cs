@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 using MineCase.World;
 
@@ -28,6 +29,11 @@ namespace MineCase.World
         public static implicit operator Position(BlockWorldPos position)
         {
             return new Position { X = position.X, Y = position.Y, Z = position.Z };
+        }
+
+        public static implicit operator Vector3(BlockWorldPos position)
+        {
+            return new Vector3 { X = position.X, Y = position.Y, Z = position.Z };
         }
 
         public BlockChunkPos ToBlockChunkPos()

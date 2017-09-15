@@ -75,5 +75,7 @@ namespace MineCase.Server.Game.Entities
         Task CloseWindow(byte windowId);
 
         Task SetOnGround(bool state);
+
+        Task TossPickup(Slot slot);
     }
 }

@@ -12,7 +12,5 @@ namespace MineCase.Server.Game.BlockEntities
         Task SetSlot(int slotIndex, Slot item);
 
         Task UseBy(IPlayer player);
-
-        Task<(int fuelLeft, int maxFuelTime, int cookProgress, int maxProgress)> GetCookingState();
     }
 }
