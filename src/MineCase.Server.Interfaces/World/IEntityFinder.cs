@@ -11,9 +11,13 @@ namespace MineCase.Server.World
 {
     public interface IEntityFinder : IGrainWithStringKey
     {
-        Task Register(IEntity entity);
+        Task Register(ICollectable entity);
 
-        Task Unregister(IEntity entity);
+        Task Register(ICreature entity);
+
+        Task Unregister(ICollectable entity);
+
+        Task Unregister(ICreature entity);
 
         Task<IReadOnlyCollection<IEntity>> Collision(IEntity entity);
 

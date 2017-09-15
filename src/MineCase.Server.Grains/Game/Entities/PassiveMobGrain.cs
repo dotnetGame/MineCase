@@ -54,11 +54,11 @@ namespace MineCase.Server.Game.Entities
         public Task Look(Vector3 pos)
         {
             Vector3 v = pos - Position;
-            Vector3.Normalize(v);
+            v = Vector3.Normalize(v);
 
             double tmpYaw = -Math.Atan2(v.X, v.Z) / Math.PI * 180;
             if (tmpYaw < 0)
-                tmpYaw = 360 - tmpYaw;
+                tmpYaw = 360 + tmpYaw;
             double tmppitch = -Math.Asin(v.Y) / Math.PI * 180;
 
             _yaw = (byte)(tmpYaw * 255 / 360);
@@ -112,7 +112,7 @@ namespace MineCase.Server.Game.Entities
 
         public async Task OnGameTick(TimeSpan deltaTime, long worldAge)
         {
-            if (worldAge % 32 == 0)
+            if (worldAge % 16 == 0)
             {
                 await GetBroadcastGenerator().EntityHeadLook(EntityId, _yaw);
                 await GetBroadcastGenerator().EntityLook(EntityId, _yaw, _pitch, _onGround);

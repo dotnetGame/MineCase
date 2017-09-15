@@ -13,12 +13,14 @@ namespace MineCase.Server.World
     internal class EntityFinder : Grain, IEntityFinder
     {
         private IWorld _world;
-        private List<IEntity> _entities;
+        private List<ICollectable> _collectableEntities;
+        private List<ICreature> _creatureEntities;
 
         public override Task OnActivateAsync()
         {
             _world = GrainFactory.GetGrain<IWorld>(this.GetWorldAndChunkPosition().worldKey);
-            _entities = new List<IEntity>();
+            _collectableEntities = new List<ICollectable>();
+            _creatureEntities = new List<ICreature>();
             return base.OnActivateAsync();
         }
 
@@ -27,52 +29,57 @@ namespace MineCase.Server.World
             return CollisionInChunk(entity);
         }
 
-        public async Task<IReadOnlyCollection<ICollectable>> CollisionCollectable(IEntity entity)
+        public Task<IReadOnlyCollection<ICollectable>> CollisionCollectable(IEntity entity)
         {
-            var collection = await CollisionInChunk(entity);
-            List<ICollectable> result = new List<ICollectable>();
-            foreach (IEntity eachEntity in collection)
-            {
-                if (eachEntity is ICollectable)
-                {
-                    result.Add((ICollectable)eachEntity);
-                }
-            }
-
-            return result;
+            return Task.FromResult<IReadOnlyCollection<ICollectable>>(_collectableEntities);
         }
 
-        public async Task<IReadOnlyCollection<ICreature>> CollisionCreature(IEntity entity)
+        public Task<IReadOnlyCollection<ICreature>> CollisionCreature(IEntity entity)
         {
-            var collection = await CollisionInChunk(entity);
-            List<ICreature> result = new List<ICreature>();
-            foreach (IEntity eachEntity in collection)
-            {
-                if (eachEntity is ICreature)
-                {
-                    result.Add((ICreature)eachEntity);
-                }
-            }
-
-            return result;
+            return Task.FromResult<IReadOnlyCollection<ICreature>>(_creatureEntities);
         }
 
         public Task<IReadOnlyCollection<IEntity>> CollisionInChunk(IEntity entity)
         {
-            return Task.FromResult<IReadOnlyCollection<IEntity>>(_entities);
+            List<IEntity> result = new List<IEntity>();
+            foreach (ICollectable each in _collectableEntities)
+            {
+                result.Add(each);
+            }
+
+            foreach (ICreature each in _creatureEntities)
+            {
+                result.Add(each);
+            }
+
+            return Task.FromResult<IReadOnlyCollection<IEntity>>(result);
         }
 
-        public Task Register(IEntity entity)
+        public Task Register(ICollectable entity)
         {
-            if (!_entities.Contains(entity))
-                _entities.Add(entity);
+            if (!_collectableEntities.Contains(entity))
+                _collectableEntities.Add(entity);
 
             return Task.CompletedTask;
         }
 
-        public Task Unregister(IEntity entity)
+        public Task Register(ICreature entity)
         {
-            _entities.Remove(entity);
+            if (!_creatureEntities.Contains(entity))
+                _creatureEntities.Add(entity);
+
+            return Task.CompletedTask;
+        }
+
+        public Task Unregister(ICollectable entity)
+        {
+            _collectableEntities.Remove(entity);
+            return Task.CompletedTask;
+        }
+
+        public Task Unregister(ICreature entity)
+        {
+            _creatureEntities.Remove(entity);
             return Task.CompletedTask;
         }
 

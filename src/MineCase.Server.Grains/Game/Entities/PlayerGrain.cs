@@ -202,7 +202,6 @@ namespace MineCase.Server.Game.Entities
                 await each.Look(await GetPosition());
             }
 
-            System.Console.WriteLine(list.Count);
             await SetPosition(new Vector3((float)x, (float)feetY, (float)z));
         }
 
