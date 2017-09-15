@@ -182,15 +182,15 @@ namespace MineCase.Server.Game.BlockEntities
         private async Task StartCooking()
         {
             _isCooking = true;
-            var facing = (FacingDirectionType)(await World.GetBlockState(GrainFactory, Position)).MetaValue;
-            await World.SetBlockState(GrainFactory, Position, BlockStates.BurningFurnace(facing));
+            var meta = (await World.GetBlockState(GrainFactory, Position)).MetaValue;
+            await World.SetBlockState(GrainFactory, Position, new BlockState { Id = (uint)BlockId.BurningFurnace, MetaValue = meta });
         }
 
         private async Task StopCooking()
         {
             _isCooking = false;
-            var facing = (FacingDirectionType)(await World.GetBlockState(GrainFactory, Position)).MetaValue;
-            await World.SetBlockState(GrainFactory, Position, BlockStates.Furnace(facing));
+            var meta = (await World.GetBlockState(GrainFactory, Position)).MetaValue;
+            await World.SetBlockState(GrainFactory, Position, new BlockState { Id = (uint)BlockId.Furnace, MetaValue = meta });
             await Unregister();
         }
 

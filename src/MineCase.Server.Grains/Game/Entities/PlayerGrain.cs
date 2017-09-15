@@ -156,6 +156,7 @@ namespace MineCase.Server.Game.Entities
         }
 
         private const float _maxDiggingRadius = 6;
+        private long _diggingStartTick;
 
         public async Task StartDigging(Position location, PlayerDiggingFace face)
         {
@@ -163,7 +164,10 @@ namespace MineCase.Server.Game.Entities
             var distance = (new Vector3(location.X + 0.5f, location.Y + 0.5f, location.Z + 0.5f)
                 - new Vector3(Position.X, Position.Y + 1.5f, Position.Z)).Length();
             if (distance <= _maxDiggingRadius)
+            {
+                _diggingStartTick = await World.GetAge();
                 _diggingBlock = (location, await World.GetBlockState(GrainFactory, location.X, location.Y, location.Z));
+            }
         }
 
         public Task CancelDigging(Position location, PlayerDiggingFace face)
@@ -176,16 +180,18 @@ namespace MineCase.Server.Game.Entities
         {
             if (_diggingBlock != null)
             {
-                var oldState = _diggingBlock.Value.Item2;
-                var newState = BlockStates.Air();
-                await World.SetBlockState(GrainFactory, location.X, location.Y, location.Z, newState);
-
-                var chunk = location.GetChunk();
-
-                // 产生 Pickup
-                var finder = GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunk.chunkX, chunk.chunkZ));
-                await finder.SpawnPickup(location, new[] { new Slot { BlockId = (short)oldState.Id, ItemCount = 1 } }.AsImmutable());
+                var heldItem = await GetHeldItem();
+                var itemHandler = ItemHandler.Create((uint)heldItem.slot.BlockId);
+                var usedTick = (await World.GetAge()) - _diggingStartTick;
+                if (await itemHandler.FinishedDigging(this, GrainFactory, World, _diggingBlock.Value.Item1, _diggingBlock.Value.Item2, usedTick))
+                    return;
             }
+        }
+
+        private async Task<(int index, Slot slot)> GetHeldItem()
+        {
+            var slotIndex = await _inventory.GetHotbarGlobalIndex(this, _heldSlot);
+            return (slotIndex, await _inventory.GetSlot(this, slotIndex));
         }
 
         public Task<IUser> GetUser() => Task.FromResult(_user);
@@ -236,13 +242,12 @@ namespace MineCase.Server.Game.Entities
                 }
                 else
                 {
-                    var slotIndex = await _inventory.GetHotbarGlobalIndex(this, _heldSlot);
-                    var slot = await _inventory.GetSlot(this, slotIndex);
-                    if (!slot.IsEmpty)
+                    var heldItem = await GetHeldItem();
+                    if (!heldItem.slot.IsEmpty)
                     {
-                        var itemHandler = ItemHandler.Create((uint)slot.BlockId);
+                        var itemHandler = ItemHandler.Create((uint)heldItem.slot.BlockId);
                         if (itemHandler.IsPlaceable)
-                            await itemHandler.PlaceBy(this, GrainFactory, World, location, _inventory, slotIndex, face, cursorPosition);
+                            await itemHandler.PlaceBy(this, GrainFactory, World, location, _inventory, heldItem.index, face, cursorPosition);
                     }
                 }
             }
@@ -329,6 +334,15 @@ namespace MineCase.Server.Game.Entities
         public Task<(float pitch, float yaw)> GetLook()
         {
             return Task.FromResult((_pitch, _yaw));
+        }
+
+        public async Task TossPickup(Slot slot)
+        {
+            var chunk = GetChunkPosition();
+
+            // 产生 Pickup
+            var finder = GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunk.x, chunk.z));
+            await finder.SpawnPickup(Position, new[] { slot }.AsImmutable());
         }
 
         private class WindowContext

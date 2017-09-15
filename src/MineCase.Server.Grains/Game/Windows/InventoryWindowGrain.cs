@@ -48,26 +48,5 @@ namespace MineCase.Server.Game.Windows
         {
             return Task.FromResult(LocalSlotIndexToGlobal(SlotAreas[3], slotIndex));
         }
-
-        public override async Task Click(IPlayer player, int slotIndex, ClickAction clickAction, Slot clickedItem)
-        {
-            switch (clickAction)
-            {
-                case ClickAction.NumberKey1:
-                case ClickAction.NumberKey2:
-                case ClickAction.NumberKey3:
-                case ClickAction.NumberKey4:
-                case ClickAction.NumberKey5:
-                case ClickAction.NumberKey6:
-                case ClickAction.NumberKey7:
-                case ClickAction.NumberKey8:
-                case ClickAction.NumberKey9:
-                    await player.SetHeldItem((short)(clickAction - ClickAction.NumberKey1));
-                    break;
-                default:
-                    await base.Click(player, slotIndex, clickAction, clickedItem);
-                    break;
-            }
-        }
     }
 }

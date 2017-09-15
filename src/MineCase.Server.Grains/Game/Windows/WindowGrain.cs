@@ -129,6 +129,19 @@ namespace MineCase.Server.Game.Windows
             }
         }
 
+        internal Task BroadcastWholeWindow()
+        {
+            async Task SendWholeWindow(IPlayer player, IClientboundPacketSink sink)
+            {
+                var slots = await GetSlots(player);
+                var id = await player.GetWindowId(this);
+                await new ClientPlayPacketGenerator(sink).WindowItems(id, slots);
+            }
+
+            Task.WhenAll(from p in _players select SendWholeWindow(p.Key, p.Value)).Ignore();
+            return Task.CompletedTask;
+        }
+
         public async Task Close(IPlayer player)
         {
             foreach (var slotArea in SlotAreas)
