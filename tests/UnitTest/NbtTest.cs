@@ -98,6 +98,7 @@ namespace MineCase.UnitTest
             testList.Add(new NbtInt(2));
             testList.Add(new NbtInt(4));
             testCompound.Add(new NbtLong(0x000000FFFFFFFFFF, "testLong"));
+            testCompound.Add(new NbtDouble(3.1415926, "testDouble"));
 
             using (var sw = new StringWriter())
             {

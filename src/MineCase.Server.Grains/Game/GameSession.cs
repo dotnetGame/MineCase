@@ -23,6 +23,8 @@ namespace MineCase.Server.Game
 
         private HashSet<ITickable> _tickables;
 
+        private readonly Commands.CommandMap _commandMap = new Commands.CommandMap();
+
         public override async Task OnActivateAsync()
         {
             _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(this.GetPrimaryKeyString());
@@ -30,6 +32,24 @@ namespace MineCase.Server.Game
             _lastGameTickTime = DateTime.UtcNow;
             _tickables = new HashSet<ITickable>();
             _gameTick = RegisterTimer(OnGameTick, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(50));
+        }
+
+        public Task<IEnumerable<IUser>> GetUsers()
+        {
+            return Task.FromResult((IEnumerable<IUser>)_users.Keys);
+        }
+
+        public async Task<IUser> FindUserByName(string name)
+        {
+            foreach (var user in _users)
+            {
+                if (await user.Key.GetName() == name)
+                {
+                    return user.Key;
+                }
+            }
+
+            return null;
         }
 
         public async Task JoinGame(IUser user)
@@ -64,10 +84,26 @@ namespace MineCase.Server.Game
         {
             var senderName = await sender.GetName();
 
-            // TODO command parser
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                var command = message.Trim();
+                if (command[0] == '/')
+                {
+                    if (!await _commandMap.Dispatch(await sender.GetPlayer(), message))
+                    {
+                        await sender.SendChatMessage(
+                            await CreateStandardChatMessage(
+                                senderName,
+                                $"试图执行指令 \"{command}\" 时被拒绝，请检查是否具有足够的权限以及指令语法是否正确"), 0);
+                    }
+
+                    return;
+                }
+            }
+
             // construct name
-            Chat jsonData = await CreateStandardChatMessage(senderName, message);
-            byte position = 0; // It represents user message in chat box
+            var jsonData = await CreateStandardChatMessage(senderName, message);
+            const byte position = 0; // It represents user message in chat box
             foreach (var item in _users.Keys)
             {
                 await item.SendChatMessage(jsonData, position);
@@ -79,8 +115,8 @@ namespace MineCase.Server.Game
             var senderName = await sender.GetName();
             var receiverName = await receiver.GetName();
 
-            Chat jsonData = await CreateStandardChatMessage(senderName, message);
-            byte position = 0; // It represents user message in chat box
+            var jsonData = await CreateStandardChatMessage(senderName, message);
+            const byte position = 0; // It represents user message in chat box
             foreach (var item in _users.Keys)
             {
                 if (await item.GetName() == receiverName ||
@@ -112,20 +148,23 @@ namespace MineCase.Server.Game
 
         private Task<Chat> CreateStandardChatMessage(string name, string message)
         {
-            StringComponent nameComponent = new StringComponent(name);
-            nameComponent.ClickEvent = new ChatClickEvent(ClickEventType.SuggestCommand, "/msg " + name);
-            nameComponent.HoverEvent = new ChatHoverEvent(HoverEventType.ShowEntity, name);
-            nameComponent.Insertion = name;
+            var nameComponent = new StringComponent(name)
+            {
+                ClickEvent = new ChatClickEvent(ClickEventType.SuggestCommand, "/msg " + name),
+                HoverEvent = new ChatHoverEvent(HoverEventType.ShowEntity, name),
+                Insertion = name
+            };
 
             // construct message
-            StringComponent messageComponent = new StringComponent(message);
+            var messageComponent = new StringComponent(message);
 
             // list
-            List<ChatComponent> list = new List<ChatComponent>();
-            list.Add(nameComponent);
-            list.Add(messageComponent);
+            var list = new List<ChatComponent>
+            {
+                nameComponent, messageComponent
+            };
 
-            Chat jsonData = new Chat(new TranslationComponent("chat.type.text", list));
+            var jsonData = new Chat(new TranslationComponent("chat.type.text", list));
             return Task.FromResult(jsonData);
         }
 

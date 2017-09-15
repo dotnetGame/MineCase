@@ -350,5 +350,17 @@ namespace MineCase.Server.Game.Entities
             public IWindow Window;
             public short ActionNumber;
         }
+
+        public Task<bool> HasPermission(Permission permission)
+        {
+            // TODO: 临时提供所有权限，需要实现权限管理
+            return Task.FromResult(true);
+        }
+
+        public Task SendMessage(string msg)
+        {
+            // TODO: 向玩家发送信息
+            return Task.CompletedTask;
+        }
     }
 }

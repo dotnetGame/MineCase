@@ -16,6 +16,8 @@ namespace MineCase.Server.World
 
         Task<IEntity> FindEntity(uint eid);
 
+        Task<IEnumerable<IEntity>> GetEntities();
+
         Task<(long age, long timeOfDay)> GetTime();
 
         Task<long> GetAge();

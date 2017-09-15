@@ -11,6 +11,10 @@ namespace MineCase.Server.Game
 {
     public interface IGameSession : IGrainWithStringKey
     {
+        Task<IEnumerable<IUser>> GetUsers();
+
+        Task<IUser> FindUserByName(string name);
+
         Task JoinGame(IUser player);
 
         Task LeaveGame(IUser player);
