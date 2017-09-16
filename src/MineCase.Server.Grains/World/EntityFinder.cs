@@ -20,6 +20,7 @@ namespace MineCase.Server.World
         public override Task OnActivateAsync()
         {
             _world = GrainFactory.GetGrain<IWorld>(this.GetWorldAndChunkPosition().worldKey);
+            _playerEntities = new List<IPlayer>();
             _collectableEntities = new List<ICollectable>();
             _creatureEntities = new List<ICreature>();
             return base.OnActivateAsync();

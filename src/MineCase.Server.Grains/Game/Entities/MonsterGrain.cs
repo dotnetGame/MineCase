@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 using System.Threading.Tasks;
-using MineCase.Server.Network.Play;
 using MineCase.Server.World;
 using MineCase.Server.World.EntitySpawner;
 using MineCase.World;
@@ -145,6 +143,11 @@ namespace MineCase.Server.Game.Entities
         {
             _tasks.Clear();
             return Task.CompletedTask;
+        }
+
+        public Task<CreatureTask> GetCreatureTask()
+        {
+            throw new NotImplementedException();
         }
     }
 }

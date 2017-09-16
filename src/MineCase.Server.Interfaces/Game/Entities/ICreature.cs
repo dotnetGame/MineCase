@@ -19,6 +19,8 @@ namespace MineCase.Server.Game.Entities
 
         Task Look(Vector3 pos);
 
+        Task<CreatureTask> GetCreatureTask();
+
         Task AddTask(CreatureTask task);
 
         Task RemoveAllTask();

@@ -1,3 +1,6 @@
+using System;
+using System.Numerics;
+
 namespace MineCase.Algorithm
 {
     public class MathHelper

@@ -26,10 +26,28 @@ namespace MineCase.Server.World.EntitySpawner.Ai.Action
                 // 三格内玩家
                 if (Vector3.Distance(playerPosition, entityPos) < 3)
                 {
-                    await creature.Look(playerPosition);
+                    (var yaw, var pitch) = VectorToYawAndPitch(entityPos, playerPosition);
+                    CreatureTask task = await creature.GetCreatureTask();
+                    task.Pitch = pitch;
+                    task.Yaw = yaw;
                     break;
                 }
             }
+        }
+
+        public static (byte, byte) VectorToYawAndPitch(Vector3 from, Vector3 to)
+        {
+            Vector3 v = to - from;
+            v = Vector3.Normalize(v);
+
+            double tmpYaw = -Math.Atan2(v.X, v.Z) / Math.PI * 180;
+            if (tmpYaw < 0)
+                tmpYaw = 360 + tmpYaw;
+            double tmppitch = -Math.Asin(v.Y) / Math.PI * 180;
+
+            byte yaw = (byte)(tmpYaw * 255 / 360);
+            byte pitch = (byte)(tmppitch * 255 / 360);
+            return (yaw, pitch);
         }
     }
 }

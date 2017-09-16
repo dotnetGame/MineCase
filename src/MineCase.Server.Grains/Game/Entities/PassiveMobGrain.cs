@@ -147,5 +147,18 @@ namespace MineCase.Server.Game.Entities
             _tasks.Clear();
             return Task.CompletedTask;
         }
+
+        public Task<CreatureTask> GetCreatureTask()
+        {
+            return Task.FromResult(
+                new CreatureTask
+                {
+                    Health = _health,
+                    Position = Position,
+                    Pitch = _pitch,
+                    Yaw = _yaw,
+                    OnGround = _onGround
+                });
+        }
     }
 }

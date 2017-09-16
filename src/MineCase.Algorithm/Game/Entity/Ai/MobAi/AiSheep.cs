@@ -12,6 +12,11 @@ namespace MineCase.Server.World.EntitySpawner.Ai.MobAi
         static AiSheep()
         {
             Automation = new ICreatureAiAction[3, 3];
+            Automation[(int)CreatureState.Stop, (int)CreatureEvent.Attacked] = new CreatureAiActionEscape();
+            Automation[(int)CreatureState.Stop, (int)CreatureEvent.PlayerApproaching] = new CreatureAiActionLookAtPlayer();
+            Automation[(int)CreatureState.Stop, (int)CreatureEvent.RandomWalk] = new CreatureAiActionWalk();
+            Automation[(int)CreatureState.Walk, (int)CreatureEvent.Attacked] = new CreatureAiActionEscape();
+            Automation[(int)CreatureState.Escape, (int)CreatureEvent.Attacked] = new CreatureAiActionEscape();
         }
 
         public ICreatureAiAction GetAction(CreatureState creatureState, CreatureEvent creatureEvent)
