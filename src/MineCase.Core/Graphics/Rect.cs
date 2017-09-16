@@ -46,9 +46,31 @@ namespace MineCase.Graphics
             return new Vector2(X + Width * 0.5f, Y + Height * 0.5f);
         }
 
-        public bool IntersectWith(Rect other)
+        public bool OverlapWith(Rect rect)
         {
-            return false;
+            var minx = Math.Max(X, rect.X);
+            var miny = Math.Max(Y, rect.Y);
+            var maxx = Math.Min(X + Width, rect.X + rect.Width);
+            var maxy = Math.Min(Y + Height, rect.Y + rect.Height);
+
+            // 边重叠也算重叠
+            if (minx > maxx || miny > maxy)
+                return false;
+            return true;
+        }
+
+        public bool OverlapWith(Circle circle)
+        {
+            var c = Center();
+            var h = TopRight() - c;
+            var v = new Vector2(Math.Abs(circle.Center.X - c.X), Math.Abs(circle.Center.Y - c.Y));
+            var u = v - h;
+            if (u.X < 0 && u.Y < 0)
+            {
+                u.X = u.Y = 0;
+            }
+
+            return u.LengthSquared() <= circle.Radius * circle.Radius;
         }
     }
 }
