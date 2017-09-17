@@ -7,11 +7,21 @@ namespace MineCase.Engine
 {
     public abstract class Component
     {
+        public string Name { get; }
+
         protected DependencyObject AttachedObject { get; private set; }
 
-        internal Task Attach(DependencyObject dependencyObject)
+        protected IServiceProvider ServiceProvider { get; private set; }
+
+        public Component(string name)
+        {
+            Name = name;
+        }
+
+        internal Task Attach(DependencyObject dependencyObject, IServiceProvider serviceProvider)
         {
             AttachedObject = dependencyObject;
+            ServiceProvider = serviceProvider;
             return OnAttached();
         }
 

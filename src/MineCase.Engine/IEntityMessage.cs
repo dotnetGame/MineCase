@@ -11,4 +11,8 @@ namespace MineCase.Engine
     public interface IEntityMessage<TResponse>
     {
     }
+
+    public class ReceiverNotFoundException : Exception
+    {
+    }
 }

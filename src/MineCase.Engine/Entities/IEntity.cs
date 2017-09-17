@@ -6,7 +6,7 @@ using Orleans;
 
 namespace MineCase.Engine.Entities
 {
-    public interface IEntity : IGrainWithStringKey
+    public interface IEntity : IGrain
     {
         Task Tell(IEntityMessage message);
 

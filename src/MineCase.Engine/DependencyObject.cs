@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace MineCase.Engine
 {
     public abstract class DependencyObject : Grain
     {
-        private Dictionary<Type, Component> _components;
+        private Dictionary<string, Component> _components;
 
         public DependencyObject()
         {
@@ -22,7 +23,7 @@ namespace MineCase.Engine
 
         public override Task OnActivateAsync()
         {
-            _components = new Dictionary<Type, Component>();
+            _components = new Dictionary<string, Component>();
             _messageHandlers = new MultiValueDictionary<Type, Component>();
             return base.OnActivateAsync();
         }
@@ -30,33 +31,40 @@ namespace MineCase.Engine
         public T GetComponent<T>()
             where T : Component
         {
-            if (_components.TryGetValue(typeof(T), out var component))
-                return (T)component;
+            foreach (var component in _components)
+            {
+                if (component.Value is T result)
+                    return result;
+            }
+
             return null;
         }
 
         public async Task SetComponent(Component component)
         {
-            var type = component.GetType();
-            if (_components.TryGetValue(type, out var old))
+            var name = component.Name;
+            if (_components.TryGetValue(name, out var old))
             {
                 if (old == component) return;
+                Unsubscribe(old);
                 await old.Detach();
-                _components.Remove(type);
+                _components.Remove(name);
             }
 
-            _components.Add(type, component);
-            await component.Attach(this);
+            _components.Add(name, component);
+            await component.Attach(this, ServiceProvider);
+            Subscribe(component);
         }
 
         public async Task ClearComponent<T>()
             where T : Component
         {
-            var type = typeof(T);
-            if (_components.TryGetValue(type, out var old))
+            var components = _components.Where(o => o.Value is T);
+            foreach (var component in components)
             {
-                await old.Detach();
-                _components.Remove(type);
+                Unsubscribe(component.Value);
+                await component.Value.Detach();
+                _components.Remove(component.Key);
             }
         }
 
@@ -169,6 +177,36 @@ namespace MineCase.Engine
         }
 
         private MultiValueDictionary<Type, Component> _messageHandlers;
+        private static readonly ConcurrentDictionary<Type, Delegate> _messageCaller = new ConcurrentDictionary<Type, Delegate>();
+
+        private static Delegate GetOrAddMessageCaller(Type messageType)
+        {
+            return _messageCaller.GetOrAdd(messageType, k =>
+            {
+                var iface = (from i in messageType.GetInterfaces()
+                             where i == typeof(IEntityMessage) ||
+                             (i.IsConstructedGenericType && i.GetGenericTypeDefinition() == typeof(IEntityMessage<>))
+                             select i).Single();
+                var paramExp = Expression.Parameter(typeof(Component), "c");
+                if (iface.IsConstructedGenericType)
+                {
+                    var responseType = iface.GetGenericArguments()[0];
+                    var handlerType = typeof(IHandle<,>).MakeGenericType(messageType, responseType);
+                    var handleMethod = handlerType.GetMethod("Handle");
+                    return Expression.Lambda(
+                        Expression.Call(Expression.Convert(paramExp, handlerType), handleMethod),
+                        paramExp).Compile();
+                }
+                else
+                {
+                    var handlerType = typeof(IHandle<>).MakeGenericType(messageType);
+                    var handleMethod = handlerType.GetMethod("Handle");
+                    return Expression.Lambda(
+                        Expression.Call(Expression.Convert(paramExp, handlerType), handleMethod),
+                        paramExp).Compile();
+                }
+            });
+        }
 
         private IEnumerable<Type> GetComponentHandledMessageTypes(Component component)
         {
@@ -185,26 +223,40 @@ namespace MineCase.Engine
             }
         }
 
-        public void Subscribe(Component component)
+        private void Subscribe(Component component)
         {
             foreach (var type in GetComponentHandledMessageTypes(component))
                 _messageHandlers.Add(type, component);
         }
 
-        public void Unsubscribe(Component component)
+        private void Unsubscribe(Component component)
         {
             foreach (var type in GetComponentHandledMessageTypes(component))
                 _messageHandlers.Remove(type, component);
         }
 
-        public Task Tell(IEntityMessage message)
+        public async Task Tell(IEntityMessage message)
         {
-            throw new NotImplementedException();
+            var messageType = message.GetType();
+            var invoker = (Func<Component, Task>)GetOrAddMessageCaller(messageType);
+            if (_messageHandlers.TryGetValue(messageType, out var handlers))
+            {
+                foreach (var handler in handlers)
+                    await invoker(handler);
+            }
         }
 
-        public Task<TResponse> Ask<TResponse>(IEntityMessage<TResponse> message)
+        public async Task<TResponse> Ask<TResponse>(IEntityMessage<TResponse> message)
         {
-            throw new NotImplementedException();
+            var messageType = message.GetType();
+            var invoker = (Func<Component, Task<TResponse>>)GetOrAddMessageCaller(messageType);
+            if (_messageHandlers.TryGetValue(messageType, out var handlers))
+            {
+                foreach (var handler in handlers)
+                    return await invoker(handler);
+            }
+
+            throw new ReceiverNotFoundException();
         }
     }
 }
