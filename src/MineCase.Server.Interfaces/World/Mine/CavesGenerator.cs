@@ -32,7 +32,7 @@ namespace MineCase.Server.World.Mine
         protected override void RecursiveGenerate(MapGenerationInfo info, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, ChunkColumnStorage chunk, Biome biome)
         {
             // 之前根据chunkXZ设置种子了
-            int seedPointCount = _rand.Next(17);
+            int seedPointCount = _rand.Next(15);
 
             // 仅1/7概率生成洞穴
             if (_rand.Next(7) != 0)
@@ -66,7 +66,7 @@ namespace MineCase.Server.World.Mine
                     if (_rand.Next(10) == 0)
                     {
                         // 扩大到1~3倍
-                        rangeScale *= (float)(_rand.NextDouble() * _rand.NextDouble()) * 3.0F + 1.0F;
+                        rangeScale *= (float)_rand.NextDouble() * 3.0F + 1.0F;
                     }
 
                     AddTunnel(_rand.Next(), centerChunkX, centerChunkZ, chunk, biome, seedPointX, seedPointY, seedPointZ, rangeScale, yawAngle, pitchAngle, 0, 0, 1.0D);
@@ -327,7 +327,7 @@ namespace MineCase.Server.World.Mine
         {
             BlockState top = biome._topBlock;
             BlockState filler = biome._fillerBlock;
-            if (this.CanReplaceBlock(state, up)
+            if (CanReplaceBlock(state, up)
                 || state == top
                 || state == filler)
             {
