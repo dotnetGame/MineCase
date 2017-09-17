@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Server.World.Biomes;
+using MineCase.Algorithm.World.Biomes;
 using MineCase.World;
 
-namespace MineCase.Server.World
+namespace MineCase.Algorithm.World
 {
     public class MapGenerationInfo
     {
