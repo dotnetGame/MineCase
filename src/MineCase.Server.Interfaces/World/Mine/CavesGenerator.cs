@@ -211,7 +211,7 @@ namespace MineCase.Server.World.Mine
                                 {
                                     if (y >= 0 && y < 256)
                                     {
-                                        if (chunk[x, y, z].IsSameId(BlockStates.Water()))
+                                        if (chunk[x, y, z].Id == (uint)BlockId.Water)
                                         {
                                             isOcean = true;
                                         }
@@ -246,14 +246,25 @@ namespace MineCase.Server.World.Mine
                                     // 平面上平方距离<1
                                     if (xDist1 * xDist1 + zDist1 * zDist1 < 1.0D)
                                     {
-                                        // 先获取高度
-                                        int height = 0;
-                                        for (int y = 255; y >= 0; --y)
+                                        // 先获取高度(改为二分)
+                                        int height = 64;
+                                        int upBound = 255, downbound = 1;
+
+                                        while (upBound != downbound)
                                         {
-                                            if (!chunk[x, y, z].IsAir())
+                                            int y = (upBound + downbound) / 2;
+                                            if (chunk[x, y, z].IsAir() && !chunk[x, y - 1, z].IsAir())
                                             {
-                                                height = y + 1;
+                                                height = y;
                                                 break;
+                                            }
+                                            else if (chunk[x, y, z].IsAir())
+                                            {
+                                                upBound = y - 1;
+                                            }
+                                            else
+                                            {
+                                                downbound = y + 1;
                                             }
                                         }
 
@@ -332,7 +343,7 @@ namespace MineCase.Server.World.Mine
 
                     if (foundTop && chunk[x, y - 1, z] == filler)
                     {
-                        // 如果挖开了顶层方块则把下面的方块设置为顶层方块
+                        // 如果挖开了顶层方块则把下面的方块设置为biome顶层方块
                         chunk[x, y - 1, z] = top;
                     }
                 }
