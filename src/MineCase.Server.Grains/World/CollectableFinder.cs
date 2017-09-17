@@ -47,15 +47,13 @@ namespace MineCase.Server.World
             return Task.CompletedTask;
         }
 
-        public async Task SpawnPickup(Position location, Immutable<Slot[]> slots)
+        public async Task SpawnPickup(Vector3 position, Immutable<Slot[]> slots)
         {
             foreach (var slot in slots.Value)
             {
                 var pickup = GrainFactory.GetGrain<IPickup>(_world.MakeEntityKey(await _world.NewEntityId()));
                 await _world.AttachEntity(pickup);
-                await pickup.Spawn(
-                    Guid.NewGuid(),
-                    new Vector3(location.X + 0.5f, location.Y + 0.5f, location.Z + 0.5f));
+                await pickup.Spawn(Guid.NewGuid(), position);
                 await pickup.SetItem(slot);
                 pickup.Register().Ignore();
             }

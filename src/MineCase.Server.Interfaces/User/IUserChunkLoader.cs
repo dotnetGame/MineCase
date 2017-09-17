@@ -16,7 +16,7 @@ namespace MineCase.Server.User
 
         Task JoinGame(IWorld world, IPlayer player);
 
-        Task OnGameTick();
+        Task OnGameTick(long worldAge);
 
         [OneWay]
         Task OnChunkSent(int chunkX, int chunkZ);

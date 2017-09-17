@@ -1,16 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace MineCase.Algorithm
 {
-    public class FindCraftingRecipeResult
-    {
-        public Slot Result { get; set; }
-
-        public Slot[,] AfterTake { get; set; }
-    }
-
     public class CraftingRecipeMatcher
     {
         private List<CraftingRecipe> _recipes;

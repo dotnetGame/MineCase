@@ -11,7 +11,9 @@ using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Network.Play;
 using MineCase.Server.World;
+using MineCase.World;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Game.Items
 {
@@ -116,6 +118,26 @@ namespace MineCase.Server.Game.Items
                 default:
                     throw new ArgumentOutOfRangeException(nameof(face));
             }
+        }
+
+        public async Task<bool> FinishedDigging(IPlayer player, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, BlockState blockState, long usedTick)
+        {
+            if (!blockState.IsSameId(BlockStates.Bedrock()))
+            {
+                var newState = BlockStates.Air();
+                await world.SetBlockState(grainFactory, position, newState);
+
+                // 产生 Pickup
+                var chunk = position.GetChunk();
+                var finder = grainFactory.GetGrain<ICollectableFinder>(world.MakeCollectableFinderKey(chunk.chunkX, chunk.chunkZ));
+                var blockHandler = BlockHandler.Create((BlockId)blockState.Id);
+                var droppedSlot = blockHandler.DropBlock(ItemId, blockState);
+                if (!droppedSlot.IsEmpty)
+                    await finder.SpawnPickup(position + new Vector3(0.5f, 0.5f, 0.5f), new[] { droppedSlot }.AsImmutable());
+                return true;
+            }
+
+            return false;
         }
     }
 

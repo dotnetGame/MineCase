@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.World;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.Game.Blocks
@@ -65,6 +66,18 @@ namespace MineCase.Server.Game.Blocks
         public virtual Task OnPlaced(IPlayer player, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, BlockState blockState)
         {
             return Task.CompletedTask;
+        }
+
+        public virtual Slot DropBlock(uint itemId, BlockState blockState)
+        {
+            switch ((BlockId)blockState.Id)
+            {
+                case BlockId.Air:
+                case BlockId.Water:
+                    return Slot.Empty;
+                default:
+                    return new Slot { BlockId = (short)blockState.Id, ItemCount = 1 };
+            }
         }
     }
 

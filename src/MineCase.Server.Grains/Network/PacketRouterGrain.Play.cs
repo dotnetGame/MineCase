@@ -4,7 +4,6 @@ using System.IO;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-
 using MineCase.Protocol;
 using MineCase.Protocol.Play;
 using MineCase.Serialization;
@@ -239,7 +238,7 @@ namespace MineCase.Server.Network
             try
             {
                 var player = await _user.GetPlayer();
-                player.ClickWindow(packet.WindowId, packet.Slot, ToClickAction(packet.Button, packet.Mode), packet.ActionNumber, packet.ClickedItem).Ignore();
+                player.ClickWindow(packet.WindowId, packet.Slot, ToClickAction(packet.Button, packet.Mode, packet.Slot), packet.ActionNumber, packet.ClickedItem).Ignore();
             }
             catch
             {
@@ -257,7 +256,7 @@ namespace MineCase.Server.Network
             return (Game.PlayerDiggingFace)face;
         }
 
-        private ClickAction ToClickAction(byte button, uint mode)
+        private ClickAction ToClickAction(byte button, uint mode, short slot)
         {
             switch (mode)
             {
@@ -268,6 +267,66 @@ namespace MineCase.Server.Network
                             return ClickAction.LeftMouseClick;
                         case 1:
                             return ClickAction.RightMouseClick;
+                        default:
+                            break;
+                    }
+
+                    break;
+                case 1:
+                    switch (button)
+                    {
+                        case 0:
+                            return ClickAction.LeftMouseClick;
+                        case 1:
+                            return ClickAction.RightMouseClick;
+                        default:
+                            break;
+                    }
+
+                    break;
+                case 2:
+                    switch (button)
+                    {
+                        case 0:
+                            return ClickAction.NumberKey1;
+                        case 1:
+                            return ClickAction.NumberKey2;
+                        case 2:
+                            return ClickAction.NumberKey3;
+                        case 3:
+                            return ClickAction.NumberKey4;
+                        case 4:
+                            return ClickAction.NumberKey5;
+                        case 5:
+                            return ClickAction.NumberKey6;
+                        case 6:
+                            return ClickAction.NumberKey7;
+                        case 7:
+                            return ClickAction.NumberKey8;
+                        case 8:
+                            return ClickAction.NumberKey9;
+                        default:
+                            break;
+                    }
+
+                    break;
+                case 3:
+                    switch (button)
+                    {
+                        case 2:
+                            return ClickAction.MiddleClick;
+                        default:
+                            break;
+                    }
+
+                    break;
+                case 4:
+                    switch (button)
+                    {
+                        case 0:
+                            return slot == -999 ? ClickAction.LeftClickNoting : ClickAction.DropKey;
+                        case 1:
+                            return slot == -999 ? ClickAction.RightClickNothing : ClickAction.CtrlDropKey;
                         default:
                             break;
                     }

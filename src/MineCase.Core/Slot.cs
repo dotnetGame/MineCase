@@ -41,6 +41,11 @@ namespace MineCase
                 this = Empty;
         }
 
+        public Slot CopyOne()
+        {
+            return new Slot { BlockId = BlockId, ItemCount = 1, ItemDamage = ItemDamage, NBT = NBT };
+        }
+
         public override bool Equals(object obj)
         {
             return obj is Slot && Equals((Slot)obj);

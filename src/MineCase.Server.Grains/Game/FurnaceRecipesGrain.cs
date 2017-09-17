@@ -33,9 +33,14 @@ namespace MineCase.Server.Game
             _recipeMatcher = new FurnaceRecipeMatcher(recipeLoader.Recipes, recipeLoader.Fuels);
         }
 
-        public Task<FindFurnaceRecipeResult> FindRecipe(Slot input, Slot fuel)
+        public Task<FurnaceRecipe> FindRecipe(Slot input)
         {
-            return Task.FromResult(_recipeMatcher.FindRecipe(input, fuel));
+            return Task.FromResult(_recipeMatcher.FindRecipe(input));
+        }
+
+        public Task<FurnaceFuel> FindFuel(Slot fuel)
+        {
+            return Task.FromResult(_recipeMatcher.FindFuel(fuel));
         }
     }
 }

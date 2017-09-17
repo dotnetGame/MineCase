@@ -38,7 +38,7 @@ namespace MineCase.Server.User
             return Task.CompletedTask;
         }
 
-        public async Task OnGameTick()
+        public async Task OnGameTick(long worldAge)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -46,8 +46,8 @@ namespace MineCase.Server.User
                     break;
             }
 
-            // unload per 5 ticks
-            if (await _world.GetAge() % 100 == 0)
+            // unload per 5 seconds
+            if (worldAge % 100 == 0)
                 await UnloadOutOfRangeChunks();
         }
 
