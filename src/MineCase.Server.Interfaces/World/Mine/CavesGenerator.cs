@@ -273,18 +273,25 @@ namespace MineCase.Server.World.Mine
                                             double yDist = ((double)(y - 1) + 0.5D - seedPointY) / yRange;
 
                                             // 空间平方距离<1
-                                            if (yDist > -0.7D && xDist1 * xDist1 + yDist * yDist + zDist1 * zDist1 < 1.0D)
+                                            if (yDist > -0.7D)
                                             {
-                                                BlockState curBlock = chunk[x, y, z];
-                                                BlockState upBlock = chunk[x, y + 1, z];
-
-                                                if (y == height - 1)
+                                                if (xDist1 * xDist1 + yDist * yDist + zDist1 * zDist1 < 1.0D)
                                                 {
-                                                    isTopBlock = true;
-                                                }
+                                                    BlockState curBlock = chunk[x, y, z];
+                                                    BlockState upBlock = chunk[x, y + 1, z];
 
-                                                // 把这个方块替换为空气或岩浆
-                                                DigBlock(chunk, biome, x, y, z, centerChunkX, centerChunkZ, isTopBlock, curBlock, upBlock);
+                                                    if (y == height - 1)
+                                                    {
+                                                        isTopBlock = true;
+                                                    }
+
+                                                    // 把这个方块替换为空气或岩浆
+                                                    DigBlock(chunk, biome, x, y, z, centerChunkX, centerChunkZ, isTopBlock, curBlock, upBlock);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                break;
                                             }
                                         }
                                     }
@@ -335,7 +342,7 @@ namespace MineCase.Server.World.Mine
                     // 设置为空气
                     chunk[x, y, z] = BlockStates.Air();
 
-                    if (up == BlockStates.Sand())
+                    if (up.Id == (uint)BlockId.Sand)
                     {
                         // 如果上面的方块是沙子则替换为沙石
                         chunk[x, y + 1, z] = BlockStates.Sandstone();
