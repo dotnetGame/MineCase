@@ -33,7 +33,7 @@ namespace MineCase.Algorithm.World.Plants
                         {
                             BlockChunkPos chunkPos = new BlockWorldPos(x, y, z).ToBlockChunkPos();
                             BlockState state = chunk[chunkPos.X, chunkPos.Y, chunkPos.Z];
-                            if (state != BlockStates.Air())
+                            if (!state.IsAir())
                             {
                                 result = false;
                             }

@@ -119,7 +119,7 @@ namespace MineCase.Server.World
             int y;
             for (y = 255; y >= 0; --y)
             {
-                if (await chunk.GetBlockState(xOffset.block, y, zOffset.block) != BlockStates.Air())
+                if (!(await chunk.GetBlockState(xOffset.block, y, zOffset.block)).IsAir())
                 {
                     break;
                 }
