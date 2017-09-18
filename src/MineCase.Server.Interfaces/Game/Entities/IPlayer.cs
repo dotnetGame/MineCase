@@ -9,6 +9,7 @@ using MineCase.Server.Game.Windows;
 using MineCase.Server.Network;
 using MineCase.Server.User;
 using Orleans.Concurrency;
+using MineCase.World;
 
 namespace MineCase.Server.Game.Entities
 {
@@ -54,7 +55,7 @@ namespace MineCase.Server.Game.Entities
 
         Task FinishDigging(Position location, PlayerDiggingFace face);
 
-        Task Spawn(Guid uuid, Vector3 position, float pitch, float yaw);
+        Task Spawn(EntityWorldPos position, float pitch, float yaw);
 
         Task PlaceBlock(Position location, EntityInteractHand hand, PlayerDiggingFace face, Vector3 cursorPosition);
 

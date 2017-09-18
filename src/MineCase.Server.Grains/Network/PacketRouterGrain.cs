@@ -18,9 +18,6 @@ namespace MineCase.Server.Network
         private uint _protocolVersion;
         private IUser _user;
 
-        private readonly Queue<object> _deferredPacket = new Queue<object>();
-        private readonly object _deferPacketMark = new DeferredPacketMark();
-
         public async Task SendPacket(UncompressedPacket packet)
         {
             dynamic innerPacket = new object();
@@ -36,16 +33,13 @@ namespace MineCase.Server.Network
                     innerPacket = DeserializeLoginPacket(packet);
                     break;
                 case SessionState.Play:
-                    innerPacket = DeserializePlayPacket(packet);
+                    await _user.ForwardPacket(packet);
                     break;
                 case SessionState.Closed:
                     break;
                 default:
                     break;
             }
-
-            if (!(innerPacket is DeferredPacketMark))
-                await DispatchPacket(innerPacket);
         }
 
         public async Task Close()
@@ -70,18 +64,6 @@ namespace MineCase.Server.Network
         {
             _user = user;
             return Task.CompletedTask;
-        }
-
-        public async Task OnGameTick()
-        {
-            while (_deferredPacket.Count != 0)
-                await DispatchPacket((dynamic)_deferredPacket.Dequeue());
-        }
-
-        protected object DeferPacket(object packet)
-        {
-            _deferredPacket.Enqueue(packet);
-            return _deferPacketMark;
         }
 
         private sealed class DeferredPacketMark

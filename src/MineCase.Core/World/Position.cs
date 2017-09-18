@@ -225,6 +225,16 @@ namespace MineCase.World
             Z = z;
         }
 
+        public static implicit operator Vector3(EntityWorldPos pos)
+        {
+            return new Vector3(pos.X, pos.Y, pos.Z);
+        }
+
+        public static implicit operator EntityWorldPos(Vector3 pos)
+        {
+            return new EntityWorldPos(pos.X, pos.Y, pos.Z);
+        }
+
         public ChunkWorldPos ToChunkWorldPos()
         {
             float chunkX = (float)Math.Floor((double)X / ChunkConstants.BlockEdgeWidthInSection);

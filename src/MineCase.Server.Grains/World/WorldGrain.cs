@@ -19,6 +19,8 @@ namespace MineCase.Server.World
         private long _worldAge;
         private GeneratorSettings _genSettings; // 生成设置
         private string _seed; // 世界种子
+        private HashSet<IWorldPartition> _activedPartitions;
+        private ObserverSubscriptionManager<ITickObserver> _observerSubscription;
 
         public override async Task OnActivateAsync()
         {
@@ -28,6 +30,8 @@ namespace MineCase.Server.World
             _genSettings = new GeneratorSettings();
             await InitGeneratorSettings(_genSettings);
             _seed = (await serverSettings.GetSettings()).LevelSeed;
+            _activedPartitions = new HashSet<IWorldPartition>();
+            _observerSubscription = new ObserverSubscriptionManager<ITickObserver>();
             await base.OnActivateAsync();
         }
 
@@ -35,13 +39,6 @@ namespace MineCase.Server.World
         {
             _entities.Add(entity.GetEntityId(), entity);
             return Task.CompletedTask;
-        }
-
-        public Task<IEntity> FindEntity(uint eid)
-        {
-            if (_entities.TryGetValue(eid, out var entity))
-                return Task.FromResult(entity);
-            return Task.FromException<IEntity>(new EntityNotFoundException());
         }
 
         public Task<(long age, long timeOfDay)> GetTime()
@@ -58,6 +55,7 @@ namespace MineCase.Server.World
         public Task OnGameTick(TimeSpan deltaTime)
         {
             _worldAge++;
+            _observerSubscription.Notify(o => o.OnGameTick(deltaTime, _worldAge));
             return Task.CompletedTask;
         }
 
@@ -84,6 +82,20 @@ namespace MineCase.Server.World
             IServerSettings serverSettings = GrainFactory.GetGrain<IServerSettings>(0);
 
             // TODO move server settings to generator settings
+            return Task.CompletedTask;
+        }
+
+        public Task ActivePartition(IWorldPartition worldPartition)
+        {
+            _activedPartitions.Add(worldPartition);
+            _observerSubscription.Subscribe(worldPartition);
+            return Task.CompletedTask;
+        }
+
+        public Task DeactivePartition(IWorldPartition worldPartition)
+        {
+            _activedPartitions.Remove(worldPartition);
+            _observerSubscription.Unsubscribe(worldPartition);
             return Task.CompletedTask;
         }
     }

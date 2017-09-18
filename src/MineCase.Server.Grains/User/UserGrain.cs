@@ -13,6 +13,7 @@ using MineCase.Server.Network.Play;
 using MineCase.Server.World;
 using Orleans;
 using Orleans.Concurrency;
+using MineCase.World;
 
 namespace MineCase.Server.User
 {
@@ -83,10 +84,9 @@ namespace MineCase.Server.User
         public async Task JoinGame()
         {
             var playerEid = await _world.NewEntityId();
-            _player = GrainFactory.GetGrain<IPlayer>(_world.MakeEntityKey(playerEid));
+            _player = GrainFactory.GetGrain<IPlayer>(this.GetPrimaryKey());
             await _player.SetName(_name);
             await _player.BindToUser(this);
-            await _world.AttachEntity(_player);
 
             await _chunkLoader.JoinGame(_world, _player);
             _state = UserState.JoinedGame;
@@ -96,12 +96,7 @@ namespace MineCase.Server.User
             // _worldTimeSyncTimer = RegisterTimer(OnSyncWorldTime, null, TimeSpan.Zero, )
 
             // 设置出生点
-            await _player.Spawn(this.GetPrimaryKey(), new Vector3(1000, 200, 1000), 0.0f, 0.0f);
-        }
-
-        public Task UseEntity(uint targetEid, EntityUsage type, Vector3? targetPosition, EntityInteractHand? hand)
-        {
-            return Task.CompletedTask;
+            await _player.Spawn(new EntityWorldPos(1000, 200, 1000), 0.0f, 0.0f);
         }
 
         private async Task OnSendKeepAliveRequests(object state)

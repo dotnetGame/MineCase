@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="GameSystems\**" />
+    <EmbeddedResource Remove="GameSystems\**" />
+    <None Remove="GameSystems\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Autofac" Version="4.6.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="2.0.0" />
@@ -31,8 +37,6 @@
     <Folder Include="World\Generation\" />
 
     <AdditionalFiles Include="..\..\build\stylecop.json" />
-
-    <Folder Include="GameSystems\" />
   </ItemGroup>
 
   <ItemGroup>

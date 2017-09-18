@@ -2,30 +2,47 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Orleans;
+using Microsoft.Extensions.Logging;
 
 namespace MineCase.Engine
 {
-    public abstract class Component
+    internal interface IComponentIntern
+    {
+        Task Attach(DependencyObject dependencyObject, IServiceProvider serviceProvider);
+
+        Task Detach();
+    }
+
+    public abstract class Component<T> : IComponentIntern
+        where T : DependencyObject
     {
         public string Name { get; }
 
-        protected DependencyObject AttachedObject { get; private set; }
+        protected T AttachedObject { get; private set; }
 
         protected IServiceProvider ServiceProvider { get; private set; }
+
+        protected IGrainFactory GrainFactory { get; private set; }
+
+        protected ILogger Logger { get; private set; }
 
         public Component(string name)
         {
             Name = name;
         }
 
-        internal Task Attach(DependencyObject dependencyObject, IServiceProvider serviceProvider)
+        Task IComponentIntern.Attach(DependencyObject dependencyObject, IServiceProvider serviceProvider)
         {
-            AttachedObject = dependencyObject;
+            AttachedObject = (T)dependencyObject;
             ServiceProvider = serviceProvider;
+            GrainFactory = serviceProvider.GetService<IGrainFactory>();
+            Logger = serviceProvider.GetService<ILoggerFactory>()?.CreateLogger(GetType());
             return OnAttached();
         }
 
-        internal Task Detach()
+        Task IComponentIntern.Detach()
         {
             AttachedObject = null;
             return OnDetached();
@@ -39,6 +56,14 @@ namespace MineCase.Engine
         protected virtual Task OnDetached()
         {
             return Task.CompletedTask;
+        }
+    }
+
+    public abstract class Component : Component<DependencyObject>
+    {
+        public Component(string name)
+            : base(name)
+        {
         }
     }
 }

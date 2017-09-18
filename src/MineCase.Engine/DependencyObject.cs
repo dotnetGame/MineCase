@@ -11,9 +11,9 @@ using Orleans;
 
 namespace MineCase.Engine
 {
-    public abstract class DependencyObject : Grain
+    public abstract class DependencyObject : Grain, IDependencyObject
     {
-        private Dictionary<string, Component> _components;
+        private Dictionary<string, IComponentIntern> _components;
 
         public DependencyObject()
         {
@@ -21,11 +21,16 @@ namespace MineCase.Engine
             _valueStorage.CurrentValueChanged += ValueStorage_CurrentValueChanged;
         }
 
-        public override Task OnActivateAsync()
+        public override async Task OnActivateAsync()
         {
-            _components = new Dictionary<string, Component>();
-            _messageHandlers = new MultiValueDictionary<Type, Component>();
-            return base.OnActivateAsync();
+            _components = new Dictionary<string, IComponentIntern>();
+            _messageHandlers = new MultiValueDictionary<Type, IComponentIntern>();
+            await InitializeComponents();
+        }
+
+        protected virtual Task InitializeComponents()
+        {
+            return Task.CompletedTask;
         }
 
         public T GetComponent<T>()
@@ -52,7 +57,7 @@ namespace MineCase.Engine
             }
 
             _components.Add(name, component);
-            await component.Attach(this, ServiceProvider);
+            await ((IComponentIntern)component).Attach(this, ServiceProvider);
             Subscribe(component);
         }
 
@@ -176,7 +181,7 @@ namespace MineCase.Engine
             return default(T);
         }
 
-        private MultiValueDictionary<Type, Component> _messageHandlers;
+        private MultiValueDictionary<Type, IComponentIntern> _messageHandlers;
         private static readonly ConcurrentDictionary<Type, Delegate> _messageCaller = new ConcurrentDictionary<Type, Delegate>();
 
         private static Delegate GetOrAddMessageCaller(Type messageType)
@@ -187,7 +192,7 @@ namespace MineCase.Engine
                              where i == typeof(IEntityMessage) ||
                              (i.IsConstructedGenericType && i.GetGenericTypeDefinition() == typeof(IEntityMessage<>))
                              select i).Single();
-                var paramExp = Expression.Parameter(typeof(Component), "c");
+                var paramExp = Expression.Parameter(typeof(IComponentIntern), "c");
                 if (iface.IsConstructedGenericType)
                 {
                     var responseType = iface.GetGenericArguments()[0];
@@ -208,7 +213,7 @@ namespace MineCase.Engine
             });
         }
 
-        private IEnumerable<Type> GetComponentHandledMessageTypes(Component component)
+        private IEnumerable<Type> GetComponentHandledMessageTypes(IComponentIntern component)
         {
             foreach (var iface in component.GetType().GetInterfaces())
             {
@@ -223,13 +228,13 @@ namespace MineCase.Engine
             }
         }
 
-        private void Subscribe(Component component)
+        private void Subscribe(IComponentIntern component)
         {
             foreach (var type in GetComponentHandledMessageTypes(component))
                 _messageHandlers.Add(type, component);
         }
 
-        private void Unsubscribe(Component component)
+        private void Unsubscribe(IComponentIntern component)
         {
             foreach (var type in GetComponentHandledMessageTypes(component))
                 _messageHandlers.Remove(type, component);
@@ -238,7 +243,7 @@ namespace MineCase.Engine
         public async Task Tell(IEntityMessage message)
         {
             var messageType = message.GetType();
-            var invoker = (Func<Component, Task>)GetOrAddMessageCaller(messageType);
+            var invoker = (Func<IComponentIntern, Task>)GetOrAddMessageCaller(messageType);
             if (_messageHandlers.TryGetValue(messageType, out var handlers))
             {
                 foreach (var handler in handlers)
@@ -249,7 +254,7 @@ namespace MineCase.Engine
         public async Task<TResponse> Ask<TResponse>(IEntityMessage<TResponse> message)
         {
             var messageType = message.GetType();
-            var invoker = (Func<Component, Task<TResponse>>)GetOrAddMessageCaller(messageType);
+            var invoker = (Func<IComponentIntern, Task<TResponse>>)GetOrAddMessageCaller(messageType);
             if (_messageHandlers.TryGetValue(messageType, out var handlers))
             {
                 foreach (var handler in handlers)
