@@ -265,7 +265,7 @@ namespace MineCase.Algorithm.World.Biomes
                 {
                     BlockState iblockstate = chunk[x_in_chunk, y, z_in_chunk];
 
-                    if (iblockstate == BlockStates.Air())
+                    if (iblockstate.IsAir())
                     {
                         surfaceFlag = -1;
                     }

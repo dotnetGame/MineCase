@@ -20,7 +20,7 @@ namespace MineCase.Algorithm.World.Plants
             int z = chunkPos.Z;
 
             // TODO use block accessor
-            if (chunk[x, y, z] == BlockStates.Air() &&
+            if (chunk[x, y, z].IsAir() &&
                 chunk[x, y - 1, z] == BlockStates.GrassBlock())
             {
                 var flowerType = biome.GetRandomFlower(random);
