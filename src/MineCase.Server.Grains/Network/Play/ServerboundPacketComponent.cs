@@ -6,10 +6,12 @@ using MineCase.Serialization;
 using MineCase.Server.Components;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.Components;
+using MineCase.World;
 using Orleans.Concurrency;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -183,94 +185,98 @@ namespace MineCase.Server.Network.Play
 
         private Task DispatchPacket(ServerboundKeepAlive packet)
         {
-            _user.KeepAlive(packet.KeepAliveId).Ignore();
-            return Task.CompletedTask;
+            return AttachedObject.GetComponent<KeepAliveComponent>().ReceiveResponse(packet.KeepAliveId);
         }
 
         private async Task DispatchPacket(ServerboundPositionAndLook packet)
         {
-            var player = await _user.GetPlayer();
-            player.SetPosition(packet.X, packet.FeetY, packet.Z, packet.OnGround).Ignore();
-            player.SetLook(packet.Yaw, packet.Pitch, packet.OnGround).Ignore();
+            await AttachedObject.GetComponent<EntityWorldPositionComponent>()
+                .SetPosition(new EntityWorldPos((float)packet.X, (float)packet.FeetY, (float)packet.Z));
+            var lookComponent = AttachedObject.GetComponent<EntityLookComponent>();
+            await lookComponent.SetPitch(packet.Pitch);
+            await lookComponent.SetYaw(packet.Yaw);
+            await AttachedObject.GetComponent<EntityOnGroundComponent>()
+                .SetIsOnGround(packet.OnGround);
         }
 
         private async Task DispatchPacket(PlayerOnGround packet)
         {
-            var player = await _user.GetPlayer();
-            await player.SetOnGround(packet.OnGround);
+            await AttachedObject.GetComponent<EntityOnGroundComponent>()
+                .SetIsOnGround(packet.OnGround);
         }
 
         private async Task DispatchPacket(PlayerPosition packet)
         {
-            var player = await _user.GetPlayer();
-            player.SetPosition(packet.X, packet.FeetY, packet.Z, packet.OnGround).Ignore();
+            await AttachedObject.GetComponent<EntityWorldPositionComponent>()
+                .SetPosition(new EntityWorldPos((float)packet.X, (float)packet.FeetY, (float)packet.Z));
+            await AttachedObject.GetComponent<EntityOnGroundComponent>()
+                .SetIsOnGround(packet.OnGround);
         }
 
         private async Task DispatchPacket(PlayerLook packet)
         {
-            var player = await _user.GetPlayer();
-            player.SetLook(packet.Yaw, packet.Pitch, packet.OnGround).Ignore();
+            var lookComponent = AttachedObject.GetComponent<EntityLookComponent>();
+            await lookComponent.SetPitch(packet.Pitch);
+            await lookComponent.SetYaw(packet.Yaw);
+            await AttachedObject.GetComponent<EntityOnGroundComponent>()
+                .SetIsOnGround(packet.OnGround);
         }
 
         private Task DispatchPacket(UseEntity packet)
         {
-            var player = _user;
+            Logger.LogWarning("UseEntity is not implemented.");
 
             // player.UseEntity((uint)packet.Target, (EntityUsage)packet.Type, packet.TargetX.HasValue ?
             //    new Vector3?(new Vector3(packet.TargetX.Value, packet.TargetY.Value, packet.TargetZ.Value)) : null, (EntityInteractHand?)packet.Hand).Ignore();
             return Task.CompletedTask;
         }
 
-        private async Task DispatchPacket(ServerboundHeldItemChange packet)
+        private Task DispatchPacket(ServerboundHeldItemChange packet)
         {
-            var player = await _user.GetPlayer();
-            player.SetHeldItem(packet.Slot).Ignore();
+            return AttachedObject.GetComponent<HeldItemComponent>().SetHeldItemIndex(packet.Slot);
         }
 
         private async Task DispatchPacket(PlayerDigging packet)
         {
             var face = ConvertDiggingFace(packet.Face);
-            var player = await _user.GetPlayer();
+            var component = AttachedObject.GetComponent<DiggingComponent>();
             switch (packet.Status)
             {
                 case PlayerDiggingStatus.StartedDigging:
-                    player.StartDigging(packet.Location, face).Ignore();
+                    await component.StartDigging(packet.Location, face);
                     break;
                 case PlayerDiggingStatus.CancelledDigging:
-                    player.CancelDigging(packet.Location, face).Ignore();
+                    await component.CancelDigging(packet.Location, face);
                     break;
                 case PlayerDiggingStatus.FinishedDigging:
-                    player.FinishDigging(packet.Location, face).Ignore();
-                    break;
-                case PlayerDiggingStatus.DropItemStack:
-                    break;
-                case PlayerDiggingStatus.DropItem:
-                    break;
-                case PlayerDiggingStatus.ShootArrowOrFinishEating:
-                    break;
-                case PlayerDiggingStatus.SwapItemInHand:
+                    await component.FinishDigging(packet.Location, face);
                     break;
                 default:
+                    Logger.LogWarning($"Not implemented digging status: {packet.Status}");
                     break;
             }
         }
 
         private Task DispatchPacket(EntityAction packet)
         {
+            Logger.LogWarning("EntityAction is not implemented.");
+
             // TODO Set Entity Action
             return Task.CompletedTask;
         }
 
         private Task DispatchPacket(ServerboundAnimation packet)
         {
+            Logger.LogWarning("Animation is not implemented.");
+
             return Task.CompletedTask;
         }
 
         private async Task DispatchPacket(PlayerBlockPlacement packet)
         {
             var face = ConvertDiggingFace(packet.Face);
-            var player = await _user.GetPlayer();
-            player.PlaceBlock(packet.Location, (EntityInteractHand)packet.Hand, face, new Vector3(packet.CursorPositionX, packet.CursorPositionY, packet.CursorPositionZ)).Ignore();
+            await AttachedObject.GetComponent<BlockPlacementComponent>()
+                .PlaceBlock(packet.Location, (EntityInteractHand)packet.Hand, face, new Vector3(packet.CursorPositionX, packet.CursorPositionY, packet.CursorPositionZ));
         }
 
         private Task DispatchPacket(UseItem packet)
@@ -282,23 +288,23 @@ namespace MineCase.Server.Network.Play
         {
             try
             {
-                var player = await _user.GetPlayer();
-                player.ClickWindow(packet.WindowId, packet.Slot, ToClickAction(packet.Button, packet.Mode, packet.Slot), packet.ActionNumber, packet.ClickedItem).Ignore();
+                await AttachedObject.GetComponent<WindowManagerComponent>()
+                    .ClickWindow(packet.WindowId, packet.Slot, ToClickAction(packet.Button, packet.Mode, packet.Slot), packet.ActionNumber, packet.ClickedItem);
             }
             catch
             {
             }
         }
 
-        private async Task DispatchPacket(ServerboundCloseWindow packet)
+        private Task DispatchPacket(ServerboundCloseWindow packet)
         {
-            var player = await _user.GetPlayer();
-            player.CloseWindow(packet.WindowId).Ignore();
+            return AttachedObject.GetComponent<WindowManagerComponent>()
+                .CloseWindow(packet.WindowId);
         }
 
-        private Game.PlayerDiggingFace ConvertDiggingFace(Protocol.Play.PlayerDiggingFace face)
+        private PlayerDiggingFace ConvertDiggingFace(Protocol.Play.PlayerDiggingFace face)
         {
-            return (Game.PlayerDiggingFace)face;
+            return (PlayerDiggingFace)face;
         }
 
         private ClickAction ToClickAction(byte button, uint mode, short slot)

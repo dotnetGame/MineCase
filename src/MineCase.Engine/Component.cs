@@ -15,12 +15,11 @@ namespace MineCase.Engine
         Task Detach();
     }
 
-    public abstract class Component<T> : IComponentIntern
-        where T : DependencyObject
+    public abstract class Component : IComponentIntern
     {
         public string Name { get; }
 
-        protected T AttachedObject { get; private set; }
+        protected DependencyObject AttachedObject { get; private set; }
 
         protected IServiceProvider ServiceProvider { get; private set; }
 
@@ -59,8 +58,11 @@ namespace MineCase.Engine
         }
     }
 
-    public abstract class Component : Component<DependencyObject>
+    public abstract class Component<T> : Component
+        where T : DependencyObject
     {
+        public new T AttachedObject => (T)base.AttachedObject;
+
         public Component(string name)
             : base(name)
         {

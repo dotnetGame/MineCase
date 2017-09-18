@@ -14,6 +14,7 @@ using MineCase.Server.World;
 using Orleans;
 using Orleans.Concurrency;
 using MineCase.World;
+using MineCase.Server.Game.Entities.Components;
 
 namespace MineCase.Server.User
 {
@@ -86,7 +87,7 @@ namespace MineCase.Server.User
             var playerEid = await _world.NewEntityId();
             _player = GrainFactory.GetGrain<IPlayer>(this.GetPrimaryKey());
             await _player.SetName(_name);
-            await _player.BindToUser(this);
+            await _player.Tell(new BindToUser { User = this.AsReference<IUser>() });
 
             await _chunkLoader.JoinGame(_world, _player);
             _state = UserState.JoinedGame;
@@ -143,7 +144,7 @@ namespace MineCase.Server.User
             _isOnline = true;
             _keepAliveWaiters = new HashSet<uint>();
 
-            await _player.NotifyLoggedIn();
+            await _player.Tell(new PlayerLoggedIn());
             _state = UserState.DownloadingWorld;
         }
 

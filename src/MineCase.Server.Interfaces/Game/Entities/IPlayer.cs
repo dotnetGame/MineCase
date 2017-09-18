@@ -45,21 +45,7 @@ namespace MineCase.Server.Game.Entities
 
         Task SetPosition(double x, double feetY, double z, bool onGround);
 
-        Task SetLook(float yaw, float pitch, bool onGround);
-
         Task<(float pitch, float yaw)> GetLook();
-
-        Task StartDigging(Position location, PlayerDiggingFace face);
-
-        Task CancelDigging(Position location, PlayerDiggingFace face);
-
-        Task FinishDigging(Position location, PlayerDiggingFace face);
-
-        Task Spawn(EntityWorldPos position, float pitch, float yaw);
-
-        Task PlaceBlock(Position location, EntityInteractHand hand, PlayerDiggingFace face, Vector3 cursorPosition);
-
-        Task SetHeldItem(short slot);
 
         Task<Slot> GetInventorySlot(int index);
 
@@ -70,12 +56,6 @@ namespace MineCase.Server.Game.Entities
         Task SetDraggedSlot(Slot item);
 
         Task<Slot> GetDraggedSlot();
-
-        Task ClickWindow(byte windowId, short slot, ClickAction clickAction, short actionNumber, Slot clickedItem);
-
-        Task CloseWindow(byte windowId);
-
-        Task SetOnGround(bool state);
 
         Task TossPickup(Slot slot);
     }

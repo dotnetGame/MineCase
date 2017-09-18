@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
+using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.World;
 
@@ -16,6 +17,9 @@ namespace MineCase.Server.Components
             : base(name)
         {
         }
+
+        public Task SetPosition(EntityWorldPos entityWorldPos)
+            => AttachedObject.SetLocalValue(EntityWorldPositionProperty, entityWorldPos);
     }
 
     public static class EntityWorldPositionComponentExtensions
