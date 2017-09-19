@@ -1,14 +1,14 @@
-﻿using MineCase.Engine;
-using MineCase.Server.Game.Windows;
-using MineCase.Server.Network.Play;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Engine;
+using MineCase.Server.Game.Windows;
+using MineCase.Server.Network.Play;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class InventoryComponent : Component<PlayerGrain>, IHandle<PlayerLoggedIn>
+    internal class InventoryComponent : Component<PlayerGrain>
     {
         public InventoryComponent(string name = "inventory")
             : base(name)
@@ -17,12 +17,5 @@ namespace MineCase.Server.Game.Entities.Components
 
         public IInventoryWindow GetInventoryWindow() =>
             GrainFactory.GetGrain<IInventoryWindow>(Guid.Empty);
-
-        async Task IHandle<PlayerLoggedIn>.Handle(PlayerLoggedIn message)
-        {
-            var slots = await GetInventoryWindow().GetSlots(AttachedObject);
-            await AttachedObject.GetComponent<ClientboundPacketComponent>().GetGenerator()
-                .WindowItems(0, slots);
-        }
     }
 }

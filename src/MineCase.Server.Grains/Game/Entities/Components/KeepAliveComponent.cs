@@ -1,10 +1,10 @@
-﻿using MineCase.Engine;
-using MineCase.Server.Components;
-using MineCase.Server.Network.Play;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Engine;
+using MineCase.Server.Components;
+using MineCase.Server.Network.Play;
 
 namespace MineCase.Server.Game.Entities.Components
 {
@@ -17,6 +17,20 @@ namespace MineCase.Server.Game.Entities.Components
         private bool _isOnline = false;
 
         private const int ClientKeepInterval = 6;
+
+        public uint Ping
+        {
+            get
+            {
+                uint ping;
+                var diff = DateTime.UtcNow - _keepAliveRequestTime;
+                if (diff.Ticks < 0)
+                    ping = int.MaxValue;
+                else
+                    ping = (uint)diff.TotalMilliseconds;
+                return ping;
+            }
+        }
 
         public KeepAliveComponent(string name = "keepAlive")
             : base(name)

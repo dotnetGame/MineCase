@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace MineCase.Server.Game.Entities
 {
-    public interface IPickup : IEntity, ICollectable
+    public interface IPickup : IEntity
     {
-        Task Spawn(Guid uuid, Vector3 position);
-
-        Task SetItem(Slot item);
     }
 }

@@ -1,4 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Numerics;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using MineCase.Engine;
 using MineCase.Protocol;
 using MineCase.Protocol.Play;
@@ -8,12 +14,6 @@ using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.Components;
 using MineCase.World;
 using Orleans.Concurrency;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MineCase.Server.Network.Play
 {
@@ -161,7 +161,7 @@ namespace MineCase.Server.Network.Play
 
         private Task DispatchPacket(TeleportConfirm packet)
         {
-            return AttachedObject.OnTeleportConfirm(packet.TeleportId);
+            return AttachedObject.GetComponent<TeleportComponent>().ConfirmTeleport(packet.TeleportId);
         }
 
         private Task DispatchPacket(ServerboundChatMessage packet)

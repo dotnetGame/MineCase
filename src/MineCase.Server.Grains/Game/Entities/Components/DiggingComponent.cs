@@ -1,13 +1,13 @@
-﻿using MineCase.Engine;
-using MineCase.Server.Components;
-using MineCase.Server.Game.Items;
-using MineCase.Server.World;
-using MineCase.World;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Engine;
+using MineCase.Server.Components;
+using MineCase.Server.Game.Items;
+using MineCase.Server.World;
+using MineCase.World;
 
 namespace MineCase.Server.Game.Entities.Components
 {
@@ -48,7 +48,7 @@ namespace MineCase.Server.Game.Entities.Components
         {
             if (_diggingBlock != null)
             {
-                var heldItem = await AttachedObject.GetHeldItem();
+                var heldItem = await AttachedObject.Ask(new AskHeldItem());
                 var itemHandler = ItemHandler.Create((uint)heldItem.slot.BlockId);
 
                 var world = AttachedObject.GetWorld();

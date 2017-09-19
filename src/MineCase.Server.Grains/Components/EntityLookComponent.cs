@@ -1,8 +1,8 @@
-﻿using MineCase.Engine;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Engine;
 
 namespace MineCase.Server.Components
 {
@@ -13,6 +13,10 @@ namespace MineCase.Server.Components
 
         public static readonly DependencyProperty<float> YawProperty =
             DependencyProperty.Register<float>("Yaw", typeof(EntityWorldPositionComponent));
+
+        public float Pitch => AttachedObject.GetValue(PitchProperty);
+
+        public float Yaw => AttachedObject.GetValue(YawProperty);
 
         public EntityLookComponent(string name = "entityLook")
             : base(name)

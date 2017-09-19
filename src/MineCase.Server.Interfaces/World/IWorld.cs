@@ -12,8 +12,6 @@ namespace MineCase.Server.World
     {
         Task<uint> NewEntityId();
 
-        Task AttachEntity(IEntity entity);
-
         Task<(long age, long timeOfDay)> GetTime();
 
         Task<long> GetAge();

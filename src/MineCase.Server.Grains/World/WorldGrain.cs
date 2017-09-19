@@ -14,7 +14,6 @@ namespace MineCase.Server.World
     [Reentrant]
     internal class WorldGrain : Grain, IWorld
     {
-        private Dictionary<uint, IEntity> _entities;
         private uint _nextAvailEId;
         private long _worldAge;
         private GeneratorSettings _genSettings; // 生成设置
@@ -26,19 +25,12 @@ namespace MineCase.Server.World
         {
             IServerSettings serverSettings = GrainFactory.GetGrain<IServerSettings>(0);
             _nextAvailEId = 0;
-            _entities = new Dictionary<uint, IEntity>();
             _genSettings = new GeneratorSettings();
             await InitGeneratorSettings(_genSettings);
             _seed = (await serverSettings.GetSettings()).LevelSeed;
             _activedPartitions = new HashSet<IWorldPartition>();
             _observerSubscription = new ObserverSubscriptionManager<ITickObserver>();
             await base.OnActivateAsync();
-        }
-
-        public Task AttachEntity(IEntity entity)
-        {
-            _entities.Add(entity.GetEntityId(), entity);
-            return Task.CompletedTask;
         }
 
         public Task<(long age, long timeOfDay)> GetTime()

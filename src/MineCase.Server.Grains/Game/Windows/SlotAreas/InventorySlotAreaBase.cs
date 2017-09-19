@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MineCase.Server.Game.Entities;
 using Orleans;
 using Orleans.Concurrency;
+using MineCase.Server.Game.Entities.Components;
 
 namespace MineCase.Server.Game.Windows.SlotAreas
 {
@@ -21,12 +22,12 @@ namespace MineCase.Server.Game.Windows.SlotAreas
 
         public override Task<Slot> GetSlot(IPlayer player, int slotIndex)
         {
-            return player.GetInventorySlot(slotIndex + OffsetInContainer);
+            return player.Ask(new AskSlot { Index = slotIndex + OffsetInContainer });
         }
 
         public override async Task SetSlot(IPlayer player, int slotIndex, Slot slot)
         {
-            await player.SetInventorySlot(slotIndex + OffsetInContainer, slot);
+            await player.Tell(new SetSlot { Index = slotIndex + OffsetInContainer, Slot = slot });
             await NotifySlotChanged(player, slotIndex, slot);
         }
     }

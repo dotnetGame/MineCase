@@ -69,7 +69,6 @@ namespace MineCase.Server.Game.Items
                         var blockHandler = BlockHandler.Create((BlockId)newState.Id);
                         if (await blockHandler.CanBeAt(position, grainFactory, world))
                         {
-                            var chunk = position.GetChunk();
                             await world.SetBlockState(grainFactory, position, newState);
 
                             slot.ItemCount--;
@@ -128,8 +127,8 @@ namespace MineCase.Server.Game.Items
                 await world.SetBlockState(grainFactory, position, newState);
 
                 // 产生 Pickup
-                var chunk = position.GetChunk();
-                var finder = grainFactory.GetGrain<ICollectableFinder>(world.MakeCollectableFinderKey(chunk.chunkX, chunk.chunkZ));
+                var chunk = position.ToChunkWorldPos();
+                var finder = grainFactory.GetGrain<ICollectableFinder>(world.MakeAddressByPartitionKey(chunk));
                 var blockHandler = BlockHandler.Create((BlockId)blockState.Id);
                 var droppedSlot = blockHandler.DropBlock(ItemId, blockState);
                 if (!droppedSlot.IsEmpty)

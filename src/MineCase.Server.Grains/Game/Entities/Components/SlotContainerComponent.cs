@@ -1,18 +1,20 @@
-﻿using MineCase.Engine;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Engine;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class SlotContainerComponent : Component
+    internal class SlotContainerComponent : Component, IHandle<SetSlot>, IHandle<AskSlot, Slot>
     {
         public static readonly DependencyProperty<Slot[]> SlotsProperty =
             DependencyProperty.Register<Slot[]>("Slots", typeof(SlotContainerComponent));
 
         private readonly int _slotsCount;
+
+        public event AsyncEventHandler<(int index, Slot slot)> SlotChanged;
 
         public SlotContainerComponent(int slotsCount, string name = "slotContainer")
             : base(name)
@@ -29,7 +31,22 @@ namespace MineCase.Server.Game.Entities.Components
         public Slot GetSlot(int index) =>
             AttachedObject.GetValue(SlotsProperty)[index];
 
-        public void SetSlot(int index, Slot slot) =>
-            AttachedObject.GetValue(SlotsProperty)[index] = slot;
+        public Task SetSlot(int index, Slot slot)
+        {
+            ref var old = ref AttachedObject.GetValue(SlotsProperty)[index];
+            if (old != slot)
+            {
+                old = slot;
+                return SlotChanged.InvokeSerial(this, (index, slot));
+            }
+
+            return Task.CompletedTask;
+        }
+
+        Task IHandle<SetSlot>.Handle(SetSlot message)
+            => SetSlot(message.Index, message.Slot);
+
+        Task<Slot> IHandle<AskSlot, Slot>.Handle(AskSlot message) =>
+            Task.FromResult(GetSlot(message.Index));
     }
 }

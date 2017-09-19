@@ -1,14 +1,14 @@
-﻿using MineCase.Engine;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Numerics;
+using System.Text;
 using System.Threading.Tasks;
-using MineCase.World;
+using MineCase.Engine;
 using MineCase.Server.Components;
-using MineCase.Server.World;
 using MineCase.Server.Game.Blocks;
 using MineCase.Server.Game.Items;
+using MineCase.Server.World;
+using MineCase.World;
 
 namespace MineCase.Server.Game.Entities.Components
 {
@@ -32,7 +32,7 @@ namespace MineCase.Server.Game.Entities.Components
                 }
                 else
                 {
-                    var heldItem = await AttachedObject.GetHeldItem();
+                    var heldItem = await AttachedObject.GetComponent<HeldItemComponent>().GetHeldItem();
                     if (!heldItem.slot.IsEmpty)
                     {
                         var itemHandler = ItemHandler.Create((uint)heldItem.slot.BlockId);

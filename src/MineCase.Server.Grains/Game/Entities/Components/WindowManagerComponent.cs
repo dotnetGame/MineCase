@@ -1,16 +1,16 @@
-﻿using MineCase.Engine;
-using MineCase.Server.Game.Windows;
-using MineCase.Server.Network.Play;
-using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Engine;
+using MineCase.Server.Game.Windows;
+using MineCase.Server.Network.Play;
+using Orleans;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class WindowManagerComponent : Component<PlayerGrain>
+    internal class WindowManagerComponent : Component<PlayerGrain>, IHandle<OpenWindow>
     {
         private Dictionary<byte, WindowContext> _windows;
 
@@ -69,6 +69,9 @@ namespace MineCase.Server.Game.Entities.Components
         {
             return _windows[windowId];
         }
+
+        Task IHandle<OpenWindow>.Handle(OpenWindow message) =>
+            OpenWindow(message.Window);
 
         private class WindowContext
         {

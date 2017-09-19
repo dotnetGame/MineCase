@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Orleans;
 using Microsoft.Extensions.Logging;
+using Orleans;
 
 namespace MineCase.Engine
 {
@@ -34,7 +34,7 @@ namespace MineCase.Engine
 
         Task IComponentIntern.Attach(DependencyObject dependencyObject, IServiceProvider serviceProvider)
         {
-            AttachedObject = (T)dependencyObject;
+            AttachedObject = dependencyObject;
             ServiceProvider = serviceProvider;
             GrainFactory = serviceProvider.GetService<IGrainFactory>();
             Logger = serviceProvider.GetService<ILoggerFactory>()?.CreateLogger(GetType());

@@ -44,7 +44,7 @@ namespace MineCase.Server.Game
 
             await user.JoinGame();
             await generator.JoinGame(
-                (await user.GetPlayer()).GetEntityId(),
+                await (await user.GetPlayer()).GetEntityId(),
                 new GameMode { ModeClass = GameMode.Class.Survival },
                 Dimension.Overworld,
                 Difficulty.Easy,

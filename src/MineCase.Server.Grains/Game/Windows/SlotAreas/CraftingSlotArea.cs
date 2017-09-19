@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MineCase.Server.Game.Entities;
 using Orleans;
 using Orleans.Concurrency;
+using MineCase.Server.Game.Entities.Components;
 
 namespace MineCase.Server.Game.Windows.SlotAreas
 {
@@ -25,7 +26,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
         {
             if (slotIndex == 0)
             {
-                var draggedSlot = await player.GetDraggedSlot();
+                var draggedSlot = await player.Ask(AskDraggedSlot.Default);
                 var result = await GetSlot(player, 0);
                 bool taken = false;
                 switch (clickAction)
@@ -34,13 +35,13 @@ namespace MineCase.Server.Game.Windows.SlotAreas
                     case ClickAction.RightMouseClick:
                         if (draggedSlot.IsEmpty)
                         {
-                            await player.SetDraggedSlot(result);
+                            await player.Tell(new SetDraggedSlot { Slot = result });
                             taken = true;
                         }
                         else if (draggedSlot.CanStack(result) && draggedSlot.ItemCount + result.ItemCount <= MaxStackCount)
                         {
                             draggedSlot.ItemCount += result.ItemCount;
-                            await player.SetDraggedSlot(draggedSlot);
+                            await player.Tell(new SetDraggedSlot { Slot = draggedSlot });
                             taken = true;
                         }
 
