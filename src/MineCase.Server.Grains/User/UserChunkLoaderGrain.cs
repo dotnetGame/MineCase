@@ -7,34 +7,34 @@ using MineCase.Server.Game.Entities;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
 using MineCase.Server.World;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.User
 {
     internal class UserChunkLoaderGrain : Grain, IUserChunkLoader
     {
-        private IUser _user;
+        private IPlayer _player;
         private IClientboundPacketSink _sink;
         private IWorld _world;
         private ClientPlayPacketGenerator _generator;
-        private IPlayer _player;
 
-        private (int x, int z)? _lastStreamedChunk;
-        private HashSet<(int x, int z)> _sendingChunks;
-        private HashSet<(int x, int z)> _sentChunks;
+        private ChunkWorldPos? _lastStreamedChunk;
+        private HashSet<ChunkWorldPos> _sendingChunks;
+        private HashSet<ChunkWorldPos> _sentChunks;
 
         private int _viewDistance = 10;
 
         public override Task OnActivateAsync()
         {
-            _user = GrainFactory.GetGrain<IUser>(this.GetPrimaryKey());
+            _player = GrainFactory.GetGrain<IPlayer>(this.GetPrimaryKey());
             return Task.CompletedTask;
         }
 
-        public Task OnChunkSent(int chunkX, int chunkZ)
+        public Task OnChunkSent(ChunkWorldPos chunkPos)
         {
-            _sendingChunks.Remove((chunkX, chunkZ));
-            _sentChunks.Add((chunkX, chunkZ));
+            _sendingChunks.Remove(chunkPos);
+            _sentChunks.Add(chunkPos);
             return Task.CompletedTask;
         }
 
@@ -53,8 +53,8 @@ namespace MineCase.Server.User
 
         private async Task<bool> StreamNextChunk()
         {
-            var currentChunk = await _player.GetChunkPosition();
-            if (_lastStreamedChunk.HasValue && _lastStreamedChunk.Value.Equals((currentChunk.x, currentChunk.z))) return true;
+            var currentChunk = (await _player.GetPosition()).ToChunkWorldPos();
+            if (_lastStreamedChunk.HasValue && _lastStreamedChunk.Value == currentChunk) return true;
 
             for (int d = 0; d <= _viewDistance; d++)
             {
@@ -62,33 +62,33 @@ namespace MineCase.Server.User
                 {
                     var z = d - Math.Abs(x);
 
-                    if (await StreamChunk(currentChunk.x + x, currentChunk.z + z))
+                    if (await StreamChunk(new ChunkWorldPos(currentChunk.X + x, currentChunk.Z + z)))
                         return false;
-                    if (await StreamChunk(currentChunk.x + x, currentChunk.z - z))
+                    if (await StreamChunk(new ChunkWorldPos(currentChunk.X + x, currentChunk.Z - z)))
                         return false;
                 }
             }
 
-            _lastStreamedChunk = (currentChunk.x, currentChunk.z);
+            _lastStreamedChunk = currentChunk;
             return true;
         }
 
-        private async Task<bool> StreamChunk(int chunkX, int chunkZ)
+        private async Task<bool> StreamChunk(ChunkWorldPos chunkPos)
         {
             var trunkSender = GrainFactory.GetGrain<IChunkSender>(_world.GetPrimaryKeyString());
-            if (!_sentChunks.Contains((chunkX, chunkZ)) && _sendingChunks.Add((chunkX, chunkZ)))
+            if (!_sentChunks.Contains(chunkPos) && _sendingChunks.Add(chunkPos))
             {
-                await trunkSender.PostChunk(chunkX, chunkZ, new[] { _sink }, new[] { this.AsReference<IUserChunkLoader>() });
-                await GrainFactory.GetGrain<IChunkTrackingHub>(_world.MakeChunkTrackingHubKey(chunkX, chunkZ)).Subscribe(_user);
+                await trunkSender.PostChunk(chunkPos, new[] { _sink }, new[] { this.AsReference<IUserChunkLoader>() });
+                await GrainFactory.GetGrain<IChunkTrackingHub>(_world.MakeAddressByPartitionKey(chunkPos)).Subscribe(_player);
                 return true;
             }
 
             return false;
         }
 
-        private readonly List<(int x, int y)> _clonedSentChunks = new List<(int x, int y)>();
+        private readonly List<ChunkWorldPos> _clonedSentChunks = new List<ChunkWorldPos>();
 
-        private List<(int x, int z)> CloneSentChunks()
+        private List<ChunkWorldPos> CloneSentChunks()
         {
             _clonedSentChunks.Clear();
             _clonedSentChunks.AddRange(_sentChunks);
@@ -97,14 +97,14 @@ namespace MineCase.Server.User
 
         private async Task UnloadOutOfRangeChunks()
         {
-            var currentChunk = await _player.GetChunkPosition();
+            var currentChunk = (await _player.GetPosition()).ToChunkWorldPos();
             foreach (var chunk in CloneSentChunks())
             {
-                var distance = Math.Abs(chunk.x - currentChunk.x) + Math.Abs(chunk.z - currentChunk.z);
+                var distance = Math.Abs(chunk.X - currentChunk.X) + Math.Abs(chunk.Z - currentChunk.Z);
                 if (distance > _viewDistance)
                 {
-                    await GrainFactory.GetGrain<IChunkTrackingHub>(_world.MakeChunkTrackingHubKey(chunk.x, chunk.z)).Unsubscribe(_user);
-                    await _generator.UnloadChunk(chunk.x, chunk.z);
+                    await GrainFactory.GetGrain<IChunkTrackingHub>(_world.MakeAddressByPartitionKey(chunk)).Unsubscribe(_player);
+                    await _generator.UnloadChunk(chunk.X, chunk.Z);
                     _sentChunks.Remove(chunk);
                 }
             }
@@ -122,8 +122,8 @@ namespace MineCase.Server.User
             _world = world;
             _player = player;
             _lastStreamedChunk = null;
-            _sendingChunks = new HashSet<(int x, int z)>();
-            _sentChunks = new HashSet<(int x, int z)>();
+            _sendingChunks = new HashSet<ChunkWorldPos>();
+            _sentChunks = new HashSet<ChunkWorldPos>();
             return Task.CompletedTask;
         }
 

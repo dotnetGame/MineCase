@@ -17,7 +17,5 @@ namespace MineCase.Server.Network
         Task Close();
 
         Task Play();
-
-        Task OnGameTick();
     }
 }

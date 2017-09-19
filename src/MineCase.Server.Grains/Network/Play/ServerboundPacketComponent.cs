@@ -4,16 +4,61 @@ using System.IO;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using MineCase.Engine;
 using MineCase.Protocol;
 using MineCase.Protocol.Play;
 using MineCase.Serialization;
-using MineCase.Server.Game;
-using Orleans;
+using MineCase.Server.Components;
+using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Entities.Components;
+using MineCase.World;
+using Orleans.Concurrency;
 
-namespace MineCase.Server.Network
+namespace MineCase.Server.Network.Play
 {
-    internal partial class PacketRouterGrain
+    internal class ServerboundPacketComponent : Component<PlayerGrain>, IHandle<ServerboundPacketMessage>
     {
+        private readonly Queue<object> _deferredPacket = new Queue<object>();
+
+        public ServerboundPacketComponent(string name = "serverboundPacket")
+            : base(name)
+        {
+        }
+
+        protected override Task OnAttached()
+        {
+            AttachedObject.GetComponent<GameTickComponent>()
+                .Tick += OnGameTick;
+            return base.OnAttached();
+        }
+
+        protected override Task OnDetached()
+        {
+            AttachedObject.GetComponent<GameTickComponent>()
+                .Tick -= OnGameTick;
+            return base.OnDetached();
+        }
+
+        private async Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
+        {
+            while (_deferredPacket.Count != 0)
+                await DispatchPacket((dynamic)_deferredPacket.Dequeue());
+        }
+
+        Task IHandle<ServerboundPacketMessage>.Handle(ServerboundPacketMessage message)
+        {
+            var packet = DeserializePlayPacket(message.Packet);
+            if (packet != null)
+                _deferredPacket.Enqueue(packet);
+            return Task.CompletedTask;
+        }
+
+        private Task DispatchPacket(object packet)
+        {
+            throw new NotImplementedException();
+        }
+
         private object DeserializePlayPacket(UncompressedPacket packet)
         {
             var br = new SpanReader(packet.Data);
@@ -47,65 +92,66 @@ namespace MineCase.Server.Network
 
                 // Player On Ground
                 case 0x0D:
-                    innerPacket = DeferPacket(PlayerOnGround.Deserialize(ref br));
+                    innerPacket = PlayerOnGround.Deserialize(ref br);
                     break;
 
                 // Player Position
                 case 0x0E:
-                    innerPacket = DeferPacket(PlayerPosition.Deserialize(ref br));
+                    innerPacket = PlayerPosition.Deserialize(ref br);
                     break;
 
                 // Position And Look
                 case 0x0F:
-                    innerPacket = DeferPacket(ServerboundPositionAndLook.Deserialize(ref br));
+                    innerPacket = ServerboundPositionAndLook.Deserialize(ref br);
                     break;
 
                 // Player Look
                 case 0x10:
-                    innerPacket = DeferPacket(PlayerLook.Deserialize(ref br));
+                    innerPacket = PlayerLook.Deserialize(ref br);
                     break;
 
                 // Player Digging
                 case 0x14:
-                    innerPacket = DeferPacket(PlayerDigging.Deserialize(ref br));
+                    innerPacket = PlayerDigging.Deserialize(ref br);
                     break;
 
                 // Entity Action
                 case 0x15:
-                    innerPacket = DeferPacket(EntityAction.Deserialize(ref br));
+                    innerPacket = EntityAction.Deserialize(ref br);
                     break;
 
                 // Held Item Change
                 case 0x1A:
-                    innerPacket = DeferPacket(ServerboundHeldItemChange.Deserialize(ref br));
+                    innerPacket = ServerboundHeldItemChange.Deserialize(ref br);
                     break;
 
                 // Animation
                 case 0x1D:
-                    innerPacket = DeferPacket(ServerboundAnimation.Deserialize(ref br));
+                    innerPacket = ServerboundAnimation.Deserialize(ref br);
                     break;
 
                 // Player Block Placement
                 case 0x1F:
-                    innerPacket = DeferPacket(PlayerBlockPlacement.Deserialize(ref br));
+                    innerPacket = PlayerBlockPlacement.Deserialize(ref br);
                     break;
 
                 // Use Item
                 case 0x20:
-                    innerPacket = DeferPacket(UseItem.Deserialize(ref br));
+                    innerPacket = UseItem.Deserialize(ref br);
                     break;
 
                 // Click Window
                 case 0x08:
-                    innerPacket = DeferPacket(ClickWindow.Deserialize(ref br));
+                    innerPacket = ClickWindow.Deserialize(ref br);
                     break;
 
                 // Close Window
                 case 0x09:
-                    innerPacket = DeferPacket(ServerboundCloseWindow.Deserialize(ref br));
+                    innerPacket = ServerboundCloseWindow.Deserialize(ref br);
                     break;
                 default:
-                    throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X2}.");
+                    Logger.LogWarning($"Unrecognizable packet id: 0x{packet.PacketId:X2}.");
+                    return null;
             }
 
             if (!br.IsCosumed)
@@ -113,22 +159,23 @@ namespace MineCase.Server.Network
             return innerPacket;
         }
 
-        private async Task DispatchPacket(TeleportConfirm packet)
+        private Task DispatchPacket(TeleportConfirm packet)
         {
-            var player = await _user.GetPlayer();
-            player.OnTeleportConfirm(packet.TeleportId).Ignore();
+            return AttachedObject.GetComponent<TeleportComponent>().ConfirmTeleport(packet.TeleportId);
         }
 
-        private async Task DispatchPacket(ServerboundChatMessage packet)
+        private Task DispatchPacket(ServerboundChatMessage packet)
         {
+            /*
             var gameSession = await _user.GetGameSession();
             await gameSession.SendChatMessage(_user, packet.Message);
+            */
+            return Task.CompletedTask;
         }
 
-        private Task DispatchPacket(ClientSettings packet)
+        private async Task DispatchPacket(ClientSettings packet)
         {
-            _user.SetViewDistance(packet.ViewDistance);
-            return Task.CompletedTask;
+            await AttachedObject.SetLocalValue(ViewDistanceComponent.ViewDistanceProperty, packet.ViewDistance);
         }
 
         private Task DispatchPacket(ServerboundPluginMessage packet)
@@ -138,94 +185,98 @@ namespace MineCase.Server.Network
 
         private Task DispatchPacket(ServerboundKeepAlive packet)
         {
-            _user.KeepAlive(packet.KeepAliveId).Ignore();
-            return Task.CompletedTask;
+            return AttachedObject.GetComponent<KeepAliveComponent>().ReceiveResponse(packet.KeepAliveId);
         }
 
         private async Task DispatchPacket(ServerboundPositionAndLook packet)
         {
-            var player = await _user.GetPlayer();
-            player.SetPosition(packet.X, packet.FeetY, packet.Z, packet.OnGround).Ignore();
-            player.SetLook(packet.Yaw, packet.Pitch, packet.OnGround).Ignore();
+            await AttachedObject.GetComponent<EntityWorldPositionComponent>()
+                .SetPosition(new EntityWorldPos((float)packet.X, (float)packet.FeetY, (float)packet.Z));
+            var lookComponent = AttachedObject.GetComponent<EntityLookComponent>();
+            await lookComponent.SetPitch(packet.Pitch);
+            await lookComponent.SetYaw(packet.Yaw);
+            await AttachedObject.GetComponent<EntityOnGroundComponent>()
+                .SetIsOnGround(packet.OnGround);
         }
 
         private async Task DispatchPacket(PlayerOnGround packet)
         {
-            var player = await _user.GetPlayer();
-            await player.SetOnGround(packet.OnGround);
+            await AttachedObject.GetComponent<EntityOnGroundComponent>()
+                .SetIsOnGround(packet.OnGround);
         }
 
         private async Task DispatchPacket(PlayerPosition packet)
         {
-            var player = await _user.GetPlayer();
-            player.SetPosition(packet.X, packet.FeetY, packet.Z, packet.OnGround).Ignore();
+            await AttachedObject.GetComponent<EntityWorldPositionComponent>()
+                .SetPosition(new EntityWorldPos((float)packet.X, (float)packet.FeetY, (float)packet.Z));
+            await AttachedObject.GetComponent<EntityOnGroundComponent>()
+                .SetIsOnGround(packet.OnGround);
         }
 
         private async Task DispatchPacket(PlayerLook packet)
         {
-            var player = await _user.GetPlayer();
-            player.SetLook(packet.Yaw, packet.Pitch, packet.OnGround).Ignore();
+            var lookComponent = AttachedObject.GetComponent<EntityLookComponent>();
+            await lookComponent.SetPitch(packet.Pitch);
+            await lookComponent.SetYaw(packet.Yaw);
+            await AttachedObject.GetComponent<EntityOnGroundComponent>()
+                .SetIsOnGround(packet.OnGround);
         }
 
         private Task DispatchPacket(UseEntity packet)
         {
-            var player = _user;
+            Logger.LogWarning("UseEntity is not implemented.");
 
             // player.UseEntity((uint)packet.Target, (EntityUsage)packet.Type, packet.TargetX.HasValue ?
             //    new Vector3?(new Vector3(packet.TargetX.Value, packet.TargetY.Value, packet.TargetZ.Value)) : null, (EntityInteractHand?)packet.Hand).Ignore();
             return Task.CompletedTask;
         }
 
-        private async Task DispatchPacket(ServerboundHeldItemChange packet)
+        private Task DispatchPacket(ServerboundHeldItemChange packet)
         {
-            var player = await _user.GetPlayer();
-            player.SetHeldItem(packet.Slot).Ignore();
+            return AttachedObject.GetComponent<HeldItemComponent>().SetHeldItemIndex(packet.Slot);
         }
 
         private async Task DispatchPacket(PlayerDigging packet)
         {
             var face = ConvertDiggingFace(packet.Face);
-            var player = await _user.GetPlayer();
+            var component = AttachedObject.GetComponent<DiggingComponent>();
             switch (packet.Status)
             {
                 case PlayerDiggingStatus.StartedDigging:
-                    player.StartDigging(packet.Location, face).Ignore();
+                    await component.StartDigging(packet.Location, face);
                     break;
                 case PlayerDiggingStatus.CancelledDigging:
-                    player.CancelDigging(packet.Location, face).Ignore();
+                    await component.CancelDigging(packet.Location, face);
                     break;
                 case PlayerDiggingStatus.FinishedDigging:
-                    player.FinishDigging(packet.Location, face).Ignore();
-                    break;
-                case PlayerDiggingStatus.DropItemStack:
-                    break;
-                case PlayerDiggingStatus.DropItem:
-                    break;
-                case PlayerDiggingStatus.ShootArrowOrFinishEating:
-                    break;
-                case PlayerDiggingStatus.SwapItemInHand:
+                    await component.FinishDigging(packet.Location, face);
                     break;
                 default:
+                    Logger.LogWarning($"Not implemented digging status: {packet.Status}");
                     break;
             }
         }
 
         private Task DispatchPacket(EntityAction packet)
         {
+            Logger.LogWarning("EntityAction is not implemented.");
+
             // TODO Set Entity Action
             return Task.CompletedTask;
         }
 
         private Task DispatchPacket(ServerboundAnimation packet)
         {
+            Logger.LogWarning("Animation is not implemented.");
+
             return Task.CompletedTask;
         }
 
         private async Task DispatchPacket(PlayerBlockPlacement packet)
         {
             var face = ConvertDiggingFace(packet.Face);
-            var player = await _user.GetPlayer();
-            player.PlaceBlock(packet.Location, (EntityInteractHand)packet.Hand, face, new Vector3(packet.CursorPositionX, packet.CursorPositionY, packet.CursorPositionZ)).Ignore();
+            await AttachedObject.GetComponent<BlockPlacementComponent>()
+                .PlaceBlock(packet.Location, (EntityInteractHand)packet.Hand, face, new Vector3(packet.CursorPositionX, packet.CursorPositionY, packet.CursorPositionZ));
         }
 
         private Task DispatchPacket(UseItem packet)
@@ -237,23 +288,23 @@ namespace MineCase.Server.Network
         {
             try
             {
-                var player = await _user.GetPlayer();
-                player.ClickWindow(packet.WindowId, packet.Slot, ToClickAction(packet.Button, packet.Mode, packet.Slot), packet.ActionNumber, packet.ClickedItem).Ignore();
+                await AttachedObject.GetComponent<WindowManagerComponent>()
+                    .ClickWindow(packet.WindowId, packet.Slot, ToClickAction(packet.Button, packet.Mode, packet.Slot), packet.ActionNumber, packet.ClickedItem);
             }
             catch
             {
             }
         }
 
-        private async Task DispatchPacket(ServerboundCloseWindow packet)
+        private Task DispatchPacket(ServerboundCloseWindow packet)
         {
-            var player = await _user.GetPlayer();
-            player.CloseWindow(packet.WindowId).Ignore();
+            return AttachedObject.GetComponent<WindowManagerComponent>()
+                .CloseWindow(packet.WindowId);
         }
 
-        private Game.PlayerDiggingFace ConvertDiggingFace(Protocol.Play.PlayerDiggingFace face)
+        private PlayerDiggingFace ConvertDiggingFace(Protocol.Play.PlayerDiggingFace face)
         {
-            return (Game.PlayerDiggingFace)face;
+            return (PlayerDiggingFace)face;
         }
 
         private ClickAction ToClickAction(byte button, uint mode, short slot)
@@ -338,5 +389,11 @@ namespace MineCase.Server.Network
 
             throw new NotSupportedException("This button-mode is not supported");
         }
+    }
+
+    [Immutable]
+    public sealed class ServerboundPacketMessage : IEntityMessage
+    {
+        public UncompressedPacket Packet { get; set; }
     }
 }

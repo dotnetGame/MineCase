@@ -21,8 +21,7 @@ namespace MineCase.Server.World
     internal class ChunkColumnGrain : Grain, IChunkColumn
     {
         private IWorld _world;
-        private int _chunkX;
-        private int _chunkZ;
+        private ChunkWorldPos _chunkPos;
 
         private bool _generated = false;
         private ChunkColumnCompactStorage _state;
@@ -42,10 +41,9 @@ namespace MineCase.Server.World
 
         public override Task OnActivateAsync()
         {
-            var key = this.GetWorldAndChunkPosition();
-            _world = GrainFactory.GetGrain<IWorld>(key.worldKey);
-            _chunkX = key.x;
-            _chunkZ = key.z;
+            var keys = this.GetWorldAndChunkWorldPos();
+            _world = GrainFactory.GetGrain<IWorld>(keys.worldKey);
+            _chunkPos = keys.chunkWorldPos;
             _blockEntities = new Dictionary<BlockChunkPos, IBlockEntity>();
             return Task.CompletedTask;
         }
@@ -65,7 +63,7 @@ namespace MineCase.Server.World
                 _state[x, y, z] = blockState;
 
                 var chunkPos = new BlockChunkPos(x, y, z);
-                var blockWorldPos = chunkPos.ToBlockWorldPos(new ChunkWorldPos(_chunkX, _chunkZ));
+                var blockWorldPos = chunkPos.ToBlockWorldPos(_chunkPos);
                 await GetBroadcastGenerator().BlockChange(blockWorldPos, blockState);
 
                 if (oldState.Id != blockState.Id)
@@ -100,9 +98,9 @@ namespace MineCase.Server.World
                    var neighborPos = blockWorldPos;
                    neighborPos.X += crossCoord.x;
                    neighborPos.Z += crossCoord.z;
-                   var chunk = neighborPos.GetChunk();
+                   var chunk = neighborPos.ToChunkWorldPos();
                    var blockChunkPos = neighborPos.ToBlockChunkPos();
-                   return GrainFactory.GetGrain<IChunkColumn>(_world.MakeChunkColumnKey(chunk.chunkX, chunk.chunkZ)).OnBlockNeighborChanged(
+                   return GrainFactory.GetPartitionGrain<IChunkColumn>(_world, chunk).OnBlockNeighborChanged(
                        blockChunkPos.X, blockChunkPos.Y, blockChunkPos.Z, blockWorldPos, oldState, blockState);
                }));
             }
@@ -120,7 +118,7 @@ namespace MineCase.Server.World
                     GeneratorSettings settings = new GeneratorSettings
                     {
                     };
-                    _state = await generator.Generate(_world, _chunkX, _chunkZ, settings);
+                    _state = await generator.Generate(_world, _chunkPos.X, _chunkPos.Z, settings);
                 }
                 else if (worldType == "FLAT" || worldType == "flat")
                 {
@@ -137,7 +135,7 @@ namespace MineCase.Server.World
                             BlockStates.Grass()
                         }
                     };
-                    _state = await generator.Generate(_world, _chunkX, _chunkZ, settings);
+                    _state = await generator.Generate(_world, _chunkPos.X, _chunkPos.Z, settings);
                 }
                 else
                 {
@@ -145,7 +143,7 @@ namespace MineCase.Server.World
                     GeneratorSettings settings = new GeneratorSettings
                     {
                     };
-                    _state = await generator.Generate(_world, _chunkX, _chunkZ, settings);
+                    _state = await generator.Generate(_world, _chunkPos.X, _chunkPos.Z, settings);
                 }
 
                 _generated = true;
@@ -154,7 +152,7 @@ namespace MineCase.Server.World
 
         protected ClientPlayPacketGenerator GetBroadcastGenerator()
         {
-            return new ClientPlayPacketGenerator(GrainFactory.GetGrain<IChunkTrackingHub>(_world.MakeChunkTrackingHubKey(_chunkX, _chunkZ)));
+            return new ClientPlayPacketGenerator(GrainFactory.GetPartitionGrain<IChunkTrackingHub>(_world, _chunkPos));
         }
 
         public Task<IBlockEntity> GetBlockEntity(int x, int y, int z)
@@ -168,7 +166,7 @@ namespace MineCase.Server.World
         {
             var block = _state[x, y, z];
             var blockHandler = BlockHandler.Create((BlockId)block.Id);
-            var selfPosition = new BlockChunkPos(x, y, z).ToBlockWorldPos(new ChunkWorldPos(_chunkX, _chunkZ));
+            var selfPosition = new BlockChunkPos(x, y, z).ToBlockWorldPos(_chunkPos);
             return blockHandler.OnNeighborChanged(selfPosition, neighborPosition, oldState, newState, GrainFactory, _world);
         }
     }

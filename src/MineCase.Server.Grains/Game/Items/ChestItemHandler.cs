@@ -38,7 +38,7 @@ namespace MineCase.Server.Game.Items
                 }
             }
 
-            var yaw = (await player.GetLook()).yaw;
+            var yaw = await player.GetYaw();
             FacingDirectionType facing;
             switch (neighborIdx)
             {

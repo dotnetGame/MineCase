@@ -10,7 +10,7 @@ using Orleans;
 
 namespace MineCase.Server.World
 {
-    public interface IChunkColumn : IGrainWithStringKey
+    public interface IChunkColumn : IAddressByPartition
     {
         Task<ChunkColumnCompactStorage> GetState();
 
@@ -21,25 +21,5 @@ namespace MineCase.Server.World
         Task<IBlockEntity> GetBlockEntity(int x, int y, int z);
 
         Task OnBlockNeighborChanged(int x, int y, int z, BlockWorldPos neighborPosition, BlockState oldState, BlockState newState);
-    }
-
-    public static class ChunkColumnExtensions
-    {
-        public static string MakeChunkColumnKey(this IWorld world, int x, int z)
-        {
-            return $"{world.GetPrimaryKeyString()},{x},{z}";
-        }
-
-        public static (int x, int z) GetChunkPosition(this IChunkColumn chunkColumn)
-        {
-            var key = chunkColumn.GetPrimaryKeyString().Split(',');
-            return (int.Parse(key[1]), int.Parse(key[2]));
-        }
-
-        public static (string worldKey, int x, int z) GetWorldAndChunkPosition(this IChunkColumn chunkColumn)
-        {
-            var key = chunkColumn.GetPrimaryKeyString().Split(',');
-            return (key[0], int.Parse(key[1]), int.Parse(key[2]));
-        }
     }
 }

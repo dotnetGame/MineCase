@@ -15,7 +15,7 @@
     <PackageReference Include="System.Memory" Version="4.4.0-preview2-25405-01" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.4.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.4.0" />
-    <PackageReference Include="Microsoft.Orleans.Core" Version="2.0.0-preview2-20170724" />
+    <PackageReference Include="Microsoft.Orleans.Core" Version="2.0.0-preview3-20170913" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" PrivateAssets="All" />
   </ItemGroup>
 

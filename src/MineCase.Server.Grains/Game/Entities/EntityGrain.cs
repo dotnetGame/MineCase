@@ -3,57 +3,46 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Engine;
+using MineCase.Server.Components;
 using MineCase.Server.Network.Play;
 using MineCase.Server.World;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.Game.Entities
 {
-    internal abstract class EntityGrain : Grain, IEntity
+    internal abstract class EntityGrain : DependencyObject, IEntity
     {
-        protected IWorld World { get; private set; }
+        public uint EntityId => GetValue(EntityIdComponent.EntityIdProperty);
 
-        protected uint EntityId { get; private set; }
+        public EntityWorldPos Position => GetValue(EntityWorldPositionComponent.EntityWorldPositionProperty);
 
-        protected Vector3 Position { get; private set; }
+        public IWorld World => GetValue(WorldComponent.WorldProperty);
 
-        protected Guid UUID { get; set; }
+        public float Yaw => GetValue(EntityLookComponent.YawProperty);
 
-        public Task<Vector3> GetPosition() => Task.FromResult(Position);
-
-        public override Task OnActivateAsync()
+        protected override async Task InitializeComponents()
         {
-            var keys = this.GetWorldAndEntityId();
-            World = GrainFactory.GetGrain<IWorld>(keys.worldKey);
-            EntityId = keys.entityId;
-
-            return Task.CompletedTask;
+            await SetComponent(new EntityIdComponent());
+            await SetComponent(new WorldComponent());
+            await SetComponent(new EntityWorldPositionComponent());
+            await SetComponent(new EntityLookComponent());
+            await SetComponent(new AddressByPartitionKeyComponent());
+            await SetComponent(new ChunkEventBroadcastComponent());
+            await SetComponent(new GameTickComponent());
         }
 
-        public Task SetPosition(Vector3 position)
-        {
-            Position = position;
-            return OnPositionChanged();
-        }
+        Task<uint> IEntity.GetEntityId() =>
+            Task.FromResult(EntityId);
 
-        protected virtual Task OnPositionChanged()
-        {
-            return Task.CompletedTask;
-        }
+        Task<EntityWorldPos> IEntity.GetPosition() =>
+            Task.FromResult(Position);
 
-        Task<(int x, int y, int z)> IEntity.GetChunkPosition() => Task.FromResult(GetChunkPosition());
+        Task<IWorld> IEntity.GetWorld() =>
+            Task.FromResult(World);
 
-        protected (int x, int y, int z) GetChunkPosition() => ((int)(Position.X / 16), (int)(Position.Y / 16), (int)(Position.Z / 16));
-
-        protected ClientPlayPacketGenerator GetBroadcastGenerator(int chunkX, int chunkZ)
-        {
-            return new ClientPlayPacketGenerator(GrainFactory.GetGrain<IChunkTrackingHub>(World.MakeChunkTrackingHubKey(chunkX, chunkZ)));
-        }
-
-        protected ClientPlayPacketGenerator GetBroadcastGenerator()
-        {
-            var chunk = GetChunkPosition();
-            return GetBroadcastGenerator(chunk.x, chunk.z);
-        }
+        Task<float> IEntity.GetYaw() =>
+            Task.FromResult(Yaw);
     }
 }

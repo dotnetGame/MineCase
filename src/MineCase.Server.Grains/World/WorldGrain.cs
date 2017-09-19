@@ -14,39 +14,26 @@ namespace MineCase.Server.World
     [Reentrant]
     internal class WorldGrain : Grain, IWorld
     {
-        private Dictionary<uint, IEntity> _entities;
         private uint _nextAvailEId;
         private long _worldAge;
         private GeneratorSettings _genSettings; // 生成设置
         private string _seed; // 世界种子
+        private HashSet<IWorldPartition> _activedPartitions;
 
         public override async Task OnActivateAsync()
         {
             IServerSettings serverSettings = GrainFactory.GetGrain<IServerSettings>(0);
             _nextAvailEId = 0;
-            _entities = new Dictionary<uint, IEntity>();
             _genSettings = new GeneratorSettings();
             await InitGeneratorSettings(_genSettings);
             _seed = (await serverSettings.GetSettings()).LevelSeed;
+            _activedPartitions = new HashSet<IWorldPartition>();
             await base.OnActivateAsync();
         }
 
-        public Task AttachEntity(IEntity entity)
+        public Task<WorldTime> GetTime()
         {
-            _entities.Add(entity.GetEntityId(), entity);
-            return Task.CompletedTask;
-        }
-
-        public Task<IEntity> FindEntity(uint eid)
-        {
-            if (_entities.TryGetValue(eid, out var entity))
-                return Task.FromResult(entity);
-            return Task.FromException<IEntity>(new EntityNotFoundException());
-        }
-
-        public Task<(long age, long timeOfDay)> GetTime()
-        {
-            return Task.FromResult((_worldAge, _worldAge % 24000));
+            return Task.FromResult(new WorldTime { WorldAge = _worldAge, TimeOfDay = _worldAge % 24000 });
         }
 
         public Task<uint> NewEntityId()
@@ -58,6 +45,8 @@ namespace MineCase.Server.World
         public Task OnGameTick(TimeSpan deltaTime)
         {
             _worldAge++;
+            foreach (var partition in _activedPartitions)
+                partition.InvokeOneWay(p => p.OnGameTick(deltaTime, _worldAge));
             return Task.CompletedTask;
         }
 
@@ -84,6 +73,18 @@ namespace MineCase.Server.World
             IServerSettings serverSettings = GrainFactory.GetGrain<IServerSettings>(0);
 
             // TODO move server settings to generator settings
+            return Task.CompletedTask;
+        }
+
+        public Task ActivePartition(IWorldPartition worldPartition)
+        {
+            _activedPartitions.Add(worldPartition);
+            return Task.CompletedTask;
+        }
+
+        public Task DeactivePartition(IWorldPartition worldPartition)
+        {
+            _activedPartitions.Remove(worldPartition);
             return Task.CompletedTask;
         }
     }

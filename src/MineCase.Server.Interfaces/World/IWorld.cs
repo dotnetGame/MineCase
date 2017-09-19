@@ -12,11 +12,7 @@ namespace MineCase.Server.World
     {
         Task<uint> NewEntityId();
 
-        Task AttachEntity(IEntity entity);
-
-        Task<IEntity> FindEntity(uint eid);
-
-        Task<(long age, long timeOfDay)> GetTime();
+        Task<WorldTime> GetTime();
 
         Task<long> GetAge();
 
@@ -25,5 +21,9 @@ namespace MineCase.Server.World
         Task<int> GetSeed();
 
         Task<GeneratorSettings> GetGeneratorSettings();
+
+        Task ActivePartition(IWorldPartition worldPartition);
+
+        Task DeactivePartition(IWorldPartition worldPartition);
     }
 }

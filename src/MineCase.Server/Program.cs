@@ -30,6 +30,7 @@ namespace MineCase.Server
             // define the cluster configuration
             var config = new ClusterConfiguration();
             config.LoadFromFile("OrleansConfiguration.dev.xml");
+            config.AddMemoryStorageProvider();
             config.UseStartupType<Startup>();
 
             hostWrapper = new OrleansHostWrapper(config, args);

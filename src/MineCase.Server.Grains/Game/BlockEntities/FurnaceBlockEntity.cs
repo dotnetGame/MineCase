@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MineCase.Algorithm;
 using MineCase.Game.Windows;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Game.Windows.SlotAreas;
 using MineCase.Server.World;
@@ -84,7 +85,7 @@ namespace MineCase.Server.Game.BlockEntities
                 await _furnaceWindow.SetEntity(this);
             }
 
-            await player.OpenWindow(_furnaceWindow);
+            await player.Tell(new OpenWindow { Window = _furnaceWindow });
         }
 
         public override async Task OnCreated()
@@ -194,18 +195,24 @@ namespace MineCase.Server.Game.BlockEntities
             await Unregister();
         }
 
-        private async Task Register()
+        private Task Register()
         {
+            /*
             var chunkPos = Position.ToChunkWorldPos();
             var tracker = GrainFactory.GetGrain<IChunkTrackingHub>(World.MakeChunkTrackingHubKey(chunkPos.X, chunkPos.Z));
             await tracker.Subscribe(this);
+            */
+            return Task.CompletedTask;
         }
 
-        private async Task Unregister()
+        private Task Unregister()
         {
+            /*
             var chunkPos = Position.ToChunkWorldPos();
             var tracker = GrainFactory.GetGrain<IChunkTrackingHub>(World.MakeChunkTrackingHubKey(chunkPos.X, chunkPos.Z));
             await tracker.Unsubscribe(this);
+            */
+            return Task.CompletedTask;
         }
     }
 }
