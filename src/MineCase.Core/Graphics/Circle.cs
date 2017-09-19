@@ -23,6 +23,11 @@ namespace MineCase.Graphics
             Radius = radius;
         }
 
+        public bool OverlapWith(Circle circle)
+        {
+            return Radius + circle.Radius < Base.Distance(Center, circle.Center);
+        }
+
         public bool OverlapWith(Rect rect)
         {
             return rect.OverlapWith(this);
