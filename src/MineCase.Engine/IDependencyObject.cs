@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Orleans;
 
 namespace MineCase.Engine
 {
-    public interface IDependencyObject
+    public interface IDependencyObject : IGrain
     {
         Task Tell(IEntityMessage message);
 

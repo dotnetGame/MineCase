@@ -2,35 +2,40 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Engine;
+using MineCase.Server.Components;
+using MineCase.Server.Game.Entities;
 using Orleans;
 
 namespace MineCase.Server.World
 {
     internal class TickEmitterGrain : Grain, ITickEmitter
     {
-        private ObserverSubscriptionManager<ITickObserver> _subscriptionManager;
+        private HashSet<IDependencyObject> _subscription;
 
         public override Task OnActivateAsync()
         {
-            _subscriptionManager = new ObserverSubscriptionManager<ITickObserver>();
+            _subscription = new HashSet<IDependencyObject>();
             return base.OnActivateAsync();
         }
 
         public Task OnGameTick(TimeSpan deltaTime, long worldAge)
         {
-            _subscriptionManager.Notify(o => o.OnGameTick(deltaTime, worldAge));
+            var message = new GameTick { DeltaTime = deltaTime, WorldAge = worldAge };
+            foreach (var entity in _subscription)
+                entity.InvokeOneWay(e => e.Tell(message));
             return Task.CompletedTask;
         }
 
-        public Task Subscribe(ITickObserver observer)
+        public Task Subscribe(IDependencyObject observer)
         {
-            _subscriptionManager.Subscribe(observer);
+            _subscription.Add(observer);
             return Task.CompletedTask;
         }
 
-        public Task Unsubscribe(ITickObserver observer)
+        public Task Unsubscribe(IDependencyObject observer)
         {
-            _subscriptionManager.Unsubscribe(observer);
+            _subscription.Remove(observer);
             return Task.CompletedTask;
         }
     }

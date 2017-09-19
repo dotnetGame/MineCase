@@ -4,11 +4,11 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
-using MineCase.Server.Game.Entities.Components;
 
 namespace MineCase.Server.Game.Blocks
 {

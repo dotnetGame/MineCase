@@ -58,6 +58,7 @@ namespace MineCase.Server.World
                 var pickup = GrainFactory.GetGrain<IPickup>(Guid.NewGuid());
                 await pickup.Tell(new SpawnEntity
                 {
+                    World = _world,
                     EntityId = await _world.NewEntityId(),
                     Position = position
                 });

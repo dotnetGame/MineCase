@@ -12,7 +12,7 @@ namespace MineCase.Server.World
     {
         Task<uint> NewEntityId();
 
-        Task<(long age, long timeOfDay)> GetTime();
+        Task<WorldTime> GetTime();
 
         Task<long> GetAge();
 

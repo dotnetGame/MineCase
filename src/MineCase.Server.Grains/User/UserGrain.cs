@@ -81,6 +81,7 @@ namespace MineCase.Server.User
             // 设置出生点
             await _player.Tell(new SpawnEntity
             {
+                World = _world,
                 EntityId = await _world.NewEntityId(),
                 Position = new EntityWorldPos(1000, 200, 1000)
             });

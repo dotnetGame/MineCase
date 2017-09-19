@@ -166,11 +166,11 @@ namespace MineCase.Engine
         {
             Delegate d;
             if (_propertyChangedHandlers.TryGetValue(e.Property, out d))
-                await ((AsyncEventHandler<PropertyChangedEventArgs<T>>)d)?.InvokeSerial(this, e);
+                await ((AsyncEventHandler<PropertyChangedEventArgs<T>>)d).InvokeSerial(this, e);
 
             if (_propertyChangedHandlersGen.TryGetValue(e.Property, out d))
-                await ((AsyncEventHandler<PropertyChangedEventArgs>)d)?.InvokeSerial(this, e);
-            await ((AsyncEventHandler<PropertyChangedEventArgs>)_anyPropertyChangedHandler)?.InvokeSerial(this, e);
+                await ((AsyncEventHandler<PropertyChangedEventArgs>)d).InvokeSerial(this, e);
+            await ((AsyncEventHandler<PropertyChangedEventArgs>)_anyPropertyChangedHandler).InvokeSerial(this, e);
         }
 
         private T GetDefaultValue<T>(DependencyProperty<T> property)
@@ -196,19 +196,29 @@ namespace MineCase.Engine
                 if (iface.IsConstructedGenericType)
                 {
                     var responseType = iface.GetGenericArguments()[0];
+                    var messageParamExp = Expression.Parameter(typeof(IEntityMessage<>).MakeGenericType(responseType), "m");
                     var handlerType = typeof(IHandle<,>).MakeGenericType(messageType, responseType);
                     var handleMethod = handlerType.GetMethod("Handle");
                     return Expression.Lambda(
-                        Expression.Call(Expression.Convert(paramExp, handlerType), handleMethod),
-                        paramExp).Compile();
+                        Expression.Call(
+                            Expression.Convert(paramExp, handlerType),
+                            handleMethod,
+                            Expression.Convert(messageParamExp, messageType)),
+                        paramExp,
+                        messageParamExp).Compile();
                 }
                 else
                 {
+                    var messageParamExp = Expression.Parameter(typeof(IEntityMessage), "m");
                     var handlerType = typeof(IHandle<>).MakeGenericType(messageType);
                     var handleMethod = handlerType.GetMethod("Handle");
                     return Expression.Lambda(
-                        Expression.Call(Expression.Convert(paramExp, handlerType), handleMethod),
-                        paramExp).Compile();
+                        Expression.Call(
+                            Expression.Convert(paramExp, handlerType),
+                            handleMethod,
+                            Expression.Convert(messageParamExp, messageType)),
+                        paramExp,
+                        messageParamExp).Compile();
                 }
             });
         }
@@ -243,22 +253,22 @@ namespace MineCase.Engine
         public async Task Tell(IEntityMessage message)
         {
             var messageType = message.GetType();
-            var invoker = (Func<IComponentIntern, Task>)GetOrAddMessageCaller(messageType);
+            var invoker = (Func<IComponentIntern, IEntityMessage, Task>)GetOrAddMessageCaller(messageType);
             if (_messageHandlers.TryGetValue(messageType, out var handlers))
             {
                 foreach (var handler in handlers)
-                    await invoker(handler);
+                    await invoker(handler, message);
             }
         }
 
         public async Task<TResponse> Ask<TResponse>(IEntityMessage<TResponse> message)
         {
             var messageType = message.GetType();
-            var invoker = (Func<IComponentIntern, Task<TResponse>>)GetOrAddMessageCaller(messageType);
+            var invoker = (Func<IComponentIntern, IEntityMessage<TResponse>, Task<TResponse>>)GetOrAddMessageCaller(messageType);
             if (_messageHandlers.TryGetValue(messageType, out var handlers))
             {
                 foreach (var handler in handlers)
-                    return await invoker(handler);
+                    return await invoker(handler, message);
             }
 
             throw new ReceiverNotFoundException();

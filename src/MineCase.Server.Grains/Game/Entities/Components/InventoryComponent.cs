@@ -8,7 +8,7 @@ using MineCase.Server.Network.Play;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class InventoryComponent : Component<PlayerGrain>
+    internal class InventoryComponent : Component<PlayerGrain>, IHandle<AskInventoryWindow, IInventoryWindow>
     {
         public InventoryComponent(string name = "inventory")
             : base(name)
@@ -17,5 +17,8 @@ namespace MineCase.Server.Game.Entities.Components
 
         public IInventoryWindow GetInventoryWindow() =>
             GrainFactory.GetGrain<IInventoryWindow>(Guid.Empty);
+
+        Task<IInventoryWindow> IHandle<AskInventoryWindow, IInventoryWindow>.Handle(AskInventoryWindow message) =>
+            Task.FromResult(GetInventoryWindow());
     }
 }

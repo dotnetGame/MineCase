@@ -19,7 +19,6 @@ namespace MineCase.Server.World
         private GeneratorSettings _genSettings; // 生成设置
         private string _seed; // 世界种子
         private HashSet<IWorldPartition> _activedPartitions;
-        private ObserverSubscriptionManager<ITickObserver> _observerSubscription;
 
         public override async Task OnActivateAsync()
         {
@@ -29,13 +28,12 @@ namespace MineCase.Server.World
             await InitGeneratorSettings(_genSettings);
             _seed = (await serverSettings.GetSettings()).LevelSeed;
             _activedPartitions = new HashSet<IWorldPartition>();
-            _observerSubscription = new ObserverSubscriptionManager<ITickObserver>();
             await base.OnActivateAsync();
         }
 
-        public Task<(long age, long timeOfDay)> GetTime()
+        public Task<WorldTime> GetTime()
         {
-            return Task.FromResult((_worldAge, _worldAge % 24000));
+            return Task.FromResult(new WorldTime { WorldAge = _worldAge, TimeOfDay = _worldAge % 24000 });
         }
 
         public Task<uint> NewEntityId()
@@ -47,7 +45,8 @@ namespace MineCase.Server.World
         public Task OnGameTick(TimeSpan deltaTime)
         {
             _worldAge++;
-            _observerSubscription.Notify(o => o.OnGameTick(deltaTime, _worldAge));
+            foreach (var partition in _activedPartitions)
+                partition.InvokeOneWay(p => p.OnGameTick(deltaTime, _worldAge));
             return Task.CompletedTask;
         }
 
@@ -80,14 +79,12 @@ namespace MineCase.Server.World
         public Task ActivePartition(IWorldPartition worldPartition)
         {
             _activedPartitions.Add(worldPartition);
-            _observerSubscription.Subscribe(worldPartition);
             return Task.CompletedTask;
         }
 
         public Task DeactivePartition(IWorldPartition worldPartition)
         {
             _activedPartitions.Remove(worldPartition);
-            _observerSubscription.Unsubscribe(worldPartition);
             return Task.CompletedTask;
         }
     }

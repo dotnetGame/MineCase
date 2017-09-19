@@ -4,6 +4,7 @@ using System.Text;
 using MineCase.Engine;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.User;
+using MineCase.Server.World;
 using MineCase.World;
 using Orleans.Concurrency;
 
@@ -54,6 +55,8 @@ namespace MineCase.Server.Game.Entities.Components
     [Immutable]
     public sealed class SpawnEntity : IEntityMessage
     {
+        public IWorld World { get; set; }
+
         public uint EntityId { get; set; }
 
         public EntityWorldPos Position { get; set; }
@@ -87,5 +90,17 @@ namespace MineCase.Server.Game.Entities.Components
     public sealed class OpenWindow : IEntityMessage
     {
         public IWindow Window { get; set; }
+    }
+
+    [Immutable]
+    public sealed class AskInventoryWindow : IEntityMessage<IInventoryWindow>
+    {
+        public static readonly AskInventoryWindow Default = new AskInventoryWindow();
+    }
+
+    [Immutable]
+    public sealed class TossPickup : IEntityMessage
+    {
+        public Slot[] Slots { get; set; }
     }
 }

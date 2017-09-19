@@ -38,9 +38,10 @@ namespace MineCase.Server.World
             }
         }
 
-        public void OnGameTick(TimeSpan deltaTime, long worldAge)
+        public Task OnGameTick(TimeSpan deltaTime, long worldAge)
         {
             _tickEmitter.InvokeOneWay(e => e.OnGameTick(deltaTime, worldAge));
+            return Task.CompletedTask;
         }
     }
 }

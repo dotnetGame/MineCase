@@ -16,6 +16,10 @@ namespace MineCase.Server.Game.Entities
     {
         public uint EntityId => GetValue(EntityIdComponent.EntityIdProperty);
 
+        public EntityWorldPos Position => GetValue(EntityWorldPositionComponent.EntityWorldPositionProperty);
+
+        public IWorld World => GetValue(WorldComponent.WorldProperty);
+
         public float Yaw => GetValue(EntityLookComponent.YawProperty);
 
         protected override async Task InitializeComponents()
@@ -33,10 +37,10 @@ namespace MineCase.Server.Game.Entities
             Task.FromResult(EntityId);
 
         Task<EntityWorldPos> IEntity.GetPosition() =>
-            Task.FromResult(this.GetEntityWorldPosition());
+            Task.FromResult(Position);
 
         Task<IWorld> IEntity.GetWorld() =>
-            Task.FromResult(this.GetWorld());
+            Task.FromResult(World);
 
         Task<float> IEntity.GetYaw() =>
             Task.FromResult(Yaw);

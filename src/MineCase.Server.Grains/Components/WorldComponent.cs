@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.World;
 
@@ -15,6 +16,9 @@ namespace MineCase.Server.Components
             : base(name)
         {
         }
+
+        public Task SetWorld(IWorld value) =>
+            AttachedObject.SetLocalValue(WorldProperty, value);
     }
 
     public static class WorldComponentExtensions

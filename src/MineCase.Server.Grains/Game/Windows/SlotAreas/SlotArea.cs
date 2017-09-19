@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.World;
 using Orleans;
 using Orleans.Concurrency;
@@ -121,7 +122,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
 
         private async Task OnNumberKeyClick(IPlayer player, int slotIndex, int numberIndex)
         {
-            var inventory = await player.GetInventory();
+            var inventory = await player.Ask(AskInventoryWindow.Default);
             var hotbarIndex = await inventory.GetHotbarGlobalIndex(player, numberIndex);
             var hotbarSlot = await inventory.GetSlot(player, hotbarIndex);
             var slot = await GetSlot(player, slotIndex);
@@ -137,18 +138,18 @@ namespace MineCase.Server.Game.Windows.SlotAreas
             if (!slot.IsEmpty)
             {
                 var position = await player.GetPosition();
-                var chunk = await player.GetChunkPosition();
-                var world = GrainFactory.GetGrain<IWorld>(player.GetWorldAndEntityId().worldKey);
-                var finder = GrainFactory.GetGrain<ICollectableFinder>(world.MakeCollectableFinderKey(chunk.x, chunk.z));
+                var chunk = position.ToChunkWorldPos();
+                var world = await player.GetWorld();
+                var finder = GrainFactory.GetPartitionGrain<ICollectableFinder>(world, chunk);
 
                 if (dropWholeSlot)
                 {
-                    await player.TossPickup(slot);
+                    await player.Tell(new TossPickup { Slots = new[] { slot } });
                     await SetSlot(player, slotIndex, Slot.Empty);
                 }
                 else
                 {
-                    await player.TossPickup(slot.CopyOne());
+                    await player.Tell(new TossPickup { Slots = new[] { slot.CopyOne() } });
                     slot.ItemCount--;
                     slot.MakeEmptyIfZero();
                     await SetSlot(player, slotIndex, slot);
@@ -166,7 +167,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
         protected virtual async Task OnRightMouseClick(IPlayer player, int slotIndex)
         {
             var slot = await GetSlot(player, slotIndex);
-            var draggedSlot = await player.GetDraggedSlot();
+            var draggedSlot = await player.Ask(AskDraggedSlot.Default);
 
             if (draggedSlot.IsEmpty)
             {
@@ -179,7 +180,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
                     slot.MakeEmptyIfZero();
 
                     await SetSlot(player, slotIndex, slot);
-                    await player.SetDraggedSlot(draggedSlot);
+                    await player.Tell(new SetDraggedSlot { Slot = draggedSlot });
                 }
             }
             else if (slot.IsEmpty || draggedSlot.CanStack(slot))
@@ -195,33 +196,33 @@ namespace MineCase.Server.Game.Windows.SlotAreas
                     draggedSlot.MakeEmptyIfZero();
 
                     await SetSlot(player, slotIndex, slot);
-                    await player.SetDraggedSlot(draggedSlot);
+                    await player.Tell(new SetDraggedSlot { Slot = draggedSlot });
                 }
             }
             else
             {
                 // 交换
                 await SetSlot(player, slotIndex, draggedSlot);
-                await player.SetDraggedSlot(slot);
+                await player.Tell(new SetDraggedSlot { Slot = slot });
             }
         }
 
         protected virtual async Task OnLeftMouseClick(IPlayer player, int slotIndex)
         {
             var slot = await GetSlot(player, slotIndex);
-            var draggedSlot = await player.GetDraggedSlot();
+            var draggedSlot = await player.Ask(AskDraggedSlot.Default);
 
             if (draggedSlot.IsEmpty || !draggedSlot.CanStack(slot))
             {
                 // 交换
                 await SetSlot(player, slotIndex, draggedSlot);
-                await player.SetDraggedSlot(slot);
+                await player.Tell(new SetDraggedSlot { Slot = slot });
             }
             else if (TryStackSlot(ref draggedSlot, ref slot))
             {
                 // 堆叠到最大
                 await SetSlot(player, slotIndex, slot);
-                await player.SetDraggedSlot(draggedSlot);
+                await player.Tell(new SetDraggedSlot { Slot = draggedSlot });
             }
         }
 

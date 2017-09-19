@@ -34,12 +34,14 @@ namespace MineCase.Server.Network
                     break;
                 case SessionState.Play:
                     await _user.ForwardPacket(packet);
-                    break;
+                    return;
                 case SessionState.Closed:
                     break;
                 default:
                     break;
             }
+
+            await DispatchPacket(innerPacket);
         }
 
         public async Task Close()

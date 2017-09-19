@@ -9,44 +9,45 @@ using Orleans.Concurrency;
 
 namespace MineCase.Server.Components
 {
-    internal class GameTickComponent : Component, ITickObserver
+    internal class GameTickComponent : Component, IHandle<GameTick>
     {
         public event AsyncEventHandler<(TimeSpan deltaTime, long worldAge)> Tick;
-
-        private ITickObserver _tickObserver;
 
         public GameTickComponent(string name = "gameTick")
             : base(name)
         {
         }
 
-        protected override async Task OnAttached()
+        protected override Task OnAttached()
         {
-            _tickObserver = await GrainFactory.CreateObjectReference<ITickObserver>(this);
-
             AttachedObject.GetComponent<AddressByPartitionKeyComponent>()
                 .KeyChanged += OnAddressByPartitionKeyChanged;
+            return base.OnAttached();
         }
 
-        protected override async Task OnDetached()
+        protected override Task OnDetached()
         {
             AttachedObject.GetComponent<AddressByPartitionKeyComponent>()
                 .KeyChanged -= OnAddressByPartitionKeyChanged;
-            await GrainFactory.DeleteObjectReference<ITickObserver>(this);
-            _tickObserver = null;
+            return base.OnDetached();
         }
 
         private async Task OnAddressByPartitionKeyChanged(object sender, (string oldKey, string newKey) e)
         {
             if (!string.IsNullOrEmpty(e.oldKey))
-                await GrainFactory.GetGrain<ITickEmitter>(e.oldKey).Unsubscribe(_tickObserver);
+                await GrainFactory.GetGrain<ITickEmitter>(e.oldKey).Unsubscribe(AttachedObject);
             if (!string.IsNullOrEmpty(e.newKey))
-                await GrainFactory.GetGrain<ITickEmitter>(e.newKey).Subscribe(_tickObserver);
+                await GrainFactory.GetGrain<ITickEmitter>(e.newKey).Subscribe(AttachedObject);
         }
 
         public void OnGameTick(TimeSpan deltaTime, long worldAge)
         {
             Tick.InvokeSerial(this, (deltaTime, worldAge)).Ignore();
+        }
+
+        Task IHandle<GameTick>.Handle(GameTick message)
+        {
+            return Tick.InvokeSerial(this, (message.DeltaTime, message.WorldAge));
         }
     }
 }

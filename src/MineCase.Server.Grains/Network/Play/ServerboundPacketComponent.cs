@@ -50,7 +50,7 @@ namespace MineCase.Server.Network.Play
         {
             var packet = DeserializePlayPacket(message.Packet);
             if (packet != null)
-                _deferredPacket.Enqueue(message.Packet);
+                _deferredPacket.Enqueue(packet);
             return Task.CompletedTask;
         }
 

@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using MineCase.Engine;
 using MineCase.Protocol.Play;
 using MineCase.Server.Components;
 using MineCase.Server.Game.Blocks;
@@ -27,7 +28,9 @@ namespace MineCase.Server.Game.Entities
         protected override async Task InitializeComponents()
         {
             await base.InitializeComponents();
+            await SetComponent(new ActiveWorldPartitionComponent());
             await SetComponent(new BlockPlacementComponent());
+            await SetComponent(new ClientboundPacketComponent());
             await SetComponent(new ChunkLoaderComponent());
             await SetComponent(new DiggingComponent());
             await SetComponent(new DraggedSlotComponent());
@@ -41,11 +44,22 @@ namespace MineCase.Server.Game.Entities
             await SetComponent(new KeepAliveComponent());
             await SetComponent(new NameComponent());
             await SetComponent(new PlayerListComponent());
+            await SetComponent(new ServerboundPacketComponent());
             await SetComponent(new SlotContainerComponent(SlotArea.UserSlotsCount));
             await SetComponent(new SyncPlayerStateComponent());
             await SetComponent(new TeleportComponent());
+            await SetComponent(new TossPickupComponent());
             await SetComponent(new ViewDistanceComponent());
             await SetComponent(new WindowManagerComponent());
+        }
+
+        public override async Task OnActivateAsync()
+        {
+            await base.OnActivateAsync();
+            await this.SetLocalValue(HealthComponent.MaxHealthProperty, 20u);
+            await this.SetLocalValue(FoodComponent.MaxFoodProperty, 20u);
+            await this.SetLocalValue(HealthComponent.HealthProperty, GetValue(HealthComponent.MaxHealthProperty));
+            await this.SetLocalValue(FoodComponent.FoodProperty, GetValue(FoodComponent.MaxFoodProperty));
         }
 
         public Task<SwingHandState> OnSwingHand(SwingHandState handState)

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Engine;
+using MineCase.Server.Game.Entities;
 using Orleans;
 using Orleans.Concurrency;
 
@@ -12,13 +14,8 @@ namespace MineCase.Server.World
         [OneWay]
         Task OnGameTick(TimeSpan deltaTime, long worldAge);
 
-        Task Subscribe(ITickObserver observer);
+        Task Subscribe(IDependencyObject observer);
 
-        Task Unsubscribe(ITickObserver observer);
-    }
-
-    public interface ITickObserver : IGrainObserver
-    {
-        void OnGameTick(TimeSpan deltaTime, long worldAge);
+        Task Unsubscribe(IDependencyObject observer);
     }
 }
