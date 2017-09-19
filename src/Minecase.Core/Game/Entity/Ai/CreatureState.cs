@@ -8,6 +8,7 @@ namespace MineCase.Server.World.EntitySpawner
     {
         Stop,
         Walk,
-        Escape
+        Escape,
+        Follow
     }
 }

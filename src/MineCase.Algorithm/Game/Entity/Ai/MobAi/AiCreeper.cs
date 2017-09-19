@@ -5,11 +5,11 @@ using MineCase.Server.World.EntitySpawner.Ai.Action;
 
 namespace MineCase.Server.World.EntitySpawner.Ai.MobAi
 {
-    internal class AiSheep
+    internal class AiCreeper
     {
         public static ICreatureAiAction[,] Automation { get; set; }
 
-        static AiSheep()
+        static AiCreeper()
         {
             int creatureStateMax = Enum.GetValues(typeof(CreatureState)).Length;
             int creatureEventMax = Enum.GetValues(typeof(CreatureEvent)).Length;
