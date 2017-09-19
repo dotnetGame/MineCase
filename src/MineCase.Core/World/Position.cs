@@ -192,7 +192,7 @@ namespace MineCase.World
         }
     }
 
-    public struct ChunkWorldPos
+    public struct ChunkWorldPos : IEquatable<ChunkWorldPos>
     {
         public int X { get; set; }
 
@@ -207,6 +207,36 @@ namespace MineCase.World
         public BlockWorldPos ToBlockWorldPos()
         {
             return new BlockWorldPos(X * 16, 0, Z * 16);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is ChunkWorldPos && Equals((ChunkWorldPos)obj);
+        }
+
+        public bool Equals(ChunkWorldPos other)
+        {
+            return X == other.X &&
+                   Z == other.Z;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 1911744652;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + X.GetHashCode();
+            hashCode = hashCode * -1521134295 + Z.GetHashCode();
+            return hashCode;
+        }
+
+        public static bool operator ==(ChunkWorldPos pos1, ChunkWorldPos pos2)
+        {
+            return pos1.Equals(pos2);
+        }
+
+        public static bool operator !=(ChunkWorldPos pos1, ChunkWorldPos pos2)
+        {
+            return !(pos1 == pos2);
         }
     }
 
@@ -223,6 +253,16 @@ namespace MineCase.World
             X = x;
             Y = y;
             Z = z;
+        }
+
+        public static implicit operator Vector3(EntityWorldPos pos)
+        {
+            return new Vector3(pos.X, pos.Y, pos.Z);
+        }
+
+        public static implicit operator EntityWorldPos(Vector3 pos)
+        {
+            return new EntityWorldPos(pos.X, pos.Y, pos.Z);
         }
 
         public ChunkWorldPos ToChunkWorldPos()

@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.World;
 using MineCase.World;
@@ -24,7 +25,7 @@ namespace MineCase.Server.Game.Blocks
         public override async Task UseBy(IPlayer player, IGrainFactory grainFactory, IWorld world, BlockWorldPos blockPosition, Vector3 cursorPosition)
         {
             var window = grainFactory.GetGrain<ICraftingWindow>(Guid.NewGuid());
-            await player.OpenWindow(window);
+            await player.Tell(new OpenWindow { Window = window });
         }
     }
 }

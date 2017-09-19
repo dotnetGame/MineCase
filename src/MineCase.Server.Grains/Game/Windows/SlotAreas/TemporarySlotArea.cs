@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.World;
 using Orleans;
 using Orleans.Concurrency;
@@ -50,15 +50,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
                          select s).ToArray();
             if (items.Length != 0)
             {
-                var position = await player.GetPosition();
-                var chunk = await player.GetChunkPosition();
-                var world = GrainFactory.GetGrain<IWorld>(player.GetWorldAndEntityId().worldKey);
-
-                // 产生 Pickup
-                var finder = GrainFactory.GetGrain<ICollectableFinder>(world.MakeCollectableFinderKey(chunk.x, chunk.z));
-                await finder.SpawnPickup(
-                    new Position { X = (int)position.X, Y = (int)position.Y, Z = (int)position.Z },
-                    items.AsImmutable());
+                await player.Tell(new TossPickup { Slots = items });
                 _tempSlotsMap.Remove(player);
 
                 for (int i = 0; i < slots.Length; i++)

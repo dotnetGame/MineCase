@@ -4,13 +4,15 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-
+using MineCase.Protocol;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Game.Windows.SlotAreas;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
 using MineCase.Server.World;
+using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
 
@@ -26,16 +28,6 @@ namespace MineCase.Server.User
         private IClientboundPacketSink _sink;
         private IPacketRouter _packetRouter;
         private ClientPlayPacketGenerator _generator;
-        private IUserChunkLoader _chunkLoader;
-        private IDisposable _sendKeepAliveTimer;
-        private IDisposable _worldTimeSyncTimer;
-        public HashSet<uint> _keepAliveWaiters;
-
-        private readonly Random _keepAliveIdRand = new Random();
-        private const int ClientKeepInterval = 6;
-        private bool _isOnline = false;
-        private DateTime _keepAliveRequestTime;
-        private DateTime _keepAliveResponseTime;
         private UserState _state;
 
         private IPlayer _player;
@@ -52,7 +44,6 @@ namespace MineCase.Server.User
             }
 
             _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(_worldId);
-            _chunkLoader = GrainFactory.GetGrain<IUserChunkLoader>(this.GetPrimaryKey());
             _slots = new[]
             {
                 new Slot { BlockId = (short)BlockId.Furnace, ItemCount = 1 },
@@ -77,64 +68,27 @@ namespace MineCase.Server.User
         {
             _sink = sink;
             _generator = new ClientPlayPacketGenerator(sink);
-            return _chunkLoader.SetClientPacketSink(sink);
+            return Task.CompletedTask;
         }
 
         public async Task JoinGame()
         {
-            var playerEid = await _world.NewEntityId();
-            _player = GrainFactory.GetGrain<IPlayer>(_world.MakeEntityKey(playerEid));
-            await _player.SetName(_name);
-            await _player.BindToUser(this);
-            await _world.AttachEntity(_player);
+            _player = GrainFactory.GetGrain<IPlayer>(this.GetPrimaryKey());
+            await _player.Tell(new BindToUser { User = this.AsReference<IUser>() });
 
-            await _chunkLoader.JoinGame(_world, _player);
             _state = UserState.JoinedGame;
-            _keepAliveWaiters = new HashSet<uint>();
-            _sendKeepAliveTimer = RegisterTimer(OnSendKeepAliveRequests, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
-
-            // _worldTimeSyncTimer = RegisterTimer(OnSyncWorldTime, null, TimeSpan.Zero, )
 
             // 设置出生点
-            await _player.Spawn(this.GetPrimaryKey(), new Vector3(1000, 200, 1000), 0.0f, 0.0f);
-        }
-
-        public Task UseEntity(uint targetEid, EntityUsage type, Vector3? targetPosition, EntityInteractHand? hand)
-        {
-            return Task.CompletedTask;
-        }
-
-        private async Task OnSendKeepAliveRequests(object state)
-        {
-            if (_isOnline && _keepAliveWaiters.Count >= ClientKeepInterval)
+            await _player.Tell(new SpawnEntity
             {
-                _isOnline = false;
-                KickPlayer().Ignore();
-            }
-            else
-            {
-                var id = (uint)_keepAliveIdRand.Next();
-                _keepAliveWaiters.Add(id);
-                _keepAliveRequestTime = DateTime.UtcNow;
-                await _generator.KeepAlive(id);
-            }
-        }
-
-        public Task KeepAlive(uint keepAliveId)
-        {
-            _keepAliveWaiters.Remove(keepAliveId);
-            if (_keepAliveWaiters.Count == 0)
-                _keepAliveResponseTime = DateTime.UtcNow;
-            return Task.CompletedTask;
+                World = _world,
+                EntityId = await _world.NewEntityId(),
+                Position = new EntityWorldPos(1000, 200, 1000)
+            });
         }
 
         private async Task KickPlayer()
         {
-            _sendKeepAliveTimer?.Dispose();
-            _sendKeepAliveTimer = null;
-            _worldTimeSyncTimer?.Dispose();
-            _worldTimeSyncTimer = null;
-
             var game = await GetGameSession();
             await game.LeaveGame(this);
             await _sink.Close();
@@ -145,10 +99,7 @@ namespace MineCase.Server.User
 
         public async Task NotifyLoggedIn()
         {
-            _isOnline = true;
-            _keepAliveWaiters = new HashSet<uint>();
-
-            await _player.NotifyLoggedIn();
+            await _player.Tell(PlayerLoggedIn.Default);
             _state = UserState.DownloadingWorld;
         }
 
@@ -180,28 +131,18 @@ namespace MineCase.Server.User
             return Task.CompletedTask;
         }
 
-        public Task<uint> GetPing()
+        public Task OnGameTick(TimeSpan deltaTime, long worldAge)
         {
-            uint ping;
-            var diff = DateTime.UtcNow - _keepAliveRequestTime;
-            if (diff.Ticks < 0)
-                ping = int.MaxValue;
-            else
-                ping = (uint)diff.TotalMilliseconds;
-            return Task.FromResult(ping);
-        }
-
-        public async Task OnGameTick(TimeSpan deltaTime, long worldAge)
-        {
-            _packetRouter?.OnGameTick();
             if (_state == UserState.DownloadingWorld)
             {
-                await _player.SendPositionAndLook();
+                // await _player.SendPositionAndLook();
                 _state = UserState.Playing;
             }
 
+            /*
             if (_state >= UserState.JoinedGame && _state < UserState.Destroying)
-                await _chunkLoader.OnGameTick(worldAge);
+                await _chunkLoader.OnGameTick(worldAge);*/
+            return Task.CompletedTask;
         }
 
         public Task SetPacketRouter(IPacketRouter packetRouter)
@@ -210,12 +151,15 @@ namespace MineCase.Server.User
             return Task.CompletedTask;
         }
 
-        public Task SetViewDistance(int viewDistance)
-        {
-            return _chunkLoader.SetViewDistance(viewDistance);
-        }
-
         public Task<Slot[]> GetInventorySlots() => Task.FromResult(_slots);
+
+        public Task ForwardPacket(UncompressedPacket packet)
+        {
+            return _player.Tell(new ServerboundPacketMessage
+            {
+                Packet = packet
+            });
+        }
 
         private enum UserState : uint
         {

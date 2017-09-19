@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Game.Windows.SlotAreas;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
@@ -27,11 +28,11 @@ namespace MineCase.Server.Game.Windows
 
         protected virtual byte? EntityId => null;
 
-        private Dictionary<IPlayer, IClientboundPacketSink> _players;
+        private HashSet<IPlayer> _players;
 
         public override Task OnActivateAsync()
         {
-            _players = new Dictionary<IPlayer, IClientboundPacketSink>();
+            _players = new HashSet<IPlayer>();
             return base.OnActivateAsync();
         }
 
@@ -52,22 +53,28 @@ namespace MineCase.Server.Game.Windows
             return slots;
         }
 
+        private Task<byte> GetWindowId(IPlayer player) =>
+            player.Ask(new AskWindowId { Window = this.AsReference<IWindow>() });
+
+        private ClientPlayPacketGenerator GetPlayerPacketGenerator(IPlayer player) =>
+            new ClientPlayPacketGenerator(new ForwardToPlayerPacketSink(player, ServiceProvider.GetRequiredService<IPacketPackager>()));
+
         internal async Task NotifySlotChanged(SlotArea slotArea, IPlayer player, int slotIndex, Slot item)
         {
-            new ClientPlayPacketGenerator(await (await player.GetUser()).GetClientPacketSink())
-                .SetSlot(await player.GetWindowId(this), (short)LocalSlotIndexToGlobal(slotArea, slotIndex), item).Ignore();
+            GetPlayerPacketGenerator(player)
+                .SetSlot(await GetWindowId(player), (short)LocalSlotIndexToGlobal(slotArea, slotIndex), item).Ignore();
         }
 
         internal Task BroadcastSlotChanged(SlotArea slotArea, int slotIndex, Slot item)
         {
             var globalIndex = (short)LocalSlotIndexToGlobal(slotArea, slotIndex);
-            async Task SendSetSlot(IPlayer player, IClientboundPacketSink sink)
+            async Task SendSetSlot(IPlayer player)
             {
-                var id = await player.GetWindowId(this);
-                await new ClientPlayPacketGenerator(sink).SetSlot(id, globalIndex, item);
+                var id = await GetWindowId(player);
+                await GetPlayerPacketGenerator(player).SetSlot(id, globalIndex, item);
             }
 
-            Task.WhenAll(from p in _players select SendSetSlot(p.Key, p.Value)).Ignore();
+            Task.WhenAll(from p in _players select SendSetSlot(p)).Ignore();
             return Task.CompletedTask;
         }
 
@@ -131,14 +138,14 @@ namespace MineCase.Server.Game.Windows
 
         internal Task BroadcastWholeWindow()
         {
-            async Task SendWholeWindow(IPlayer player, IClientboundPacketSink sink)
+            async Task SendWholeWindow(IPlayer player)
             {
                 var slots = await GetSlots(player);
-                var id = await player.GetWindowId(this);
-                await new ClientPlayPacketGenerator(sink).WindowItems(id, slots);
+                var id = await GetWindowId(player);
+                await GetPlayerPacketGenerator(player).WindowItems(id, slots);
             }
 
-            Task.WhenAll(from p in _players select SendWholeWindow(p.Key, p.Value)).Ignore();
+            Task.WhenAll(from p in _players select SendWholeWindow(p)).Ignore();
             return Task.CompletedTask;
         }
 
@@ -164,13 +171,12 @@ namespace MineCase.Server.Game.Windows
         public virtual async Task OpenWindow(IPlayer player)
         {
             var slots = await GetSlots(player);
-            var sink = await (await player.GetUser()).GetClientPacketSink();
-            var generator = new ClientPlayPacketGenerator(sink);
 
-            var id = await player.GetWindowId(this);
+            var id = await GetWindowId(player);
+            var generator = GetPlayerPacketGenerator(player);
             await generator.OpenWindow(id, WindowType, Title, GetNonInventorySlotsCount(), EntityId);
             await generator.WindowItems(id, slots);
-            _players.Add(player, sink);
+            _players.Add(player);
         }
 
         public Task<Slot> GetSlot(IPlayer player, int slotIndex)
@@ -187,46 +193,46 @@ namespace MineCase.Server.Game.Windows
 
         public async Task Destroy()
         {
-            async Task SendCloseWindow(IPlayer player, IClientboundPacketSink sink)
+            async Task SendCloseWindow(IPlayer player)
             {
-                var id = await player.GetWindowId(this);
-                await new ClientPlayPacketGenerator(sink).CloseWindow(id);
+                var id = await GetWindowId(player);
+                await GetPlayerPacketGenerator(player).CloseWindow(id);
             }
 
-            await Task.WhenAll(from p in _players select SendCloseWindow(p.Key, p.Value));
-            await Task.WhenAll(from p in _players.Keys select Close(p));
+            await Task.WhenAll(from p in _players select SendCloseWindow(p));
+            await Task.WhenAll(from p in _players select Close(p));
         }
 
         public Task BroadcastSlotChanged(int slotIndex, Slot item)
         {
-            async Task SendSetSlot(IPlayer player, IClientboundPacketSink sink)
+            async Task SendSetSlot(IPlayer player)
             {
-                var id = await player.GetWindowId(this);
-                await new ClientPlayPacketGenerator(sink).SetSlot(id, (short)slotIndex, item);
+                var id = await GetWindowId(player);
+                await GetPlayerPacketGenerator(player).SetSlot(id, (short)slotIndex, item);
             }
 
-            Task.WhenAll(from p in _players select SendSetSlot(p.Key, p.Value)).Ignore();
+            Task.WhenAll(from p in _players select SendSetSlot(p)).Ignore();
             return Task.CompletedTask;
         }
 
         protected Task BroadcastWindowProperty<T>(T property, short value)
             where T : struct
         {
-            async Task SendWindowProperty(IPlayer player, IClientboundPacketSink sink)
+            async Task SendWindowProperty(IPlayer player)
             {
-                var id = await player.GetWindowId(this);
-                await new ClientPlayPacketGenerator(sink).WindowProperty(id, property, value);
+                var id = await GetWindowId(player);
+                await GetPlayerPacketGenerator(player).WindowProperty(id, property, value);
             }
 
-            Task.WhenAll(from p in _players select SendWindowProperty(p.Key, p.Value)).Ignore();
+            Task.WhenAll(from p in _players select SendWindowProperty(p)).Ignore();
             return Task.CompletedTask;
         }
 
         protected async Task NotifyWindowProperty<T>(IPlayer player, T property, short value)
             where T : struct
         {
-            var id = await player.GetWindowId(this);
-            await new ClientPlayPacketGenerator(_players[player]).WindowProperty(id, property, value);
+            var id = await GetWindowId(player);
+            await GetPlayerPacketGenerator(player).WindowProperty(id, property, value);
         }
     }
 }
