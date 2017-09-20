@@ -8,9 +8,11 @@ using MineCase.Server.Game.Windows.SlotAreas;
 using MineCase.Server.Network.Play;
 using MineCase.Server.User;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Game.Windows
 {
+    [StatelessWorker]
     internal class InventoryWindowGrain : WindowGrain, IInventoryWindow
     {
         protected override string WindowType => string.Empty;

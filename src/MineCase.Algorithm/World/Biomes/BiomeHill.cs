@@ -120,7 +120,7 @@ namespace MineCase.Algorithm.World.Biomes
                 int h = 0;
                 for (int y = 255; y >= 0; --y)
                 {
-                    if (chunk[x, y, z] != BlockStates.Air())
+                    if (!chunk[x, y, z].IsAir())
                     {
                         h = y + 1;
                         break;

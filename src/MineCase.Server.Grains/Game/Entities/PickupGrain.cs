@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-
+using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.World;
 using Orleans;
 
@@ -11,8 +11,13 @@ namespace MineCase.Server.Game.Entities
 {
     internal class PickupGrain : EntityGrain, IPickup
     {
-        private EntityMetadata.Pickup _metadata;
+        protected override async Task InitializeComponents()
+        {
+            await base.InitializeComponents();
+            await SetComponent(new PickupMetadataComponent());
+        }
 
+        /*
         public async Task CollectBy(IPlayer player)
         {
             var after = await player.Collect(EntityId, _metadata.Item);
@@ -27,12 +32,6 @@ namespace MineCase.Server.Game.Entities
             {
                 await SetItem(after);
             }
-        }
-
-        public override Task OnActivateAsync()
-        {
-            _metadata = new EntityMetadata.Pickup();
-            return base.OnActivateAsync();
         }
 
         public async Task Register()
@@ -52,6 +51,6 @@ namespace MineCase.Server.Game.Entities
             UUID = uuid;
             await SetPosition(position);
             await GetBroadcastGenerator().SpawnObject(EntityId, uuid, 2, position, 0, 0, 0);
-        }
+        }*/
     }
 }

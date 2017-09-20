@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using MineCase.Algorithm.World.Biomes;
 using MineCase.World;
 
 namespace MineCase.Algorithm.World
@@ -27,7 +31,7 @@ namespace MineCase.Algorithm.World
             _info = info;
         }
 
-        public void Generate(MapGenerationInfo info, int chunkX, int chunkZ, ChunkColumnStorage chunk)
+        public void Generate(MapGenerationInfo info, int chunkX, int chunkZ, ChunkColumnStorage chunk, Biome biome)
         {
             int range = _range;
             _info = info;
@@ -45,11 +49,11 @@ namespace MineCase.Algorithm.World
                     _rand = new Random(randX ^ randZ ^ info.Seed);
 
                     // 调用子类方法
-                    RecursiveGenerate(info, x, z, chunkX, chunkZ, chunk);
+                    RecursiveGenerate(info, x, z, chunkX, chunkZ, chunk, biome);
                 }
             }
         }
 
-        protected abstract void RecursiveGenerate(MapGenerationInfo info, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, ChunkColumnStorage chunk);
+        protected abstract void RecursiveGenerate(MapGenerationInfo info, int chunkX, int chunkZ, int centerChunkX, int centerChunkZ, ChunkColumnStorage chunk, Biome biome);
     }
 }

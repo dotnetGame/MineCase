@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-
+using MineCase.Protocol;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Network;
@@ -36,18 +36,14 @@ namespace MineCase.Server.User
 
         Task NotifyLoggedIn();
 
-        Task KeepAlive(uint keepAliveId);
-
         Task SendChatMessage(Chat jsonData, Byte position);
 
-        Task<uint> GetPing();
-
-        Task OnGameTick(TimeSpan deltaTime);
+        Task OnGameTick(TimeSpan deltaTime, long worldAge);
 
         Task SetPacketRouter(IPacketRouter packetRouter);
 
-        Task SetViewDistance(int viewDistance);
-
         Task<Slot[]> GetInventorySlots();
+
+        Task ForwardPacket(UncompressedPacket packet);
     }
 }

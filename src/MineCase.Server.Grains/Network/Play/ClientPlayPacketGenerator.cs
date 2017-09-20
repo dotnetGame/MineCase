@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Game.Windows;
 using MineCase.Protocol.Play;
 using MineCase.Serialization;
 using MineCase.Server.Game;
@@ -416,12 +418,20 @@ namespace MineCase.Server.Network.Play
             });
         }
 
-        public Task WindowProperty(byte windowId, short property, short value)
+        public Task WindowProperty<T>(byte windowId, T property, short value)
+            where T : struct
         {
+            short PropertyToShort()
+            {
+                if (typeof(T) == typeof(FurnaceWindowProperty))
+                    return Unsafe.As<T, short>(ref property);
+                throw new NotSupportedException();
+            }
+
             return Sink.SendPacket(new WindowProperty
             {
                 WindowId = windowId,
-                Property = property,
+                Property = PropertyToShort(),
                 Value = value
             });
         }

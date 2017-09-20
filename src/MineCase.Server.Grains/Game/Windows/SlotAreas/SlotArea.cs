@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Entities.Components;
+using MineCase.Server.World;
 using Orleans;
 using Orleans.Concurrency;
 
@@ -86,66 +87,142 @@ namespace MineCase.Server.Game.Windows.SlotAreas
 
         public virtual async Task Click(IPlayer player, int slotIndex, ClickAction clickAction, Slot clickedItem)
         {
-            var slot = await GetSlot(player, slotIndex);
-            var draggedSlot = await player.GetDraggedSlot();
             switch (clickAction)
             {
                 case ClickAction.LeftMouseClick:
-                    if (draggedSlot.IsEmpty || !draggedSlot.CanStack(slot))
-                    {
-                        // 交换
-                        await SetSlot(player, slotIndex, draggedSlot);
-                        await player.SetDraggedSlot(slot);
-                    }
-                    else if (TryStackSlot(ref draggedSlot, ref slot))
-                    {
-                        // 堆叠到最大
-                        await SetSlot(player, slotIndex, slot);
-                        await player.SetDraggedSlot(draggedSlot);
-                    }
-
+                    await OnLeftMouseClick(player, slotIndex);
                     break;
                 case ClickAction.RightMouseClick:
-                    if (draggedSlot.IsEmpty)
-                    {
-                        // 取一半
-                        if (!slot.IsEmpty)
-                        {
-                            var takeCount = (byte)Math.Ceiling(slot.ItemCount / 2.0f);
-                            draggedSlot = slot.WithItemCount(takeCount);
-                            slot.ItemCount -= takeCount;
-                            slot.MakeEmptyIfZero();
-
-                            await SetSlot(player, slotIndex, slot);
-                            await player.SetDraggedSlot(draggedSlot);
-                        }
-                    }
-                    else if (slot.IsEmpty || draggedSlot.CanStack(slot))
-                    {
-                        // 放一个
-                        if (draggedSlot.ItemCount > 0 && (slot.IsEmpty || slot.ItemCount < MaxStackCount))
-                        {
-                            draggedSlot.ItemCount--;
-                            if (slot.IsEmpty)
-                                slot = draggedSlot.WithItemCount(1);
-                            else
-                                slot.ItemCount++;
-                            draggedSlot.MakeEmptyIfZero();
-
-                            await SetSlot(player, slotIndex, slot);
-                            await player.SetDraggedSlot(draggedSlot);
-                        }
-                    }
-                    else
-                    {
-                        // 交换
-                        await SetSlot(player, slotIndex, draggedSlot);
-                        await player.SetDraggedSlot(slot);
-                    }
-
+                    await OnRightMouseClick(player, slotIndex);
+                    break;
+                case ClickAction.ShiftLeftMouseClick:
+                case ClickAction.ShiftRightMouseClick:
+                    await OnMouseShiftClick(player, slotIndex);
+                    break;
+                case ClickAction.DropKey:
+                case ClickAction.CtrlDropKey:
+                    await OnDropClick(player, slotIndex, clickAction == ClickAction.CtrlDropKey);
+                    break;
+                case ClickAction.NumberKey1:
+                case ClickAction.NumberKey2:
+                case ClickAction.NumberKey3:
+                case ClickAction.NumberKey4:
+                case ClickAction.NumberKey5:
+                case ClickAction.NumberKey6:
+                case ClickAction.NumberKey7:
+                case ClickAction.NumberKey8:
+                case ClickAction.NumberKey9:
+                    await OnNumberKeyClick(player, slotIndex, clickAction - ClickAction.NumberKey1);
                     break;
                 default:
+                    await Window.BroadcastWholeWindow();
                     break;
+            }
+        }
+
+        private async Task OnNumberKeyClick(IPlayer player, int slotIndex, int numberIndex)
+        {
+            var inventory = await player.Ask(AskInventoryWindow.Default);
+            var hotbarIndex = await inventory.GetHotbarGlobalIndex(player, numberIndex);
+            var hotbarSlot = await inventory.GetSlot(player, hotbarIndex);
+            var slot = await GetSlot(player, slotIndex);
+
+            // 交换
+            await inventory.SetSlot(player, hotbarIndex, slot);
+            await SetSlot(player, slotIndex, hotbarSlot);
+        }
+
+        private async Task OnDropClick(IPlayer player, int slotIndex, bool dropWholeSlot)
+        {
+            var slot = await GetSlot(player, slotIndex);
+            if (!slot.IsEmpty)
+            {
+                var position = await player.GetPosition();
+                var chunk = position.ToChunkWorldPos();
+                var world = await player.GetWorld();
+                var finder = GrainFactory.GetPartitionGrain<ICollectableFinder>(world, chunk);
+
+                if (dropWholeSlot)
+                {
+                    await player.Tell(new TossPickup { Slots = new[] { slot } });
+                    await SetSlot(player, slotIndex, Slot.Empty);
+                }
+                else
+                {
+                    await player.Tell(new TossPickup { Slots = new[] { slot.CopyOne() } });
+                    slot.ItemCount--;
+                    slot.MakeEmptyIfZero();
+                    await SetSlot(player, slotIndex, slot);
+                }
+            }
+        }
+
+        protected virtual async Task OnMouseShiftClick(IPlayer player, int slotIndex)
+        {
+            var slot = await GetSlot(player, slotIndex);
+            slot = await Window.DistributeStack(player, slot);
+            await SetSlot(player, slotIndex, slot);
+        }
+
+        protected virtual async Task OnRightMouseClick(IPlayer player, int slotIndex)
+        {
+            var slot = await GetSlot(player, slotIndex);
+            var draggedSlot = await player.Ask(AskDraggedSlot.Default);
+
+            if (draggedSlot.IsEmpty)
+            {
+                // 取一半
+                if (!slot.IsEmpty)
+                {
+                    var takeCount = (byte)Math.Ceiling(slot.ItemCount / 2.0f);
+                    draggedSlot = slot.WithItemCount(takeCount);
+                    slot.ItemCount -= takeCount;
+                    slot.MakeEmptyIfZero();
+
+                    await SetSlot(player, slotIndex, slot);
+                    await player.Tell(new SetDraggedSlot { Slot = draggedSlot });
+                }
+            }
+            else if (slot.IsEmpty || draggedSlot.CanStack(slot))
+            {
+                // 放一个
+                if (draggedSlot.ItemCount > 0 && (slot.IsEmpty || slot.ItemCount < MaxStackCount))
+                {
+                    draggedSlot.ItemCount--;
+                    if (slot.IsEmpty)
+                        slot = draggedSlot.WithItemCount(1);
+                    else
+                        slot.ItemCount++;
+                    draggedSlot.MakeEmptyIfZero();
+
+                    await SetSlot(player, slotIndex, slot);
+                    await player.Tell(new SetDraggedSlot { Slot = draggedSlot });
+                }
+            }
+            else
+            {
+                // 交换
+                await SetSlot(player, slotIndex, draggedSlot);
+                await player.Tell(new SetDraggedSlot { Slot = slot });
+            }
+        }
+
+        protected virtual async Task OnLeftMouseClick(IPlayer player, int slotIndex)
+        {
+            var slot = await GetSlot(player, slotIndex);
+            var draggedSlot = await player.Ask(AskDraggedSlot.Default);
+
+            if (draggedSlot.IsEmpty || !draggedSlot.CanStack(slot))
+            {
+                // 交换
+                await SetSlot(player, slotIndex, draggedSlot);
+                await player.Tell(new SetDraggedSlot { Slot = slot });
+            }
+            else if (TryStackSlot(ref draggedSlot, ref slot))
+            {
+                // 堆叠到最大
+                await SetSlot(player, slotIndex, slot);
+                await player.Tell(new SetDraggedSlot { Slot = draggedSlot });
             }
         }
 

@@ -45,7 +45,7 @@ namespace MineCase.Server.World
         {
             var xOffset = MakeRelativeBlockOffset(x);
             var zOffset = MakeRelativeBlockOffset(z);
-            var chunkColumnKey = world.MakeChunkColumnKey(xOffset.chunk, zOffset.chunk);
+            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.chunk, zOffset.chunk));
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockState(
                 xOffset.block,
                 y,
@@ -63,7 +63,7 @@ namespace MineCase.Server.World
         {
             var xOffset = MakeRelativeBlockOffset(pos.X);
             var zOffset = MakeRelativeBlockOffset(pos.Z);
-            var chunkColumnKey = world.MakeChunkColumnKey(xOffset.chunk, zOffset.chunk);
+            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.chunk, zOffset.chunk));
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockState(
                 xOffset.block,
                 pos.Y,
@@ -83,7 +83,7 @@ namespace MineCase.Server.World
         {
             var xOffset = MakeRelativeBlockOffset(x);
             var zOffset = MakeRelativeBlockOffset(z);
-            var chunkColumnKey = world.MakeChunkColumnKey(xOffset.chunk, zOffset.chunk);
+            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.chunk, zOffset.chunk));
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).SetBlockState(
                 xOffset.block,
                 y,
@@ -102,7 +102,7 @@ namespace MineCase.Server.World
         {
             var xOffset = MakeRelativeBlockOffset(pos.X);
             var zOffset = MakeRelativeBlockOffset(pos.Z);
-            var chunkColumnKey = world.MakeChunkColumnKey(xOffset.chunk, zOffset.chunk);
+            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.chunk, zOffset.chunk));
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).SetBlockState(
                 xOffset.block,
                 pos.Y,
@@ -114,28 +114,18 @@ namespace MineCase.Server.World
         {
             var xOffset = MakeRelativeBlockOffset(pos.X);
             var zOffset = MakeRelativeBlockOffset(pos.Z);
-            var chunkColumnKey = world.MakeChunkColumnKey(xOffset.chunk, zOffset.chunk);
+            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.chunk, zOffset.chunk));
             var chunk = grainFactory.GetGrain<IChunkColumn>(chunkColumnKey);
             int y;
             for (y = 255; y >= 0; --y)
             {
-                if (await chunk.GetBlockState(xOffset.block, y, zOffset.block) != BlockStates.Air())
+                if (!(await chunk.GetBlockState(xOffset.block, y, zOffset.block)).IsAir())
                 {
                     break;
                 }
             }
 
             return y + 1;
-        }
-
-        public static (int chunkX, int chunkZ) GetChunk(this Position blockPosition)
-        {
-            return (MakeRelativeBlockOffset(blockPosition.X).chunk, MakeRelativeBlockOffset(blockPosition.Z).chunk);
-        }
-
-        public static (int chunkX, int chunkZ) GetChunk(this BlockWorldPos blockPosition)
-        {
-            return (MakeRelativeBlockOffset(blockPosition.X).chunk, MakeRelativeBlockOffset(blockPosition.Z).chunk);
         }
 
         public static (int chunk, int block) MakeRelativeBlockOffset(int value)
@@ -164,7 +154,7 @@ namespace MineCase.Server.World
         {
             var xOffset = MakeRelativeBlockOffset(x);
             var zOffset = MakeRelativeBlockOffset(z);
-            var chunkColumnKey = world.MakeChunkColumnKey(xOffset.chunk, zOffset.chunk);
+            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.chunk, zOffset.chunk));
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockEntity(
                 xOffset.block,
                 y,
@@ -182,7 +172,7 @@ namespace MineCase.Server.World
         {
             var xOffset = MakeRelativeBlockOffset(pos.X);
             var zOffset = MakeRelativeBlockOffset(pos.Z);
-            var chunkColumnKey = world.MakeChunkColumnKey(xOffset.chunk, zOffset.chunk);
+            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.chunk, zOffset.chunk));
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockEntity(
                 xOffset.block,
                 pos.Y,

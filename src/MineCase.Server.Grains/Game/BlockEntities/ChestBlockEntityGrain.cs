@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Game.Windows.SlotAreas;
 using Orleans;
@@ -48,7 +49,7 @@ namespace MineCase.Server.Game.BlockEntities
                         new[] { this.AsReference<IChestBlockEntity>() } : new[] { this.AsReference<IChestBlockEntity>(), _neightborEntity }).AsImmutable());
                 }
 
-                await player.OpenWindow(_chestWindow);
+                await player.Tell(new OpenWindow { Window = _chestWindow });
             }
             else
             {

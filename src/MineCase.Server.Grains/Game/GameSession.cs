@@ -44,7 +44,7 @@ namespace MineCase.Server.Game
 
             await user.JoinGame();
             await generator.JoinGame(
-                (await user.GetPlayer()).GetEntityId(),
+                await (await user.GetPlayer()).GetEntityId(),
                 new GameMode { ModeClass = GameMode.Class.Survival },
                 Dimension.Overworld,
                 Difficulty.Easy,
@@ -95,12 +95,19 @@ namespace MineCase.Server.Game
             var deltaTime = now - _lastGameTickTime;
             _lastGameTickTime = now;
 
-            var worldAge = await _world.GetAge();
+            var worldTime = await _world.GetTime();
+
+            if (worldTime.WorldAge % 20 == 0)
+            {
+                await Task.WhenAll(from u in _users.Values
+                                   select u.Generator.TimeUpdate(worldTime.WorldAge, worldTime.TimeOfDay));
+            }
+
             await _world.OnGameTick(deltaTime);
             await Task.WhenAll(from u in _users.Keys
-                               select u.OnGameTick(deltaTime));
+                               select u.OnGameTick(deltaTime, worldTime.WorldAge));
             await Task.WhenAll(from u in _tickables
-                               select u.OnGameTick(deltaTime, worldAge));
+                               select u.OnGameTick(deltaTime, worldTime.WorldAge));
         }
 
         private Task<Chat> CreateStandardChatMessage(string name, string message)

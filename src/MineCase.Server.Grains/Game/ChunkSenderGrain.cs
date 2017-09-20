@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MineCase.Server.Network;
 using MineCase.Server.User;
 using MineCase.Server.World;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.Game
@@ -19,14 +20,13 @@ namespace MineCase.Server.Game
             return base.OnActivateAsync();
         }
 
-        public Task PostChunk(int x, int z, IReadOnlyCollection<IClientboundPacketSink> clients, IReadOnlyCollection<IUserChunkLoader> loaders)
+        public Task PostChunk(ChunkWorldPos chunkPos, IReadOnlyCollection<IClientboundPacketSink> clients, IReadOnlyCollection<IUserChunkLoader> loaders)
         {
             var stream = GetStreamProvider(StreamProviders.JobsProvider).GetStream<SendChunkJob>(_jobWorkerId, StreamProviders.Namespaces.ChunkSender);
             stream.OnNextAsync(new SendChunkJob
             {
                 World = GrainFactory.GetGrain<IWorld>(this.GetPrimaryKeyString()),
-                ChunkX = x,
-                ChunkZ = z,
+                ChunkPosition = chunkPos,
                 Clients = clients,
                 Loaders = loaders
             }).Ignore();

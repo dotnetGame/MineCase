@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase.Server.Game
+namespace MineCase
 {
     public enum PlayerDiggingFace : byte
     {

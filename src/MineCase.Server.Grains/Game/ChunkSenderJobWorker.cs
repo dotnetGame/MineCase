@@ -8,6 +8,7 @@ using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
 using MineCase.Server.User;
 using MineCase.Server.World;
+using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
 using Orleans.Streams;
@@ -18,9 +19,7 @@ namespace MineCase.Server.Game
     {
         public IWorld World { get; set; }
 
-        public int ChunkX { get; set; }
-
-        public int ChunkZ { get; set; }
+        public ChunkWorldPos ChunkPosition { get; set; }
 
         public IReadOnlyCollection<IClientboundPacketSink> Clients { get; set; }
 
@@ -49,12 +48,12 @@ namespace MineCase.Server.Game
 
         private async Task OnNextAsync(SendChunkJob job, StreamSequenceToken token)
         {
-            var chunkColumn = GrainFactory.GetGrain<IChunkColumn>(job.World.MakeChunkColumnKey(job.ChunkX, job.ChunkZ));
+            var chunkColumn = GrainFactory.GetGrain<IChunkColumn>(job.World.MakeAddressByPartitionKey(job.ChunkPosition));
 
             var generator = new ClientPlayPacketGenerator(new BroadcastPacketSink(job.Clients, _packetPackager));
-            await generator.ChunkData(Dimension.Overworld, job.ChunkX, job.ChunkZ, await chunkColumn.GetState());
+            await generator.ChunkData(Dimension.Overworld, job.ChunkPosition.X, job.ChunkPosition.Z, await chunkColumn.GetState());
             foreach (var loader in job.Loaders)
-                loader.OnChunkSent(job.ChunkX, job.ChunkZ).Ignore();
+                loader.OnChunkSent(job.ChunkPosition).Ignore();
         }
     }
 }
