@@ -11,7 +11,7 @@ using MineCase.Server.Network.Play;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class PickupDiscoveryComponent : Component<PickupGrain>, IHandle<DiscoveredByPlayer>, IHandle<BroadcasstDiscovered>
+    internal class PickupDiscoveryComponent : Component<PickupGrain>, IHandle<DiscoveredByPlayer>, IHandle<BroadcastDiscovered>
     {
         public PickupDiscoveryComponent(string name = "pickupDiscovery")
             : base(name)
@@ -27,7 +27,7 @@ namespace MineCase.Server.Game.Entities.Components
                 .SpawnObject(AttachedObject.EntityId, AttachedObject.UUID, 0, AttachedObject.Position, AttachedObject.Pitch, AttachedObject.Yaw, 0);
         }
 
-        Task IHandle<BroadcasstDiscovered>.Handle(BroadcasstDiscovered message)
+        Task IHandle<BroadcastDiscovered>.Handle(BroadcastDiscovered message)
         {
             return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator()
                 .SpawnObject(AttachedObject.EntityId, AttachedObject.UUID, 0, AttachedObject.Position, AttachedObject.Pitch, AttachedObject.Yaw, 0);

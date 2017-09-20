@@ -117,8 +117,8 @@ namespace MineCase.Server.Game.Entities.Components
     }
 
     [Immutable]
-    public sealed class BroadcasstDiscovered : IEntityMessage
+    public sealed class BroadcastDiscovered : IEntityMessage
     {
-        public static readonly BroadcasstDiscovered Default = new BroadcasstDiscovered();
+        public static readonly BroadcastDiscovered Default = new BroadcastDiscovered();
     }
 }
