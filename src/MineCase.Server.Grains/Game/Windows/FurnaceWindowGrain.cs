@@ -16,10 +16,10 @@ namespace MineCase.Server.Game.Windows
 
         protected override Chat Title { get; } = new Chat("Furnace");
 
-        private IFurnaceBlockEntity _furnaceEntity;
-        private Dictionary<FurnaceWindowProperty, short> _properties = new Dictionary<FurnaceWindowProperty, short>();
+        private IBlockEntity _furnaceEntity;
+        private Dictionary<FurnaceWindowPropertyType, short> _properties = new Dictionary<FurnaceWindowPropertyType, short>();
 
-        public Task SetEntity(IFurnaceBlockEntity furnaceEntity)
+        public Task SetEntity(IBlockEntity furnaceEntity)
         {
             SlotAreas.Clear();
             _properties.Clear();
@@ -31,7 +31,7 @@ namespace MineCase.Server.Game.Windows
             return Task.CompletedTask;
         }
 
-        public Task SetProperty(FurnaceWindowProperty property, short value)
+        public Task SetProperty(FurnaceWindowPropertyType property, short value)
         {
             _properties[property] = value;
             return BroadcastWindowProperty(property, value);
