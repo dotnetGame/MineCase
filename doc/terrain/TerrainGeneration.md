@@ -89,3 +89,14 @@ public interface IChunkGenerator
 ```
 
 所有的ChunkGeneratorGrain都会实现此接口
+
+我们主要会对ChunkGeneratorOverWorld进行讲解
+
+## Biome 生物群落
+
+生物群落是MC中的一个很重要的概念，生物群落贯穿着MC地形生成的整个过程。在generate阶段它会影响地形，影响表层覆盖的方块。在populate阶段，biome影响着地表植物的分布，动物的生成。一个chunk有16x16的biome数据，垂直方向的方块共享一个biome。Biome由一个biome ID表示，具体的ID值可以在wiki上查到。
+
+
+## GenLayer 层次生成器
+对于Biome的生成，MC采用了Genlayer的方式，以decorator模式，把生物群落得生成过程串在一起，从上向下逐层采样，生成Biome。
+我们可以看到在Genlayer.java中将各个Genlayer串在一起
