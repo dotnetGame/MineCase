@@ -43,6 +43,16 @@ namespace MineCase.Server.Game.Entities.Components
             return Task.CompletedTask;
         }
 
+        public async Task SetSlots(Slot[] slots)
+        {
+            if (slots.Length != _slotsCount)
+                throw new ArgumentException(nameof(slots));
+
+            await AttachedObject.SetLocalValue(SlotsProperty, slots);
+            for (int i = 0; i < _slotsCount; i++)
+                await SlotChanged.InvokeSerial(this, (i, slots[i]));
+        }
+
         Task IHandle<SetSlot>.Handle(SetSlot message)
             => SetSlot(message.Index, message.Slot);
 

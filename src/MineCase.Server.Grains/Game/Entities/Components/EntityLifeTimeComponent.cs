@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.Components;
+using MineCase.Server.Game.BlockEntities;
 
 namespace MineCase.Server.Game.Entities.Components
 {
@@ -21,6 +22,7 @@ namespace MineCase.Server.Game.Entities.Components
             var lookComponent = AttachedObject.GetComponent<EntityLookComponent>();
             await lookComponent.SetPitch(message.Pitch);
             await lookComponent.SetYaw(message.Yaw);
+            await AttachedObject.Tell(BroadcastDiscovered.Default);
         }
     }
 }

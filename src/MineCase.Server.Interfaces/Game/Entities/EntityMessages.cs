@@ -17,6 +17,12 @@ namespace MineCase.Server.Game.Entities.Components
     }
 
     [Immutable]
+    public sealed class KickPlayer : IEntityMessage
+    {
+        public Chat Reason { get; set; }
+    }
+
+    [Immutable]
     public sealed class BindToUser : IEntityMessage
     {
         public IUser User { get; set; }
@@ -102,5 +108,17 @@ namespace MineCase.Server.Game.Entities.Components
     public sealed class TossPickup : IEntityMessage
     {
         public Slot[] Slots { get; set; }
+    }
+
+    [Immutable]
+    public sealed class DiscoveredByPlayer : IEntityMessage
+    {
+        public IPlayer Player { get; set; }
+    }
+
+    [Immutable]
+    public sealed class BroadcastDiscovered : IEntityMessage
+    {
+        public static readonly BroadcastDiscovered Default = new BroadcastDiscovered();
     }
 }

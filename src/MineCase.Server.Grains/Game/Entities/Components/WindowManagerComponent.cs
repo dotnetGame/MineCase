@@ -10,7 +10,7 @@ using Orleans;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class WindowManagerComponent : Component<PlayerGrain>, IHandle<OpenWindow>
+    internal class WindowManagerComponent : Component<PlayerGrain>, IHandle<OpenWindow>, IHandle<AskWindowId, byte>
     {
         private Dictionary<byte, WindowContext> _windows;
 
@@ -72,6 +72,9 @@ namespace MineCase.Server.Game.Entities.Components
 
         Task IHandle<OpenWindow>.Handle(OpenWindow message) =>
             OpenWindow(message.Window);
+
+        Task<byte> IHandle<AskWindowId, byte>.Handle(AskWindowId message) =>
+            Task.FromResult(_windows.First(o => o.Value.Window.GetPrimaryKey() == message.Window.GetPrimaryKey()).Key);
 
         private class WindowContext
         {

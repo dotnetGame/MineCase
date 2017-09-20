@@ -50,23 +50,26 @@ namespace MineCase.Server.Game.Blocks
 
         public override async Task UseBy(IPlayer player, IGrainFactory grainFactory, IWorld world, BlockWorldPos blockPosition, Vector3 cursorPosition)
         {
-            var entity = (await world.GetBlockEntity(grainFactory, blockPosition)).Cast<IChestBlockEntity>();
-            await entity.UseBy(player);
+            var entity = await world.GetBlockEntity(grainFactory, blockPosition);
+            await entity.Tell(new UseBy { Player = player });
         }
 
         public override async Task OnNeighborChanged(BlockWorldPos selfPosition, BlockWorldPos neighborPosition, BlockState oldState, BlockState newState, IGrainFactory grainFactory, IWorld world)
         {
             if (oldState.Id == (uint)BlockId.Chest)
             {
-                var entity = (await world.GetBlockEntity(grainFactory, selfPosition)).Cast<IChestBlockEntity>();
-                await entity.ClearNeighborEntity();
+                var entity = await world.GetBlockEntity(grainFactory, selfPosition);
+                await entity.Tell(NeighborEntityChanged.Empty);
             }
 
             if (newState.Id == (uint)BlockId.Chest)
             {
                 await world.SetBlockState(grainFactory, selfPosition, newState);
-                var entity = (await world.GetBlockEntity(grainFactory, selfPosition)).Cast<IChestBlockEntity>();
-                await entity.SetNeighborEntity((await world.GetBlockEntity(grainFactory, neighborPosition)).Cast<IChestBlockEntity>());
+                var entity = await world.GetBlockEntity(grainFactory, selfPosition);
+                await entity.Tell(new NeighborEntityChanged
+                {
+                    Entity = await world.GetBlockEntity(grainFactory, neighborPosition)
+                });
             }
         }
 
@@ -86,9 +89,9 @@ namespace MineCase.Server.Game.Blocks
 
             if (neighborPosition.HasValue)
             {
-                var entity = (await world.GetBlockEntity(grainFactory, position)).Cast<IChestBlockEntity>();
-                var neightborEntity = (await world.GetBlockEntity(grainFactory, neighborPosition.Value)).Cast<IChestBlockEntity>();
-                await entity.SetNeighborEntity(neightborEntity);
+                var entity = await world.GetBlockEntity(grainFactory, position);
+                var neightborEntity = await world.GetBlockEntity(grainFactory, neighborPosition.Value);
+                await entity.Tell(new NeighborEntityChanged { Entity = neightborEntity });
             }
         }
 

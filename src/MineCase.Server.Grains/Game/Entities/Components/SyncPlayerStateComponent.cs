@@ -54,6 +54,7 @@ namespace MineCase.Server.Game.Entities.Components
         async Task IHandle<BindToUser>.Handle(BindToUser message)
         {
             await AttachedObject.GetComponent<NameComponent>().SetName(await message.User.GetName());
+            await AttachedObject.GetComponent<SlotContainerComponent>().SetSlots(await message.User.GetInventorySlots());
         }
     }
 }

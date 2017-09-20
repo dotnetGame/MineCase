@@ -5,12 +5,7 @@ namespace MineCase.Server.Game.BlockEntities
 {
     [BlockEntity(BlockId.Furnace)]
     [BlockEntity(BlockId.BurningFurnace)]
-    public interface IFurnaceBlockEntity : IBlockEntity, ITickable
+    public interface IFurnaceBlockEntity : IBlockEntity
     {
-        Task<Slot> GetSlot(int slotIndex);
-
-        Task SetSlot(int slotIndex, Slot item);
-
-        Task UseBy(IPlayer player);
     }
 }
