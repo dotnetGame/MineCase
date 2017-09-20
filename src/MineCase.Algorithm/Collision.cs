@@ -9,7 +9,7 @@ using MineCase.World;
 
 namespace MineCase.Algorithm
 {
-    public static class Collsion
+    public static class Collision
     {
         public static bool IsCollided(Shape shape1, Shape shape2)
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Numerics;
 using System.Text;
 
@@ -15,9 +16,9 @@ namespace MineCase.Graphics
 
         public Size(float length, float width, float height = 0f)
         {
-            System.Diagnostics.Debug.Assert(length >= 0f, "The parameter must be greater than or equal to zero.");
-            System.Diagnostics.Debug.Assert(width >= 0f, "The parameter must be greater than or equal to zero.");
-            System.Diagnostics.Debug.Assert(height >= 0f, "The parameter must be greater than or equal to zero.");
+            Contract.Assert(length >= 0f, "The parameter must be greater than or equal to zero.");
+            Contract.Assert(width >= 0f, "The parameter must be greater than or equal to zero.");
+            Contract.Assert(height >= 0f, "The parameter must be greater than or equal to zero.");
             Length = length;
             Width = width;
             Height = height;
