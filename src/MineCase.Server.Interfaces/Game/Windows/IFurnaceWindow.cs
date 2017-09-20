@@ -9,8 +9,8 @@ namespace MineCase.Server.Game.Windows
 {
     public interface IFurnaceWindow : IWindow
     {
-        Task SetEntity(IFurnaceBlockEntity furnaceEntity);
+        Task SetEntity(IBlockEntity furnaceEntity);
 
-        Task SetProperty(FurnaceWindowProperty property, short value);
+        Task SetProperty(FurnaceWindowPropertyType property, short value);
     }
 }

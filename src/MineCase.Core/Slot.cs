@@ -35,6 +35,17 @@ namespace MineCase
             };
         }
 
+        public Slot AddItemCount(int count)
+        {
+            return new Slot
+            {
+                BlockId = BlockId,
+                ItemCount = (byte)(ItemCount + count),
+                ItemDamage = ItemDamage,
+                NBT = NBT
+            };
+        }
+
         public void MakeEmptyIfZero()
         {
             if (ItemCount == 0)

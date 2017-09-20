@@ -29,17 +29,17 @@ namespace MineCase.Server.Game.BlockEntities
                                  }).ToDictionary(o => o.BlockId, o => o.Method);
         }
 
-        private static IBlockEntity GetBlockEntity<TGrain>(IGrainFactory grainFactory, string key)
+        private static IBlockEntity GetBlockEntity<TGrain>(IGrainFactory grainFactory, Guid key)
             where TGrain : IBlockEntity
         {
             return grainFactory.GetGrain<TGrain>(key).Cast<IBlockEntity>();
         }
 
-        public static IBlockEntity Create(IGrainFactory grainFactory, IWorld world, BlockWorldPos position, BlockId blockId)
+        public static IBlockEntity Create(IGrainFactory grainFactory, BlockId blockId)
         {
             if (_blockEntityTypes.TryGetValue(blockId, out var method))
             {
-                var key = world.MakeBlockEntityKey(position);
+                var key = Guid.NewGuid();
                 return (IBlockEntity)method.Invoke(null, new object[] { grainFactory, key });
             }
 

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.Components;
+using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Network.Play;
 using MineCase.Server.World;
 using MineCase.World;
@@ -14,11 +15,15 @@ namespace MineCase.Server.Game.Entities
 {
     internal abstract class EntityGrain : DependencyObject, IEntity
     {
+        public Guid UUID => this.GetPrimaryKey();
+
         public uint EntityId => GetValue(EntityIdComponent.EntityIdProperty);
 
         public EntityWorldPos Position => GetValue(EntityWorldPositionComponent.EntityWorldPositionProperty);
 
         public IWorld World => GetValue(WorldComponent.WorldProperty);
+
+        public float Pitch => GetValue(EntityLookComponent.PitchProperty);
 
         public float Yaw => GetValue(EntityLookComponent.YawProperty);
 

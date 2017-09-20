@@ -69,7 +69,7 @@ namespace MineCase.Server.World
                 if (oldState.Id != blockState.Id)
                 {
                     bool replaceOld = true;
-                    var newEntity = BlockEntity.Create(GrainFactory, _world, blockWorldPos, (BlockId)blockState.Id);
+                    var newEntity = BlockEntity.Create(GrainFactory, (BlockId)blockState.Id);
 
                     // 删除旧的 BlockEntity
                     if (_blockEntities.TryGetValue(chunkPos, out var entity))
@@ -79,7 +79,7 @@ namespace MineCase.Server.World
 
                         if (replaceOld)
                         {
-                            await entity.Destroy();
+                            await entity.Tell(DestroyBlockEntity.Default);
                             _blockEntities.Remove(chunkPos);
                         }
                     }
@@ -88,7 +88,7 @@ namespace MineCase.Server.World
                     if (newEntity != null && replaceOld)
                     {
                         _blockEntities.Add(chunkPos, newEntity);
-                        await newEntity.OnCreated();
+                        await newEntity.Tell(new SpawnBlockEntity { World = _world, Position = blockWorldPos });
                     }
                 }
 

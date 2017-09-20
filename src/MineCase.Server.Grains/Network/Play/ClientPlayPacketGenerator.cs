@@ -423,7 +423,7 @@ namespace MineCase.Server.Network.Play
         {
             short PropertyToShort()
             {
-                if (typeof(T) == typeof(FurnaceWindowProperty))
+                if (typeof(T) == typeof(FurnaceWindowPropertyType))
                     return Unsafe.As<T, short>(ref property);
                 throw new NotSupportedException();
             }

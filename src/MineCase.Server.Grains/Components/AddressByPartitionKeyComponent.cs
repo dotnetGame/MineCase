@@ -25,31 +25,44 @@ namespace MineCase.Server.Components
         {
             AttachedObject.RegisterPropertyChangedHandler(WorldComponent.WorldProperty, OnWorldChanged);
             AttachedObject.RegisterPropertyChangedHandler(EntityWorldPositionComponent.EntityWorldPositionProperty, OnEntityWorldPositionChanged);
+            AttachedObject.RegisterPropertyChangedHandler(BlockWorldPositionComponent.BlockWorldPositionProperty, OnBlockWorldPositionChanged);
+            return Task.CompletedTask;
+        }
+
+        private Task OnBlockWorldPositionChanged(object sender, PropertyChangedEventArgs<BlockWorldPos> e)
+        {
+            UpdateKey();
             return Task.CompletedTask;
         }
 
         private Task OnWorldChanged(object sender, PropertyChangedEventArgs<IWorld> e)
         {
-            if (AttachedObject.TryGetEntityWorldPosition(out var entityPos))
-            {
-                var chunkWorldPos = entityPos.ToChunkWorldPos();
-                var key = e.NewValue.MakeAddressByPartitionKey(chunkWorldPos);
-                AttachedObject.SetLocalValue(AddressByPartitionKeyProperty, key);
-            }
-
+            UpdateKey();
             return Task.CompletedTask;
         }
 
         private Task OnEntityWorldPositionChanged(object sender, PropertyChangedEventArgs<EntityWorldPos> e)
         {
+            UpdateKey();
+            return Task.CompletedTask;
+        }
+
+        private void UpdateKey()
+        {
             if (AttachedObject.TryGetWorld(out var world))
             {
-                var chunkWorldPos = e.NewValue.ToChunkWorldPos();
-                var key = world.MakeAddressByPartitionKey(chunkWorldPos);
-                AttachedObject.SetLocalValue(AddressByPartitionKeyProperty, key);
-            }
+                ChunkWorldPos? chunkWorldPos = null;
+                if (AttachedObject.TryGetLocalValue(EntityWorldPositionComponent.EntityWorldPositionProperty, out var entityPos))
+                    chunkWorldPos = entityPos.ToChunkWorldPos();
+                else if (AttachedObject.TryGetLocalValue(BlockWorldPositionComponent.BlockWorldPositionProperty, out var blockPos))
+                    chunkWorldPos = blockPos.ToChunkWorldPos();
 
-            return Task.CompletedTask;
+                if (chunkWorldPos.HasValue)
+                {
+                    var key = world.MakeAddressByPartitionKey(chunkWorldPos.Value);
+                    AttachedObject.SetLocalValue(AddressByPartitionKeyProperty, key);
+                }
+            }
         }
 
         private static async Task OnAddressByPartitionKeyChanged(object sender, PropertyChangedEventArgs<string> e)
