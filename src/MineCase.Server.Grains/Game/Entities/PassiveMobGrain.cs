@@ -39,10 +39,8 @@ namespace MineCase.Server.Game.Entities
             await SetComponent(new EntityLifeTimeComponent());
             await SetComponent(new EntityOnGroundComponent());
             await SetComponent(new HealthComponent());
-            await SetComponent(new HeldItemComponent());
+            await SetComponent(new StandaloneHeldItemComponent());
             await SetComponent(new NameComponent());
-            await SetComponent(new PlayerListComponent());
-            await SetComponent(new TeleportComponent());
         }
 
         public async override Task OnActivateAsync()

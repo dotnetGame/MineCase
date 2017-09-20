@@ -38,7 +38,7 @@ namespace MineCase.Server.Game.Entities.Components
                         var itemHandler = ItemHandler.Create((uint)heldItem.slot.BlockId);
                         if (itemHandler.IsPlaceable)
                         {
-                            await itemHandler.PlaceBy(AttachedObject, GrainFactory, world, location, heldItem, face, cursorPosition);
+                            await itemHandler.PlaceBy(AttachedObject, GrainFactory, world, location, heldItem.slot, face, cursorPosition);
                         }
                     }
                 }
