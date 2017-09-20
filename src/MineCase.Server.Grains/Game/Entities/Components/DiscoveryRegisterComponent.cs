@@ -25,7 +25,7 @@ namespace MineCase.Server.Game.Entities.Components
         private async Task AddressByPartitionKeyChanged(object sender, (string oldKey, string newKey) e)
         {
             if (!string.IsNullOrEmpty(e.oldKey))
-                await GrainFactory.GetGrain<IWorldPartition>(e.oldKey).UnubscribeDiscovery(AttachedObject);
+                await GrainFactory.GetGrain<IWorldPartition>(e.oldKey).UnsubscribeDiscovery(AttachedObject);
             if (!string.IsNullOrEmpty(e.newKey))
                 await GrainFactory.GetGrain<IWorldPartition>(e.newKey).SubscribeDiscovery(AttachedObject);
         }

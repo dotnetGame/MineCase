@@ -18,6 +18,6 @@ namespace MineCase.Server.World
 
         Task SubscribeDiscovery(IEntity entity);
 
-        Task UnubscribeDiscovery(IEntity entity);
+        Task UnsubscribeDiscovery(IEntity entity);
     }
 }

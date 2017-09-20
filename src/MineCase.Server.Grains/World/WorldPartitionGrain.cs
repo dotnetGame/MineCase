@@ -59,7 +59,7 @@ namespace MineCase.Server.World
             return Task.CompletedTask;
         }
 
-        Task IWorldPartition.UnubscribeDiscovery(IEntity entity)
+        Task IWorldPartition.UnsubscribeDiscovery(IEntity entity)
         {
             _discoveryEntities.Remove(entity);
             return Task.CompletedTask;
