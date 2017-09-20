@@ -7,8 +7,9 @@ using MineCase.Server.World.EntitySpawner;
 
 namespace MineCase.Server.Game.Entities
 {
-    public interface ICreature : IEntity, ITickable
+    public interface ICreature : IEntity /*, ITickable*/
     {
+        /*
         Task Spawn(Guid uuid, Vector3 position, MobType type);
 
         Task OnCreated();
@@ -24,5 +25,6 @@ namespace MineCase.Server.Game.Entities
         Task AddTask(CreatureTask task);
 
         Task RemoveAllTask();
+        */
     }
 }

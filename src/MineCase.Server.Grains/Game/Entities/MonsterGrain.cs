@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
+using MineCase.Engine;
+using MineCase.Server.Components;
+using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.World;
 using MineCase.Server.World.EntitySpawner;
 using MineCase.World;
@@ -10,6 +13,7 @@ namespace MineCase.Server.Game.Entities
 {
     internal class MonsterGrain : EntityGrain, IMonster
     {
+        /*
         private string _name;
 
         private uint _health;
@@ -23,18 +27,33 @@ namespace MineCase.Server.Game.Entities
         private MobType _mobType;
 
         private Queue<CreatureTask> _tasks;
+        */
 
-        public override Task OnActivateAsync()
+        protected override async Task InitializeComponents()
         {
-            _prevPosition = Position;
-            _pitch = 0;
-            _yaw = 0;
-            _onGround = false;
-
-            _tasks = new Queue<CreatureTask>();
-            return base.OnActivateAsync();
+            await base.InitializeComponents();
+            await SetComponent(new ActiveWorldPartitionComponent());
+            await SetComponent(new BlockPlacementComponent());  // 末影人
+            await SetComponent(new DiggingComponent()); // 末影人
+            await SetComponent(new EntityLifeTimeComponent());
+            await SetComponent(new EntityOnGroundComponent());
+            await SetComponent(new HealthComponent());
+            await SetComponent(new HeldItemComponent());
+            await SetComponent(new NameComponent());
+            await SetComponent(new PlayerListComponent());
+            await SetComponent(new TeleportComponent());
         }
 
+        public async override Task OnActivateAsync()
+        {
+            await base.OnActivateAsync();
+            await this.SetLocalValue(HealthComponent.MaxHealthProperty, 20u);
+            await this.SetLocalValue(FoodComponent.MaxFoodProperty, 20u);
+            await this.SetLocalValue(HealthComponent.HealthProperty, GetValue(HealthComponent.MaxHealthProperty));
+            await this.SetLocalValue(FoodComponent.FoodProperty, GetValue(FoodComponent.MaxFoodProperty));
+        }
+
+        /*
         public async Task OnCreated()
         {
             var chunkPos = new EntityWorldPos(Position.X, Position.Y, Position.Z).ToChunkWorldPos();
@@ -149,5 +168,6 @@ namespace MineCase.Server.Game.Entities
         {
             throw new NotImplementedException();
         }
+        */
     }
 }

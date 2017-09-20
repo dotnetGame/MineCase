@@ -21,7 +21,7 @@ namespace MineCase.Server.World.EntitySpawner
             _groupMaxNum = groupMaxNum;
         }
 
-        public async void Spawn(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        public void Spawn(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
         {
             int num = random.Next(_groupMaxNum);
             for (int n = 0; n < num; ++n)
@@ -42,12 +42,15 @@ namespace MineCase.Server.World.EntitySpawner
                 if (CanMobStand(world, grainFactory, chunk, random, standPos.ToBlockChunkPos()))
                 {
                     // 添加一个生物
+
+                    /*
                     var eid = await world.NewEntityId();
                     var entity = grainFactory.GetGrain<IPassiveMob>(world.MakeEntityKey(eid));
                     await world.AttachEntity(entity);
 
                     await entity.Spawn(Guid.NewGuid(), new Vector3(pos.X + x + 0.5F, height + 1, pos.Z + z + 0.5F), _mobType);
                     await entity.OnCreated();
+                    */
                 }
             }
         }

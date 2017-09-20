@@ -10,8 +10,9 @@ namespace MineCase.Server.World.EntitySpawner.Ai.Action
 {
     internal class CreatureAiActionLookAtPlayer : ICreatureAiAction
     {
-        public async void Action(IGrainFactory grainFactory, ICreature creature, IWorld world)
+        public void Action(IGrainFactory grainFactory, ICreature creature, IWorld world)
         {
+            /*
             // 通知周围creature entity看着玩家
             Vector3 entityPos = await creature.GetPosition();
             ChunkWorldPos pos = new EntityWorldPos(entityPos.X, entityPos.Y, entityPos.Z).ToChunkWorldPos();
@@ -33,6 +34,7 @@ namespace MineCase.Server.World.EntitySpawner.Ai.Action
                     break;
                 }
             }
+            */
         }
 
         public static (byte, byte) VectorToYawAndPitch(Vector3 from, Vector3 to)
