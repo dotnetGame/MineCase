@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MineCase.Server.Game.BlockEntities;
 using MineCase.Server.Game.Windows.SlotAreas;
 using Orleans.Concurrency;
+using MineCase.Engine;
 
 namespace MineCase.Server.Game.Windows
 {
@@ -16,7 +17,7 @@ namespace MineCase.Server.Game.Windows
 
         protected override Chat Title => _title;
 
-        public Task SetEntities(Immutable<IChestBlockEntity[]> entities)
+        public Task SetEntities(Immutable<IDependencyObject[]> entities)
         {
             SlotAreas.Clear();
 

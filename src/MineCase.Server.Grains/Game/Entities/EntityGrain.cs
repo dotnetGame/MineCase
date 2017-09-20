@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.Components;
+using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Network.Play;
 using MineCase.Server.World;
 using MineCase.World;

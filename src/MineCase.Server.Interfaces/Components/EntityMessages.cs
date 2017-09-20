@@ -13,4 +13,10 @@ namespace MineCase.Server.Components
 
         public long WorldAge { get; set; }
     }
+
+    [Immutable]
+    public sealed class Disable : IEntityMessage
+    {
+        public static readonly Disable Default = new Disable();
+    }
 }

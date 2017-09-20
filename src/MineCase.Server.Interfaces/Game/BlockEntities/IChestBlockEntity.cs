@@ -9,14 +9,5 @@ namespace MineCase.Server.Game.BlockEntities
     [BlockEntity(BlockId.Chest)]
     public interface IChestBlockEntity : IBlockEntity
     {
-        Task<Slot> GetSlot(int slotIndex);
-
-        Task SetSlot(int slotIndex, Slot item);
-
-        Task UseBy(IPlayer player);
-
-        Task ClearNeighborEntity();
-
-        Task SetNeighborEntity(IChestBlockEntity chestEntity);
     }
 }

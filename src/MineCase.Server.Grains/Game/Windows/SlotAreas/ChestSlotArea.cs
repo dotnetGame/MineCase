@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using MineCase.Server.Game.BlockEntities;
 using MineCase.Server.Game.Entities;
 using Orleans;
+using MineCase.Engine;
+using MineCase.Server.Game.Entities.Components;
 
 namespace MineCase.Server.Game.Windows.SlotAreas
 {
@@ -12,9 +14,9 @@ namespace MineCase.Server.Game.Windows.SlotAreas
     {
         public const int ChestSlotsCount = 9 * 3;
 
-        private readonly IChestBlockEntity _chestEntity;
+        private readonly IDependencyObject _chestEntity;
 
-        public ChestSlotArea(IChestBlockEntity chestEntity, WindowGrain window, IGrainFactory grainFactory)
+        public ChestSlotArea(IDependencyObject chestEntity, WindowGrain window, IGrainFactory grainFactory)
             : base(ChestSlotsCount, window, grainFactory)
         {
             _chestEntity = chestEntity;
@@ -22,12 +24,12 @@ namespace MineCase.Server.Game.Windows.SlotAreas
 
         public override Task<Slot> GetSlot(IPlayer player, int slotIndex)
         {
-            return _chestEntity.GetSlot(slotIndex);
+            return _chestEntity.Ask(new AskSlot { Index = slotIndex });
         }
 
         public override async Task SetSlot(IPlayer player, int slotIndex, Slot slot)
         {
-            await _chestEntity.SetSlot(slotIndex, slot);
+            await _chestEntity.Tell(new SetSlot { Index = slotIndex, Slot = slot });
             await BroadcastSlotChanged(slotIndex, slot);
         }
     }

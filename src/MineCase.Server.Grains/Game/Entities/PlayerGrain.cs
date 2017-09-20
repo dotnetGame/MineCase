@@ -34,8 +34,8 @@ namespace MineCase.Server.Game.Entities
             await SetComponent(new ChunkLoaderComponent());
             await SetComponent(new DiggingComponent());
             await SetComponent(new DraggedSlotComponent());
-            await SetComponent(new EntityLifeTimeComponent());
             await SetComponent(new ExperienceComponent());
+            await SetComponent(new EntityLifeTimeComponent());
             await SetComponent(new EntityOnGroundComponent());
             await SetComponent(new FoodComponent());
             await SetComponent(new HealthComponent());
