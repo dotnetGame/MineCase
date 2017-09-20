@@ -15,11 +15,15 @@ namespace MineCase.Server.Game.Entities
 {
     internal abstract class EntityGrain : DependencyObject, IEntity
     {
+        public Guid UUID => this.GetPrimaryKey();
+
         public uint EntityId => GetValue(EntityIdComponent.EntityIdProperty);
 
         public EntityWorldPos Position => GetValue(EntityWorldPositionComponent.EntityWorldPositionProperty);
 
         public IWorld World => GetValue(WorldComponent.WorldProperty);
+
+        public float Pitch => GetValue(EntityLookComponent.PitchProperty);
 
         public float Yaw => GetValue(EntityLookComponent.YawProperty);
 

@@ -4,10 +4,11 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.Game.Entities.Components;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Network.Play
 {
-    internal class ClientboundPacketComponent : Component, IHandle<BindToUser>, IHandle<KickPlayer>
+    internal class ClientboundPacketComponent : Component, IHandle<BindToUser>, IHandle<KickPlayer>, IHandle<PacketForwardToPlayer>
     {
         private IClientboundPacketSink _sink;
 
@@ -32,6 +33,11 @@ namespace MineCase.Server.Network.Play
         Task IHandle<KickPlayer>.Handle(KickPlayer message)
         {
             return Kick();
+        }
+
+        Task IHandle<PacketForwardToPlayer>.Handle(PacketForwardToPlayer message)
+        {
+            return _sink.SendPacket(message.PacketId, message.Data.AsImmutable());
         }
     }
 }

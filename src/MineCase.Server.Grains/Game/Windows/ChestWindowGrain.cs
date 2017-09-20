@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Engine;
 using MineCase.Server.Game.BlockEntities;
 using MineCase.Server.Game.Windows.SlotAreas;
 using Orleans.Concurrency;
-using MineCase.Engine;
 
 namespace MineCase.Server.Game.Windows
 {

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Engine;
 using MineCase.Server.Game.BlockEntities;
 using MineCase.Server.Game.Entities;
-using Orleans;
-using MineCase.Engine;
 using MineCase.Server.Game.Entities.Components;
+using Orleans;
 
 namespace MineCase.Server.Game.Windows.SlotAreas
 {

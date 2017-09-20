@@ -15,5 +15,9 @@ namespace MineCase.Server.World
 
         [OneWay]
         Task OnGameTick(TimeSpan deltaTime, long worldAge);
+
+        Task SubscribeDiscovery(IEntity entity);
+
+        Task UnubscribeDiscovery(IEntity entity);
     }
 }

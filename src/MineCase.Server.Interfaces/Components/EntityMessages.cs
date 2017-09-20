@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using MineCase.Engine;
+using MineCase.Server.Game.Entities;
 using Orleans.Concurrency;
 
 namespace MineCase.Server.Components

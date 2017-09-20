@@ -16,6 +16,7 @@ namespace MineCase.Server.Game.Entities
             await base.InitializeComponents();
             await SetComponent(new EntityLifeTimeComponent());
             await SetComponent(new PickupMetadataComponent());
+            await SetComponent(new PickupDiscoveryComponent());
         }
 
         /*

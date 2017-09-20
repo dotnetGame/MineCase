@@ -109,4 +109,16 @@ namespace MineCase.Server.Game.Entities.Components
     {
         public Slot[] Slots { get; set; }
     }
+
+    [Immutable]
+    public sealed class DiscoveredByPlayer : IEntityMessage
+    {
+        public IPlayer Player { get; set; }
+    }
+
+    [Immutable]
+    public sealed class BroadcasstDiscovered : IEntityMessage
+    {
+        public static readonly BroadcasstDiscovered Default = new BroadcasstDiscovered();
+    }
 }
