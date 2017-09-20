@@ -11,47 +11,47 @@ namespace MineCase.Graphics
 
         public float Y { get; set; }
 
+        public float Length { get; set; }
+
         public float Width { get; set; }
 
-        public float Height { get; set; }
-
-        public Rect(float x, float y, float width, float height)
+        public Rect(float x, float y, float length, float width)
         {
             X = x;
             Y = y;
+            Length = length;
             Width = width;
-            Height = height;
         }
 
-        public Rect(Vector2 pos, Vector2 size)
+        public Rect(Point2d point, Size size)
         {
-            X = pos.X;
-            Y = pos.Y;
-            Width = size.X;
-            Height = size.Y;
+            X = point.X;
+            Y = point.Y;
+            Length = size.Length;
+            Width = size.Width;
         }
 
-        public Vector2 BottomLeft()
+        public Point2d BottomLeft()
         {
-            return new Vector2(X, Y);
+            return new Point2d(X, Y);
         }
 
-        public Vector2 TopRight()
+        public Point2d TopRight()
         {
-            return new Vector2(X + Width, Y + Height);
+            return new Point2d(X + Length, Y + Width);
         }
 
-        public Vector2 Center()
+        public Point2d Center()
         {
-            return new Vector2(X + Width * 0.5f, Y + Height * 0.5f);
+            return new Point2d(X + Length * 0.5f, Y + Width * 0.5f);
         }
 
         public bool OverlapWith(Rect rect)
         {
             var minx = Math.Max(X, rect.X);
             var miny = Math.Max(Y, rect.Y);
-            var maxx = Math.Min(X + Width, rect.X + rect.Width);
-            var maxy = Math.Min(Y + Height, rect.Y + rect.Height);
+            var maxx = Math.Min(X + Length, rect.X + rect.Length);
+            var maxy = Math.Min(Y + Width, rect.Y + rect.Width);
 
             // 边重叠也算重叠
             if (minx > maxx || miny > maxy)
@@ -63,11 +63,11 @@ namespace MineCase.Graphics
         {
             var c = Center();
             var h = TopRight() - c;
-            var v = new Vector2(Math.Abs(circle.Center.X - c.X), Math.Abs(circle.Center.Y - c.Y));
+            var v = new Point2d(Math.Abs(circle.Center.X - c.X), Math.Abs(circle.Center.Y - c.Y));
             var u = v - h;
-            if (u.X < 0 && u.Y < 0)
+            if (u.X < 0f && u.Y < 0f)
             {
-                u.X = u.Y = 0;
+                u.X = u.Y = 0f;
             }
 
             return u.LengthSquared() <= circle.Radius * circle.Radius;

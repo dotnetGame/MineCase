@@ -7,17 +7,17 @@ namespace MineCase.Graphics
 {
     public struct Circle
     {
-        public Vector2 Center { get; set; }
+        public Point2d Center { get; set; }
 
         public float Radius { get; set; }
 
         public Circle(float x, float y, float radius)
         {
-            Center = new Vector2(x, y);
+            Center = new Point2d(x, y);
             Radius = radius;
         }
 
-        public Circle(Vector2 center, float radius)
+        public Circle(Point2d center, float radius)
         {
             Center = center;
             Radius = radius;
@@ -25,7 +25,7 @@ namespace MineCase.Graphics
 
         public bool OverlapWith(Circle circle)
         {
-            return Radius + circle.Radius < Base.Distance(Center, circle.Center);
+            return Radius + circle.Radius < Point2d.Distance(Center, circle.Center);
         }
 
         public bool OverlapWith(Rect rect)
