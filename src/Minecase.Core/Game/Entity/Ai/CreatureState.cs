@@ -9,6 +9,10 @@ namespace MineCase.Server.World.EntitySpawner
         Stop,
         Walk,
         Escape,
-        Follow
+        Follow,
+        EatingGrass,
+        BurnedBySunshine,
+        Burned,
+        Escaping
     }
 }

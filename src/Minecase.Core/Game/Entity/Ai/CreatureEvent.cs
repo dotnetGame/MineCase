@@ -9,6 +9,9 @@ namespace MineCase.Server.World.EntitySpawner.Ai
         RandomWalk,
         Attacked,
         PlayerApproaching,
-        FollowFood
+        FollowFood,
+        EatingGrass,
+        BurnedBySunshine,
+        Burned
     }
 }
