@@ -9,6 +9,12 @@ before_build:
     choco install opencover.portable
 
     choco install codecov
+
+    cd MineCase.ControlPanel
+
+    npm install
+
+    cd ..
 build:
   project: ./src/
   verbosity: minimal
