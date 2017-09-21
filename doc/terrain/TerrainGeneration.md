@@ -100,3 +100,47 @@ public interface IChunkGenerator
 ## GenLayer 层次生成器
 对于Biome的生成，MC采用了Genlayer的方式，以decorator模式，把生物群落得生成过程串在一起，从上向下逐层采样，生成Biome。
 我们可以看到在Genlayer.java中将各个Genlayer串在一起
+每一个new出来的layer都把上一行的layer设置为parent
+
+在调用getInts时，每一个layer都会递归的先将parent的ints取得，进行修改后返回。
+
+下面是几个主要的genlayer子类。
+
+首先是GenLayerIsland，这个layer主要用来生成基本的海洋和陆地的biome分布，1是plains biome，0是ocean biome
+
+
+
+仅靠上面的getInts获得的biome范围会很小，几乎就是每个biome块只有一格大小，我们还需要对这个数据xz放大后使用，这个工作在GenLayerZoom中完成。
+
+
+GenLayerBiome用来在已有的biome中添加一些不同的Biome
+
+先讲以上这三个主要的biome genlayer，因为genlayer实在太多了，全讲的话，一下子也理解不了。所以先讲这三个，对后面的理解有帮助。
+
+
+## Terrain 基本地形
+进入generate方法,下面就是generateChunk方法的前一部分。
+
+
+
+首先我们进入setBlocksInChunk函数一探究竟。这个函数用来通过柏林噪声函数，生成一个只有石头和水的地表不平坦的世界。
+
+
+先看第一行，第一行的作用是获取周围32x32的biome值，
+也许有人有疑问了，在mc中一个chunk是16x16，为什么要获取32x32的biome呢？
+其实获取32x32范围的biome是用来做插值的，之前我们说过了，biome会影响地形的高度，我们知道plain是比较低的，而hill是比较高的，如果正好两个biome相邻，不做特殊的处理的话，biome和biome间会有陡崖。所以我们需要周围的biome的信息以便进行插值保证地形的平滑。
+
+不做插值的后果：
+
+
+
+如果有人认真地复现了算法，就会有人提问了，为什么我看到返回的biome数组是10x10的呢？
+这就涉及到了，mc在地形生成的一个优化，一个chunk虽然是16x16的，但是在生成高度图的时候，mc生成的是5x5x33的数组，然后对数组进行三个方向的线性插值，获得16x16x256的chunk数组。因此我们biome也只要10x10的大小（16->32, 5->10），这大大减少了运算量。
+
+接下来我们来看generateHeightMap函数，
+
+
+
+
+## Perlin Noise柏林噪声
+
