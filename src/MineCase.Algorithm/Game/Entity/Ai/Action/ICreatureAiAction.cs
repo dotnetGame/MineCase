@@ -6,7 +6,7 @@ using Orleans;
 
 namespace MineCase.Server.World.EntitySpawner.Ai.Action
 {
-    internal interface ICreatureAiAction
+    public interface ICreatureAiAction
     {
         void Action(IGrainFactory grainFactory, ICreature creature, IWorld world);
     }
