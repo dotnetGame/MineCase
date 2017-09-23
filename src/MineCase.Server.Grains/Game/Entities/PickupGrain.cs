@@ -14,6 +14,8 @@ namespace MineCase.Server.Game.Entities
         protected override async Task InitializeComponents()
         {
             await base.InitializeComponents();
+            await SetComponent(new CollectorComponent());
+            await SetComponent(new ColliderComponent());
             await SetComponent(new EntityLifeTimeComponent());
             await SetComponent(new PickupMetadataComponent());
             await SetComponent(new DiscoveryRegisterComponent());

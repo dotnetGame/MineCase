@@ -263,15 +263,28 @@ namespace MineCase.Engine
 
         public async Task<TResponse> Ask<TResponse>(IEntityMessage<TResponse> message)
         {
+            var response = await TryAsk(message);
+            if (!response.Succeeded)
+                throw new ReceiverNotFoundException();
+            return response.Response;
+        }
+
+        public async Task<AskResult<TResponse>> TryAsk<TResponse>(IEntityMessage<TResponse> message)
+        {
             var messageType = message.GetType();
             var invoker = (Func<IComponentIntern, IEntityMessage<TResponse>, Task<TResponse>>)GetOrAddMessageCaller(messageType);
             if (_messageHandlers.TryGetValue(messageType, out var handlers))
             {
                 foreach (var handler in handlers)
-                    return await invoker(handler, message);
+                    return new AskResult<TResponse> { Succeeded = true, Response = await invoker(handler, message) };
             }
 
-            throw new ReceiverNotFoundException();
+            return AskResult<TResponse>.Failed;
+        }
+
+        public virtual void Destroy()
+        {
+            DeactivateOnIdle();
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using MineCase.Engine;
+using MineCase.Graphics;
 using MineCase.Server.Components;
 using MineCase.Server.Game.BlockEntities;
 using MineCase.Server.Network;
@@ -11,7 +12,7 @@ using MineCase.Server.Network.Play;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class PickupDiscoveryComponent : Component<PickupGrain>, IHandle<DiscoveredByPlayer>, IHandle<BroadcastDiscovered>
+    internal class PickupDiscoveryComponent : Component<PickupGrain>, IHandle<DiscoveredByPlayer>, IHandle<BroadcastDiscovered>, IHandle<DestroyEntity>, IHandle<SpawnEntity>
     {
         public PickupDiscoveryComponent(string name = "pickupDiscovery")
             : base(name)
@@ -24,13 +25,27 @@ namespace MineCase.Server.Game.Entities.Components
         Task IHandle<DiscoveredByPlayer>.Handle(DiscoveredByPlayer message)
         {
             return GetPlayerPacketGenerator(message.Player)
-                .SpawnObject(AttachedObject.EntityId, AttachedObject.UUID, 0, AttachedObject.Position, AttachedObject.Pitch, AttachedObject.Yaw, 0);
+                .SpawnObject(AttachedObject.EntityId, AttachedObject.UUID, 2, AttachedObject.Position, AttachedObject.Pitch, AttachedObject.Yaw, 0);
         }
 
         Task IHandle<BroadcastDiscovered>.Handle(BroadcastDiscovered message)
         {
             return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator()
-                .SpawnObject(AttachedObject.EntityId, AttachedObject.UUID, 0, AttachedObject.Position, AttachedObject.Pitch, AttachedObject.Yaw, 0);
+                .SpawnObject(AttachedObject.EntityId, AttachedObject.UUID, 2, AttachedObject.Position, AttachedObject.Pitch, AttachedObject.Yaw, 0);
+        }
+
+        Task IHandle<DestroyEntity>.Handle(DestroyEntity message)
+        {
+            return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator()
+                .DestroyEntities(new[] { AttachedObject.EntityId });
+        }
+
+        Task IHandle<SpawnEntity>.Handle(SpawnEntity message)
+        {
+            var pos = message.Position;
+            var bb = BoundingBox.Item();
+            var box = new Cuboid(new Point3d(pos.X, pos.Z, pos.Y), new Size(bb.X, bb.Y, bb.Z));
+            return AttachedObject.SetLocalValue(ColliderComponent.ColliderShapeProperty, box);
         }
     }
 }

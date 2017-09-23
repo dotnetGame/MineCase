@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
+using MineCase.Graphics;
 using MineCase.Server.Components;
 using MineCase.Server.Network.Play;
+using MineCase.World;
 
 namespace MineCase.Server.Game.Entities.Components
 {
@@ -43,6 +45,14 @@ namespace MineCase.Server.Game.Entities.Components
         private void InstallPropertyChangedHandlers()
         {
             AttachedObject.RegisterPropertyChangedHandler(DraggedSlotComponent.DraggedSlotProperty, OnDraggedSlotChanged);
+            AttachedObject.RegisterPropertyChangedHandler(EntityWorldPositionComponent.EntityWorldPositionProperty, OnEntityWorldPositionChanged);
+        }
+
+        private Task OnEntityWorldPositionChanged(object sender, PropertyChangedEventArgs<EntityWorldPos> e)
+        {
+            var pos = e.NewValue;
+            var box = new Cuboid(new Point3d(pos.X, pos.Z, pos.Y), new Size(0.6f, 0.6f, 1.75f));
+            return AttachedObject.SetLocalValue(ColliderComponent.ColliderShapeProperty, box);
         }
 
         private Task OnDraggedSlotChanged(object sender, PropertyChangedEventArgs<Slot> e)
