@@ -8,19 +8,23 @@ using MineCase.Server.Game.Entities.Components;
 
 namespace MineCase.Server.Game.Entities
 {
-    internal abstract class MobGrain : EntityGrain
+    internal class MobGrain : EntityGrain, IMob
     {
         public MobType MobType { get; set; }
 
         protected override async Task InitializeComponents()
         {
             await base.InitializeComponents();
-            await SetComponent(new ActiveWorldPartitionComponent());
+
+            // await SetComponent(new ActiveWorldPartitionComponent());
             await SetComponent(new EntityLifeTimeComponent());
             await SetComponent(new EntityOnGroundComponent());
             await SetComponent(new HealthComponent());
             await SetComponent(new StandaloneHeldItemComponent());
             await SetComponent(new NameComponent());
+            await SetComponent(new EntityAiComponent());
+            await SetComponent(new DiscoveryRegisterComponent());
+            await SetComponent(new MobDiscoveryComponent());
             if (MobType == MobType.Enderman)
             {
                 await SetComponent(new BlockPlacementComponent());

@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Text;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Entities.Components;
 using MineCase.World;
 using Orleans;
 
@@ -21,7 +22,7 @@ namespace MineCase.Server.World.EntitySpawner
             _groupMaxNum = groupMaxNum;
         }
 
-        public void Spawn(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        public async void Spawn(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
         {
             int num = random.Next(_groupMaxNum);
             for (int n = 0; n < num; ++n)
@@ -51,6 +52,8 @@ namespace MineCase.Server.World.EntitySpawner
                     await entity.Spawn(Guid.NewGuid(), new Vector3(pos.X + x + 0.5F, height + 1, pos.Z + z + 0.5F), _mobType);
                     await entity.OnCreated();
                     */
+                    IMob entity = grainFactory.GetGrain<IMob>(Guid.NewGuid());
+                    await entity.Tell(BroadcastDiscovered.Default);
                 }
             }
         }

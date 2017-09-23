@@ -41,6 +41,13 @@ namespace MineCase.Server.Game.Entities.Components
 
         private Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
         {
+            float pitch = AttachedObject.GetComponent<EntityLookComponent>().Pitch;
+            AttachedObject.GetComponent<EntityLookComponent>().SetYaw(pitch + 360.0f / 255);
+            if (pitch > 360)
+            {
+                pitch = 0;
+            }
+
             return Task.CompletedTask;
         }
     }

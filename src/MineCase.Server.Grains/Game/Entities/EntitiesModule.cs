@@ -11,8 +11,7 @@ namespace MineCase.Server.Game.Entities
         {
             builder.RegisterType<PlayerGrain>();
             builder.RegisterType<PickupGrain>();
-            builder.RegisterType<MonsterGrain>();
-            builder.RegisterType<PassiveMobGrain>();
+            builder.RegisterType<MobGrain>();
         }
     }
 }
