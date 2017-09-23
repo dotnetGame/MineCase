@@ -20,20 +20,20 @@ namespace MineCase.Graphics
 
         public bool CollideWithCuboid(Cuboid cuboid)
         {
-            if (Point.Z + Size.Height < cuboid.Point.Z ||
-                Point.Z > cuboid.Point.Z + cuboid.Size.Height)
+            if (Point.Y + Size.Height < cuboid.Point.Y ||
+                Point.Y > cuboid.Point.Y + cuboid.Size.Height)
                 return false;
             Rect rect1 = new Rect
             {
                 X = Point.X,
-                Y = Point.Y,
+                Z = Point.Z,
                 Length = Size.Length,
                 Width = Size.Width
             };
             Rect rect2 = new Rect
             {
                 X = cuboid.Point.X,
-                Y = cuboid.Point.Y,
+                Z = cuboid.Point.Z,
                 Length = cuboid.Size.Length,
                 Width = cuboid.Size.Width
             };
