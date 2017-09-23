@@ -8,7 +8,7 @@ using MineCase.Server.World;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class DiscoveryRegisterComponent : Component<EntityGrain>
+    internal class DiscoveryRegisterComponent : Component<EntityGrain>, IHandle<Disable>
     {
         public DiscoveryRegisterComponent(string name = "discoveryRegister")
             : base(name)
@@ -28,6 +28,13 @@ namespace MineCase.Server.Game.Entities.Components
                 await GrainFactory.GetGrain<IWorldPartition>(e.oldKey).UnsubscribeDiscovery(AttachedObject);
             if (!string.IsNullOrEmpty(e.newKey))
                 await GrainFactory.GetGrain<IWorldPartition>(e.newKey).SubscribeDiscovery(AttachedObject);
+        }
+
+        async Task IHandle<Disable>.Handle(Disable message)
+        {
+            var key = AttachedObject.GetAddressByPartitionKey();
+            if (!string.IsNullOrEmpty(key))
+                await GrainFactory.GetGrain<IWorldPartition>(key).UnsubscribeDiscovery(AttachedObject);
         }
     }
 }

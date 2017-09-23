@@ -73,6 +73,12 @@ namespace MineCase.Server.Game.Entities.Components
     }
 
     [Immutable]
+    public sealed class DestroyEntity : IEntityMessage
+    {
+        public static readonly DestroyEntity Default = new DestroyEntity();
+    }
+
+    [Immutable]
     public sealed class SetSlot : IEntityMessage
     {
         public int Index { get; set; }
@@ -120,5 +126,19 @@ namespace MineCase.Server.Game.Entities.Components
     public sealed class BroadcastDiscovered : IEntityMessage
     {
         public static readonly BroadcastDiscovered Default = new BroadcastDiscovered();
+    }
+
+    [Immutable]
+    public sealed class CollectBy : IEntityMessage
+    {
+        public IEntity Entity { get; set; }
+    }
+
+    [Immutable]
+    public sealed class AskCollectionResult : IEntityMessage<Slot>
+    {
+        public IEntity Source { get; set; }
+
+        public Slot Slot { get; set; }
     }
 }

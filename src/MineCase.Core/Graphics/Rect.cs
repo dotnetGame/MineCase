@@ -5,6 +5,7 @@ using System.Text;
 
 namespace MineCase.Graphics
 {
+    [Serializable]
     public struct Rect
     {
         /// <summary>

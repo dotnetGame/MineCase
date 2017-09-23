@@ -4,6 +4,7 @@ using System.Text;
 
 namespace MineCase.Graphics
 {
+    [Serializable]
     public class Cuboid : Shape
     {
         public override ShapeType Type => ShapeType.Cuboid;

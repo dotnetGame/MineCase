@@ -28,6 +28,7 @@ namespace MineCase.Server.Game.Entities
         protected override async Task InitializeComponents()
         {
             await base.InitializeComponents();
+            await SetComponent(new EntityLifeTimeComponent());
             await SetComponent(new ActiveWorldPartitionComponent());
             await SetComponent(new BlockPlacementComponent());
             await SetComponent(new ClientboundPacketComponent());
@@ -36,7 +37,6 @@ namespace MineCase.Server.Game.Entities
             await SetComponent(new DiscoveryRegisterComponent());
             await SetComponent(new DraggedSlotComponent());
             await SetComponent(new ExperienceComponent());
-            await SetComponent(new EntityLifeTimeComponent());
             await SetComponent(new EntityOnGroundComponent());
             await SetComponent(new FoodComponent());
             await SetComponent(new HealthComponent());
@@ -53,6 +53,8 @@ namespace MineCase.Server.Game.Entities
             await SetComponent(new TossPickupComponent());
             await SetComponent(new ViewDistanceComponent());
             await SetComponent(new WindowManagerComponent());
+            await SetComponent(new CollectorComponent());
+            await SetComponent(new ColliderComponent());
         }
 
         public override async Task OnActivateAsync()
@@ -79,27 +81,6 @@ namespace MineCase.Server.Game.Entities
         }
 
         /*
-        protected override Task OnPositionChanged()
-        {
-            return CollectCollectables();
-        }
-
-        private async Task CollectCollectables()
-        {
-            var chunkPos = GetChunkPosition();
-            var collectables = await GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunkPos.x, chunkPos.z)).Collision(this);
-            await Task.WhenAll(from c in collectables
-                               select c.CollectBy(this));
-        }
-
-        public async Task<Slot> Collect(uint collectedEntityId, Slot item)
-        {
-            var after = await _inventory.DistributeStack(this, item);
-            if (item.ItemCount != after.ItemCount)
-                await GetBroadcastGenerator().CollectItem(collectedEntityId, EntityId, (byte)(item.ItemCount - after.ItemCount));
-            return after;
-        }
-
         public async Task TossPickup(Slot slot)
         {
             var chunk = GetChunkPosition();
