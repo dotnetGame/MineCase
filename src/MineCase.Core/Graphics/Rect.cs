@@ -7,18 +7,30 @@ namespace MineCase.Graphics
 {
     public struct Rect
     {
+        /// <summary>
+        /// Gets or sets the positon of X-axis in minecraft world.
+        /// </summary>
         public float X { get; set; }
 
-        public float Y { get; set; }
+        /// <summary>
+        /// Gets or sets the positon of Z-axis in minecraft world.
+        /// </summary>
+        public float Z { get; set; }
 
+        /// <summary>
+        /// Gets or sets the size of X-axis.
+        /// </summary>
         public float Length { get; set; }
 
+        /// <summary>
+        /// Gets or sets the size of Y-axis.
+        /// </summary>
         public float Width { get; set; }
 
-        public Rect(float x, float y, float length, float width)
+        public Rect(float x, float z, float length, float width)
         {
             X = x;
-            Y = y;
+            Z = z;
             Length = length;
             Width = width;
         }
@@ -26,35 +38,35 @@ namespace MineCase.Graphics
         public Rect(Point2d point, Size size)
         {
             X = point.X;
-            Y = point.Y;
+            Z = point.Z;
             Length = size.Length;
             Width = size.Width;
         }
 
         public Point2d BottomLeft()
         {
-            return new Point2d(X, Y);
+            return new Point2d(X, Z);
         }
 
         public Point2d TopRight()
         {
-            return new Point2d(X + Length, Y + Width);
+            return new Point2d(X + Length, Z + Width);
         }
 
         public Point2d Center()
         {
-            return new Point2d(X + Length * 0.5f, Y + Width * 0.5f);
+            return new Point2d(X + Length * 0.5f, Z + Width * 0.5f);
         }
 
         public bool OverlapWith(Rect rect)
         {
             var minx = Math.Max(X, rect.X);
-            var miny = Math.Max(Y, rect.Y);
+            var minz = Math.Max(Z, rect.Z);
             var maxx = Math.Min(X + Length, rect.X + rect.Length);
-            var maxy = Math.Min(Y + Width, rect.Y + rect.Width);
+            var maxz = Math.Min(Z + Width, rect.Z + rect.Width);
 
             // 边重叠也算重叠
-            if (minx > maxx || miny > maxy)
+            if (minx > maxx || minz > maxz)
                 return false;
             return true;
         }
@@ -63,11 +75,11 @@ namespace MineCase.Graphics
         {
             var c = Center();
             var h = TopRight() - c;
-            var v = new Point2d(Math.Abs(circle.Center.X - c.X), Math.Abs(circle.Center.Y - c.Y));
+            var v = new Point2d(Math.Abs(circle.Center.X - c.X), Math.Abs(circle.Center.Z - c.Z));
             var u = v - h;
-            if (u.X < 0f && u.Y < 0f)
+            if (u.X < 0f && u.Z < 0f)
             {
-                u.X = u.Y = 0f;
+                u.X = u.Z = 0f;
             }
 
             return u.LengthSquared() <= circle.Radius * circle.Radius;
