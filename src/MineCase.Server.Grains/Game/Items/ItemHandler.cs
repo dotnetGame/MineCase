@@ -26,6 +26,8 @@ namespace MineCase.Server.Game.Items
 
         public abstract bool IsPlaceable { get; }
 
+        public virtual byte MaxStackCount => 64;
+
         public ItemHandler(uint itemId)
         {
             ItemId = itemId;

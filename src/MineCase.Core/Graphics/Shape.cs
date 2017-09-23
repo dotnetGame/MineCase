@@ -9,6 +9,7 @@ namespace MineCase.Graphics
         Cuboid = 0
     }
 
+    [Serializable]
     public abstract class Shape
     {
         public abstract ShapeType Type { get; }

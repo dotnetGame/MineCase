@@ -11,9 +11,11 @@ using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
 using MineCase.Server.World;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Game.Windows
 {
+    [Reentrant]
     internal abstract class WindowGrain : Grain, IWindow
     {
         protected List<Slot> Slots { get; } = new List<Slot>();
@@ -61,8 +63,8 @@ namespace MineCase.Server.Game.Windows
 
         internal async Task NotifySlotChanged(SlotArea slotArea, IPlayer player, int slotIndex, Slot item)
         {
-            GetPlayerPacketGenerator(player)
-                .SetSlot(await GetWindowId(player), (short)LocalSlotIndexToGlobal(slotArea, slotIndex), item).Ignore();
+            await GetPlayerPacketGenerator(player)
+                .SetSlot(await GetWindowId(player), (short)LocalSlotIndexToGlobal(slotArea, slotIndex), item);
         }
 
         internal Task BroadcastSlotChanged(SlotArea slotArea, int slotIndex, Slot item)
@@ -74,8 +76,7 @@ namespace MineCase.Server.Game.Windows
                 await GetPlayerPacketGenerator(player).SetSlot(id, globalIndex, item);
             }
 
-            Task.WhenAll(from p in _players select SendSetSlot(p)).Ignore();
-            return Task.CompletedTask;
+            return Task.WhenAll(from p in _players select SendSetSlot(p));
         }
 
         protected int LocalSlotIndexToGlobal(SlotArea slotArea, int slotIndex)
@@ -145,8 +146,7 @@ namespace MineCase.Server.Game.Windows
                 await GetPlayerPacketGenerator(player).WindowItems(id, slots);
             }
 
-            Task.WhenAll(from p in _players select SendWholeWindow(p)).Ignore();
-            return Task.CompletedTask;
+            return Task.WhenAll(from p in _players select SendWholeWindow(p));
         }
 
         public async Task Close(IPlayer player)
@@ -211,8 +211,7 @@ namespace MineCase.Server.Game.Windows
                 await GetPlayerPacketGenerator(player).SetSlot(id, (short)slotIndex, item);
             }
 
-            Task.WhenAll(from p in _players select SendSetSlot(p)).Ignore();
-            return Task.CompletedTask;
+            return Task.WhenAll(from p in _players select SendSetSlot(p));
         }
 
         protected Task BroadcastWindowProperty<T>(T property, short value)
@@ -224,8 +223,7 @@ namespace MineCase.Server.Game.Windows
                 await GetPlayerPacketGenerator(player).WindowProperty(id, property, value);
             }
 
-            Task.WhenAll(from p in _players select SendWindowProperty(p)).Ignore();
-            return Task.CompletedTask;
+            return Task.WhenAll(from p in _players select SendWindowProperty(p));
         }
 
         protected async Task NotifyWindowProperty<T>(IPlayer player, T property, short value)

@@ -6,12 +6,22 @@ using System.Text;
 
 namespace MineCase.Graphics
 {
+    [Serializable]
     public struct Size
     {
+        /// <summary>
+        /// Gets or sets the size of X-axis.
+        /// </summary>
         public float Length { get; set; }
 
+        /// <summary>
+        /// Gets or sets the size of Z-axis.
+        /// </summary>
         public float Width { get; set; }
 
+        /// <summary>
+        /// Gets or sets the size of Y-axis.
+        /// </summary>
         public float Height { get; set; }
 
         public Size(float length, float width, float height = 0f)

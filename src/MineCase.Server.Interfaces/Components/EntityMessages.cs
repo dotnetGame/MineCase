@@ -20,4 +20,10 @@ namespace MineCase.Server.Components
     {
         public static readonly Disable Default = new Disable();
     }
+
+    [Immutable]
+    public sealed class CollisionWith : IEntityMessage
+    {
+        public IReadOnlyCollection<IDependencyObject> Entities { get; set; }
+    }
 }

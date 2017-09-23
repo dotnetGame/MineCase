@@ -8,7 +8,7 @@ using MineCase.Server.Game.BlockEntities;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class EntityLifeTimeComponent : Component<EntityGrain>, IHandle<SpawnEntity>
+    internal class EntityLifeTimeComponent : Component<EntityGrain>, IHandle<SpawnEntity>, IHandle<DestroyEntity>
     {
         public EntityLifeTimeComponent(string name = "entityLiftTime")
             : base(name)
@@ -23,6 +23,11 @@ namespace MineCase.Server.Game.Entities.Components
             await lookComponent.SetPitch(message.Pitch);
             await lookComponent.SetYaw(message.Yaw);
             await AttachedObject.Tell(BroadcastDiscovered.Default);
+        }
+
+        async Task IHandle<DestroyEntity>.Handle(DestroyEntity message)
+        {
+            await AttachedObject.Tell(Disable.Default);
         }
     }
 }

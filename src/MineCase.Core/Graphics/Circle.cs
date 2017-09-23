@@ -5,15 +5,16 @@ using System.Text;
 
 namespace MineCase.Graphics
 {
+    [Serializable]
     public struct Circle
     {
         public Point2d Center { get; set; }
 
         public float Radius { get; set; }
 
-        public Circle(float x, float y, float radius)
+        public Circle(float x, float z, float radius)
         {
-            Center = new Point2d(x, y);
+            Center = new Point2d(x, z);
             Radius = radius;
         }
 
