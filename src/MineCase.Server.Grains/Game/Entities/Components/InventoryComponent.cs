@@ -6,6 +6,7 @@ using MineCase.Engine;
 using MineCase.Server.Components;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Network.Play;
+using Orleans;
 
 namespace MineCase.Server.Game.Entities.Components
 {
@@ -17,7 +18,7 @@ namespace MineCase.Server.Game.Entities.Components
         }
 
         public IInventoryWindow GetInventoryWindow() =>
-            GrainFactory.GetGrain<IInventoryWindow>(Guid.Empty);
+            GrainFactory.GetGrain<IInventoryWindow>(AttachedObject.GetPrimaryKey());
 
         Task<IInventoryWindow> IHandle<AskInventoryWindow, IInventoryWindow>.Handle(AskInventoryWindow message) =>
             Task.FromResult(GetInventoryWindow());

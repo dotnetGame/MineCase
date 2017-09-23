@@ -6,6 +6,7 @@ using System.Text;
 
 namespace MineCase.Graphics
 {
+    [Serializable]
     public struct Size
     {
         /// <summary>

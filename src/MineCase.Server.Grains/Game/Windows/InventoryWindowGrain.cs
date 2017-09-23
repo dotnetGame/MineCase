@@ -12,7 +12,7 @@ using Orleans.Concurrency;
 
 namespace MineCase.Server.Game.Windows
 {
-    [StatelessWorker]
+    [Reentrant]
     internal class InventoryWindowGrain : WindowGrain, IInventoryWindow
     {
         protected override string WindowType => string.Empty;

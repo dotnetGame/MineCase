@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MineCase.Engine;
 using MineCase.Graphics;
 using MineCase.Server.Components;
@@ -40,12 +41,14 @@ namespace MineCase.Server.Game.Entities.Components
                 .DestroyEntities(new[] { AttachedObject.EntityId });
         }
 
-        Task IHandle<SpawnEntity>.Handle(SpawnEntity message)
+        async Task IHandle<SpawnEntity>.Handle(SpawnEntity message)
         {
             var pos = message.Position;
             var bb = BoundingBox.Item();
             var box = new Cuboid(new Point3d(pos.X, pos.Z, pos.Y), new Size(bb.X, bb.Y, bb.Z));
-            return AttachedObject.SetLocalValue(ColliderComponent.ColliderShapeProperty, box);
+            await AttachedObject.SetLocalValue(ColliderComponent.ColliderShapeProperty, box);
+
+            Logger.LogInformation($"Pickup spawn, key: {AttachedObject.GetAddressByPartitionKey()}");
         }
     }
 }

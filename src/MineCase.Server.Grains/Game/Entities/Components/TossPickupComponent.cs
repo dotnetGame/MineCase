@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
@@ -19,10 +20,16 @@ namespace MineCase.Server.Game.Entities.Components
         {
             var position = AttachedObject.Position;
             var world = AttachedObject.World;
+            var yaw = AttachedObject.Yaw;
+
+            var x = -Math.Cos(0) * Math.Sin(yaw);
+            var y = -Math.Sin(0);
+            var z = Math.Cos(0) * Math.Cos(yaw);
+            var look = new Vector3((float)x, (float)y, (float)z);
 
             // 产生 Pickup
             var finder = GrainFactory.GetPartitionGrain<ICollectableFinder>(world, position.ToChunkWorldPos());
-            await finder.SpawnPickup(position, message.Slots.AsImmutable());
+            await finder.SpawnPickup(position + look, message.Slots.AsImmutable());
         }
     }
 }

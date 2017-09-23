@@ -13,6 +13,8 @@ namespace MineCase.Engine
         Task Attach(DependencyObject dependencyObject, IServiceProvider serviceProvider);
 
         Task Detach();
+
+        int GetMessageOrder(object message);
     }
 
     public abstract class Component : IComponentIntern
@@ -55,6 +57,11 @@ namespace MineCase.Engine
         protected virtual Task OnDetached()
         {
             return Task.CompletedTask;
+        }
+
+        public virtual int GetMessageOrder(object message)
+        {
+            return 0;
         }
     }
 

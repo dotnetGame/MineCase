@@ -5,6 +5,7 @@ using System.Text;
 
 namespace MineCase.Graphics
 {
+    [Serializable]
     public struct Point2d
     {
         /// <summary>
@@ -66,6 +67,7 @@ namespace MineCase.Graphics
         }
     }
 
+    [Serializable]
     public struct Point3d
     {
         /// <summary>

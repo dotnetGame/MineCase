@@ -3,23 +3,26 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.Components;
 using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.World;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Game.Entities
 {
+    [Reentrant]
     internal class PickupGrain : EntityGrain, IPickup
     {
         protected override async Task InitializeComponents()
         {
             await base.InitializeComponents();
-            await SetComponent(new CollectorComponent());
-            await SetComponent(new ColliderComponent());
             await SetComponent(new EntityLifeTimeComponent());
             await SetComponent(new PickupMetadataComponent());
             await SetComponent(new DiscoveryRegisterComponent());
             await SetComponent(new PickupDiscoveryComponent());
+            await SetComponent(new CollectorComponent());
+            await SetComponent(new ColliderComponent());
         }
 
         /*
