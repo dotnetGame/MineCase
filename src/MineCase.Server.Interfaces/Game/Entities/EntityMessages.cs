@@ -76,6 +76,8 @@ namespace MineCase.Server.Game.Entities.Components
         public float Pitch { get; set; }
 
         public float Yaw { get; set; }
+
+        public MobType MobType { get; set; }
     }
 
     [Immutable]

@@ -10,8 +10,6 @@ namespace MineCase.Server.Game.Entities
 {
     internal class MobGrain : EntityGrain, IMob
     {
-        public MobType MobType { get; set; }
-
         protected override async Task InitializeComponents()
         {
             await base.InitializeComponents();
@@ -25,11 +23,14 @@ namespace MineCase.Server.Game.Entities
             await SetComponent(new EntityAiComponent());
             await SetComponent(new DiscoveryRegisterComponent());
             await SetComponent(new MobDiscoveryComponent());
+            await SetComponent(new MobTypeComponent());
+            /*
             if (MobType == MobType.Enderman)
             {
                 await SetComponent(new BlockPlacementComponent());
                 await SetComponent(new DiggingComponent());
             }
+            */
         }
 
         public async override Task OnActivateAsync()

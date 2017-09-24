@@ -53,7 +53,13 @@ namespace MineCase.Server.World.EntitySpawner
                     await entity.OnCreated();
                     */
                     IMob entity = grainFactory.GetGrain<IMob>(Guid.NewGuid());
-                    await entity.Tell(BroadcastDiscovered.Default);
+                    await entity.Tell(new SpawnEntity
+                    {
+                        World = world,
+                        EntityId = await world.NewEntityId(),
+                        Position = new EntityWorldPos(pos.X + x + 0.5F, height + 1, pos.Z + z + 0.5F),
+                        MobType = _mobType,
+                    });
                 }
             }
         }
