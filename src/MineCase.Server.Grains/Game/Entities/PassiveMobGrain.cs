@@ -33,7 +33,6 @@ namespace MineCase.Server.Game.Entities
         protected override async Task InitializeComponents()
         {
             await base.InitializeComponents();
-            await SetComponent(new ActiveWorldPartitionComponent());
             await SetComponent(new BlockPlacementComponent());  // 末影人
             await SetComponent(new DiggingComponent()); // 末影人
             await SetComponent(new EntityLifeTimeComponent());

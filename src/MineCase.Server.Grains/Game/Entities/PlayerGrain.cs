@@ -29,7 +29,6 @@ namespace MineCase.Server.Game.Entities
         {
             await base.InitializeComponents();
             await SetComponent(new EntityLifeTimeComponent());
-            await SetComponent(new ActiveWorldPartitionComponent());
             await SetComponent(new BlockPlacementComponent());
             await SetComponent(new ClientboundPacketComponent());
             await SetComponent(new ChunkLoaderComponent());
