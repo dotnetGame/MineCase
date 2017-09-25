@@ -4,6 +4,7 @@ using System.Text;
 
 namespace MineCase
 {
+    public enum ObjectId : uint
     {
         Boat = 1,
         ItemStack = 2,
