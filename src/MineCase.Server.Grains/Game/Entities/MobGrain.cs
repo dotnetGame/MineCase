@@ -24,6 +24,7 @@ namespace MineCase.Server.Game.Entities
             await SetComponent(new DiscoveryRegisterComponent());
             await SetComponent(new MobDiscoveryComponent());
             await SetComponent(new MobTypeComponent());
+            await SetComponent(new MobLookComponent());
             /*
             if (MobType == MobType.Enderman)
             {

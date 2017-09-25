@@ -11,6 +11,8 @@ namespace MineCase.Server.Components
         public static readonly DependencyProperty<bool> IsOnGroundProperty =
             DependencyProperty.Register<bool>("IsOnGround", typeof(EntityWorldPositionComponent));
 
+        public bool IsOnGround => AttachedObject.GetValue(IsOnGroundProperty);
+
         public EntityOnGroundComponent(string name = "isOnGround")
             : base(name)
         {

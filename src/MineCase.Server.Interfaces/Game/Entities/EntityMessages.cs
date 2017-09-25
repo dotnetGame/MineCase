@@ -85,6 +85,14 @@ namespace MineCase.Server.Game.Entities.Components
     }
 
     [Immutable]
+    public class EntityLook : IEntityMessage
+    {
+        public float Yaw { get; set; }
+
+        public float Pitch { get; set; }
+    }
+
+    [Immutable]
     public sealed class DestroyEntity : IEntityMessage
     {
         public static readonly DestroyEntity Default = new DestroyEntity();

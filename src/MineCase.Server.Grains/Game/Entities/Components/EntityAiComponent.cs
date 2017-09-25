@@ -27,6 +27,18 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
+        protected override Task OnAttached()
+        {
+            Register();
+            return base.OnAttached();
+        }
+
+        protected override Task OnDetached()
+        {
+            Unregister();
+            return base.OnDetached();
+        }
+
         private void Register()
         {
             AttachedObject.GetComponent<GameTickComponent>()
@@ -41,11 +53,19 @@ namespace MineCase.Server.Game.Entities.Components
 
         private Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
         {
-            float pitch = AttachedObject.GetComponent<EntityLookComponent>().Pitch;
-            AttachedObject.GetComponent<EntityLookComponent>().SetYaw(pitch + 360.0f / 255);
-            if (pitch > 360)
+            if (e.worldAge % 16 == 0)
             {
-                pitch = 0;
+                float pitch = AttachedObject.GetComponent<EntityLookComponent>().Pitch;
+                AttachedObject.GetComponent<EntityLookComponent>().SetPitch(pitch + 360.0f / 255);
+                if (pitch > 360)
+                {
+                    pitch = 0;
+                }
+
+                AttachedObject.Tell(new EntityLook
+                {
+                    Pitch = pitch
+                });
             }
 
             return Task.CompletedTask;
