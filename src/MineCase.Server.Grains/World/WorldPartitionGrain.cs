@@ -7,9 +7,11 @@ using MineCase.Server.Game.BlockEntities;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.Components;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.World
 {
+    [Reentrant]
     internal class WorldPartitionGrain : AddressByPartitionGrain, IWorldPartition
     {
         private ITickEmitter _tickEmitter;
@@ -53,10 +55,10 @@ namespace MineCase.Server.World
             return Task.CompletedTask;
         }
 
-        Task IWorldPartition.SubscribeDiscovery(IEntity entity)
+        async Task IWorldPartition.SubscribeDiscovery(IEntity entity)
         {
             _discoveryEntities.Add(entity);
-            return Task.CompletedTask;
+            await entity.Tell(BroadcastDiscovered.Default);
         }
 
         Task IWorldPartition.UnsubscribeDiscovery(IEntity entity)

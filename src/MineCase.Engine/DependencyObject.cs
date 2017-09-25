@@ -256,9 +256,19 @@ namespace MineCase.Engine
                 _messageHandlers.Remove(type, component);
         }
 
-        public async Task Tell(IEntityMessage message)
+        public Task Tell(IEntityMessage message)
         {
-            var messageType = message.GetType();
+            return Tell(message, message.GetType());
+        }
+
+        public Task Tell<T>(T message)
+            where T : IEntityMessage
+        {
+            return Tell(message, typeof(T));
+        }
+
+        private async Task Tell(IEntityMessage message, Type messageType)
+        {
             var invoker = (Func<IComponentIntern, IEntityMessage, Task>)GetOrAddMessageCaller(messageType);
             if (_messageHandlers.TryGetValue(messageType, out var handlers))
             {

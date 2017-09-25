@@ -12,38 +12,27 @@ using MineCase.Server.Network.Play;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class MobDiscoveryComponent : Component<EntityGrain>, IHandle<DiscoveredByPlayer>, IHandle<BroadcastDiscovered>, IHandle<SpawnEntity>
+    internal class MobDiscoveryComponent : EntityDiscoveryComponentBase<EntityGrain>, IHandle<SpawnMob>
     {
         public MobDiscoveryComponent(string name = "mobDiscovery")
             : base(name)
         {
         }
 
-        private ClientPlayPacketGenerator GetPlayerPacketGenerator(IPlayer player) =>
-            new ClientPlayPacketGenerator(new ForwardToPlayerPacketSink(player, ServiceProvider.GetRequiredService<IPacketPackager>()));
-
-        Task IHandle<DiscoveredByPlayer>.Handle(DiscoveredByPlayer message)
+        async Task IHandle<SpawnMob>.Handle(SpawnMob message)
         {
-            MobType type = AttachedObject.GetComponent<MobTypeComponent>().MobType;
-
-            // Logger.LogInformation($"Mob spawn, type: {type}");
-            return GetPlayerPacketGenerator(message.Player)
-                .SpawnMob(AttachedObject.EntityId, AttachedObject.UUID, (byte)type, AttachedObject.Position, AttachedObject.Pitch, AttachedObject.Yaw, new EntityMetadata.Entity { });
-        }
-
-        Task IHandle<BroadcastDiscovered>.Handle(BroadcastDiscovered message)
-        {
-            MobType type = AttachedObject.GetComponent<MobTypeComponent>().MobType;
-            return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator()
-                .SpawnMob(AttachedObject.EntityId, AttachedObject.UUID, (byte)type, AttachedObject.Position, AttachedObject.Pitch, AttachedObject.Yaw, new EntityMetadata.Entity { });
-        }
-
-        async Task IHandle<SpawnEntity>.Handle(SpawnEntity message)
-        {
+            await AttachedObject.Tell<SpawnEntity>(message);
             await AttachedObject.SetLocalValue(MobTypeComponent.MobTypeProperty, message.MobType);
+            CompleteSpawn();
 
             // Logger.LogInformation($"Mob spawn, key: {AttachedObject.GetAddressByPartitionKey()}");
             // Logger.LogInformation($"Mob spawn, type: {message.MobType}");
+        }
+
+        protected override Task SendSpawnPacket(ClientPlayPacketGenerator generator)
+        {
+            MobType type = AttachedObject.GetComponent<MobTypeComponent>().MobType;
+            return generator.SpawnMob(AttachedObject.EntityId, AttachedObject.UUID, (byte)type, AttachedObject.Position, AttachedObject.Pitch, AttachedObject.Yaw, new EntityMetadata.Entity { });
         }
     }
 }

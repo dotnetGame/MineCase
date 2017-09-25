@@ -65,7 +65,7 @@ namespace MineCase.Server.Game.Entities.Components
     }
 
     [Immutable]
-    public sealed class SpawnEntity : IEntityMessage
+    public class SpawnEntity : IEntityMessage
     {
         public IWorld World { get; set; }
 
@@ -76,7 +76,11 @@ namespace MineCase.Server.Game.Entities.Components
         public float Pitch { get; set; }
 
         public float Yaw { get; set; }
+    }
 
+    [Immutable]
+    public class SpawnMob : SpawnEntity
+    {
         public MobType MobType { get; set; }
     }
 
