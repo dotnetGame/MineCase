@@ -53,19 +53,16 @@ namespace MineCase.Server.Game.Entities.Components
 
         private Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
         {
-            if (e.worldAge % 16 == 0)
+            if (e.worldAge % 4 == 0)
             {
-                float pitch = AttachedObject.GetComponent<EntityLookComponent>().Pitch;
-                AttachedObject.GetComponent<EntityLookComponent>().SetPitch(pitch + 360.0f / 255);
+                float pitch = AttachedObject.GetValue(EntityLookComponent.PitchProperty);
+                pitch += 30 * 360.0f / 255;
                 if (pitch > 360)
                 {
                     pitch = 0;
                 }
 
-                AttachedObject.Tell(new EntityLook
-                {
-                    Pitch = pitch
-                });
+                AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, pitch);
             }
 
             return Task.CompletedTask;

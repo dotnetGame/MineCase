@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.Components;
 using MineCase.Server.Game.Entities.Components;
+using MineCase.Server.Network.Play;
 
 namespace MineCase.Server.Game.Entities
 {
@@ -24,7 +25,7 @@ namespace MineCase.Server.Game.Entities
             await SetComponent(new DiscoveryRegisterComponent());
             await SetComponent(new MobDiscoveryComponent());
             await SetComponent(new MobTypeComponent());
-            await SetComponent(new MobLookComponent());
+            await SetComponent(new SyncMobStateComponent());
             /*
             if (MobType == MobType.Enderman)
             {
