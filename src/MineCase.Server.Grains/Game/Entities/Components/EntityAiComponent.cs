@@ -53,7 +53,7 @@ namespace MineCase.Server.Game.Entities.Components
 
         private Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
         {
-            if (e.worldAge % 4 == 0)
+            if (e.worldAge % 16 == 0)
             {
                 float pitch = AttachedObject.GetValue(EntityLookComponent.PitchProperty);
                 pitch += 30 * 360.0f / 255;
@@ -63,6 +63,8 @@ namespace MineCase.Server.Game.Entities.Components
                 }
 
                 AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, pitch);
+
+
             }
 
             return Task.CompletedTask;

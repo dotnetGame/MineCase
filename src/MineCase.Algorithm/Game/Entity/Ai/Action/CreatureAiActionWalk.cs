@@ -8,9 +8,9 @@ using Orleans;
 
 namespace MineCase.Server.World.EntitySpawner.Ai.Action
 {
-    internal class CreatureAiActionWalk : ICreatureAiAction
+    internal class CreatureAiActionWalk : CreatureAiAction
     {
-        public async void Action(IGrainFactory grainFactory, ICreature creature, IWorld world)
+        public override async void Action(IGrainFactory grainFactory, ICreature creature, IWorld world)
         {
             // 随机选择一个步长
             Random random = new Random();

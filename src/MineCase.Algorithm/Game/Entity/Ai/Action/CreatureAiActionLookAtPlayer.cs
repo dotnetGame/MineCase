@@ -8,9 +8,14 @@ using Orleans;
 
 namespace MineCase.Server.World.EntitySpawner.Ai.Action
 {
-    internal class CreatureAiActionLookAtPlayer : ICreatureAiAction
+    internal class CreatureAiActionLookAtPlayer : CreatureAiAction
     {
-        public void Action(IGrainFactory grainFactory, ICreature creature, IWorld world)
+        public CreatureAiActionLookAtPlayer()
+            : base(CreatureState.Look)
+        {
+        }
+
+        public override void Action(IGrainFactory grainFactory, ICreature creature, IWorld world)
         {
             /*
             // 通知周围creature entity看着玩家

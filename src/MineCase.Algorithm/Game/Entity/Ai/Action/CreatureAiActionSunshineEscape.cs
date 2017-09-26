@@ -6,9 +6,14 @@ using Orleans;
 
 namespace MineCase.Server.World.EntitySpawner.Ai.Action
 {
-    internal class CreatureAiActionSunshineEscape : ICreatureAiAction
+    internal class CreatureAiActionSunshineEscape : CreatureAiAction
     {
-        public void Action(IGrainFactory grainFactory, ICreature creature, IWorld world)
+        public CreatureAiActionSunshineEscape()
+            : base(CreatureState.BurnedBySunshine)
+        {
+        }
+
+        public override void Action(IGrainFactory grainFactory, ICreature creature, IWorld world)
         {
             throw new NotImplementedException();
         }
