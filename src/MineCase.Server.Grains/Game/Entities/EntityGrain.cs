@@ -36,6 +36,7 @@ namespace MineCase.Server.Game.Entities
             await SetComponent(new AddressByPartitionKeyComponent());
             await SetComponent(new ChunkEventBroadcastComponent());
             await SetComponent(new GameTickComponent());
+            await SetComponent(new ChunkAccessorComponent());
         }
 
         Task<uint> IEntity.GetEntityId() =>

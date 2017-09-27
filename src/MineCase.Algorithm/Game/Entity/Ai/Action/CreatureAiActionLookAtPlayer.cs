@@ -15,7 +15,7 @@ namespace MineCase.Server.World.EntitySpawner.Ai.Action
         {
         }
 
-        public override void Action(IGrainFactory grainFactory, ICreature creature, IWorld world)
+        public override void Action(IEntity creature)
         {
             /*
             // 通知周围creature entity看着玩家

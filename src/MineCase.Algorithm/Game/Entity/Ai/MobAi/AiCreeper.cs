@@ -8,21 +8,21 @@ namespace MineCase.Server.World.EntitySpawner.Ai.MobAi
 {
     public class AiCreeper : ICreatureAi
     {
-        public static ICreatureAiAction[,] Automation { get; set; }
+        public static CreatureAiAction[,] Automation { get; set; }
 
         static AiCreeper()
         {
             int creatureStateMax = Enum.GetValues(typeof(CreatureState)).Length;
             int creatureEventMax = Enum.GetValues(typeof(CreatureEvent)).Length;
-            Automation = new ICreatureAiAction[creatureStateMax, creatureEventMax];
+            Automation = new CreatureAiAction[creatureStateMax, creatureEventMax];
             Automation[(int)CreatureState.Stop, (int)CreatureEvent.Attacked] = new CreatureAiActionEscape();
             Automation[(int)CreatureState.Stop, (int)CreatureEvent.PlayerApproaching] = new CreatureAiActionLookAtPlayer();
             Automation[(int)CreatureState.Stop, (int)CreatureEvent.RandomWalk] = new CreatureAiActionWalk();
             Automation[(int)CreatureState.Walk, (int)CreatureEvent.Attacked] = new CreatureAiActionEscape();
-            Automation[(int)CreatureState.Escape, (int)CreatureEvent.Attacked] = new CreatureAiActionEscape();
+            Automation[(int)CreatureState.Escaping, (int)CreatureEvent.Attacked] = new CreatureAiActionEscape();
         }
 
-        public ICreatureAiAction GetAction(CreatureState creatureState, CreatureEvent creatureEvent)
+        public CreatureAiAction GetAction(CreatureState creatureState, CreatureEvent creatureEvent)
         {
             return Automation[(int)creatureState, (int)creatureEvent];
         }

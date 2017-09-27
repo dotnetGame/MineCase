@@ -10,8 +10,14 @@ namespace MineCase.Server.World.EntitySpawner.Ai.Action
 {
     internal class CreatureAiActionWalk : CreatureAiAction
     {
-        public override async void Action(IGrainFactory grainFactory, ICreature creature, IWorld world)
+        public CreatureAiActionWalk()
+            : base(CreatureState.Walk)
         {
+        }
+
+        public override void Action(IEntity creature)
+        {
+            /*
             // 随机选择一个步长
             Random random = new Random();
             int stepNum = random.Next(16);
@@ -34,6 +40,7 @@ namespace MineCase.Server.World.EntitySpawner.Ai.Action
                     }
                 }
             }
+            */
         }
     }
 }

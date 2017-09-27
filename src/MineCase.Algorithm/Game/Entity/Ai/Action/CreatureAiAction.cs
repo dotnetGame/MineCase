@@ -15,6 +15,6 @@ namespace MineCase.Server.World.EntitySpawner.Ai.Action
             State = state;
         }
 
-        public abstract void Action(IGrainFactory grainFactory, ICreature creature, IWorld world);
+        public abstract void Action(IEntity creature);
     }
 }

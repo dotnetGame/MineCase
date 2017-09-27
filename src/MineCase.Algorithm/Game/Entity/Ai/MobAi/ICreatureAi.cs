@@ -9,6 +9,6 @@ namespace MineCase.Algorithm.Game.Entity.Ai.MobAi
 {
     public interface ICreatureAi
     {
-        ICreatureAiAction GetAction(CreatureState creatureState, CreatureEvent creatureEvent);
+        CreatureAiAction GetAction(CreatureState creatureState, CreatureEvent creatureEvent);
     }
 }
