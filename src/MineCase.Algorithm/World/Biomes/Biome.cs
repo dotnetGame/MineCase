@@ -63,6 +63,7 @@ namespace MineCase.Algorithm.World.Biomes
         protected float _extraTreeChance;
         protected int _grassPerChunk;
         protected int _flowersPerChunk;
+        protected int _mushroomsPerChunk;
 
         protected int _deadBushPerChunk;
         protected int _reedsPerChunk;
@@ -120,6 +121,7 @@ namespace MineCase.Algorithm.World.Biomes
             _extraTreeChance = 0.05F; // mc 0.05F
             _grassPerChunk = 10;
             _flowersPerChunk = 4;
+            _mushroomsPerChunk = 0;
 
             _deadBushPerChunk = 2;
             _reedsPerChunk = 50;
@@ -161,6 +163,10 @@ namespace MineCase.Algorithm.World.Biomes
                      return new BiomeHill(BiomeHillType.Normal, new BiomeProperties(), settings);
                 case BiomeId.Forest:
                      return new BiomeForest(new BiomeProperties(), settings);
+                case BiomeId.Taiga:
+                     return new BiomeTaiga(BiomeTaigaType.Normal, new BiomeProperties(), settings);
+                case BiomeId.Beach:
+                     return new BiomeBeach(new BiomeProperties(), settings);
                 default:
                      return null;
             }
