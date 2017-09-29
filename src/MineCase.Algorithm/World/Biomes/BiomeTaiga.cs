@@ -24,6 +24,11 @@ namespace MineCase.Algorithm.World.Biomes
         {
             _name = "taiga";
             _biomeId = BiomeId.Taiga;
+
+            _baseHeight = 0.2F;
+            _heightVariation = 0.2F;
+            _temperature = 0.25F;
+
             _treesPerChunk = 10;
             _grassPerChunk = 2;
 

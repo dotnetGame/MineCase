@@ -14,6 +14,11 @@ namespace MineCase.Algorithm.World.Biomes
             _name = "beach";
             _biomeId = BiomeId.Beach;
 
+            _baseHeight = 0.0F;
+            _heightVariation = 0.025F;
+            _temperature = 0.8F;
+            _rainfall = 0.4F;
+
             _topBlock = BlockStates.Sand();
             _fillerBlock = BlockStates.Sand();
 

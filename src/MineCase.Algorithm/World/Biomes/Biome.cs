@@ -165,6 +165,8 @@ namespace MineCase.Algorithm.World.Biomes
                      return new BiomeForest(new BiomeProperties(), settings);
                 case BiomeId.Taiga:
                      return new BiomeTaiga(BiomeTaigaType.Normal, new BiomeProperties(), settings);
+                case BiomeId.River:
+                     return new BiomeRiver(new BiomeProperties(), settings);
                 case BiomeId.Beach:
                      return new BiomeBeach(new BiomeProperties(), settings);
                 default:

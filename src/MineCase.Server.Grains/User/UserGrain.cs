@@ -83,7 +83,7 @@ namespace MineCase.Server.User
             {
                 World = _world,
                 EntityId = await _world.NewEntityId(),
-                Position = new EntityWorldPos(1000, 200, 1000)
+                Position = new EntityWorldPos(0, 200, 0)
             });
         }
 

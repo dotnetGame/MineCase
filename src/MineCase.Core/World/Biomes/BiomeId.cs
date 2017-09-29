@@ -12,6 +12,7 @@ namespace MineCase.World.Biomes
         ExtremeHills = 3,
         Forest = 4,
         Taiga = 5,
+        River = 7,
         Beach = 16
     }
 }
