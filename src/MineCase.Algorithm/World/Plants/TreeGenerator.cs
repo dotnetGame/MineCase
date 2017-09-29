@@ -6,7 +6,7 @@ using Orleans;
 
 namespace MineCase.Algorithm.World.Plants
 {
-    public class TreeGenerator : PlantsGenerator
+    public class TreeGenerator : AbstractTreeGenerator
     {
         private int _minTreeHeight;
 
@@ -86,19 +86,6 @@ namespace MineCase.Algorithm.World.Plants
             }
 
             return result;
-        }
-
-        public static bool CanSustainTree(PlantsType type, BlockState state)
-        {
-            if (state == BlockStates.Dirt() ||
-                state == BlockStates.GrassBlock())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
 
         public override void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)

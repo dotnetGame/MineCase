@@ -86,7 +86,20 @@ namespace MineCase.Algorithm.World.Biomes
                 int x = rand.Next(10) + 3;
                 int z = rand.Next(10) + 3;
 
-                TaigaGenerator treeGenerator = new TaigaGenerator(5, false, GetRandomTree(rand));
+                AbstractTreeGenerator treeGenerator;
+                PlantsType type = GetRandomTree(rand);
+
+                if (type == PlantsType.Spruce)
+                {
+                    if (x % 2 == 0)
+                        treeGenerator = new Taiga2Generator(5, false, type);
+                    else
+                        treeGenerator = new TaigaGenerator(5, false, type);
+                }
+                else
+                {
+                    treeGenerator = new TreeGenerator(5, false, type);
+                }
 
                 // 获得地表面高度
                 int h = 0;

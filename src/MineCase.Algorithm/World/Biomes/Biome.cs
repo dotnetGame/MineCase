@@ -195,14 +195,12 @@ namespace MineCase.Algorithm.World.Biomes
         // 随机获得一个该生物群系可能出现的树
         public virtual PlantsType GetRandomTree(Random rand)
         {
-            int n = rand.Next(3);
+            int n = rand.Next(2);
             switch (n)
             {
                 case 0:
                     return PlantsType.Oak;
                 case 1:
-                    return PlantsType.Spruce;
-                case 2:
                     return PlantsType.Birch;
                 default:
                     return PlantsType.Oak;
