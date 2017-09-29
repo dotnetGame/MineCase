@@ -27,7 +27,10 @@ namespace MineCase.Algorithm.World.Layer
             GenLayer addIsland2 = new GenLayerAddIsland(50, zoomed1);
 
             // GenLayer zoomed2 = new GenLayerZoom(seed, zoomed0);
-            GenLayer result = GenLayerZoom.Magnify(seed, addIsland2, 7);
+            GenLayer zoomed2 = GenLayerZoom.Magnify(seed, addIsland2, 3);
+            GenLayer addBeach = new GenLayerAddBeach(50, zoomed2);
+
+            GenLayer result = GenLayerZoom.Magnify(seed, addBeach, 4);
 
             // GenLayer biomesAdded = new GenLayerBiome(seed, zoomed0);
             // GenLayer zoomed2 = new GenLayerZoom(seed, zoomed1);
