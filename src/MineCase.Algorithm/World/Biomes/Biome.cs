@@ -69,6 +69,11 @@ namespace MineCase.Algorithm.World.Biomes
         protected int _reedsPerChunk;
         protected int _cactiPerChunk;
 
+        protected int _clayPerChunk;
+        protected int _waterlilyPerChunk;
+        protected int _sandPatchesPerChunk;
+        protected int _gravelPatchesPerChunk;
+
         public Biome(BiomeProperties properties, GeneratorSettings genSettings)
         {
             _genSettings = genSettings;
@@ -165,6 +170,8 @@ namespace MineCase.Algorithm.World.Biomes
                      return new BiomeForest(new BiomeProperties(), settings);
                 case BiomeId.Taiga:
                      return new BiomeTaiga(BiomeTaigaType.Normal, new BiomeProperties(), settings);
+                case BiomeId.Swampland:
+                     return new BiomeSwamp(new BiomeProperties(), settings);
                 case BiomeId.River:
                      return new BiomeRiver(new BiomeProperties(), settings);
                 case BiomeId.Beach:
