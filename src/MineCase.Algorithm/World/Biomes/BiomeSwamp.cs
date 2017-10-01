@@ -65,8 +65,8 @@ namespace MineCase.Algorithm.World.Biomes
 
             for (int num = 0; num < treesPerChunk; ++num)
             {
-                int x = rand.Next(12) + 2;
-                int z = rand.Next(12) + 2;
+                int x = rand.Next(10) + 3;
+                int z = rand.Next(10) + 3;
 
                 TreeGenerator treeGenerator = new TreeGenerator(5, true, GetRandomTree(rand));
 

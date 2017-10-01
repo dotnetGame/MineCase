@@ -183,16 +183,17 @@ namespace MineCase.Algorithm.World.Plants
                         }
 
                         // 生成藤蔓
+                        BlockChunkPos chunkPos = pos.ToBlockChunkPos();
                         if (_vines)
                         {
-                            for (int y = pos.Y + height - 3; y <= pos.Y + height; ++y)
+                            for (int y = chunkPos.Y + height - 3; y <= chunkPos.Y + height; ++y)
                             {
-                                int restHeight = y - (pos.Y + height);
+                                int restHeight = y - (chunkPos.Y + height);
                                 int xzSize = 2 - restHeight / 2;
 
-                                for (int x = pos.X - xzSize; x <= pos.X + xzSize; ++x)
+                                for (int x = chunkPos.X - xzSize; x <= chunkPos.X + xzSize; ++x)
                                 {
-                                    for (int z = pos.Z - xzSize; z <= pos.Z + xzSize; ++z)
+                                    for (int z = chunkPos.Z - xzSize; z <= chunkPos.Z + xzSize; ++z)
                                     {
                                         if (chunk[x, y, z].IsLeaves())
                                         {
