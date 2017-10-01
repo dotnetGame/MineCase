@@ -155,9 +155,71 @@ namespace MineCase.Algorithm.World.Plants
                                 chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z] = _wood;
                             }
 
+                            // 生成藤蔓
+                            if (_vines && y > 0)
+                            {
+                                if (random.Next(3) > 0 && chunk[chunkUpPos.X - 1, chunkUpPos.Y, chunkUpPos.Z].IsAir())
+                                {
+                                    chunk[chunkUpPos.X - 1, chunkUpPos.Y, chunkUpPos.Z] = BlockStates.Vines(VineType.East);
+                                }
+
+                                if (random.Next(3) > 0 && chunk[chunkUpPos.X + 1, chunkUpPos.Y, chunkUpPos.Z].IsAir())
+                                {
+                                    chunk[chunkUpPos.X + 1, chunkUpPos.Y, chunkUpPos.Z] = BlockStates.Vines(VineType.West);
+                                }
+
+                                if (random.Next(3) > 0 && chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z - 1].IsAir())
+                                {
+                                    chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z - 1] = BlockStates.Vines(VineType.South);
+                                }
+
+                                if (random.Next(3) > 0 && chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z + 1].IsAir())
+                                {
+                                    chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z + 1] = BlockStates.Vines(VineType.North);
+                                }
+                            }
+
                             ++upPos.Y;
                         }
-                    }
+
+                        // 生成藤蔓
+                        if (_vines)
+                        {
+                            for (int y = pos.Y + height - 3; y <= pos.Y + height; ++y)
+                            {
+                                int restHeight = y - (pos.Y + height);
+                                int xzSize = 2 - restHeight / 2;
+
+                                for (int x = pos.X - xzSize; x <= pos.X + xzSize; ++x)
+                                {
+                                    for (int z = pos.Z - xzSize; z <= pos.Z + xzSize; ++z)
+                                    {
+                                        if (chunk[x, y, z].IsLeaves())
+                                        {
+                                            if (random.Next(4) == 0 && chunk[x - 1, y, z].IsAir())
+                                            {
+                                                chunk[x - 1, y, z] = BlockStates.Vines(VineType.East);
+                                            }
+
+                                            if (random.Next(4) == 0 && chunk[x + 1, y, z].IsAir())
+                                            {
+                                                chunk[x + 1, y, z] = BlockStates.Vines(VineType.West);
+                                            }
+
+                                            if (random.Next(4) == 0 && chunk[x, y, z - 1].IsAir())
+                                            {
+                                                chunk[x, y, z - 1] = BlockStates.Vines(VineType.South);
+                                            }
+
+                                            if (random.Next(4) == 0 && chunk[x, y, z + 1].IsAir())
+                                            {
+                                                chunk[x, y, z + 1] = BlockStates.Vines(VineType.North);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                 }
             }
         }
