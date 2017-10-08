@@ -37,11 +37,11 @@ namespace MineCase.Algorithm.World.Plants
             {
                 bool flag = true;
 
-                for (int i1 = pos.Y; i1 <= pos.Y + 1 + i && flag; ++i1)
+                for (int y = pos.Y; y <= pos.Y + 1 + i && flag; ++y)
                 {
                     int j1 = 1;
 
-                    if (i1 - pos.Y < j)
+                    if (y - pos.Y < j)
                     {
                         j1 = 0;
                     }
@@ -50,18 +50,16 @@ namespace MineCase.Algorithm.World.Plants
                         j1 = l;
                     }
 
-                    BlockChunkPos blockpos = new BlockChunkPos { };
-
-                    for (int k1 = pos.X - j1; k1 <= pos.X + j1 && flag; ++k1)
+                    for (int x = pos.X - j1; x <= pos.X + j1 && flag; ++x)
                     {
-                        for (int l1 = pos.Z - j1; l1 <= pos.Z + j1 && flag; ++l1)
+                        for (int z = pos.Z - j1; z <= pos.Z + j1 && flag; ++z)
                         {
-                            if (i1 >= 0 && i1 < 256)
+                            if (y >= 0 && y < 256)
                             {
-                                BlockChunkPos chunkpos = new BlockWorldPos(k1, i1, l1).ToBlockChunkPos();
+                                BlockChunkPos chunkpos = new BlockWorldPos(x, y, z).ToBlockChunkPos();
                                 BlockState block = chunk[chunkpos.X, chunkpos.Y, chunkpos.Z];
                                 if (!(block.IsAir()
-                                            || block.IsSameId(BlockStates.Leaves())
+                                            || block.IsLeaves()
                                             || block.IsSameId(BlockStates.Vines())))
                                 {
                                     flag = false;
@@ -87,22 +85,21 @@ namespace MineCase.Algorithm.World.Plants
 
                     if (isSoil && pos.Y < 256 - i - 1)
                     {
-                        // state.getBlock().onPlantGrow(state, world, down, position);
                         int k2 = 0;
 
-                        for (int l2 = pos.Y + i; l2 >= pos.Y + j; --l2)
+                        for (int y = pos.Y + i; y >= pos.Y + j; --y)
                         {
-                            for (int j3 = pos.X - k2; j3 <= pos.X + k2; ++j3)
+                            for (int x = pos.X - k2; x <= pos.X + k2; ++x)
                             {
-                                int k3 = j3 - pos.X;
+                                int k3 = x - pos.X;
 
-                                for (int i2 = pos.Z - k2; i2 <= pos.Z + k2; ++i2)
+                                for (int z = pos.Z - k2; z <= pos.Z + k2; ++z)
                                 {
-                                    int j2 = i2 - pos.Z;
+                                    int j2 = z - pos.Z;
 
                                     if (Math.Abs(k3) != k2 || Math.Abs(j2) != k2 || k2 <= 0)
                                     {
-                                        BlockChunkPos blockpos = new BlockWorldPos(j3, l2, i2).ToBlockChunkPos();
+                                        BlockChunkPos blockpos = new BlockWorldPos(x, y, z).ToBlockChunkPos();
                                         state = chunk[blockpos.X, blockpos.Y, blockpos.Z];
 
                                         if (state.IsAir()
@@ -115,7 +112,7 @@ namespace MineCase.Algorithm.World.Plants
                                 }
                             }
 
-                            if (k2 >= 1 && l2 == pos.Y + j + 1)
+                            if (k2 >= 1 && y == pos.Y + j + 1)
                             {
                                 --k2;
                             }
@@ -125,12 +122,12 @@ namespace MineCase.Algorithm.World.Plants
                             }
                         }
 
-                        for (int i3 = 0; i3 < i - 1; ++i3)
+                        for (int y = 0; y < i - 1; ++y)
                         {
-                            BlockChunkPos upN = new BlockWorldPos(pos.X, pos.Y + i3, pos.Z).ToBlockChunkPos();
+                            BlockChunkPos upN = new BlockWorldPos(pos.X, pos.Y + y, pos.Z).ToBlockChunkPos();
                             state = chunk[upN.X, upN.Y, upN.Z];
 
-                            if (state.IsAir() || state.IsSameId(BlockStates.Leaves()) || state.IsSameId(BlockStates.Leaves2()))
+                            if (state.IsAir() || state.IsLeaves())
                             {
                                 chunk[upN.X, upN.Y, upN.Z] = _wood;
                             }
