@@ -28,31 +28,31 @@ namespace MineCase.Algorithm.World.Plants
 
         public override void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
         {
-            int i = random.Next(5) + 7;
-            int j = i - random.Next(2) - 3;
-            int k = i - j;
+            int height = random.Next(5) + 7;
+            int heightLeaves = height - random.Next(2) - 3;
+            int k = height - heightLeaves;
             int l = 1 + random.Next(k + 1);
 
-            if (pos.Y >= 1 && pos.Y + i + 1 <= 256)
+            if (pos.Y >= 1 && pos.Y + height + 1 <= 256)
             {
                 bool flag = true;
 
-                for (int y = pos.Y; y <= pos.Y + 1 + i && flag; ++y)
+                for (int y = pos.Y; y <= pos.Y + 1 + height && flag; ++y)
                 {
-                    int j1 = 1;
+                    int xzWidth = 1;
 
-                    if (y - pos.Y < j)
+                    if (y - pos.Y < heightLeaves)
                     {
-                        j1 = 0;
+                        xzWidth = 0;
                     }
                     else
                     {
-                        j1 = l;
+                        xzWidth = l;
                     }
 
-                    for (int x = pos.X - j1; x <= pos.X + j1 && flag; ++x)
+                    for (int x = pos.X - xzWidth; x <= pos.X + xzWidth && flag; ++x)
                     {
-                        for (int z = pos.Z - j1; z <= pos.Z + j1 && flag; ++z)
+                        for (int z = pos.Z - xzWidth; z <= pos.Z + xzWidth && flag; ++z)
                         {
                             if (y >= 0 && y < 256)
                             {
@@ -83,27 +83,27 @@ namespace MineCase.Algorithm.World.Plants
                     BlockState state = chunk[down.X, down.Y, down.Z];
                     bool isSoil = CanSustainTree(PlantsType.Spruce, state);
 
-                    if (isSoil && pos.Y < 256 - i - 1)
+                    if (isSoil && pos.Y < 256 - height - 1)
                     {
-                        int k2 = 0;
+                        int xzWidth = 0;
 
-                        for (int y = pos.Y + i; y >= pos.Y + j; --y)
+                        for (int y = pos.Y + height; y >= pos.Y + heightLeaves; --y)
                         {
-                            for (int x = pos.X - k2; x <= pos.X + k2; ++x)
+                            for (int x = pos.X - xzWidth; x <= pos.X + xzWidth; ++x)
                             {
-                                int k3 = x - pos.X;
+                                int deltaX = x - pos.X;
 
-                                for (int z = pos.Z - k2; z <= pos.Z + k2; ++z)
+                                for (int z = pos.Z - xzWidth; z <= pos.Z + xzWidth; ++z)
                                 {
-                                    int j2 = z - pos.Z;
+                                    int deltaZ = z - pos.Z;
 
-                                    if (Math.Abs(k3) != k2 || Math.Abs(j2) != k2 || k2 <= 0)
+                                    if (Math.Abs(deltaX) != xzWidth || Math.Abs(deltaZ) != xzWidth || xzWidth <= 0)
                                     {
                                         BlockChunkPos blockpos = new BlockWorldPos(x, y, z).ToBlockChunkPos();
                                         state = chunk[blockpos.X, blockpos.Y, blockpos.Z];
 
                                         if (state.IsAir()
-                                            || state.IsSameId(BlockStates.Leaves())
+                                            || state.IsLeaves()
                                             || state.IsSameId(BlockStates.Vines()))
                                         {
                                             chunk[blockpos.X, blockpos.Y, blockpos.Z] = _leaves;
@@ -112,17 +112,17 @@ namespace MineCase.Algorithm.World.Plants
                                 }
                             }
 
-                            if (k2 >= 1 && y == pos.Y + j + 1)
+                            if (xzWidth >= 1 && y == pos.Y + heightLeaves + 1)
                             {
-                                --k2;
+                                --xzWidth;
                             }
-                            else if (k2 < l)
+                            else if (xzWidth < l)
                             {
-                                ++k2;
+                                ++xzWidth;
                             }
                         }
 
-                        for (int y = 0; y < i - 1; ++y)
+                        for (int y = 0; y < height - 1; ++y)
                         {
                             BlockChunkPos upN = new BlockWorldPos(pos.X, pos.Y + y, pos.Z).ToBlockChunkPos();
                             state = chunk[upN.X, upN.Y, upN.Z];
