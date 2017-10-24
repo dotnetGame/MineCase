@@ -10,11 +10,12 @@ using MineCase.Server.World;
 using MineCase.Server.World.EntitySpawner;
 using MineCase.Server.World.EntitySpawner.Ai;
 using MineCase.Server.World.EntitySpawner.Ai.Action;
+using MineCase.Server.World.EntitySpawner.Ai.MobAi;
 using Orleans;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class EntityAiComponent : Component<MobGrain>
+    internal class EntityAiComponent : Component<MobGrain>, IHandle<SpawnMob>
     {
         public static readonly DependencyProperty<ICreatureAi> AiTypeProperty =
             DependencyProperty.Register<ICreatureAi>("AiType", typeof(EntityAiComponent));
@@ -58,6 +59,51 @@ namespace MineCase.Server.Game.Entities.Components
         {
             AttachedObject.GetComponent<GameTickComponent>()
                 .Tick -= OnGameTick;
+        }
+
+        async Task IHandle<SpawnMob>.Handle(SpawnMob message)
+        {
+            switch (message.MobType)
+            {
+                case MobType.Chicken:
+                    await AttachedObject.SetLocalValue(EntityAiComponent.AiTypeProperty, new AiChicken());
+                    break;
+                case MobType.Cow:
+                    await AttachedObject.SetLocalValue(EntityAiComponent.AiTypeProperty, new AiCow());
+                    break;
+                case MobType.Creeper:
+                    await AttachedObject.SetLocalValue(EntityAiComponent.AiTypeProperty, new AiCreeper());
+                    break;
+                case MobType.Pig:
+                    await AttachedObject.SetLocalValue(EntityAiComponent.AiTypeProperty, new AiPig());
+                    break;
+                case MobType.Sheep:
+                    await AttachedObject.SetLocalValue(EntityAiComponent.AiTypeProperty, new AiSheep());
+                    break;
+                case MobType.Skeleton:
+                    await AttachedObject.SetLocalValue(EntityAiComponent.AiTypeProperty, new AiSkeleton());
+                    break;
+                case MobType.Zombie:
+                    await AttachedObject.SetLocalValue(EntityAiComponent.AiTypeProperty, new AiZombie());
+                    break;
+                default:
+                    throw new NotImplementedException("AI of this mob has not been implemented.");
+            }
+        }
+
+        private Task ActionWalk()
+        {
+            return Task.CompletedTask;
+        }
+
+        private Task ActionFollow()
+        {
+            return Task.CompletedTask;
+        }
+
+        private Task ActionEscape()
+        {
+            return Task.CompletedTask;
         }
 
         private Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
