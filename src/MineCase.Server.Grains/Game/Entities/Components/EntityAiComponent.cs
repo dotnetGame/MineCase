@@ -19,12 +19,17 @@ namespace MineCase.Server.Game.Entities.Components
         public static readonly DependencyProperty<ICreatureAi> AiTypeProperty =
             DependencyProperty.Register<ICreatureAi>("AiType", typeof(EntityAiComponent));
 
-        public static readonly DependencyProperty<CreatureAiAction> CreatureAiActionProperty =
-            DependencyProperty.Register<CreatureAiAction>("CreatureAiAction", typeof(EntityAiComponent));
+        public static readonly DependencyProperty<CreatureState> CreatureStateProperty =
+            DependencyProperty.Register<CreatureState>("CreatureState", typeof(EntityAiComponent));
+
+        public static readonly DependencyProperty<CreatureEvent> CreatureEventProperty =
+            DependencyProperty.Register<CreatureEvent>("CreatureEvent", typeof(EntityAiComponent));
 
         public ICreatureAi AiType => AttachedObject.GetValue(AiTypeProperty);
 
-        public CreatureAiAction State => AttachedObject.GetValue(CreatureAiActionProperty);
+        public CreatureState CreatureState => AttachedObject.GetValue(CreatureStateProperty);
+
+        public CreatureEvent CreatureEvent => AttachedObject.GetValue(CreatureEventProperty);
 
         public EntityAiComponent(string name = "entityAi")
             : base(name)
@@ -76,8 +81,33 @@ namespace MineCase.Server.Game.Entities.Components
             IWorld world = AttachedObject.GetWorld();
             var chunkAccessor = AttachedObject.GetComponent<ChunkAccessorComponent>();
             */
-            CreatureAiAction action = AttachedObject.GetValue(EntityAiComponent.CreatureAiActionProperty);
-            action.Action(AttachedObject);
+
+            // CreatureAiAction action = AttachedObject.GetValue(EntityAiComponent.CreatureAiActionProperty);
+            // action.Action(AttachedObject);
+            ICreatureAi ai = AttachedObject.GetValue(EntityAiComponent.AiTypeProperty);
+            CreatureState state = AttachedObject.GetValue(EntityAiComponent.CreatureStateProperty);
+            CreatureEvent evnt = AttachedObject.GetValue(EntityAiComponent.CreatureEventProperty);
+            CreatureState newState = ai.GetState(state, evnt);
+            AttachedObject.SetLocalValue(EntityAiComponent.CreatureStateProperty, newState);
+            switch (newState)
+            {
+                case CreatureState.Attacking:
+                    break;
+                case CreatureState.Burned:
+                    break;
+                case CreatureState.BurnedBySunshine:
+                    break;
+                case CreatureState.EatingGrass:
+                    break;
+                case CreatureState.Escaping:
+                    break;
+                case CreatureState.Explosion:
+                    break;
+                case CreatureState.Follow:
+                    break;
+                default:
+                    throw new NotSupportedException("Unsupported state.");
+            }
 
             return Task.CompletedTask;
         }

@@ -8,21 +8,21 @@ namespace MineCase.Server.World.EntitySpawner.Ai.MobAi
 {
     public class AiZombie : ICreatureAi
     {
-        public static CreatureAiAction[,] Automation { get; set; }
+        public static CreatureState[,] Automation { get; set; }
 
         static AiZombie()
         {
             int creatureStateMax = Enum.GetValues(typeof(CreatureState)).Length;
             int creatureEventMax = Enum.GetValues(typeof(CreatureEvent)).Length;
-            Automation = new CreatureAiAction[creatureStateMax, creatureEventMax];
-            Automation[(int)CreatureState.Stop, (int)CreatureEvent.Attacked] = new CreatureAiActionEscape();
-            Automation[(int)CreatureState.Stop, (int)CreatureEvent.PlayerApproaching] = new CreatureAiActionLookAtPlayer();
-            Automation[(int)CreatureState.Stop, (int)CreatureEvent.RandomWalk] = new CreatureAiActionWalk();
-            Automation[(int)CreatureState.Walk, (int)CreatureEvent.Attacked] = new CreatureAiActionEscape();
-            Automation[(int)CreatureState.Escaping, (int)CreatureEvent.Attacked] = new CreatureAiActionEscape();
+            Automation = new CreatureState[creatureStateMax, creatureEventMax];
+            Automation[(int)CreatureState.Stop, (int)CreatureEvent.Attacked] = CreatureState.Escaping;
+            Automation[(int)CreatureState.Stop, (int)CreatureEvent.PlayerApproaching] = CreatureState.Look;
+            Automation[(int)CreatureState.Stop, (int)CreatureEvent.RandomWalk] = CreatureState.Walk;
+            Automation[(int)CreatureState.Walk, (int)CreatureEvent.Attacked] = CreatureState.Escaping;
+            Automation[(int)CreatureState.Escaping, (int)CreatureEvent.Attacked] = CreatureState.Escaping;
         }
 
-        public CreatureAiAction GetAction(CreatureState creatureState, CreatureEvent creatureEvent)
+        public CreatureState GetState(CreatureState creatureState, CreatureEvent creatureEvent)
         {
             return Automation[(int)creatureState, (int)creatureEvent];
         }

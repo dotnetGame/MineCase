@@ -6,6 +6,7 @@ namespace MineCase.Server.World.EntitySpawner.Ai
 {
     public enum CreatureEvent : int
     {
+        Nothing,
         RandomWalk,
         Attacked,
         PlayerApproaching,

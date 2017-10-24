@@ -33,14 +33,17 @@ namespace MineCase.Server.Game.Entities
         protected override async Task InitializeComponents()
         {
             await base.InitializeComponents();
-            await SetComponent(new BlockPlacementComponent());  // 末影人
-            await SetComponent(new DiggingComponent()); // 末影人
+
+            // await SetComponent(new BlockPlacementComponent());  // 末影人
+
+            // await SetComponent(new DiggingComponent()); // 末影人
             await SetComponent(new EntityLifeTimeComponent());
             await SetComponent(new EntityOnGroundComponent());
             await SetComponent(new HealthComponent());
             await SetComponent(new StandaloneHeldItemComponent());
             await SetComponent(new NameComponent());
             await SetComponent(new DiscoveryRegisterComponent());
+            await SetComponent(new EntityAiComponent());
         }
 
         public async override Task OnActivateAsync()
