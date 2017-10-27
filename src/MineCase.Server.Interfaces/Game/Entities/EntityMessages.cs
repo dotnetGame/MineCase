@@ -93,6 +93,19 @@ namespace MineCase.Server.Game.Entities.Components
     }
 
     [Immutable]
+    public class EntityMove : IEntityMessage
+    {
+        // 实际的相对位移，并非mc协议中位移/(32*128)
+        public float DeltaX { get; set; }
+
+        public float DeltaY { get; set; }
+
+        public float DeltaZ { get; set; }
+
+        public bool OnGround { get; set; }
+    }
+
+    [Immutable]
     public sealed class DestroyEntity : IEntityMessage
     {
         public static readonly DestroyEntity Default = new DestroyEntity();

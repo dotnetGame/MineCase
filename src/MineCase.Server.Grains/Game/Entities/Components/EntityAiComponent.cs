@@ -11,6 +11,7 @@ using MineCase.Server.World.EntitySpawner;
 using MineCase.Server.World.EntitySpawner.Ai;
 using MineCase.Server.World.EntitySpawner.Ai.Action;
 using MineCase.Server.World.EntitySpawner.Ai.MobAi;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.Game.Entities.Components
@@ -93,6 +94,14 @@ namespace MineCase.Server.Game.Entities.Components
 
         private Task ActionWalk()
         {
+            Random random = new Random();
+            float step = 0.2f;
+            float theta = (float)random.NextDouble();
+            float yaw = AttachedObject.GetValue(EntityLookComponent.YawProperty);
+            EntityWorldPos pos = AttachedObject.GetValue(EntityWorldPositionComponent.EntityWorldPositionProperty);
+            AttachedObject.SetLocalValue(
+                EntityWorldPositionComponent.EntityWorldPositionProperty,
+                new EntityWorldPos(pos.X + step * (float)Math.Cos(theta), pos.Y, pos.Z + step * (float)Math.Sin(theta)));
             return Task.CompletedTask;
         }
 
@@ -103,6 +112,8 @@ namespace MineCase.Server.Game.Entities.Components
 
         private Task ActionEscape()
         {
+            float yaw = AttachedObject.GetValue(EntityLookComponent.YawProperty);
+
             return Task.CompletedTask;
         }
 
@@ -150,6 +161,9 @@ namespace MineCase.Server.Game.Entities.Components
                 case CreatureState.Explosion:
                     break;
                 case CreatureState.Follow:
+                    break;
+                case CreatureState.Walk:
+                    ActionWalk();
                     break;
                 default:
                     throw new NotSupportedException("Unsupported state.");
