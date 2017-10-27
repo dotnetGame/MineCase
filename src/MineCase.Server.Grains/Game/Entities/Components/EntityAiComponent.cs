@@ -89,11 +89,17 @@ namespace MineCase.Server.Game.Entities.Components
                 case MobType.Skeleton:
                     await AttachedObject.SetLocalValue(EntityAiComponent.AiTypeProperty, new AiSkeleton());
                     break;
+                case MobType.Squid:
+                    // TODO new ai for squid
+                    await AttachedObject.SetLocalValue(EntityAiComponent.AiTypeProperty, new AiChicken());
+                    break;
                 case MobType.Zombie:
                     await AttachedObject.SetLocalValue(EntityAiComponent.AiTypeProperty, new AiZombie());
                     break;
                 default:
-                    throw new NotImplementedException("AI of this mob has not been implemented.");
+                    // TODO add more ai
+                    // throw new NotImplementedException("AI of this mob has not been implemented.");
+                    break;
             }
         }
 
