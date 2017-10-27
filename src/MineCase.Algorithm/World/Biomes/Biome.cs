@@ -65,6 +65,7 @@ namespace MineCase.Algorithm.World.Biomes
         protected float _extraTreeChance;
         protected int _grassPerChunk;
         protected int _flowersPerChunk;
+        protected int _mushroomsPerChunk;
 
         protected int _deadBushPerChunk;
         protected int _reedsPerChunk;
@@ -73,6 +74,11 @@ namespace MineCase.Algorithm.World.Biomes
         // 生物种类
         protected List<MobType> _passiveMobList;
         protected List<MobType> _monsterList;
+
+        protected int _clayPerChunk;
+        protected int _waterlilyPerChunk;
+        protected int _sandPatchesPerChunk;
+        protected int _gravelPatchesPerChunk;
 
         public Biome(BiomeProperties properties, GeneratorSettings genSettings)
         {
@@ -126,6 +132,7 @@ namespace MineCase.Algorithm.World.Biomes
             _extraTreeChance = 0.05F; // mc 0.05F
             _grassPerChunk = 10;
             _flowersPerChunk = 4;
+            _mushroomsPerChunk = 0;
 
             _deadBushPerChunk = 2;
             _reedsPerChunk = 50;
@@ -170,6 +177,14 @@ namespace MineCase.Algorithm.World.Biomes
                      return new BiomeHill(BiomeHillType.Normal, new BiomeProperties(), settings);
                 case BiomeId.Forest:
                      return new BiomeForest(new BiomeProperties(), settings);
+                case BiomeId.Taiga:
+                     return new BiomeTaiga(BiomeTaigaType.Normal, new BiomeProperties(), settings);
+                case BiomeId.Swampland:
+                     return new BiomeSwamp(new BiomeProperties(), settings);
+                case BiomeId.River:
+                     return new BiomeRiver(new BiomeProperties(), settings);
+                case BiomeId.Beach:
+                     return new BiomeBeach(new BiomeProperties(), settings);
                 default:
                      return null;
             }
@@ -198,14 +213,12 @@ namespace MineCase.Algorithm.World.Biomes
         // 随机获得一个该生物群系可能出现的树
         public virtual PlantsType GetRandomTree(Random rand)
         {
-            int n = rand.Next(3);
+            int n = rand.Next(2);
             switch (n)
             {
                 case 0:
                     return PlantsType.Oak;
                 case 1:
-                    return PlantsType.Spruce;
-                case 2:
                     return PlantsType.Birch;
                 default:
                     return PlantsType.Oak;

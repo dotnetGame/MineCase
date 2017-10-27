@@ -55,6 +55,11 @@ namespace MineCase.Server.World
             return state.Id == (uint)BlockId.Air;
         }
 
+        public static bool IsLeaves(this BlockState state)
+        {
+            return state.IsSameId(BlockStates.Leaves()) || state.IsSameId(BlockStates.Leaves2());
+        }
+
         public static async Task<bool> CanBlockStay(this BlockState state, IWorld world, IGrainFactory grainFactory, int x, int y, int z)
         {
             if (state.IsSameId(BlockStates.Grass()))
