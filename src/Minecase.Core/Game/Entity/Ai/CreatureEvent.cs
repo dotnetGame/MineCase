@@ -8,6 +8,7 @@ namespace MineCase.Server.World.EntitySpawner.Ai
     {
         Nothing,
         RandomWalk,
+        Stop,
         Attacked,
         PlayerApproaching,
         FollowFood,

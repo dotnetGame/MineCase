@@ -33,14 +33,19 @@ namespace MineCase.Server.Game.Entities.Components
 
         public CreatureEvent CreatureEvent => AttachedObject.GetValue(CreatureEventProperty);
 
+        private Random random;
+
         public EntityAiComponent(string name = "entityAi")
             : base(name)
         {
+            random = new Random();
         }
 
         protected override Task OnAttached()
         {
             Register();
+            AttachedObject.SetLocalValue(EntityAiComponent.CreatureStateProperty, CreatureState.Stop);
+            AttachedObject.SetLocalValue(EntityAiComponent.CreatureEventProperty, CreatureEvent.Nothing);
             return base.OnAttached();
         }
 
@@ -94,14 +99,26 @@ namespace MineCase.Server.Game.Entities.Components
 
         private Task ActionWalk()
         {
-            Random random = new Random();
-            float step = 0.2f;
-            float theta = (float)random.NextDouble();
+            float step = 0.3f;
+            float theta = (float)(random.NextDouble() * 2 * Math.PI);
             float yaw = AttachedObject.GetValue(EntityLookComponent.YawProperty);
+            float head;
             EntityWorldPos pos = AttachedObject.GetValue(EntityWorldPositionComponent.EntityWorldPositionProperty);
+            if (random.Next(50) == 0)
+            {
+                head = theta;
+
+                AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, (float)(head / Math.PI * 180.0f));
+                AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, (float)(head / Math.PI * 180.0f));
+            }
+            else
+            {
+                head = (float)(yaw / 180.0f * Math.PI);
+            }
+
             AttachedObject.SetLocalValue(
-                EntityWorldPositionComponent.EntityWorldPositionProperty,
-                new EntityWorldPos(pos.X + step * (float)Math.Cos(theta), pos.Y, pos.Z + step * (float)Math.Sin(theta)));
+                    EntityWorldPositionComponent.EntityWorldPositionProperty,
+                    new EntityWorldPos(pos.X - step * (float)Math.Sin(head), pos.Y, pos.Z + step * (float)Math.Cos(head)));
             return Task.CompletedTask;
         }
 
@@ -141,8 +158,21 @@ namespace MineCase.Server.Game.Entities.Components
 
             // CreatureAiAction action = AttachedObject.GetValue(EntityAiComponent.CreatureAiActionProperty);
             // action.Action(AttachedObject);
+
+            // get state
             ICreatureAi ai = AttachedObject.GetValue(EntityAiComponent.AiTypeProperty);
             CreatureState state = AttachedObject.GetValue(EntityAiComponent.CreatureStateProperty);
+
+            // random walk
+            if (state == CreatureState.Stop && random.Next(10) == 0)
+            {
+                AttachedObject.SetLocalValue(EntityAiComponent.CreatureEventProperty, CreatureEvent.RandomWalk);
+            }
+            else if (state == CreatureState.Walk && random.Next(30) == 0)
+            {
+                AttachedObject.SetLocalValue(EntityAiComponent.CreatureEventProperty, CreatureEvent.Stop);
+            }
+
             CreatureEvent evnt = AttachedObject.GetValue(EntityAiComponent.CreatureEventProperty);
             CreatureState newState = ai.GetState(state, evnt);
             AttachedObject.SetLocalValue(EntityAiComponent.CreatureStateProperty, newState);
@@ -164,6 +194,8 @@ namespace MineCase.Server.Game.Entities.Components
                     break;
                 case CreatureState.Walk:
                     ActionWalk();
+                    break;
+                case CreatureState.Stop:
                     break;
                 default:
                     throw new NotSupportedException("Unsupported state.");

@@ -15,10 +15,13 @@ namespace MineCase.Server.World.EntitySpawner.Ai.MobAi
             int creatureStateMax = Enum.GetValues(typeof(CreatureState)).Length;
             int creatureEventMax = Enum.GetValues(typeof(CreatureEvent)).Length;
             Automation = new CreatureState[creatureStateMax, creatureEventMax];
+            Automation[(int)CreatureState.Stop, (int)CreatureEvent.Nothing] = CreatureState.Stop;
             Automation[(int)CreatureState.Stop, (int)CreatureEvent.Attacked] = CreatureState.Escaping;
             Automation[(int)CreatureState.Stop, (int)CreatureEvent.PlayerApproaching] = CreatureState.Look;
             Automation[(int)CreatureState.Stop, (int)CreatureEvent.RandomWalk] = CreatureState.Walk;
+            Automation[(int)CreatureState.Walk, (int)CreatureEvent.Nothing] = CreatureState.Walk;
             Automation[(int)CreatureState.Walk, (int)CreatureEvent.Attacked] = CreatureState.Escaping;
+            Automation[(int)CreatureState.Walk, (int)CreatureEvent.Stop] = CreatureState.Stop;
             Automation[(int)CreatureState.Escaping, (int)CreatureEvent.Attacked] = CreatureState.Escaping;
         }
 
