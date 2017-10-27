@@ -270,7 +270,9 @@ namespace MineCase.Algorithm.World.Biomes
         }
 
         // 添加生物群系特有的生物
-        public abstract void SpawnMob(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos);
+        public virtual void SpawnMob(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
+        {
+        }
 
         // 产生生物群系特有的方块
         public virtual void GenerateBiomeTerrain(int seaLevel, Random rand, ChunkColumnStorage chunk, int chunk_x, int chunk_z, int x_in_chunk, int z_in_chunk, double noiseVal)

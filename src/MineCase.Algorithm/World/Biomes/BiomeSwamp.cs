@@ -1,6 +1,8 @@
 using System;
 using MineCase.Algorithm.World.Plants;
+using MineCase.Server.Game.Entities;
 using MineCase.Server.World;
+using MineCase.Server.World.EntitySpawner;
 using MineCase.World;
 using MineCase.World.Biomes;
 using MineCase.World.Generation;
@@ -85,6 +87,22 @@ namespace MineCase.Algorithm.World.Biomes
             }
 
             base.Decorate(world, grainFactory, chunk, rand, pos);
+        }
+
+        // 添加生物群系特有的生物
+        public override void SpawnMob(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
+        {
+            ChunkWorldPos chunkPos = pos.ToChunkWorldPos();
+            int seed = chunkPos.Z * 16384 + chunkPos.X;
+            Random r = new Random(seed);
+            foreach (MobType eachType in _passiveMobList)
+            {
+                if (r.Next(32) == 0)
+                {
+                    PassiveMobSpawner spawner = new PassiveMobSpawner(eachType, 10);
+                    spawner.Spawn(world, grainFactory, chunk, rand, new BlockWorldPos(pos.X, pos.Y, pos.Z));
+                }
+            }
         }
 
         private void GenGrass(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
