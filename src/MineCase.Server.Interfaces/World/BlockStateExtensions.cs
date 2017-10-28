@@ -60,6 +60,25 @@ namespace MineCase.Server.World
             return state.IsSameId(BlockStates.Leaves()) || state.IsSameId(BlockStates.Leaves2());
         }
 
+        public static bool CanMobStand(this BlockState state)
+        {
+            return !state.IsSameId(BlockStates.Air()) &&
+                !state.IsSameId(BlockStates.Grass()) &&
+                !state.IsSameId(BlockStates.Water()) &&
+                !state.IsSameId(BlockStates.LargeFlowers()) &&
+                !state.IsSameId(BlockStates.Poppy()) &&
+                !state.IsSameId(BlockStates.Dandelion());
+        }
+
+        public static bool IsMobCollided(this BlockState state)
+        {
+            return !state.IsSameId(BlockStates.Air()) &&
+                !state.IsSameId(BlockStates.Grass()) &&
+                !state.IsSameId(BlockStates.LargeFlowers()) &&
+                !state.IsSameId(BlockStates.Poppy()) &&
+                !state.IsSameId(BlockStates.Dandelion());
+        }
+
         public static async Task<bool> CanBlockStay(this BlockState state, IWorld world, IGrainFactory grainFactory, int x, int y, int z)
         {
             if (state.IsSameId(BlockStates.Grass()))

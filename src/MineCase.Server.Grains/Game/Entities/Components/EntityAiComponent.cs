@@ -105,9 +105,27 @@ namespace MineCase.Server.Game.Entities.Components
             }
         }
 
+        private Task ActionStop()
+        {
+            float theta = (float)(random.NextDouble() * 2 * Math.PI);
+            float yaw = AttachedObject.GetValue(EntityLookComponent.YawProperty);
+            if (random.Next(20) == 0)
+            {
+                AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, (float)(theta / Math.PI * 180.0f));
+                AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, (float)(theta / Math.PI * 180.0f));
+            }
+            else
+            {
+                AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, yaw);
+                AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, yaw);
+            }
+
+            return Task.CompletedTask;
+        }
+
         private async Task ActionWalk()
         {
-            float step = 0.3f;
+            float step = 0.2f;
             float theta = (float)(random.NextDouble() * 2 * Math.PI);
             float yaw = AttachedObject.GetValue(EntityLookComponent.YawProperty);
             float head;
@@ -132,14 +150,13 @@ namespace MineCase.Server.Game.Entities.Components
             Cuboid entityBoundbox = new Cuboid(new Point3d(entityPos.X, entityPos.Y, entityPos.Z), new Size(1, 1, 2)); // TODO data from Boundbox component
             var chunkAccessor = AttachedObject.GetComponent<ChunkAccessorComponent>();
             bool isCollided = false;
-            int yJumpHeight = 0;
 
             // 检测此位置会不会与方块碰撞
             for (int i = 1; blockPos.Y + i < 256 && i <= 3; ++i)
             {
                 BlockWorldPos upblock = BlockWorldPos.Add(blockPos, 0, i, 0);
                 BlockState upstate = await chunkAccessor.GetBlockState(upblock);
-                if (!upstate.IsAir())
+                if (upstate.IsMobCollided())
                 {
                     Cuboid blockBoundbox = new Cuboid(new Point3d(upblock.X, upblock.Y, upblock.Z), new Size(1, 1, 1));
                     if (Collision.IsCollided(entityBoundbox, blockBoundbox))
@@ -151,16 +168,19 @@ namespace MineCase.Server.Game.Entities.Components
             }
 
             // 获得高度变化
+            int yJumpHeight = 0;
+            bool canWalk = false;
             for (int i = -2; blockPos.Y + i < 256 && i <= 0; ++i)
             {
                 BlockState state = await chunkAccessor.GetBlockState(BlockWorldPos.Add(blockPos, 0, i, 0));
-                if (!state.IsAir())
+                if (state.CanMobStand())
                 {
                     yJumpHeight = i + 1;
+                    canWalk = true;
                 }
             }
 
-            if (!isCollided)
+            if (!isCollided && canWalk)
             {
                 await AttachedObject.SetLocalValue(
                     EntityWorldPositionComponent.EntityWorldPositionProperty,
@@ -242,10 +262,14 @@ namespace MineCase.Server.Game.Entities.Components
                     await ActionWalk();
                     break;
                 case CreatureState.Stop:
+                    await ActionStop();
                     break;
                 default:
+                    System.Console.WriteLine(newState);
                     throw new NotSupportedException("Unsupported state.");
             }
+
+            await AttachedObject.SetLocalValue(EntityAiComponent.CreatureEventProperty, CreatureEvent.Nothing);
         }
     }
 }
