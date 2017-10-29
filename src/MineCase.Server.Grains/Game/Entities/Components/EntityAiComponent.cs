@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Algorithm;
@@ -107,16 +108,16 @@ namespace MineCase.Server.Game.Entities.Components
 
         private Task ActionStop()
         {
-            float theta = (float)(random.NextDouble() * 2 * Math.PI);
+            float theta = (float)(random.NextDouble() * 360);
             float yaw = AttachedObject.GetValue(EntityLookComponent.YawProperty);
             if (random.Next(20) == 0)
             {
-                AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, (float)(theta / Math.PI * 180.0f));
-                AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, (float)(theta / Math.PI * 180.0f));
+                AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, theta);
+                AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, theta);
             }
             else
             {
-                AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, yaw);
+                // AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, yaw);
                 AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, yaw);
             }
 
@@ -133,14 +134,14 @@ namespace MineCase.Server.Game.Entities.Components
             if (random.Next(50) == 0)
             {
                 head = theta;
-
-                await AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, (float)(head / Math.PI * 180.0f));
-                await AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, (float)(head / Math.PI * 180.0f));
             }
             else
             {
                 head = (float)(yaw / 180.0f * Math.PI);
             }
+
+            await AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, (float)(head / Math.PI * 180.0f));
+            await AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, (float)(head / Math.PI * 180.0f));
 
             // 新的位置
             EntityWorldPos entityPos = new EntityWorldPos(pos.X - step * (float)Math.Sin(head), pos.Y, pos.Z + step * (float)Math.Cos(head));
@@ -170,13 +171,15 @@ namespace MineCase.Server.Game.Entities.Components
             // 获得高度变化
             int yJumpHeight = 0;
             bool canWalk = false;
-            for (int i = -2; blockPos.Y + i < 256 && i <= 0; ++i)
+            for (int i = 0; blockPos.Y + i >= 0 && i >= -2; --i)
             {
+                BlockState upstate = await chunkAccessor.GetBlockState(BlockWorldPos.Add(blockPos, 0, i + 1, 0));
                 BlockState state = await chunkAccessor.GetBlockState(BlockWorldPos.Add(blockPos, 0, i, 0));
-                if (state.CanMobStand())
+                if (!upstate.IsMobCollided() && state.IsMobCollided() && state.CanMobStand())
                 {
                     yJumpHeight = i + 1;
                     canWalk = true;
+                    break;
                 }
             }
 
@@ -185,6 +188,32 @@ namespace MineCase.Server.Game.Entities.Components
                 await AttachedObject.SetLocalValue(
                     EntityWorldPositionComponent.EntityWorldPositionProperty,
                     EntityWorldPos.Add(entityPos, 0, yJumpHeight, 0));
+            }
+        }
+
+        private async Task ActionLook()
+        {
+            // 通知周围creature entity看着玩家
+            EntityWorldPos entityPos = AttachedObject.GetValue(EntityWorldPositionComponent.EntityWorldPositionProperty);
+            ChunkWorldPos chunkPos = entityPos.ToChunkWorldPos();
+            IChunkTrackingHub tracker = GrainFactory.GetGrain<IChunkTrackingHub>(AttachedObject.GetAddressByPartitionKey());
+            var list = await tracker.GetTrackedPlayers();
+
+            // TODO 多位玩家的话只看一位
+            foreach (IPlayer each in list)
+            {
+                EntityWorldPos playerPosition = await each.GetPosition();
+
+                // 三格内玩家
+                if (EntityWorldPos.Distance(playerPosition, entityPos) < 3)
+                {
+                    (var yaw, var pitch) = VectorToYawAndPitch(entityPos, playerPosition);
+
+                    await AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, yaw);
+                    await AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, yaw);
+                    await AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, pitch);
+                    break;
+                }
             }
         }
 
@@ -198,6 +227,40 @@ namespace MineCase.Server.Game.Entities.Components
             float yaw = AttachedObject.GetValue(EntityLookComponent.YawProperty);
 
             return Task.CompletedTask;
+        }
+
+        private async Task GenerateEvent()
+        {
+            // get state
+            ICreatureAi ai = AttachedObject.GetValue(EntityAiComponent.AiTypeProperty);
+            CreatureState state = AttachedObject.GetValue(EntityAiComponent.CreatureStateProperty);
+
+            // player approaching event
+            if (state == CreatureState.Stop)
+            {
+                IChunkTrackingHub tracker = GrainFactory.GetGrain<IChunkTrackingHub>(AttachedObject.GetAddressByPartitionKey());
+                var list = await tracker.GetTrackedPlayers();
+                if (list.Count != 0)
+                {
+                    await AttachedObject.SetLocalValue(EntityAiComponent.CreatureEventProperty, CreatureEvent.PlayerApproaching);
+                }
+            }
+
+            // random walk
+            if (state == CreatureState.Stop && random.Next(10) == 0)
+            {
+                await AttachedObject.SetLocalValue(EntityAiComponent.CreatureEventProperty, CreatureEvent.RandomWalk);
+            }
+
+            // stop
+            if (state == CreatureState.Walk && random.Next(30) == 0)
+            {
+                await AttachedObject.SetLocalValue(EntityAiComponent.CreatureEventProperty, CreatureEvent.Stop);
+            }
+            else if (state == CreatureState.Look && random.Next(10) == 0)
+            {
+                await AttachedObject.SetLocalValue(EntityAiComponent.CreatureEventProperty, CreatureEvent.Stop);
+            }
         }
 
         private async Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
@@ -224,20 +287,11 @@ namespace MineCase.Server.Game.Entities.Components
 
             // CreatureAiAction action = AttachedObject.GetValue(EntityAiComponent.CreatureAiActionProperty);
             // action.Action(AttachedObject);
+            await GenerateEvent();
 
             // get state
             ICreatureAi ai = AttachedObject.GetValue(EntityAiComponent.AiTypeProperty);
             CreatureState state = AttachedObject.GetValue(EntityAiComponent.CreatureStateProperty);
-
-            // random walk
-            if (state == CreatureState.Stop && random.Next(10) == 0)
-            {
-                await AttachedObject.SetLocalValue(EntityAiComponent.CreatureEventProperty, CreatureEvent.RandomWalk);
-            }
-            else if (state == CreatureState.Walk && random.Next(30) == 0)
-            {
-                await AttachedObject.SetLocalValue(EntityAiComponent.CreatureEventProperty, CreatureEvent.Stop);
-            }
 
             CreatureEvent evnt = AttachedObject.GetValue(EntityAiComponent.CreatureEventProperty);
             CreatureState newState = ai.GetState(state, evnt);
@@ -264,12 +318,30 @@ namespace MineCase.Server.Game.Entities.Components
                 case CreatureState.Stop:
                     await ActionStop();
                     break;
+                case CreatureState.Look:
+                    await ActionLook();
+                    break;
                 default:
                     System.Console.WriteLine(newState);
                     throw new NotSupportedException("Unsupported state.");
             }
 
             await AttachedObject.SetLocalValue(EntityAiComponent.CreatureEventProperty, CreatureEvent.Nothing);
+        }
+
+        public static (float, float) VectorToYawAndPitch(Vector3 from, Vector3 to)
+        {
+            Vector3 v = to - from;
+            v = Vector3.Normalize(v);
+
+            double tmpYaw = -Math.Atan2(v.X, v.Z) / Math.PI * 180;
+            if (tmpYaw < 0)
+                tmpYaw = 360 + tmpYaw;
+            double tmpPitch = -Math.Asin(v.Y) / Math.PI * 180;
+
+            // byte yaw = (byte)(tmpYaw * 255 / 360);
+            // byte pitch = (byte)(tmppitch * 255 / 360);
+            return ((float)tmpYaw, (float)tmpPitch);
         }
     }
 }

@@ -55,5 +55,10 @@ namespace MineCase.Server.World
             _trackingPlayers.Remove(player);
             return Task.CompletedTask;
         }
+
+        public Task<List<IPlayer>> GetTrackedPlayers()
+        {
+            return Task.FromResult(_trackingPlayers.Keys.ToList());
+        }
     }
 }
