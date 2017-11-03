@@ -311,6 +311,7 @@ namespace MineCase.Server.Game.Entities.Components
                 case CreatureState.Explosion:
                     break;
                 case CreatureState.Follow:
+                    await ActionFollow();
                     break;
                 case CreatureState.Walk:
                     await ActionWalk();

@@ -55,6 +55,7 @@ namespace MineCase.Server.Game.Entities
             await SetComponent(new WindowManagerComponent());
             await SetComponent(new CollectorComponent());
             await SetComponent(new ColliderComponent());
+            await SetComponent(new MobSpawnerComponent());
         }
 
         public override async Task OnActivateAsync()

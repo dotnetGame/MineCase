@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Algorithm.World.Biomes;
 using MineCase.Engine;
 using MineCase.Server.World;
 using MineCase.World;
@@ -39,6 +40,11 @@ namespace MineCase.Server.Components
                 blockChunkPos.X,
                 blockChunkPos.Y,
                 blockChunkPos.Z);
+        }
+
+        public Task<Biome> GetBlockBiome(BlockWorldPos pos)
+        {
+            // TODO
         }
     }
 }
