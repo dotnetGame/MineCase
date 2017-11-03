@@ -7,8 +7,8 @@ using MineCase.Server.World.EntitySpawner.Ai.Action;
 
 namespace MineCase.Algorithm.Game.Entity.Ai.MobAi
 {
-    public interface ICreatureAi
+    public abstract class CreatureAi
     {
-        CreatureState GetState(CreatureState creatureState, CreatureEvent creatureEvent);
+        public abstract CreatureState GetState(CreatureState creatureState, CreatureEvent creatureEvent);
     }
 }

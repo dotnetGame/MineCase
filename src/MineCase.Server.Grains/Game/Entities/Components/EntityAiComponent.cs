@@ -21,8 +21,8 @@ namespace MineCase.Server.Game.Entities.Components
 {
     internal class EntityAiComponent : Component<MobGrain>, IHandle<SpawnMob>
     {
-        public static readonly DependencyProperty<ICreatureAi> AiTypeProperty =
-            DependencyProperty.Register<ICreatureAi>("AiType", typeof(EntityAiComponent));
+        public static readonly DependencyProperty<CreatureAi> AiTypeProperty =
+            DependencyProperty.Register<CreatureAi>("AiType", typeof(EntityAiComponent));
 
         public static readonly DependencyProperty<CreatureState> CreatureStateProperty =
             DependencyProperty.Register<CreatureState>("CreatureState", typeof(EntityAiComponent));
@@ -30,7 +30,7 @@ namespace MineCase.Server.Game.Entities.Components
         public static readonly DependencyProperty<CreatureEvent> CreatureEventProperty =
             DependencyProperty.Register<CreatureEvent>("CreatureEvent", typeof(EntityAiComponent));
 
-        public ICreatureAi AiType => AttachedObject.GetValue(AiTypeProperty);
+        public CreatureAi AiType => AttachedObject.GetValue(AiTypeProperty);
 
         public CreatureState CreatureState => AttachedObject.GetValue(CreatureStateProperty);
 
@@ -232,7 +232,7 @@ namespace MineCase.Server.Game.Entities.Components
         private async Task GenerateEvent()
         {
             // get state
-            ICreatureAi ai = AttachedObject.GetValue(EntityAiComponent.AiTypeProperty);
+            CreatureAi ai = AttachedObject.GetValue(EntityAiComponent.AiTypeProperty);
             CreatureState state = AttachedObject.GetValue(EntityAiComponent.CreatureStateProperty);
 
             // player approaching event
@@ -290,7 +290,7 @@ namespace MineCase.Server.Game.Entities.Components
             await GenerateEvent();
 
             // get state
-            ICreatureAi ai = AttachedObject.GetValue(EntityAiComponent.AiTypeProperty);
+            CreatureAi ai = AttachedObject.GetValue(EntityAiComponent.AiTypeProperty);
             CreatureState state = AttachedObject.GetValue(EntityAiComponent.CreatureStateProperty);
 
             CreatureEvent evnt = AttachedObject.GetValue(EntityAiComponent.CreatureEventProperty);
