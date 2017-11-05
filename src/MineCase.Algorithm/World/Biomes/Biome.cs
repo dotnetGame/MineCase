@@ -5,6 +5,7 @@ using MineCase.Algorithm.World.Mine;
 using MineCase.Algorithm.World.Plants;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.World;
+using MineCase.Server.World.EntitySpawner;
 using MineCase.World;
 using MineCase.World.Biomes;
 using MineCase.World.Generation;
@@ -272,6 +273,33 @@ namespace MineCase.Algorithm.World.Biomes
         // 添加生物群系特有的生物
         public virtual void SpawnMob(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
         {
+            ChunkWorldPos chunkPos = pos.ToChunkWorldPos();
+            int seed = chunkPos.Z * 16384 + chunkPos.X;
+            Random r = new Random(seed);
+            foreach (MobType eachType in _passiveMobList)
+            {
+                if (r.Next(64) == 0)
+                {
+                    PassiveMobSpawner spawner = new PassiveMobSpawner(eachType, 10);
+                    spawner.Spawn(world, grainFactory, chunk, rand, new BlockWorldPos(pos.X, pos.Y, pos.Z));
+                }
+            }
+        }
+
+        // 添加生物群系特有的怪物
+        public virtual void SpawnMonster(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
+        {
+            ChunkWorldPos chunkPos = pos.ToChunkWorldPos();
+            int seed = chunkPos.Z * 16384 + chunkPos.X;
+            Random r = new Random(seed);
+            foreach (MobType eachType in _monsterList)
+            {
+                if (r.Next(64) == 0)
+                {
+                    MonsterSpawner spawner = new MonsterSpawner(eachType, 3);
+                    spawner.Spawn(world, grainFactory, chunk, rand, new BlockWorldPos(pos.X, pos.Y, pos.Z));
+                }
+            }
         }
 
         // 产生生物群系特有的方块

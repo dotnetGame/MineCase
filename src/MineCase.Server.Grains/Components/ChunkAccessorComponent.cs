@@ -6,6 +6,7 @@ using MineCase.Algorithm.World.Biomes;
 using MineCase.Engine;
 using MineCase.Server.World;
 using MineCase.World;
+using MineCase.World.Biomes;
 using Orleans;
 
 namespace MineCase.Server.Components
@@ -42,9 +43,22 @@ namespace MineCase.Server.Components
                 blockChunkPos.Z);
         }
 
-        public Task<Biome> GetBlockBiome(BlockWorldPos pos)
+        public Task<BiomeId> GetBlockBiome(BlockWorldPos pos)
         {
-            // TODO
+            BlockChunkPos blockChunkPos = pos.ToBlockChunkPos();
+            ChunkWorldPos chunkWorldPos = pos.ToChunkWorldPos();
+            IWorld world = AttachedObject.GetWorld();
+            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(chunkWorldPos.X, chunkWorldPos.Z));
+            return GrainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockBiome(
+                blockChunkPos.X,
+                blockChunkPos.Z);
+        }
+
+        public Task<IChunkColumn> GetChunk(ChunkWorldPos pos)
+        {
+            IWorld world = AttachedObject.GetWorld();
+            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(pos.X, pos.Z));
+            return Task.FromResult(GrainFactory.GetGrain<IChunkColumn>(chunkColumnKey));
         }
     }
 }
