@@ -45,7 +45,7 @@ namespace MineCase.Server.Game.Entities.Components
 
         protected void CompleteSpawn()
         {
-            _spawned.SetResult(null);
+            _spawned.TrySetResult(null);
         }
     }
 }

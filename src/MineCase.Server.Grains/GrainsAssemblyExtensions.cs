@@ -8,9 +8,10 @@ namespace MineCase.Server
 {
     public static class GrainsAssemblyExtensions
     {
-        public static void AddGrains(this ContainerBuilder container)
+        public static ICollection<Assembly> AddGrains(this ICollection<Assembly> assemblies)
         {
-            container.RegisterAssemblyModules(typeof(GrainsAssemblyExtensions).GetTypeInfo().Assembly);
+            assemblies.Add(typeof(GrainsAssemblyExtensions).Assembly);
+            return assemblies;
         }
     }
 }
