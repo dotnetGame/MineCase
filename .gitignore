@@ -263,3 +263,5 @@ src/**/*.txt
 
 # vscode
 .vscode/
+
+*.diagsession

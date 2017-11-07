@@ -16,6 +16,10 @@
     <AdditionalFiles Include="..\..\build\stylecop.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MineCase.Client.Engine\MineCase.Client.Engine.csproj" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy /y $(TargetPath) $(ProjectDir)..\MineCase.Client\Assets\Modules\" />
   </Target>
