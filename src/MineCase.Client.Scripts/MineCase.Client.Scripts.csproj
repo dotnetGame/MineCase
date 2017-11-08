@@ -7,6 +7,11 @@
     <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" PrivateAssets="All" />
     <PackageReference Include="Unity.TargetingPack.Modules.2017.2.0f3" Version="1.0.0" />
@@ -21,7 +26,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y $(TargetPath) $(ProjectDir)..\MineCase.Client\Assets\Modules\" />
+    <Exec Command="cd /d $(TargetDir)&#xD;&#xA;$(SolutionDir)..\build\pdb2mdb $(TargetFileName)&#xD;&#xA;copy /y $(TargetPath) $(ProjectDir)..\MineCase.Client\Assets\Modules\&#xD;&#xA;copy /y $(TargetDir)$(TargetName).pdb $(ProjectDir)..\MineCase.Client\Assets\Modules\&#xD;&#xA;copy /y $(TargetDir)$(TargetName).dll.mdb $(ProjectDir)..\MineCase.Client\Assets\Modules\" />
   </Target>
 
 </Project>

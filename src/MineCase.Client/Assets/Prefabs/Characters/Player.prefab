@@ -2651,7 +2651,7 @@ MonoBehaviour:
   m_Script: {fileID: -1546901112, guid: 1d1ef308cc4a6bf4c817b25dee1b991c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 2
+  Speed: 1.5
 --- !u!137 &137435094914731120
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

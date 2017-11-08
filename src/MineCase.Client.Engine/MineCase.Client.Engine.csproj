@@ -9,24 +9,44 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\net46\MineCase.Client.Engine.xml</DocumentationFile>
+    <LangVersion>latest</LangVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\net46\MineCase.Client.Engine.xml</DocumentationFile>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" PrivateAssets="All" />
     <PackageReference Include="Unity.TargetingPack.Modules.2017.2.0f3" Version="1.0.0" />
     <PackageReference Include="Autofac" Version="4.6.2" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.1" />
   </ItemGroup>
 
   <ItemGroup>
     <AdditionalFiles Include="..\..\build\stylecop.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y $(TargetDir)*.dll $(ProjectDir)..\MineCase.Client\Assets\Modules\Framework\" />
+    <Exec Command="cd /d $(TargetDir)&#xD;&#xA;$(SolutionDir)..\build\pdb2mdb $(TargetFileName)&#xD;&#xA;copy /y $(TargetDir)*.dll $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\&#xD;&#xA;copy /y $(TargetDir)*.pdb $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\&#xD;&#xA;copy /y $(TargetDir)*.mdb $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\" />
   </Target>
 
 </Project>

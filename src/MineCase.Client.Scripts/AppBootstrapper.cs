@@ -19,7 +19,7 @@ namespace MineCase.Client
 
         protected override void ConfigureApplicationParts(ICollection<Assembly> assemblies)
         {
-            throw new NotImplementedException();
+            assemblies.Add(typeof(AppBootstrapper).Assembly);
         }
     }
 }

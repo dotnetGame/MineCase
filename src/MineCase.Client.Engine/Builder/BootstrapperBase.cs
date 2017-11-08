@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using UnityEngine;
@@ -23,6 +24,7 @@ namespace MineCase.Engine.Builder
 
         private bool _initialized;
         private IContainer _container;
+        private SynchronizationContext _mainThreadSyncContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BootstrapperBase"/> class.
@@ -44,6 +46,8 @@ namespace MineCase.Engine.Builder
         {
             if (!_initialized)
             {
+                _mainThreadSyncContext = SynchronizationContext.Current;
+
                 var assemblies = new List<Assembly>
                 {
                     typeof(BootstrapperBase).Assembly
@@ -76,16 +80,37 @@ namespace MineCase.Engine.Builder
 
         private static BootstrapperBase OnGetCurrent()
         {
-            var type = (from a in AppDomain.CurrentDomain.GetAssemblies()
-                        let attr = a.GetCustomAttribute<BootstrapperTypeAttribute>()
-                        where attr != null
-                        select attr.Type).FirstOrDefault();
+            var boot = _current;
+            if (boot == null)
+            {
+                var type = (from a in AppDomain.CurrentDomain.GetAssemblies()
+                            let attr = a.GetCustomAttribute<BootstrapperTypeAttribute>()
+                            where attr != null
+                            select attr.Type).FirstOrDefault();
 
-            if (type == null)
-                throw new InvalidOperationException("未找到 BootstrapperTypeAttribute 标记的初始化器类型。");
-            var boot = (BootstrapperBase)Activator.CreateInstance(type);
-            _current = boot;
+                if (type == null)
+                    throw new InvalidOperationException("未找到 BootstrapperTypeAttribute 标记的初始化器类型。");
+                boot = (BootstrapperBase)Activator.CreateInstance(type);
+                _current = boot;
+            }
+
             return boot;
+        }
+
+        internal void OnMainThread(Action action)
+        {
+            _mainThreadSyncContext.Send(s => ((Action)s)(), action);
+        }
+
+        internal void OnMainThreadAsync(Action action)
+        {
+            _mainThreadSyncContext.Post(s => ((Action)s)(), action);
+        }
+
+        [RuntimeInitializeOnLoadMethod]
+        internal static void Main()
+        {
+            OnGetCurrent();
         }
     }
 }
