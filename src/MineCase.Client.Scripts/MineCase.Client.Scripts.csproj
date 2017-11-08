@@ -23,10 +23,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MineCase.Client.Engine\MineCase.Client.Engine.csproj" />
+    <ProjectReference Include="..\MineCase.Core\MineCase.Core.csproj" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="cd /d $(TargetDir)&#xD;&#xA;$(SolutionDir)..\build\pdb2mdb $(TargetFileName)&#xD;&#xA;copy /y $(TargetPath) $(ProjectDir)..\MineCase.Client\Assets\Modules\&#xD;&#xA;copy /y $(TargetDir)$(TargetName).pdb $(ProjectDir)..\MineCase.Client\Assets\Modules\&#xD;&#xA;copy /y $(TargetDir)$(TargetName).dll.mdb $(ProjectDir)..\MineCase.Client\Assets\Modules\" />
+    <Exec Command="cd /d $(TargetDir)&#xD;&#xA;$(SolutionDir)..\build\pdb2mdb $(TargetFileName)&#xD;&#xA;$(SolutionDir)..\build\pdb2mdb MineCase.Nbt.dll&#xD;&#xA;$(SolutionDir)..\build\pdb2mdb MineCase.Core.dll&#xD;&#xA;copy /y $(TargetPath) $(ProjectDir)..\MineCase.Client\Assets\Modules\&#xD;&#xA;copy /y $(TargetDir)$(TargetName).pdb $(ProjectDir)..\MineCase.Client\Assets\Modules\&#xD;&#xA;copy /y $(TargetDir)$(TargetName).dll.mdb $(ProjectDir)..\MineCase.Client\Assets\Modules\&#xD;&#xA;&#xD;&#xA;copy /y $(TargetDir)MineCase.Nbt.dll $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\&#xD;&#xA;copy /y $(TargetDir)MineCase.Nbt.pdb $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\&#xD;&#xA;copy /y $(TargetDir)MineCase.Nbt.dll.mdb $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\&#xD;&#xA;&#xD;&#xA;copy /y $(TargetDir)MineCase.Core.dll $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\&#xD;&#xA;copy /y $(TargetDir)MineCase.Core.pdb $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\&#xD;&#xA;copy /y $(TargetDir)MineCase.Core.dll.mdb $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\&#xD;&#xA;&#xD;&#xA;copy /y $(TargetDir)System.Memory.dll $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\&#xD;&#xA;copy /y $(TargetDir)System.Numerics.Vectors.dll $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\&#xD;&#xA;copy /y $(TargetDir)System.Runtime.CompilerServices.Unsafe.dll $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\&#xD;&#xA;copy /y $(TargetDir)Newtonsoft.Json.dll $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\" />
   </Target>
 
 </Project>
