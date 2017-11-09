@@ -4,11 +4,12 @@ using System.IO;
 using System.Text;
 
 using MineCase.Serialization;
-using Orleans.Concurrency;
 
 namespace MineCase.Protocol.Play
 {
-    [Immutable]
+#if !NET46
+    [Orleans.Concurrency.Immutable]
+#endif
     [Packet(0x14)]
     public sealed class WindowItems : ISerializablePacket
     {

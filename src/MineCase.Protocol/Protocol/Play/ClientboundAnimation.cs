@@ -1,11 +1,12 @@
 ﻿using System.IO;
 
 using MineCase.Serialization;
-using Orleans.Concurrency;
 
 namespace MineCase.Protocol.Play
 {
-    [Immutable]
+#if !NET46
+    [Orleans.Concurrency.Immutable]
+#endif
     [Packet(0x06)]
     public sealed class ClientboundAnimation : ISerializablePacket
     {

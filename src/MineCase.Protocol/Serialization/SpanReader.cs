@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Binary;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Pipelines;
 using System.Runtime.CompilerServices;
 using System.Text;
 

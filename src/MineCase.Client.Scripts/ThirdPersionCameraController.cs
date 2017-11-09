@@ -19,18 +19,21 @@ namespace MineCase.Client
 
         private Camera _camera;
         private Transform _player;
-        private PlayerMovement _playerAnim;
+        private PlayerMovement _playerMovement;
         private float _height;
-        private Quaternion _cameraRotation;
+
+        private float _rotateX;
+        private float _rotateY;
 
         private void Start()
         {
             _camera = GetComponent<Camera>();
             var player = GameObject.FindGameObjectWithTag("Player");
             _player = player.transform;
-            _playerAnim = player.GetComponent<PlayerMovement>();
+            _playerMovement = player.GetComponent<PlayerMovement>();
             _height = (transform.position - _player.position).y;
-            _cameraRotation = transform.localRotation;
+            _rotateX = transform.localRotation.eulerAngles.x;
+            _rotateY = transform.localRotation.eulerAngles.y;
             UpdateLookAt();
 
             EventAggregator.Subscribe(this);
@@ -38,23 +41,28 @@ namespace MineCase.Client
 
         private void LateUpdate()
         {
-            transform.position = new Vector3(0, _height, 0) + _player.position + _player.forward.normalized * -Backward;
+            transform.position = new Vector3(0, _height, 0) + _player.position + GetForward() * -Backward;
+        }
+
+        private Vector3 GetForward()
+        {
+            var forward = transform.forward;
+            forward.y = 0;
+            return forward.normalized;
         }
 
         void IHandle<CursorMoveMessage>.Handle(CursorMoveMessage message)
         {
-            var y = message.DeltaX * RotateFactor;
-            var x = -message.DeltaY * RotateFactor;
-            _cameraRotation *= Quaternion.Euler(x, y, 0);
-            transform.localRotation = _cameraRotation;
+            _rotateY += message.DeltaX * RotateFactor;
+            _rotateX += -message.DeltaY * RotateFactor;
+            transform.localRotation = Quaternion.Euler(_rotateX, _rotateY, 0);
             UpdateLookAt();
         }
 
         private void UpdateLookAt()
         {
             var lookAt = transform.forward * 50 + transform.position;
-            _playerAnim.SetLookAtPosition(lookAt);
-            transform.localRotation = Quaternion.LookRotation(lookAt - transform.position);
+            _playerMovement.SetLookAtPosition(lookAt);
         }
     }
 }
