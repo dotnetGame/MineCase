@@ -41,7 +41,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4411637646999276
 Transform:
   m_ObjectHideFlags: 1
@@ -81,4 +81,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CubeMesh: {fileID: 33390042490955664, guid: 798c03a353008ff449797f3df98a5e62, type: 2}
-  CubeMaterial: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  CubeMaterial: {fileID: 2100000, guid: 010e8f1835d647e448deb2accd7c6e32, type: 2}

@@ -33,6 +33,20 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.Boolean)]
         public bool OnGround;
 
+        public static EntityLookAndRelativeMove Deserialize(ref SpanReader br)
+        {
+            return new EntityLookAndRelativeMove
+            {
+                EID = br.ReadAsVarInt(out _),
+                DeltaX = br.ReadAsShort(),
+                DeltaY = br.ReadAsShort(),
+                DeltaZ = br.ReadAsShort(),
+                Yaw = br.ReadAsByte(),
+                Pitch = br.ReadAsByte(),
+                OnGround = br.ReadAsBoolean()
+            };
+        }
+
         public void Serialize(BinaryWriter bw)
         {
             bw.WriteAsVarInt(EID, out _);

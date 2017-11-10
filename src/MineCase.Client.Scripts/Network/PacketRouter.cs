@@ -71,7 +71,7 @@ namespace MineCase.Client.Network
                     innerPacket = DeserializeLoginPacket(packet);
                     break;
                 case SessionState.Play:
-                    // await _user.ForwardPacket(packet);
+                    _user.ForwardPacket(packet);
                     return;
                 case SessionState.Closed:
                     break;

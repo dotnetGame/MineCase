@@ -15,6 +15,13 @@ namespace MineCase.Serialization
 
         public bool IsCosumed => _span.IsEmpty;
 
+        public SpanReader ReadAsSubReader(int length)
+        {
+            var reader = new SpanReader(_span.Slice(0, length));
+            Advance(length);
+            return reader;
+        }
+
         public SpanReader(ReadOnlySpan<byte> span)
         {
             _span = span;
@@ -53,6 +60,20 @@ namespace MineCase.Serialization
         {
             var value = _span.ReadBigEndian<ushort>();
             Advance(sizeof(ushort));
+            return value;
+        }
+
+        public ulong ReadAsUnsignedLong()
+        {
+            var value = _span.ReadBigEndian<ulong>();
+            Advance(sizeof(ulong));
+            return value;
+        }
+
+        public int ReadAsInt()
+        {
+            var value = _span.ReadBigEndian<int>();
+            Advance(sizeof(int));
             return value;
         }
 

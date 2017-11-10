@@ -11,6 +11,10 @@ namespace MineCase.Client.Network
     {
         public string Name { get; set; }
 
+        public string ServerAddress { get; set; }
+
+        public int ServerPort { get; set; }
+
         public IComponentContext ServiceProvider { get; set; }
     }
 }

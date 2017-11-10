@@ -44,7 +44,7 @@ namespace MineCase.Client.Network
 
         public async Task Startup(CancellationToken cancellationToken)
         {
-            await _tcpClient.ConnectAsync(IPAddress.Loopback, 25565).ConfigureAwait(false);
+            await _tcpClient.ConnectAsync(SessionScope.ServerAddress, SessionScope.ServerPort).ConfigureAwait(false);
             using (_remoteStream = _tcpClient.GetStream())
             {
                 SessionScope.ServiceProvider.Resolve<IServerboundPacketSink>().Subscribe(_outcomingPacketObserver);

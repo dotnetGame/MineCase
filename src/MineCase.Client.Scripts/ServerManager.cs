@@ -35,7 +35,12 @@ namespace MineCase.Client
 
         private async void ConnectServer(int id, bool status = true)
         {
-            var session = new SessionScope { Name = id.ToString() };
+            var session = new SessionScope
+            {
+                Name = id.ToString(),
+                ServerAddress = "localhost",
+                ServerPort = 25565
+            };
             var scope = ServiceProvider.BeginLifetimeScope(c =>
             {
                 c.RegisterInstance(session);
@@ -65,7 +70,7 @@ namespace MineCase.Client
                 var random = new System.Random();
                 var clientSession = (ClientSession)sender;
                 Debug.Log($"Connected: {clientSession.SessionScope.Name}");
-                await _handshakingPacket.Handshake(MineCase.Protocol.Protocol.Version, "localhost", 25565, 1);
+                await _handshakingPacket.Handshake(MineCase.Protocol.Protocol.Version, clientSession.SessionScope.ServerAddress, (ushort)clientSession.SessionScope.ServerPort, 1);
                 Debug.Log("Handshaked");
 
                 Debug.Log(JsonConvert.DeserializeObject<dynamic>(await _statusPacket.Request()).description.text);
@@ -96,7 +101,7 @@ namespace MineCase.Client
                 var random = new System.Random();
                 var clientSession = (ClientSession)sender;
                 Debug.Log($"Connected: {clientSession.SessionScope.Name}");
-                await _handshakingPacket.Handshake(MineCase.Protocol.Protocol.Version, "localhost", 25565, 2);
+                await _handshakingPacket.Handshake(MineCase.Protocol.Protocol.Version, clientSession.SessionScope.ServerAddress, (ushort)clientSession.SessionScope.ServerPort, 2);
                 Debug.Log("Handshaked");
 
                 switch (await _loginPacket.LoginStart("chino"))

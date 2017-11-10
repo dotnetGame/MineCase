@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Client.User;
+using MineCase.Engine;
 using MineCase.Protocol.Login;
 
 namespace MineCase.Client.Network.Login
@@ -39,19 +40,21 @@ namespace MineCase.Client.Network.Login
     {
         private readonly IPacketSink _packetSink;
         private readonly IPacketRouter _packetRouter;
+        private readonly IEventAggregator _eventAggregator;
         private readonly ConcurrentQueue<TaskCompletionSource<LoginStartResponse>> _pendingLogins = new ConcurrentQueue<TaskCompletionSource<LoginStartResponse>>();
 
-        public LoginHandler(IPacketSink packetSink, IPacketRouter packetRouter)
+        public LoginHandler(IPacketSink packetSink, IPacketRouter packetRouter, IEventAggregator eventAggregator)
         {
             _packetSink = packetSink;
             _packetRouter = packetRouter;
+            _eventAggregator = eventAggregator;
         }
 
         void ILoginHandler.OnLoginSuccess(LoginSuccess loginSuccess)
         {
             if (_pendingLogins.TryDequeue(out var tcs))
             {
-                var user = new User.User(Guid.Parse(loginSuccess.UUID), loginSuccess.Username);
+                var user = new User.User(Guid.Parse(loginSuccess.UUID), loginSuccess.Username, _eventAggregator);
                 _packetRouter.BindToUser(user);
                 tcs.SetResult(new LoginStartSuccessResponse { User = user });
             }
