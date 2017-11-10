@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,21 +10,55 @@ namespace MineCase.Client.Network.Status
 {
     public interface IStatusHandler
     {
-        void OnResponse(Guid sessionId, Response response);
+        void OnResponse(Response response);
 
-        void OnPong(Guid sessionId, Pong pong);
+        void OnPong(Pong pong);
     }
 
-    internal class StatusHandler : IStatusHandler
+    public interface IStatusPacketGenerator
     {
-        void IStatusHandler.OnPong(Guid sessionId, Pong pong)
+        Task Ping(long payload);
+
+        Task<string> Request();
+    }
+
+    internal class StatusHandler : IStatusHandler, IStatusPacketGenerator
+    {
+        private readonly IPacketSink _packetSink;
+        private readonly ConcurrentDictionary<long, TaskCompletionSource<object>> _pendingPings = new ConcurrentDictionary<long, TaskCompletionSource<object>>();
+        private readonly ConcurrentQueue<TaskCompletionSource<string>> _pendingRequests = new ConcurrentQueue<TaskCompletionSource<string>>();
+
+        public StatusHandler(IPacketSink packetSink)
         {
-            throw new NotImplementedException();
+            _packetSink = packetSink;
         }
 
-        void IStatusHandler.OnResponse(Guid sessionId, Response response)
+        void IStatusHandler.OnPong(Pong pong)
         {
-            throw new NotImplementedException();
+            if (_pendingPings.TryRemove(pong.Payload, out var tcs))
+                tcs.SetResult(null);
+        }
+
+        void IStatusHandler.OnResponse(Response response)
+        {
+            if (_pendingRequests.TryDequeue(out var tcs))
+                tcs.SetResult(response.JsonResponse);
+        }
+
+        async Task IStatusPacketGenerator.Ping(long payload)
+        {
+            var tcs = new TaskCompletionSource<object>();
+            _pendingPings[payload] = tcs;
+            await _packetSink.SendPacket(new Ping { Payload = payload });
+            await tcs.Task;
+        }
+
+        async Task<string> IStatusPacketGenerator.Request()
+        {
+            var tcs = new TaskCompletionSource<string>();
+            _pendingRequests.Enqueue(tcs);
+            await _packetSink.SendPacket(Request.Empty);
+            return await tcs.Task;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace MineCase.Engine
         /// <summary>
         /// 获取服务提供程序
         /// </summary>
-        protected IComponentContext ServiceProvider { get; private set; }
+        public ILifetimeScope ServiceProvider { get; set; }
 
         /// <summary>
         /// 加载时执行

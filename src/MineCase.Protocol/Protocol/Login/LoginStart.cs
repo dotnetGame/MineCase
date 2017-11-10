@@ -10,7 +10,7 @@ namespace MineCase.Protocol.Login
     [Orleans.Concurrency.Immutable]
 #endif
     [Packet(0x00)]
-    public sealed class LoginStart
+    public sealed class LoginStart : ISerializablePacket
     {
         [SerializeAs(DataType.String)]
         public string Name;
@@ -21,6 +21,11 @@ namespace MineCase.Protocol.Login
             {
                 Name = br.ReadAsString(),
             };
+        }
+
+        public void Serialize(BinaryWriter bw)
+        {
+            bw.WriteAsString(Name);
         }
     }
 

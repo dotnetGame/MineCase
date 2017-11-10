@@ -12,11 +12,11 @@ namespace MineCase.Protocol.Status
     [Packet(0x00)]
     public sealed class Request : ISerializablePacket
     {
-        private static readonly Request _empty = new Request();
+        public static readonly Request Empty = new Request();
 
         public static Request Deserialize(ref SpanReader br)
         {
-            return _empty;
+            return Empty;
         }
 
         public void Serialize(BinaryWriter bw)

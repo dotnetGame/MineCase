@@ -10,7 +10,7 @@ using UnityEngine;
 namespace MineCase.Client
 {
     [RequireComponent(typeof(Camera))]
-    public class ThirdPersionCameraController : SmartBehaviour, IHandle<CursorMoveMessage>
+    public class ThirdPersonCameraController : SmartBehaviour, IHandle<CursorMoveMessage>
     {
         public float RotateFactor = 0.1f;
         public float Backward = 2;

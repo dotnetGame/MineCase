@@ -8,9 +8,21 @@ namespace MineCase.Client.User
 {
     public interface IUser
     {
+        Guid UUID { get; }
+
+        string UserName { get; }
     }
 
-    internal class User
+    internal class User : IUser
     {
+        public Guid UUID { get; }
+
+        public string UserName { get; }
+
+        public User(Guid uuid, string userName)
+        {
+            UUID = uuid;
+            UserName = userName;
+        }
     }
 }

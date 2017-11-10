@@ -10,9 +10,36 @@ using MineCase.Protocol;
 
 namespace MineCase.Client.Network
 {
+    public enum SessionState
+    {
+        /// <summary>
+        /// Status
+        /// </summary>
+        Status,
+
+        /// <summary>
+        /// Login
+        /// </summary>
+        Login,
+
+        /// <summary>
+        /// Play
+        /// </summary>
+        Play,
+
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        Closed
+    }
+
     public interface IPacketRouter
     {
+        SessionState State { get; set; }
+
         Task SendPacket(UncompressedPacket packet);
+
+        void BindToUser(IUser user);
     }
 
     /// <summary>
@@ -22,15 +49,14 @@ namespace MineCase.Client.Network
     {
         public SessionState State { get; set; }
 
-        private readonly Guid _sessionId;
+        private readonly SessionScope _sessionScope;
         private readonly IEventAggregator _eventAggregator;
-        private readonly IComponentContext _componentContext;
+        private IUser _user;
 
-        public PacketRouter(Guid sessionId, IEventAggregator eventAggregator, IComponentContext componentContext)
+        public PacketRouter(SessionScope sessionScope, IEventAggregator eventAggregator)
         {
-            _sessionId = sessionId;
+            _sessionScope = sessionScope;
             _eventAggregator = eventAggregator;
-            _componentContext = componentContext;
         }
 
         public async Task SendPacket(UncompressedPacket packet)
@@ -42,7 +68,7 @@ namespace MineCase.Client.Network
                     innerPacket = DeserializeStatusPacket(packet);
                     break;
                 case SessionState.Login:
-                    // innerPacket = DeserializeLoginPacket(packet);
+                    innerPacket = DeserializeLoginPacket(packet);
                     break;
                 case SessionState.Play:
                     // await _user.ForwardPacket(packet);
@@ -61,27 +87,10 @@ namespace MineCase.Client.Network
             throw new NotImplementedException();
         }
 
-        public enum SessionState
+        public void BindToUser(IUser user)
         {
-            /// <summary>
-            /// Status
-            /// </summary>
-            Status,
-
-            /// <summary>
-            /// Login
-            /// </summary>
-            Login,
-
-            /// <summary>
-            /// Play
-            /// </summary>
-            Play,
-
-            /// <summary>
-            /// 关闭
-            /// </summary>
-            Closed
+            _user = user;
+            State = SessionState.Play;
         }
     }
 }

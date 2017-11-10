@@ -36,15 +36,15 @@ namespace MineCase.Client.Network
 
         private Task DispatchPacket(Response packet)
         {
-            var requestGrain = _componentContext.Resolve<IStatusHandler>();
-            requestGrain.OnResponse(_sessionId, packet);
+            var requestGrain = _sessionScope.ServiceProvider.Resolve<IStatusHandler>();
+            requestGrain.OnResponse(packet);
             return Task.CompletedTask;
         }
 
         private Task DispatchPacket(Pong packet)
         {
-            var requestGrain = _componentContext.Resolve<IStatusHandler>();
-            requestGrain.OnPong(_sessionId, packet);
+            var requestGrain = _sessionScope.ServiceProvider.Resolve<IStatusHandler>();
+            requestGrain.OnPong(packet);
             return Task.CompletedTask;
         }
     }

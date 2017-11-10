@@ -56,7 +56,7 @@ namespace MineCase.Engine.Builder
 
                 var containerBuilder = new ContainerBuilder();
                 containerBuilder.RegisterAssemblyModules(assemblies.ToArray());
-                containerBuilder.Register<IComponentContext>(c => _container);
+                containerBuilder.Register<ILifetimeScope>(c => _container);
                 _container = containerBuilder.Build();
 
                 _initialized = true;

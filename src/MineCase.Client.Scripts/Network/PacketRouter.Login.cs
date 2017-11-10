@@ -43,15 +43,15 @@ namespace MineCase.Client.Network
 
         private Task DispatchPacket(LoginDisconnect packet)
         {
-            var requestGrain = _componentContext.Resolve<ILoginHandler>();
-            requestGrain.OnDisconnect(_sessionId, packet);
+            var requestGrain = _sessionScope.ServiceProvider.Resolve<ILoginHandler>();
+            requestGrain.OnDisconnect(packet);
             return Task.CompletedTask;
         }
 
         private Task DispatchPacket(LoginSuccess packet)
         {
-            var requestGrain = _componentContext.Resolve<ILoginHandler>();
-            requestGrain.OnLoginSuccess(_sessionId, packet);
+            var requestGrain = _sessionScope.ServiceProvider.Resolve<ILoginHandler>();
+            requestGrain.OnLoginSuccess(packet);
             return Task.CompletedTask;
         }
     }

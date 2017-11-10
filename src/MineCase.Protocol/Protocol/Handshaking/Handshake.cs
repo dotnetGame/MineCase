@@ -10,7 +10,7 @@ namespace MineCase.Protocol.Handshaking
     [Orleans.Concurrency.Immutable]
 #endif
     [Packet(0x00)]
-    public sealed class Handshake
+    public sealed class Handshake : ISerializablePacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint ProtocolVersion;
@@ -33,6 +33,14 @@ namespace MineCase.Protocol.Handshaking
                 ServerPort = br.ReadAsUnsignedShort(),
                 NextState = br.ReadAsVarInt(out _)
             };
+        }
+
+        public void Serialize(BinaryWriter bw)
+        {
+            bw.WriteAsVarInt(ProtocolVersion, out _);
+            bw.WriteAsString(ServerAddress);
+            bw.WriteAsUnsignedShort(ServerPort);
+            bw.WriteAsVarInt(NextState, out _);
         }
     }
 }
