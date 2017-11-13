@@ -40,10 +40,33 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="banned-ips.json" />
+    <None Remove="banned-players.json" />
+    <None Remove="ops.json" />
+    <None Remove="server.json" />
+    <None Remove="whitelist.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="..\..\data\crafting.txt" Link="crafting.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\data\furnace.txt" Link="furnace.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="banned-ips.json" >
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="banned-players.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ops.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="server.json" >
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="whitelist.json" >
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

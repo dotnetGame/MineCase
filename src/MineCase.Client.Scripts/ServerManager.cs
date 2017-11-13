@@ -38,7 +38,7 @@ namespace MineCase.Client
             var session = new SessionScope
             {
                 Name = id.ToString(),
-                ServerAddress = "localhost",
+                ServerAddress = "gs.sunnycase.moe",
                 ServerPort = 25565
             };
             var scope = ServiceProvider.BeginLifetimeScope(c =>
