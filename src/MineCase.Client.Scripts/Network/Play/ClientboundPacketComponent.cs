@@ -75,29 +75,33 @@ namespace MineCase.Client.Network.Play
         {
         }
 
-        private void DispatchPacket(ChunkData packet)
+        private async void DispatchPacket(ChunkData packet)
         {
             var column = new ChunkColumnCompactStorage(packet.Biomes);
-            var mask = packet.PrimaryBitMask;
-            int index = 0;
-            int srcIndex = 0;
-            while (index < ChunkConstants.SectionsPerChunk)
+            await Task.Run(() =>
             {
-                if ((mask & 1) == 1)
+                var mask = packet.PrimaryBitMask;
+                int index = 0;
+                int srcIndex = 0;
+                while (index < ChunkConstants.SectionsPerChunk)
                 {
-                    var src = packet.Data[srcIndex];
-                    column.Sections[index] = new ChunkSectionCompactStorage(
-                        new ChunkSectionCompactStorage.DataArray(src.DataArray),
-                        new ChunkSectionCompactStorage.NibbleArray(src.BlockLight),
-                        src.SkyLight != null ? new ChunkSectionCompactStorage.NibbleArray(src.SkyLight) : null);
-                    srcIndex++;
+                    if ((mask & 1) == 1)
+                    {
+                        var src = packet.Data[srcIndex];
+                        column.Sections[index] = new ChunkSectionCompactStorage(
+                            new ChunkSectionCompactStorage.DataArray(src.DataArray),
+                            new ChunkSectionCompactStorage.NibbleArray(src.BlockLight),
+                            src.SkyLight != null ? new ChunkSectionCompactStorage.NibbleArray(src.SkyLight) : null);
+                        srcIndex++;
+                    }
+
+                    mask >>= 1;
+                    index++;
                 }
 
-                mask >>= 1;
-                index++;
-            }
+                System.Diagnostics.Debug.Assert(packet.PrimaryBitMask == column.SectionBitMask, "PrimaryBitMask must be equal.");
+            });
 
-            System.Diagnostics.Debug.Assert(packet.PrimaryBitMask == column.SectionBitMask, "PrimaryBitMask must be equal.");
             var loader = FindObjectOfType<UserChunkLoaderComponent>();
             loader.LoadTerrain(packet.ChunkX, packet.ChunkZ, column);
         }

@@ -15,8 +15,8 @@ namespace MineCase.Client.World
 
         public void LoadTerrain(int chunkX, int chunkZ, ChunkColumnCompactStorage column)
         {
-            Debug.Log($"Load Chunk: {chunkX}, {chunkZ}");
             var go = Instantiate(ChunkColumn);
+            go.transform.position = new Vector3(chunkX * 16, 0, chunkZ * 16);
             go.GetComponentInChildren<ChunkColumnTerrainMeshUpdater>().LoadFromChunkData(chunkX, chunkZ, column);
         }
     }

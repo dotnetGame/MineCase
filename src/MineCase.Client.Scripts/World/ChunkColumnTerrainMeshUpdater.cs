@@ -9,53 +9,69 @@ using UnityEngine;
 
 namespace MineCase.Client.World
 {
+    [RequireComponent(typeof(MeshFilter), typeof(MeshCollider))]
     public class ChunkColumnTerrainMeshUpdater : MonoBehaviour
     {
-        public MeshFilter CubeMesh;
-        public Material CubeMaterial;
-
-        private Mesh _cubeMesh;
-        private List<Matrix4x4>[] _blockPositions;
+        private Mesh _columnMesh;
+        private MeshFilter _meshFilter;
+        private MeshCollider _meshCollider;
 
         private void Start()
         {
-            _cubeMesh = CubeMesh.sharedMesh;
+            _meshFilter = GetComponent<MeshFilter>();
+            _meshCollider = GetComponent<MeshCollider>();
         }
 
-        public void LoadFromChunkData(int chunkX, int chunkZ, ChunkColumnCompactStorage column)
+        public async void LoadFromChunkData(int chunkX, int chunkZ, ChunkColumnCompactStorage column)
         {
-            transform.position = new Vector3(chunkX * 16, 0, chunkZ * 16);
+            _columnMesh = await BuildMesh(column);
+            _meshFilter.mesh = _columnMesh;
+            _meshCollider.sharedMesh = _meshFilter.sharedMesh;
+        }
 
-            _blockPositions = new List<Matrix4x4>[ChunkConstants.BlockEdgeWidthInSection];
-            for (int z = 0; z < ChunkConstants.BlockEdgeWidthInSection; z++)
+        private async Task<Mesh> BuildMesh(ChunkColumnCompactStorage column)
+        {
+            var mesh = new Mesh { name = "Chunk Column" };
+            var result = await Task.Run(() =>
             {
-                var positions = new List<Matrix4x4>(ChunkConstants.BlockEdgeWidthInSection * ChunkConstants.BlockEdgeWidthInSection);
-                for (int y = 0; y < ChunkConstants.BlockEdgeWidthInSection; y++)
+                // 计算面总数
+                int planeCount = 0;
+                for (int z = 0; z < ChunkConstants.BlockEdgeWidthInSection; z++)
                 {
-                    for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; x++)
+                    for (int y = 0; y < ChunkConstants.BlockEdgeWidthInSection * ChunkConstants.SectionsPerChunk; y++)
                     {
-                        var offset = new Vector3(x, y, z);
-                        var matrix = Matrix4x4.Translate(offset) * transform.localToWorldMatrix;
-                        var state = column[x, y, z];
-                        if (state.Id != (uint)BlockId.Air)
-                            positions.Add(matrix);
+                        for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; x++)
+                            planeCount += BlockHandler.CalculatePlanesCount(new Vector3Int(x, y, z), column);
                     }
                 }
 
-                _blockPositions[z] = positions;
-            }
-        }
+                Debug.Log("Plane Count: " + planeCount);
 
-        private void OnRenderObject()
-        {
-            if (_blockPositions != null)
-            {
-                foreach (var positions in _blockPositions)
+                // 填充 Mesh
+                var vertices = new Vector3[planeCount * 4];
+                var normals = new Vector3[planeCount * 4];
+                var uvs = new Vector2[planeCount * 4];
+                var triangles = new int[planeCount * 6];
+                int planeIndex = 0;
+                for (int z = 0; z < ChunkConstants.BlockEdgeWidthInSection; z++)
                 {
-                    if (positions.Count != 0)
-                        UnityEngine.Graphics.DrawMeshInstanced(_cubeMesh, 0, CubeMaterial, positions);
+                    for (int y = 0; y < ChunkConstants.BlockEdgeWidthInSection * ChunkConstants.SectionsPerChunk; y++)
+                    {
+                        for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; x++)
+                        {
+                            BlockHandler.CreateMesh(vertices, normals, uvs, triangles, ref planeIndex, new Vector3Int(x, y, z), column);
+                        }
+                    }
                 }
-            }
+
+                return (vertices, normals, uvs, triangles);
+            });
+
+            mesh.vertices = result.vertices;
+            mesh.normals = result.normals;
+            mesh.uv = result.uvs;
+            mesh.triangles = result.triangles;
+            return mesh;
         }
     }
 }
