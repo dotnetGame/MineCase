@@ -50,27 +50,27 @@ namespace MineCase.Client.Game.Blocks
             { 0, 3, 1, 0, 2, 3 }
         };
 
-        public static int CalculatePlanesCount(Vector3Int offset, ChunkColumnCompactStorage column)
+        public static int CalculatePlanesCount(Vector3Int offset, ChunkSectionCompactStorage section)
         {
-            if (!HasNonTransparentBlock(column, offset)) return 0;
+            if (!HasNonTransparentBlock(section, offset)) return 0;
 
             int count = 0;
             for (int i = 0; i < 6; i++)
             {
-                if (HasNonTransparentBlock(column, offset + _normals[i])) continue;
+                if (HasNonTransparentBlock(section, offset + _normals[i])) continue;
                 count++;
             }
 
             return count;
         }
 
-        public static void CreateMesh(Vector3[] vertices, Vector3[] normals, Vector2[] uvs, int[] triangles, ref int planeIndex, Vector3Int offset, ChunkColumnCompactStorage column)
+        public static void CreateMesh(Vector3[] vertices, Vector3[] normals, Vector2[] uvs, int[] triangles, ref int planeIndex, Vector3Int offset, ChunkSectionCompactStorage section)
         {
-            if (!HasNonTransparentBlock(column, offset)) return;
+            if (!HasNonTransparentBlock(section, offset)) return;
 
             for (int i = 0; i < 6; i++)
             {
-                if (HasNonTransparentBlock(column, offset + _normals[i])) continue;
+                if (HasNonTransparentBlock(section, offset + _normals[i])) continue;
 
                 for (int n = planeIndex * 4, k = 0; k < 4; k++, n++)
                 {
@@ -93,7 +93,7 @@ namespace MineCase.Client.Game.Blocks
             (uint)BlockId.Air
         };
 
-        private static bool HasNonTransparentBlock(ChunkColumnCompactStorage storage, Vector3Int position)
+        private static bool HasNonTransparentBlock(ChunkSectionCompactStorage storage, Vector3Int position)
         {
             bool IsOutOfRange(int value)
             {
@@ -101,8 +101,8 @@ namespace MineCase.Client.Game.Blocks
                 return false;
             }
 
-            if (IsOutOfRange(position.x) || position.y < 0 || position.y >= ChunkConstants.BlockEdgeWidthInSection * ChunkConstants.SectionsPerChunk || IsOutOfRange(position.z)) return false;
-            return !_transparentBlockIds.Contains(storage[position.x, position.y, position.z].Id);
+            if (IsOutOfRange(position.x) || IsOutOfRange(position.y) || IsOutOfRange(position.z)) return false;
+            return !_transparentBlockIds.Contains(storage.Data[position.x, position.y, position.z].Id);
         }
     }
 }
