@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Autofac;
 
 namespace MineCase.Client.Game.Blocks
 {
@@ -19,9 +20,14 @@ namespace MineCase.Client.Game.Blocks
             BlockId = blockId;
         }
 
+        private void Initialize()
+        {
+            CacheTextureAware();
+        }
+
         private static readonly Dictionary<BlockId, Type> _blockHandlerTypes;
         private static readonly ConcurrentDictionary<BlockId, BlockHandler> _blockHandlers = new ConcurrentDictionary<BlockId, BlockHandler>();
-        private static readonly BlockHandler _defaultBlockHandler = new DefaultBlockHandler();
+        private static BlockHandler _defaultBlockHandler;
 
         static BlockHandler()
         {
@@ -36,11 +42,19 @@ namespace MineCase.Client.Game.Blocks
                                   }).ToDictionary(o => o.BlockId, o => o.Type.AsType());
         }
 
-        public static BlockHandler Create(BlockId blockId)
+        public static BlockHandler Create(BlockId blockId, IComponentContext componentContext)
         {
             if (_blockHandlerTypes.TryGetValue(blockId, out var type))
-                return _blockHandlers.GetOrAdd(blockId, k => (BlockHandler)Activator.CreateInstance(type, k));
-            return _defaultBlockHandler;
+            {
+                return _blockHandlers.GetOrAdd(blockId, k =>
+                {
+                    var handler = (BlockHandler)componentContext.InjectProperties(Activator.CreateInstance(type, k));
+                    handler.Initialize();
+                    return handler;
+                });
+            }
+
+            return _defaultBlockHandler ?? (_defaultBlockHandler = componentContext.InjectProperties(new DefaultBlockHandler()));
         }
 
         public virtual Slot DropBlock(uint itemId, BlockState blockState)

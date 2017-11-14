@@ -4,20 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Client.Game.Blocks;
+using MineCase.Engine;
 using MineCase.World;
 using UnityEngine;
 
 namespace MineCase.Client.World
 {
     [RequireComponent(typeof(MeshFilter), typeof(MeshCollider))]
-    public class ChunkSectionTerrainMeshUpdater : MonoBehaviour
+    public class ChunkSectionTerrainMeshUpdater : SmartBehaviour
     {
         private Mesh _columnMesh;
         private MeshFilter _meshFilter;
         private MeshCollider _meshCollider;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _meshFilter = GetComponent<MeshFilter>();
             _meshCollider = GetComponent<MeshCollider>();
         }
@@ -42,7 +44,7 @@ namespace MineCase.Client.World
                     {
                         for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; x++)
                         {
-                            var blockHandler = BlockHandler.Create((BlockId)section.Data[x, y, z].Id);
+                            var blockHandler = BlockHandler.Create((BlockId)section.Data[x, y, z].Id, ServiceProvider);
                             planeCount += blockHandler.CalculatePlanesCount(new Vector3Int(x, y, z), section, neighbor);
                         }
                     }
@@ -60,7 +62,7 @@ namespace MineCase.Client.World
                     {
                         for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; x++)
                         {
-                            var blockHandler = BlockHandler.Create((BlockId)section.Data[x, y, z].Id);
+                            var blockHandler = BlockHandler.Create((BlockId)section.Data[x, y, z].Id, ServiceProvider);
                             blockHandler.CreateMesh(vertices, normals, uvs, triangles, ref planeIndex, new Vector3Int(x, y, z), section, neighbor);
                         }
                     }

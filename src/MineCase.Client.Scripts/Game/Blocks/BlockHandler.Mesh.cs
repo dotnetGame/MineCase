@@ -69,16 +69,6 @@ namespace MineCase.Client.Game.Blocks
             new Vector3Int(0, 0, +1)
         };
 
-        private static readonly Vector2[,] _uvs = new Vector2[6, 4]
-        {
-            { new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 1), new Vector2(1, 1) },
-            { new Vector2(1, 0), new Vector2(0, 0), new Vector2(1, 1), new Vector2(0, 1) },
-            { new Vector2(0, 1), new Vector2(0, 0), new Vector2(1, 1), new Vector2(1, 0) },
-            { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) },
-            { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) },
-            { new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 0), new Vector2(0, 1) }
-        };
-
         private static readonly int[,] _indices = new int[6, 6]
         {
             { 0, 3, 2, 0, 1, 3 },
@@ -127,7 +117,7 @@ namespace MineCase.Client.Game.Blocks
                     v += offset;
                     vertices[n] = v;
                     normals[n] = _normals[i];
-                    uvs[n] = GetUVOffset(_uvs[i, k], (BlockFace)i);
+                    uvs[n] = GetUVOffset((BlockFace)i, k);
                 }
 
                 for (int n = planeIndex * 6, k = 0; k < 6; k++, n++)

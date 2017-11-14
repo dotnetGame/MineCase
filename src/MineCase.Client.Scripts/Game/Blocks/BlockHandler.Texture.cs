@@ -9,15 +9,22 @@ namespace MineCase.Client.Game.Blocks
 {
     public abstract partial class BlockHandler
     {
-        public Vector2 GetUVOffset(Vector2 uv, BlockFace face)
-        {
-            var offset = ServerManager.TextureOffsets[GetTextureName(face)];
-            double x = (uv.x > 0 ? 15.5 : 0.5) + offset.x;
-            double y = (uv.y > 0 ? 15.5 : 0.5) + offset.y;
+        public IBlockTextureLoader BlockTextureLoader { get; set; }
 
-            x /= ServerManager.TerrainSize.x;
-            y /= ServerManager.TerrainSize.y;
-            return new Vector2((float)x, (float)y);
+        private readonly Vector2Int[] _faceTextureCoords = new Vector2Int[6];
+
+        private void CacheTextureAware()
+        {
+            for (int i = 0; i < _faceTextureCoords.Length; i++)
+            {
+                _faceTextureCoords[i] = BlockTextureLoader.TextureOffsets[GetTextureName((BlockFace)i)];
+            }
+        }
+
+        public Vector2 GetUVOffset(BlockFace face, int vertexIndex)
+        {
+            var coord = _faceTextureCoords[(int)face];
+            return BlockTextureLoader.GetCubeUV(coord, face, vertexIndex);
         }
 
         protected virtual string GetTextureName(BlockFace face)
