@@ -8,6 +8,45 @@ using UnityEngine;
 
 namespace MineCase.Client.Game.Blocks
 {
+    public struct NeighborSections
+    {
+        public ChunkSectionCompactStorage Left;
+
+        public ChunkSectionCompactStorage Right;
+
+        public ChunkSectionCompactStorage Bottom;
+
+        public ChunkSectionCompactStorage Top;
+
+        public ChunkSectionCompactStorage Front;
+
+        public ChunkSectionCompactStorage Back;
+
+        public ChunkSectionCompactStorage this[int index]
+        {
+            get
+            {
+                switch (index)
+                {
+                    case 0:
+                        return Left;
+                    case 1:
+                        return Right;
+                    case 2:
+                        return Bottom;
+                    case 3:
+                        return Top;
+                    case 4:
+                        return Front;
+                    case 5:
+                        return Back;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(index));
+                }
+            }
+        }
+    }
+
     public partial class BlockHandler
     {
         private static readonly Vector3[,] _positions = new Vector3[6, 4]
@@ -50,27 +89,37 @@ namespace MineCase.Client.Game.Blocks
             { 0, 3, 1, 0, 2, 3 }
         };
 
-        public static int CalculatePlanesCount(Vector3Int offset, ChunkSectionCompactStorage section)
+        public int CalculatePlanesCount(Vector3Int offset, ChunkSectionCompactStorage section, NeighborSections neighbor)
         {
-            if (!HasNonTransparentBlock(section, offset)) return 0;
+            if (!HasNonTransparentBlock(section.Data[offset.x, offset.y, offset.z])) return 0;
 
             int count = 0;
             for (int i = 0; i < 6; i++)
             {
-                if (HasNonTransparentBlock(section, offset + _normals[i])) continue;
+                if (HasNonTransparentBlock(section, offset + _normals[i], neighbor)) continue;
                 count++;
             }
 
             return count;
         }
 
-        public static void CreateMesh(Vector3[] vertices, Vector3[] normals, Vector2[] uvs, int[] triangles, ref int planeIndex, Vector3Int offset, ChunkSectionCompactStorage section)
+        public enum BlockFace : int
         {
-            if (!HasNonTransparentBlock(section, offset)) return;
+            Left = 0,
+            Right = 1,
+            Top = 2,
+            Bottom = 3,
+            Front = 4,
+            Back = 5
+        }
+
+        public void CreateMesh(Vector3[] vertices, Vector3[] normals, Vector2[] uvs, int[] triangles, ref int planeIndex, Vector3Int offset, ChunkSectionCompactStorage section, NeighborSections neighbor)
+        {
+            if (!HasNonTransparentBlock(section.Data[offset.x, offset.y, offset.z])) return;
 
             for (int i = 0; i < 6; i++)
             {
-                if (HasNonTransparentBlock(section, offset + _normals[i])) continue;
+                if (HasNonTransparentBlock(section, offset + _normals[i], neighbor)) continue;
 
                 for (int n = planeIndex * 4, k = 0; k < 4; k++, n++)
                 {
@@ -78,7 +127,7 @@ namespace MineCase.Client.Game.Blocks
                     v += offset;
                     vertices[n] = v;
                     normals[n] = _normals[i];
-                    uvs[n] = _uvs[i, k];
+                    uvs[n] = GetUVOffset(_uvs[i, k], (BlockFace)i);
                 }
 
                 for (int n = planeIndex * 6, k = 0; k < 6; k++, n++)
@@ -93,16 +142,31 @@ namespace MineCase.Client.Game.Blocks
             (uint)BlockId.Air
         };
 
-        private static bool HasNonTransparentBlock(ChunkSectionCompactStorage storage, Vector3Int position)
+        private bool HasNonTransparentBlock(BlockState blockState)
         {
-            bool IsOutOfRange(int value)
+            return !_transparentBlockIds.Contains(blockState.Id);
+        }
+
+        private bool HasNonTransparentBlock(ChunkSectionCompactStorage storage, Vector3Int position, NeighborSections neighbor)
+        {
+            var target = storage;
+            for (int i = 0; i < 3; i++)
             {
-                if (value < 0 || value >= ChunkConstants.BlockEdgeWidthInSection) return true;
-                return false;
+                if (position[i] < 0)
+                {
+                    target = neighbor[i * 2];
+                    position[i] += ChunkConstants.BlockEdgeWidthInSection;
+                }
+                else if (position[i] >= ChunkConstants.BlockEdgeWidthInSection)
+                {
+                    target = neighbor[i * 2 + 1];
+                    position[i] -= ChunkConstants.BlockEdgeWidthInSection;
+                }
             }
 
-            if (IsOutOfRange(position.x) || IsOutOfRange(position.y) || IsOutOfRange(position.z)) return false;
-            return !_transparentBlockIds.Contains(storage.Data[position.x, position.y, position.z].Id);
+            if (target == null) return false;
+
+            return !_transparentBlockIds.Contains(target.Data[position.x, position.y, position.z].Id);
         }
     }
 }

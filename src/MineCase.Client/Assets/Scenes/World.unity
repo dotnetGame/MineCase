@@ -139,6 +139,7 @@ MonoBehaviour:
   m_Script: {fileID: -1569398763, guid: 1d1ef308cc4a6bf4c817b25dee1b991c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TerrainMaterial: {fileID: 2100000, guid: 010e8f1835d647e448deb2accd7c6e32, type: 2}
 --- !u!4 &181163404
 Transform:
   m_ObjectHideFlags: 0

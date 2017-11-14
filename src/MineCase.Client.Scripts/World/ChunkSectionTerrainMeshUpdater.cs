@@ -22,14 +22,14 @@ namespace MineCase.Client.World
             _meshCollider = GetComponent<MeshCollider>();
         }
 
-        public async Task LoadFromSectionData(ChunkSectionCompactStorage section)
+        public async Task LoadFromSectionData(ChunkSectionCompactStorage section, NeighborSections neighbor)
         {
-            _columnMesh = await BuildMesh(section);
+            _columnMesh = await BuildMesh(section, neighbor);
             _meshFilter.mesh = _columnMesh;
             _meshCollider.sharedMesh = _meshFilter.sharedMesh;
         }
 
-        private async Task<Mesh> BuildMesh(ChunkSectionCompactStorage section)
+        private async Task<Mesh> BuildMesh(ChunkSectionCompactStorage section, NeighborSections neighbor)
         {
             var mesh = new Mesh { name = "Chunk Section" };
             var result = await Task.Run(() =>
@@ -41,12 +41,12 @@ namespace MineCase.Client.World
                     for (int y = 0; y < ChunkConstants.BlockEdgeWidthInSection; y++)
                     {
                         for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; x++)
-                            planeCount += BlockHandler.CalculatePlanesCount(new Vector3Int(x, y, z), section);
+                        {
+                            var blockHandler = BlockHandler.Create((BlockId)section.Data[x, y, z].Id);
+                            planeCount += blockHandler.CalculatePlanesCount(new Vector3Int(x, y, z), section, neighbor);
+                        }
                     }
                 }
-
-                if (planeCount != 0)
-                    Debug.Log("Plane Count: " + planeCount);
 
                 // 填充 Mesh
                 var vertices = new Vector3[planeCount * 4];
@@ -60,7 +60,8 @@ namespace MineCase.Client.World
                     {
                         for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; x++)
                         {
-                            BlockHandler.CreateMesh(vertices, normals, uvs, triangles, ref planeIndex, new Vector3Int(x, y, z), section);
+                            var blockHandler = BlockHandler.Create((BlockId)section.Data[x, y, z].Id);
+                            blockHandler.CreateMesh(vertices, normals, uvs, triangles, ref planeIndex, new Vector3Int(x, y, z), section, neighbor);
                         }
                     }
                 }
@@ -74,6 +75,8 @@ namespace MineCase.Client.World
             mesh.normals = result.normals;
             mesh.uv = result.uvs;
             mesh.triangles = result.triangles;
+            mesh.RecalculateBounds();
+            mesh.RecalculateTangents();
             return mesh;
         }
     }

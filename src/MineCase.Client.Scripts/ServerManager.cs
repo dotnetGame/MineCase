@@ -22,6 +22,8 @@ namespace MineCase.Client
     {
         private Dictionary<int, SessionScope> _sessionScopes;
 
+        public Material TerrainMaterial;
+
         protected override void Awake()
         {
             base.Awake();
@@ -30,6 +32,7 @@ namespace MineCase.Client
 
         private void Start()
         {
+            LoadTextures();
             ConnectServer(0, false);
         }
 
@@ -119,6 +122,63 @@ namespace MineCase.Client
                         break;
                 }
             }
+        }
+
+        private static readonly string[] _textureNames = new[]
+        {
+            "stone",
+            "grass_side",
+            "grass_top",
+            "dirt",
+            "water_overlay",
+            "planks_oak",
+            "log_oak",
+            "leaves_oak"
+        };
+
+        public static Dictionary<string, Vector2Int> TextureOffsets;
+
+        public static Texture2D Terrain;
+        public static Vector2Int TerrainSize;
+
+        private void LoadTextures()
+        {
+            TextureOffsets = new Dictionary<string, Vector2Int>();
+
+            const int maxWidth = 1024;
+            var height = (int)Math.Ceiling((float)_textureNames.Length / (maxWidth / 16)) * 16;
+            var texture = new Texture2D(maxWidth, height, TextureFormat.ARGB32, true)
+            {
+                filterMode = FilterMode.Point
+            };
+
+            Debug.Log("Height: " + height);
+
+            int x = 0, y = 0;
+            foreach (var texName in _textureNames)
+            {
+                var tex = Resources.Load<Texture2D>("textures/blocks/" + texName);
+                texture.SetPixels(x, y, 16, 16, tex.GetPixels());
+                TextureOffsets.Add(texName, new Vector2Int(x, y));
+                x += 16;
+
+                if (x >= maxWidth)
+                {
+                    y += 16;
+                    x = 0;
+                }
+            }
+
+            texture.Apply();
+
+            Terrain = texture;
+            TerrainSize = new Vector2Int(texture.width, texture.height);
+            TerrainMaterial.mainTexture = texture;
+        }
+
+        private void OnGUI()
+        {
+            GUI.DrawTexture(new Rect(0, 0, 1024, 16), Terrain);
         }
 
         internal class Module : Autofac.Module
