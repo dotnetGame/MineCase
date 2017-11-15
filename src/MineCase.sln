@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.10
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Server", "MineCase.Server\MineCase.Server.csproj", "{8E71CBEC-5804-4125-B651-C78426E57C8C}"
 EndProject
@@ -38,7 +38,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{7DC8CDBD-0
 		..\data\furnace.txt = ..\data\furnace.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Engine", "MineCase.Engine\MineCase.Engine.csproj", "{76AFDAE6-75F7-4E68-86CD-DE19CA47246B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Engine", "MineCase.Engine\MineCase.Engine.csproj", "{76AFDAE6-75F7-4E68-86CD-DE19CA47246B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.ControlPanel", "MineCase.ControlPanel\MineCase.ControlPanel.csproj", "{468618BB-B6CC-4A4F-984E-A06A23B909F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,6 +88,10 @@ Global
 		{76AFDAE6-75F7-4E68-86CD-DE19CA47246B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76AFDAE6-75F7-4E68-86CD-DE19CA47246B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76AFDAE6-75F7-4E68-86CD-DE19CA47246B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{468618BB-B6CC-4A4F-984E-A06A23B909F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{468618BB-B6CC-4A4F-984E-A06A23B909F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{468618BB-B6CC-4A4F-984E-A06A23B909F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{468618BB-B6CC-4A4F-984E-A06A23B909F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
