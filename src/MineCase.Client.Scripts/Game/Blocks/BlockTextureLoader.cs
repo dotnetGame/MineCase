@@ -46,7 +46,8 @@ namespace MineCase.Client.Game.Blocks
             var height = (int)Math.Ceiling((float)_textureNames.Length / (maxWidth / 16)) * 16;
             var texture = new Texture2D(maxWidth, height, TextureFormat.ARGB32, true)
             {
-                filterMode = FilterMode.Bilinear
+                filterMode = FilterMode.Bilinear,
+                alphaIsTransparency = true
             };
 
             int x = 0, y = 0;
