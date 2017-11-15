@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MineCase.Serialization;
-using Orleans.Concurrency;
 
 namespace MineCase.Protocol.Play
 {
-    [Immutable]
+#if !NET46
+    [Orleans.Concurrency.Immutable]
+#endif
     [Packet(0x27)]
     public sealed class EntityLookAndRelativeMove : ISerializablePacket
     {
@@ -31,6 +32,20 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.Boolean)]
         public bool OnGround;
+
+        public static EntityLookAndRelativeMove Deserialize(ref SpanReader br)
+        {
+            return new EntityLookAndRelativeMove
+            {
+                EID = br.ReadAsVarInt(out _),
+                DeltaX = br.ReadAsShort(),
+                DeltaY = br.ReadAsShort(),
+                DeltaZ = br.ReadAsShort(),
+                Yaw = br.ReadAsByte(),
+                Pitch = br.ReadAsByte(),
+                OnGround = br.ReadAsBoolean()
+            };
+        }
 
         public void Serialize(BinaryWriter bw)
         {

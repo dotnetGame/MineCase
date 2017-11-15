@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MineCase.Serialization;
-using Orleans.Concurrency;
+using MineCase.World;
 
 namespace MineCase.Protocol.Play
 {
-    [Immutable]
+#if !NET46
+    [Orleans.Concurrency.Immutable]
+#endif
     [Packet(0x20)]
     public sealed class ChunkData : ISerializablePacket
     {
@@ -35,6 +37,31 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.VarInt)]
         public uint NumberOfBlockEntities;
 
+        public static ChunkData Deserialize(ref SpanReader br, bool isOverworld)
+        {
+            var result = new ChunkData
+            {
+                ChunkX = br.ReadAsInt(),
+                ChunkZ = br.ReadAsInt(),
+                GroundUpContinuous = br.ReadAsBoolean(),
+                PrimaryBitMask = br.ReadAsVarInt(out _)
+            };
+
+            var hasBioms = result.GroundUpContinuous;
+
+            result.Size = br.ReadAsVarInt(out _);
+            var dataReader = br.ReadAsSubReader((int)result.Size - (hasBioms ? 256 : 0));
+            var data = new List<ChunkSection>();
+            while (!dataReader.IsCosumed)
+                data.Add(ChunkSection.Deserialize(ref dataReader, isOverworld));
+            result.Data = data.ToArray();
+
+            if (hasBioms)
+                result.Biomes = br.ReadAsByteArray(256);
+            result.NumberOfBlockEntities = br.ReadAsVarInt(out _);
+            return result;
+        }
+
         public void Serialize(BinaryWriter bw)
         {
             bw.WriteAsInt(ChunkX);
@@ -61,7 +88,9 @@ namespace MineCase.Protocol.Play
         }
     }
 
-    [Immutable]
+#if !NET46
+    [Orleans.Concurrency.Immutable]
+#endif
     public sealed class ChunkSection : ISerializablePacket
     {
         [SerializeAs(DataType.Byte)]
@@ -84,6 +113,34 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.Array)]
         public byte[] SkyLight;
+
+        public static ChunkSection Deserialize(ref SpanReader br, bool isOverworld)
+        {
+            var result = new ChunkSection
+            {
+                BitsPerBlock = br.ReadAsByte(),
+                PaletteLength = br.ReadAsVarInt(out _)
+            };
+
+            if (result.PaletteLength != 0)
+            {
+                var paletteReader = br.ReadAsSubReader((int)result.PaletteLength);
+                var palette = new List<uint>();
+                while (!paletteReader.IsCosumed)
+                    palette.Add(paletteReader.ReadAsVarInt(out _));
+                result.Palette = palette.ToArray();
+            }
+
+            result.DataArrayLength = br.ReadAsVarInt(out _);
+            var dataArray = new ulong[result.DataArrayLength];
+            for (int i = 0; i < dataArray.Length; i++)
+                dataArray[i] = br.ReadAsUnsignedLong();
+            result.DataArray = dataArray;
+            result.BlockLight = br.ReadAsByteArray(ChunkConstants.BlocksInSection / 2);
+            if (isOverworld)
+                result.SkyLight = br.ReadAsByteArray(ChunkConstants.BlocksInSection / 2);
+            return result;
+        }
 
         public void Serialize(BinaryWriter bw)
         {

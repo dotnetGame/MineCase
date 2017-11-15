@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using MineCase.Serialization;
-using Orleans.Concurrency;
 
 namespace MineCase.Protocol.Play
 {
@@ -12,7 +11,9 @@ namespace MineCase.Protocol.Play
         Off = 1
     }
 
-    [Immutable]
+#if !NET46
+    [Orleans.Concurrency.Immutable]
+#endif
     [Packet(0x1D)]
     public sealed class ServerboundAnimation
     {

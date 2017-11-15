@@ -65,6 +65,11 @@ namespace MineCase.Serialization
             bw.Write(((ulong)value).ToBigEndian());
         }
 
+        public static void WriteAsUnsignedShort(this BinaryWriter bw, ushort value)
+        {
+            bw.Write(value.ToBigEndian());
+        }
+
         public static void WriteAsUnsignedLong(this BinaryWriter bw, ulong value)
         {
             bw.Write(value.ToBigEndian());
