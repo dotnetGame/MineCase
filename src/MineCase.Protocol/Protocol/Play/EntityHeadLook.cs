@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MineCase.Serialization;
+using Orleans.Concurrency;
 
 namespace MineCase.Protocol.Play
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
+    [Immutable]
     [Packet(0x35)]
     public sealed class EntityHeadLook : ISerializablePacket
     {
