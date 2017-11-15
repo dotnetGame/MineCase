@@ -8,7 +8,8 @@ namespace MineCase.Server.World.EntitySpawner.Ai.MobAi
 {
     public class AiCreeper : AiMonster
     {
-        static AiCreeper()
+        public AiCreeper(Func<CreatureState> getter, Action<CreatureState> setter)
+            : base(getter, setter)
         {
         }
     }

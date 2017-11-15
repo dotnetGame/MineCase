@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MineCase.Protocol.Play;
 using MineCase.Server.Network.Play;
 using MineCase.Server.User;
@@ -23,8 +24,11 @@ namespace MineCase.Server.Game
 
         private HashSet<ITickable> _tickables;
 
+        private ILogger _logger;
+
         public override async Task OnActivateAsync()
         {
+            _logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<GameSession>();
             _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(this.GetPrimaryKeyString());
             _chunkSender = GrainFactory.GetGrain<IChunkSender>(this.GetPrimaryKeyString());
             _lastGameTickTime = DateTime.UtcNow;
@@ -91,23 +95,30 @@ namespace MineCase.Server.Game
 
         private async Task OnGameTick(object state)
         {
-            var now = DateTime.UtcNow;
-            var deltaTime = now - _lastGameTickTime;
-            _lastGameTickTime = now;
-
-            var worldTime = await _world.GetTime();
-
-            if (worldTime.WorldAge % 20 == 0)
+            try
             {
-                await Task.WhenAll(from u in _users.Values
-                                   select u.Generator.TimeUpdate(worldTime.WorldAge, worldTime.TimeOfDay));
-            }
+                var now = DateTime.UtcNow;
+                var deltaTime = now - _lastGameTickTime;
+                _lastGameTickTime = now;
 
-            await _world.OnGameTick(deltaTime);
-            await Task.WhenAll(from u in _users.Keys
-                               select u.OnGameTick(deltaTime, worldTime.WorldAge));
-            await Task.WhenAll(from u in _tickables
-                               select u.OnGameTick(deltaTime, worldTime.WorldAge));
+                var worldTime = await _world.GetTime();
+
+                if (worldTime.WorldAge % 20 == 0)
+                {
+                    await Task.WhenAll(from u in _users.Values
+                                       select u.Generator.TimeUpdate(worldTime.WorldAge, worldTime.TimeOfDay));
+                }
+
+                await _world.OnGameTick(deltaTime);
+                await Task.WhenAll(from u in _users.Keys
+                                   select u.OnGameTick(deltaTime, worldTime.WorldAge));
+                await Task.WhenAll(from u in _tickables
+                                   select u.OnGameTick(deltaTime, worldTime.WorldAge));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+            }
         }
 
         private Task<Chat> CreateStandardChatMessage(string name, string message)

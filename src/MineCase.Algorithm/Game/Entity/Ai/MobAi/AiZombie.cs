@@ -8,7 +8,8 @@ namespace MineCase.Server.World.EntitySpawner.Ai.MobAi
 {
     public class AiZombie : AiMonster
     {
-        static AiZombie()
+        public AiZombie(Func<CreatureState> getter, Action<CreatureState> setter)
+            : base(getter, setter)
         {
         }
     }
