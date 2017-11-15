@@ -63,6 +63,13 @@ namespace MineCase.Serialization
             return value;
         }
 
+        public uint ReadAsUnsignedInt()
+        {
+            var value = _span.ReadBigEndian<uint>();
+            Advance(sizeof(uint));
+            return value;
+        }
+
         public ulong ReadAsUnsignedLong()
         {
             var value = _span.ReadBigEndian<ulong>();
