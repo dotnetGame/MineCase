@@ -3,39 +3,36 @@ using System.Collections.Generic;
 using System.Text;
 using MineCase.Server.World.EntitySpawner;
 using MineCase.Server.World.EntitySpawner.Ai;
+using Stateless;
 
 namespace MineCase.Algorithm.Game.Entity.Ai.MobAi
 {
     public abstract class AiMonster : CreatureAi
     {
-        public static CreatureState[,] Automation { get; set; }
-
-        static AiMonster()
+        public AiMonster(Func<CreatureState> getter, Action<CreatureState> setter)
+            : base(getter, setter)
         {
-            int creatureStateMax = Enum.GetValues(typeof(CreatureState)).Length;
-            int creatureEventMax = Enum.GetValues(typeof(CreatureEvent)).Length;
-            Automation = new CreatureState[creatureStateMax, creatureEventMax];
-            Automation[(int)CreatureState.Stop, (int)CreatureEvent.Nothing] = CreatureState.Stop;
-            Automation[(int)CreatureState.Stop, (int)CreatureEvent.RandomWalk] = CreatureState.Walk;
-            Automation[(int)CreatureState.Stop, (int)CreatureEvent.Attacked] = CreatureState.Escaping;
-            Automation[(int)CreatureState.Stop, (int)CreatureEvent.PlayerApproaching] = CreatureState.Look;
-
-            Automation[(int)CreatureState.Walk, (int)CreatureEvent.Nothing] = CreatureState.Walk;
-            Automation[(int)CreatureState.Walk, (int)CreatureEvent.Stop] = CreatureState.Stop;
-            Automation[(int)CreatureState.Walk, (int)CreatureEvent.Attacked] = CreatureState.Escaping;
-            Automation[(int)CreatureState.Walk, (int)CreatureEvent.PlayerApproaching] = CreatureState.Look;
-
-            Automation[(int)CreatureState.Look, (int)CreatureEvent.Nothing] = CreatureState.Look;
-            Automation[(int)CreatureState.Look, (int)CreatureEvent.Stop] = CreatureState.Stop;
-            Automation[(int)CreatureState.Look, (int)CreatureEvent.Attacked] = CreatureState.Escaping;
-            Automation[(int)CreatureState.Look, (int)CreatureEvent.PlayerApproaching] = CreatureState.Look;
-
-            Automation[(int)CreatureState.Escaping, (int)CreatureEvent.Attacked] = CreatureState.Escaping;
         }
 
-        public override CreatureState GetState(CreatureState creatureState, CreatureEvent creatureEvent)
+        protected override void Configure(StateMachine<CreatureState, CreatureEvent> stateMachine)
         {
-            return Automation[(int)creatureState, (int)creatureEvent];
+            stateMachine.Configure(CreatureState.Stop)
+                .PermitReentry(CreatureEvent.Nothing)
+                .Permit(CreatureEvent.RandomWalk, CreatureState.Walk)
+                .Permit(CreatureEvent.Attacked, CreatureState.Escaping)
+                .Permit(CreatureEvent.PlayerApproaching, CreatureState.Look);
+            stateMachine.Configure(CreatureState.Walk)
+                .PermitReentry(CreatureEvent.Nothing)
+                .Permit(CreatureEvent.Stop, CreatureState.Stop)
+                .Permit(CreatureEvent.Attacked, CreatureState.Escaping)
+                .Permit(CreatureEvent.PlayerApproaching, CreatureState.Look);
+            stateMachine.Configure(CreatureState.Look)
+                .PermitReentry(CreatureEvent.Nothing)
+                .Permit(CreatureEvent.Stop, CreatureState.Stop)
+                .Permit(CreatureEvent.Attacked, CreatureState.Escaping)
+                .PermitReentry(CreatureEvent.PlayerApproaching);
+            stateMachine.Configure(CreatureState.Escaping)
+                .PermitReentry(CreatureEvent.Attacked);
         }
     }
 }

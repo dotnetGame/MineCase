@@ -8,7 +8,8 @@ namespace MineCase.Server.World.EntitySpawner.Ai.MobAi
 {
     public class AiChicken : AiPassive
     {
-        static AiChicken()
+        public AiChicken(Func<CreatureState> getter, Action<CreatureState> setter)
+            : base(getter, setter)
         {
         }
     }
