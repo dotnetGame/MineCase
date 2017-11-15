@@ -11,6 +11,7 @@ using MineCase.Server.Network.Play;
 using MineCase.Server.Settings;
 using MineCase.Server.World.Generation;
 using MineCase.World;
+using MineCase.World.Biomes;
 using MineCase.World.Generation;
 using Orleans;
 using Orleans.Concurrency;
@@ -37,6 +38,12 @@ namespace MineCase.Server.World
         {
             await EnsureChunkGenerated();
             return _state;
+        }
+
+        public async Task<BiomeId> GetBlockBiome(int x, int z)
+        {
+            await EnsureChunkGenerated();
+            return (BiomeId)_state.Biomes[(z * ChunkConstants.BlockEdgeWidthInSection) + x];
         }
 
         public override Task OnActivateAsync()

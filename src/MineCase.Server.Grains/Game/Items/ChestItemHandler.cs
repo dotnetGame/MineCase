@@ -24,7 +24,7 @@ namespace MineCase.Server.Game.Items
         {
         }
 
-        protected override async Task<BlockState> ConvertToBlock(IPlayer player, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, Slot slot)
+        protected override async Task<BlockState> ConvertToBlock(IEntity entity, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, Slot slot)
         {
             int neighborIdx = -1;
             for (int i = 0; i < ChestBlockHandler.CrossCoords.Length; i++)
@@ -38,7 +38,7 @@ namespace MineCase.Server.Game.Items
                 }
             }
 
-            var yaw = await player.GetYaw();
+            var yaw = await entity.GetYaw();
             FacingDirectionType facing;
             switch (neighborIdx)
             {

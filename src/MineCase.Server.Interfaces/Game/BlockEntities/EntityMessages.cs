@@ -34,6 +34,6 @@ namespace MineCase.Server.Game.BlockEntities
     [Immutable]
     public sealed class UseBy : IEntityMessage
     {
-        public IPlayer Player { get; set; }
+        public IEntity Entity { get; set; }
     }
 }

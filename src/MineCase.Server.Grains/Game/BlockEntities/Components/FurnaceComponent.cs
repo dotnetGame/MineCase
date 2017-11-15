@@ -210,7 +210,7 @@ namespace MineCase.Server.Game.BlockEntities.Components
                 await FurnaceWindow.SetEntity(AttachedObject);
             }
 
-            await message.Player.Tell(new OpenWindow { Window = FurnaceWindow });
+            await message.Entity.Tell(new OpenWindow { Window = FurnaceWindow });
         }
     }
 }

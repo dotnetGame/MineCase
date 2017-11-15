@@ -6,7 +6,7 @@ using MineCase.Engine;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class HeldItemComponent : Component<PlayerGrain>, IHandle<SetHeldItemIndex>, IHandle<AskHeldItem, (int index, Slot slot)>
+    internal class HeldItemComponent : Component<PlayerGrain>, IHandle<SetHeldItemIndex>, IHandle<AskHeldItem, (int index, Slot slot)>, IHandle<SetHeldItem>
     {
         public static readonly DependencyProperty<int> HeldItemIndexProperty =
             DependencyProperty.Register("HeldItemIndex", typeof(HeldItemComponent), new PropertyMetadata<int>(0));
@@ -33,5 +33,12 @@ namespace MineCase.Server.Game.Entities.Components
 
         Task<(int index, Slot slot)> IHandle<AskHeldItem, (int index, Slot slot)>.Handle(AskHeldItem message) =>
             GetHeldItem();
+
+        async Task IHandle<SetHeldItem>.Handle(SetHeldItem message)
+        {
+            var inventory = AttachedObject.GetComponent<InventoryComponent>().GetInventoryWindow();
+            var index = await inventory.GetHotbarGlobalIndex(AttachedObject, HeldItemIndex);
+            await inventory.SetSlot(AttachedObject, index, message.Slot);
+        }
     }
 }

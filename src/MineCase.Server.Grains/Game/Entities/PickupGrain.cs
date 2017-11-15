@@ -32,7 +32,7 @@ namespace MineCase.Server.Game.Entities
             if (after.IsEmpty)
             {
                 var chunkPos = GetChunkPosition();
-                await GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunkPos.x, chunkPos.z)).Unregister(this);
+                await GrainFactory.GetGrain<IEntityFinder>(World.MakeEntityFinderKey(chunkPos.x, chunkPos.z)).Unregister(this);
                 await GetBroadcastGenerator().DestroyEntities(new[] { EntityId });
                 DeactivateOnIdle();
             }
@@ -45,7 +45,7 @@ namespace MineCase.Server.Game.Entities
         public async Task Register()
         {
             var chunkPos = GetChunkPosition();
-            await GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunkPos.x, chunkPos.z)).Register(this);
+            await GrainFactory.GetGrain<IEntityFinder>(World.MakeEntityFinderKey(chunkPos.x, chunkPos.z)).Register(this);
         }
 
         public async Task SetItem(Slot item)

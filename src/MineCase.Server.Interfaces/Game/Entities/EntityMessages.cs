@@ -35,6 +35,12 @@ namespace MineCase.Server.Game.Entities.Components
     }
 
     [Immutable]
+    public sealed class SetHeldItem : IEntityMessage
+    {
+        public Slot Slot { get; set; }
+    }
+
+    [Immutable]
     public sealed class AskHeldItem : IEntityMessage<(int index, Slot slot)>
     {
         public static readonly AskHeldItem Default = new AskHeldItem();
@@ -59,7 +65,7 @@ namespace MineCase.Server.Game.Entities.Components
     }
 
     [Immutable]
-    public sealed class SpawnEntity : IEntityMessage
+    public class SpawnEntity : IEntityMessage
     {
         public IWorld World { get; set; }
 
@@ -70,6 +76,33 @@ namespace MineCase.Server.Game.Entities.Components
         public float Pitch { get; set; }
 
         public float Yaw { get; set; }
+    }
+
+    [Immutable]
+    public class SpawnMob : SpawnEntity
+    {
+        public MobType MobType { get; set; }
+    }
+
+    [Immutable]
+    public class EntityLook : IEntityMessage
+    {
+        public float Yaw { get; set; }
+
+        public float Pitch { get; set; }
+    }
+
+    [Immutable]
+    public class EntityMove : IEntityMessage
+    {
+        // 实际的相对位移，并非mc协议中位移/(32*128)
+        public float DeltaX { get; set; }
+
+        public float DeltaY { get; set; }
+
+        public float DeltaZ { get; set; }
+
+        public bool OnGround { get; set; }
     }
 
     [Immutable]

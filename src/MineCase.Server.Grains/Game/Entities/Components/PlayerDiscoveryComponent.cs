@@ -5,21 +5,25 @@ using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.Components;
 using MineCase.Server.Game.BlockEntities;
+using MineCase.Server.Network.Play;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class PlayerDiscoveryComponent : Component<PlayerGrain>, IHandle<DiscoveredByPlayer>
+    internal class PlayerDiscoveryComponent : EntityDiscoveryComponentBase<PlayerGrain>, IHandle<SpawnEntity>
     {
         public PlayerDiscoveryComponent(string name = "playerDiscovery")
             : base(name)
         {
         }
 
-        Task IHandle<DiscoveredByPlayer>.Handle(DiscoveredByPlayer message)
+        protected override Task SendSpawnPacket(ClientPlayPacketGenerator generator)
         {
-            /*
-            AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator()
-                .SpawnPlayer*/
+            return Task.CompletedTask;
+        }
+
+        Task IHandle<SpawnEntity>.Handle(SpawnEntity message)
+        {
+            CompleteSpawn();
             return Task.CompletedTask;
         }
     }

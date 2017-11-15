@@ -48,10 +48,10 @@ namespace MineCase.Server.Game.Blocks
             return await base.CanBeAt(position, grainFactory, world);
         }
 
-        public override async Task UseBy(IPlayer player, IGrainFactory grainFactory, IWorld world, BlockWorldPos blockPosition, Vector3 cursorPosition)
+        public override async Task UseBy(IEntity entity, IGrainFactory grainFactory, IWorld world, BlockWorldPos blockPosition, Vector3 cursorPosition)
         {
-            var entity = await world.GetBlockEntity(grainFactory, blockPosition);
-            await entity.Tell(new UseBy { Player = player });
+            var blockEntity = (await world.GetBlockEntity(grainFactory, blockPosition)).Cast<IChestBlockEntity>();
+            await blockEntity.Tell(new UseBy { Entity = entity });
         }
 
         public override async Task OnNeighborChanged(BlockWorldPos selfPosition, BlockWorldPos neighborPosition, BlockState oldState, BlockState newState, IGrainFactory grainFactory, IWorld world)
@@ -73,7 +73,7 @@ namespace MineCase.Server.Game.Blocks
             }
         }
 
-        public override async Task OnPlaced(IPlayer player, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, BlockState blockState)
+        public override async Task OnPlaced(IEntity entity, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, BlockState blockState)
         {
             BlockWorldPos? neighborPosition = null;
             foreach (var crossCoord in CrossCoords)
@@ -89,7 +89,7 @@ namespace MineCase.Server.Game.Blocks
 
             if (neighborPosition.HasValue)
             {
-                var entity = await world.GetBlockEntity(grainFactory, position);
+                var blockEntity = await world.GetBlockEntity(grainFactory, position);
                 var neightborEntity = await world.GetBlockEntity(grainFactory, neighborPosition.Value);
                 await entity.Tell(new NeighborEntityChanged { Entity = neightborEntity });
             }

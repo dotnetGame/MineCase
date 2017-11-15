@@ -22,7 +22,6 @@ namespace MineCase.Server.Game.Entities.Components
             var lookComponent = AttachedObject.GetComponent<EntityLookComponent>();
             await lookComponent.SetPitch(message.Pitch);
             await lookComponent.SetYaw(message.Yaw);
-            await AttachedObject.Tell(BroadcastDiscovered.Default);
         }
 
         async Task IHandle<DestroyEntity>.Handle(DestroyEntity message)

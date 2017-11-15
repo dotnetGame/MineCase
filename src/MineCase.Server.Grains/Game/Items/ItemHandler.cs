@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game.Blocks;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.Network.Play;
 using MineCase.Server.World;
@@ -56,7 +57,7 @@ namespace MineCase.Server.Game.Items
             return _defaultItemHandler;
         }
 
-        public virtual async Task<bool> PlaceBy(IPlayer player, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, IInventoryWindow inventoryWindow, int slotIndex, PlayerDiggingFace face, Vector3 cursorPosition)
+        public virtual async Task<bool> PlaceBy(IEntity entity, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, Slot heldItem, PlayerDiggingFace face, Vector3 cursorPosition)
         {
             if (IsPlaceable)
             {
@@ -64,20 +65,19 @@ namespace MineCase.Server.Game.Items
                 var blockState = await world.GetBlockState(grainFactory, position);
                 if ((BlockId)blockState.Id == BlockId.Air)
                 {
-                    var slot = await inventoryWindow.GetSlot(player, slotIndex);
-                    if (!slot.IsEmpty)
+                    if (!heldItem.IsEmpty)
                     {
-                        var newState = await ConvertToBlock(player, grainFactory, world, position, slot);
+                        var newState = await ConvertToBlock(entity, grainFactory, world, position, heldItem);
                         var blockHandler = BlockHandler.Create((BlockId)newState.Id);
                         if (await blockHandler.CanBeAt(position, grainFactory, world))
                         {
                             await world.SetBlockState(grainFactory, position, newState);
 
-                            slot.ItemCount--;
-                            slot.MakeEmptyIfZero();
-                            await inventoryWindow.SetSlot(player, slotIndex, slot);
+                            heldItem.ItemCount--;
+                            heldItem.MakeEmptyIfZero();
+                            await entity.Tell(new SetHeldItem { Slot = heldItem });
 
-                            await blockHandler.OnPlaced(player, grainFactory, world, position, newState);
+                            await blockHandler.OnPlaced(entity, grainFactory, world, position, newState);
                             return true;
                         }
                     }
@@ -87,7 +87,7 @@ namespace MineCase.Server.Game.Items
             return false;
         }
 
-        protected virtual Task<BlockState> ConvertToBlock(IPlayer player, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, Slot slot)
+        protected virtual Task<BlockState> ConvertToBlock(IEntity entity, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, Slot slot)
         {
             return Task.FromResult(new BlockState { Id = (uint)slot.BlockId, MetaValue = (uint)slot.ItemDamage });
         }
@@ -121,7 +121,7 @@ namespace MineCase.Server.Game.Items
             }
         }
 
-        public async Task<bool> FinishedDigging(IPlayer player, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, BlockState blockState, long usedTick)
+        public async Task<bool> FinishedDigging(IEntity entity, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, BlockState blockState, long usedTick)
         {
             if (!blockState.IsSameId(BlockStates.Bedrock()))
             {

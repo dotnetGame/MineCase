@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using MineCase.Algorithm.Noise;
 using MineCase.Algorithm.World.Mine;
 using MineCase.Algorithm.World.Plants;
+using MineCase.Server.Game.Entities;
 using MineCase.Server.World;
+using MineCase.Server.World.EntitySpawner;
 using MineCase.World;
 using MineCase.World.Biomes;
 using MineCase.World.Generation;
@@ -69,6 +72,10 @@ namespace MineCase.Algorithm.World.Biomes
         protected int _reedsPerChunk;
         protected int _cactiPerChunk;
 
+        // 生物种类
+        protected List<MobType> _passiveMobList;
+        protected List<MobType> _monsterList;
+
         protected int _clayPerChunk;
         protected int _waterlilyPerChunk;
         protected int _sandPatchesPerChunk;
@@ -131,6 +138,9 @@ namespace MineCase.Algorithm.World.Biomes
             _deadBushPerChunk = 2;
             _reedsPerChunk = 50;
             _cactiPerChunk = 10;
+
+            _passiveMobList = new List<MobType>();
+            _monsterList = new List<MobType>();
         }
 
         public BiomeId GetBiomeId()
@@ -258,6 +268,38 @@ namespace MineCase.Algorithm.World.Biomes
             GenerateOre(_redstoneGen, world, grainFactory, chunk, rand, pos, _genSettings.RedstoneCount, _genSettings.RedstoneMaxHeight, _genSettings.RedstoneMinHeight);
             GenerateOre(_diamondGen, world, grainFactory, chunk, rand, pos, _genSettings.DiamondCount, _genSettings.DiamondMaxHeight, _genSettings.DiamondMinHeight);
             GenerateOre(_lapisGen, world, grainFactory, chunk, rand, pos, _genSettings.LapisCount, _genSettings.LapisCenterHeight + _genSettings.LapisSpread, _genSettings.LapisCenterHeight - _genSettings.LapisSpread);
+        }
+
+        // 添加生物群系特有的生物
+        public virtual void SpawnMob(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
+        {
+            ChunkWorldPos chunkPos = pos.ToChunkWorldPos();
+            int seed = chunkPos.Z * 16384 + chunkPos.X;
+            Random r = new Random(seed);
+            foreach (MobType eachType in _passiveMobList)
+            {
+                if (r.Next(64) == 0)
+                {
+                    PassiveMobSpawner spawner = new PassiveMobSpawner(eachType, 10);
+                    spawner.Spawn(world, grainFactory, chunk, rand, new BlockWorldPos(pos.X, pos.Y, pos.Z));
+                }
+            }
+        }
+
+        // 添加生物群系特有的怪物
+        public virtual void SpawnMonster(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
+        {
+            ChunkWorldPos chunkPos = pos.ToChunkWorldPos();
+            int seed = chunkPos.Z * 16384 + chunkPos.X;
+            Random r = new Random(seed);
+            foreach (MobType eachType in _monsterList)
+            {
+                if (r.Next(64) == 0)
+                {
+                    MonsterSpawner spawner = new MonsterSpawner(eachType, 3);
+                    spawner.Spawn(world, grainFactory, chunk, rand, new BlockWorldPos(pos.X, pos.Y, pos.Z));
+                }
+            }
         }
 
         // 产生生物群系特有的方块

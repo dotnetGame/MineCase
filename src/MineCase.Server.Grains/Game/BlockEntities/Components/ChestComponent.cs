@@ -68,7 +68,7 @@ namespace MineCase.Server.Game.BlockEntities.Components
                         new[] { AttachedObject.AsReference<IDependencyObject>(), NeighborEntity }).AsImmutable());
                 }
 
-                await message.Player.Tell(new OpenWindow { Window = ChestWindow });
+                await message.Entity.Tell(new OpenWindow { Window = ChestWindow });
             }
             else
             {
