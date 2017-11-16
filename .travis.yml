@@ -20,6 +20,8 @@ script:
  - docker tag minecase.gateway sunnycase/minecase.gateway:ci-latest
  - docker tag minecase.server sunnycase/minecase.server:ci-latest
  - >
-    docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
-    docker push sunnycase/minecase.gateway
-    docker push sunnycase/minecase.server
+    if [[ $TRAVIS_BRANCH == 'master' ]]
+      docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
+      docker push sunnycase/minecase.gateway
+      docker push sunnycase/minecase.server
+    fi
