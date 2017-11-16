@@ -7,7 +7,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
     <LangVersion>latest</LangVersion>
-    <Configurations>Debug;Release;Appveyor</Configurations>
+    <Configurations>Debug;Release;Appveyor;TravisCI</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net46'">

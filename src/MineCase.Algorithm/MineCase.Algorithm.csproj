@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
-    <Configurations>Debug;Release;Appveyor</Configurations>
+    <Configurations>Debug;Release;Appveyor;TravisCI</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

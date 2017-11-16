@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
 	<CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
-	<Configurations>Debug;Release;Appveyor</Configurations>
+	<Configurations>Debug;Release;Appveyor;TravisCI</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

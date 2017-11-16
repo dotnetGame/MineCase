@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
-    <Configurations>Debug;Release;Appveyor</Configurations>
+    <Configurations>Debug;Release;Appveyor;TravisCI</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

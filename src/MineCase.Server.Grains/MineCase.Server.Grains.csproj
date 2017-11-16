@@ -6,7 +6,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Configurations>Debug;Release;Appveyor</Configurations>
+    <Configurations>Debug;Release;Appveyor;TravisCI</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

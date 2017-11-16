@@ -1,6 +1,7 @@
 language: csharp
-solution: src/MineCase.sln
-dotnet: 1.0.3
+dotnet: 2.0.0
+mono: none
 script:
  - cd src
  - dotnet restore
+ - dotnet build -c TravisCI
