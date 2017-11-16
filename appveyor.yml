@@ -4,8 +4,10 @@ pull_requests:
 image: Visual Studio 2017
 configuration: Appveyor
 environment:
-  DOCKER_USER: goDG0WJjQvZlOe655QTbdA==
-  DOCKER_PASS: ONZZJySikYvgDWkBai0mZw==
+  DOCKER_USER:
+    secure: goDG0WJjQvZlOe655QTbdA==
+  DOCKER_PASS:
+    secure: ONZZJySikYvgDWkBai0mZw==
 before_build:
 - ps: >-
     cd src
