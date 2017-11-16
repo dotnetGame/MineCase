@@ -1,0 +1,6 @@
+language: csharp
+solution: src/MineCase.sln
+dotnet: 1.0.3
+script:
+ - cd src
+ - dotnet restore
