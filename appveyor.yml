@@ -2,6 +2,7 @@ version: 1.0.0-alpha1-{build}
 pull_requests:
   do_not_increment_build_number: true
 image: Visual Studio 2017
+configuration: Appveyor
 environment:
   DOCKER_USER: goDG0WJjQvZlOe655QTbdA==
   DOCKER_PASS: ONZZJySikYvgDWkBai0mZw==
@@ -16,6 +17,7 @@ before_build:
     choco install codecov
 build:
   project: ./src/
+  parallel: true
   verbosity: minimal
 test_script:
 - ps: >-
