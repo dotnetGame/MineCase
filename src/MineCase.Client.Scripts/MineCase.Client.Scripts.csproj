@@ -7,9 +7,10 @@
     <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
     <LangVersion>latest</LangVersion>
     <PackageTargetFallback>portable-net45+win8+wpa81</PackageTargetFallback>
+    <Configurations>Debug;Release;Appveyor;TravisCI</Configurations>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net46'">
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>

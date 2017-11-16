@@ -1,5 +1,13 @@
 version: 1.0.0-alpha1-{build}
+pull_requests:
+  do_not_increment_build_number: true
 image: Visual Studio 2017
+configuration: Appveyor
+environment:
+  DOCKER_USER:
+    secure: goDG0WJjQvZlOe655QTbdA==
+  DOCKER_PASS:
+    secure: ONZZJySikYvgDWkBai0mZw==
 before_build:
 - ps: >-
     cd src
@@ -11,6 +19,7 @@ before_build:
     choco install codecov
 build:
   project: ./src/
+  parallel: true
   verbosity: minimal
 test_script:
 - ps: >-
@@ -19,3 +28,17 @@ test_script:
     OpenCover.Console.exe -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test" -output:".\test_coverage.xml"
 
     codecov -f "test_coverage.xml"
+deploy_script:
+- ps: >-
+    docker tag minecase.gateway sunnycase/minecase.gateway:ci-latest-nanoserver
+    
+    docker tag minecase.server sunnycase/minecase.server:ci-latest-nanoserver
+
+    IF ($env:APPVEYOR_REPO_BRANCH -eq "master")
+    {
+        docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+    
+        docker push sunnycase/minecase.gateway
+    
+        docker push sunnycase/minecase.server
+    }
