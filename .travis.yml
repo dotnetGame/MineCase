@@ -3,5 +3,5 @@ dotnet: 2.0.0
 mono: none
 script:
  - cd ./src
- - dotnet restore ./MineCase.sln
- - dotnet build ./MineCase.sln -c TravisCI
+ - dotnet restore
+ - dotnet build -c TravisCI
