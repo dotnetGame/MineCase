@@ -29,12 +29,13 @@ test_script:
 
     codecov -f "test_coverage.xml"
 deploy_script:
-  - docker tag minecase.gateway sunnycase/minecase.gateway:latest-nanoserver
-  
-  - docker tag minecase.server sunnycase/minecase.server:latest-nanoserver
-  
-  - docker login -u="%DOCKER_USER%" -p="%DOCKER_PASS%"
-  
-  - docker push sunnycase/minecase.gateway
-  
-  - docker push sunnycase/minecase.server
+- ps: >-
+    docker tag minecase.gateway sunnycase/minecase.gateway:ci-latest-nanoserver
+    
+    docker tag minecase.server sunnycase/minecase.server:ci-latest-nanoserver
+    
+    docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+    
+    docker push sunnycase/minecase.gateway
+    
+    docker push sunnycase/minecase.server
