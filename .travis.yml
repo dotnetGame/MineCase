@@ -5,3 +5,9 @@ script:
  - cd ./src
  - dotnet restore
  - dotnet build -c TravisCI
+ - cd ../tests
+ - dotnet test
+ - cd ../src/MineCase.Gateway
+ - docker build -t minecase.gateway
+ - cd ../MineCase.Server
+ - docker build -t minecase.server

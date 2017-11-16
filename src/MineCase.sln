@@ -161,7 +161,6 @@ Global
 		{2974A4BE-85D2-454D-ACDE-B4BE63993B95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2974A4BE-85D2-454D-ACDE-B4BE63993B95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2974A4BE-85D2-454D-ACDE-B4BE63993B95}.TravisCI|Any CPU.ActiveCfg = TravisCI|Any CPU
-		{2974A4BE-85D2-454D-ACDE-B4BE63993B95}.TravisCI|Any CPU.Build.0 = TravisCI|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
