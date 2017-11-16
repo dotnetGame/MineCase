@@ -1,0 +1,27 @@
+language: csharp
+dotnet: 2.0.0
+mono: none
+script:
+# build
+ - cd ./src
+ - dotnet restore
+ - dotnet build -c TravisCI
+# test
+ - cd ../tests
+ - dotnet test
+# docker build
+ - cd ../src/MineCase.Gateway
+ - dotnet publish -c TravisCI -o obj/Docker/publish
+ - docker build -t minecase.gateway .
+ - cd ../MineCase.Server
+ - dotnet publish -c TravisCI -o obj/Docker/publish
+ - docker build -t minecase.server .
+# docker push
+ - docker tag minecase.gateway sunnycase/minecase.gateway:ci-latest
+ - docker tag minecase.server sunnycase/minecase.server:ci-latest
+ - >
+   if [ "$TRAVIS_BRANCH" == "master" ]; then
+     docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
+     docker push sunnycase/minecase.gateway
+     docker push sunnycase/minecase.server
+   fi
