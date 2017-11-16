@@ -29,9 +29,9 @@ test_script:
 
     codecov -f "test_coverage.xml"
 deploy_script:
-  - docker tag minecase.gateway sunnycase/minecase.gateway:$env:APPVEYOR_BUILD_VERSION-nanoserver
+  - docker tag minecase.gateway sunnycase/minecase.gateway:latest-nanoserver
   
-  - docker tag minecase.server sunnycase/minecase.server:$env:APPVEYOR_BUILD_VERSION-nanoserver
+  - docker tag minecase.server sunnycase/minecase.server:latest-nanoserver
   
   - docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
   
