@@ -2,12 +2,18 @@ language: csharp
 dotnet: 2.0.0
 mono: none
 script:
+# build
  - cd ./src
  - dotnet restore
  - dotnet build -c TravisCI
+# test
  - cd ../tests
  - dotnet test
+# docker build
  - cd ../src/MineCase.Gateway
- - docker build -t minecase.gateway
+ - docker build -t minecase.gateway .
  - cd ../MineCase.Server
- - docker build -t minecase.server
+ - docker build -t minecase.server .
+# docker push
+ - docker tag minecase.gateway sunnycase/minecase.gateway:ci-latest
+ - docker tag minecase.server sunnycase/minecase.server:ci-latest
