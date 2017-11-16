@@ -33,7 +33,7 @@ deploy_script:
   
   - docker tag minecase.server sunnycase/minecase.server:latest-nanoserver
   
-  - docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+  - docker login -u="%DOCKER_USER%" -p="%DOCKER_PASS%"
   
   - docker push sunnycase/minecase.gateway
   
