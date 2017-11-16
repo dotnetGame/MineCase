@@ -33,9 +33,12 @@ deploy_script:
     docker tag minecase.gateway sunnycase/minecase.gateway:ci-latest-nanoserver
     
     docker tag minecase.server sunnycase/minecase.server:ci-latest-nanoserver
+
+    IF ($env:APPVEYOR_REPO_BRANCH != "master")
+    {
+        docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
     
-    docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+        docker push sunnycase/minecase.gateway
     
-    docker push sunnycase/minecase.gateway
-    
-    docker push sunnycase/minecase.server
+        docker push sunnycase/minecase.server
+    }
