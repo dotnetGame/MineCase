@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+    <Configurations>Debug;Release;Appveyor</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,6 +35,12 @@
     <ProjectReference Include="..\MineCase.Core\MineCase.Core.csproj" />
     <ProjectReference Include="..\MineCase.Protocol\MineCase.Protocol.csproj" />
     <ProjectReference Include="..\MineCase.Server.Interfaces\MineCase.Server.Interfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update=".dockerignore">
+      <DependentUpon>Dockerfile</DependentUpon>
+    </None>
   </ItemGroup>
 
 </Project>

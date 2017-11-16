@@ -1,5 +1,10 @@
 version: 1.0.0-alpha1-{build}
+pull_requests:
+  do_not_increment_build_number: true
 image: Visual Studio 2017
+environment:
+  DOCKER_USER: goDG0WJjQvZlOe655QTbdA==
+  DOCKER_PASS: ONZZJySikYvgDWkBai0mZw==
 before_build:
 - ps: >-
     cd src
@@ -19,3 +24,14 @@ test_script:
     OpenCover.Console.exe -oldstyle -register:user -target:"C:\Program Files\dotnet\dotnet.exe" -targetargs:"test" -output:".\test_coverage.xml"
 
     codecov -f "test_coverage.xml"
+deploy_script:
+- ps: >-
+    docker tag minecase.gateway sunnycase/minecase.gateway:latest
+    
+    docker tag minecase.server sunnycase/minecase.server:latest
+
+    docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
+
+    docker push sunnycase/minecase.gateway
+
+    docker push sunnycase/minecase.server

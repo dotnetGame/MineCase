@@ -7,9 +7,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
     <LangVersion>latest</LangVersion>
+    <Configurations>Debug;Release;Appveyor</Configurations>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net46'">
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>

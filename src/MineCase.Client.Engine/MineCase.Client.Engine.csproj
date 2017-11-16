@@ -5,18 +5,25 @@
     <RootNamespace>MineCase.Engine</RootNamespace>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
+    <Configurations>Debug;Release;Appveyor</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\net46\MineCase.Client.Engine.xml</DocumentationFile>
-    <LangVersion>latest</LangVersion>
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\net46\MineCase.Client.Engine.xml</DocumentationFile>
-    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Appveyor|AnyCPU'">
+    <DocumentationFile>bin\Release\net46\MineCase.Client.Engine.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net46'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>

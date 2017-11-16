@@ -6,6 +6,7 @@
     <RootNamespace>MineCase.Server</RootNamespace>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
+    <Configurations>Debug;Release;Appveyor</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

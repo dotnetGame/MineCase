@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  minecase.server:
+    image: minecase.server
+    build:
+      context: ../MineCase.Server
+      dockerfile: Dockerfile
+
+  minecase.gateway:
+    image: minecase.gateway
+    build:
+      context: ../MineCase.Gateway
+      dockerfile: Dockerfile
