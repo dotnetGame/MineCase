@@ -13,31 +13,54 @@ namespace MineCase.Client
     {
         public IEventAggregator EventAggregator { get; set; }
 
-        private float _mouseX;
-        private float _mouseY;
+        private bool _isEnableCursorLock = true;
+        private bool _isCursorLocked = false;
 
         private void Start()
         {
-            _mouseX = Input.mousePosition.x;
-            _mouseY = Input.mousePosition.y;
+            _isCursorLocked = true;
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
+        private void UpdateMouseLock()
+        {
+            if (Input.GetKeyUp(KeyCode.Escape))
+                _isCursorLocked = false;
+            else if (Input.GetMouseButtonUp(0))
+                _isCursorLocked = true;
+
+            if (_isCursorLocked)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+            else if (!_isCursorLocked)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
         }
 
         private void FixedUpdate()
         {
-            var horizontalMovement = Input.GetAxis("Horizontal");
-            var verticalMovement = Input.GetAxis("Vertical");
+            if (_isEnableCursorLock)
+                UpdateMouseLock();
 
-            if (horizontalMovement != 0 || verticalMovement != 0)
-                EventAggregator.PublishOnCurrentThread(new PositionMoveMessage { Horizontal = horizontalMovement, Vertical = verticalMovement });
+            if (Cursor.lockState == CursorLockMode.Locked)
+            {
+                var horizontalMovement = Input.GetAxis("Horizontal");
+                var verticalMovement = Input.GetAxis("Vertical");
 
-            var mouseX = Input.mousePosition.x;
-            var mouseY = Input.mousePosition.y;
-            var deltaMouseX = mouseX - _mouseX;
-            var deltaMouseY = mouseY - _mouseY;
-            if (deltaMouseX != 0 || deltaMouseY != 0)
-                EventAggregator.PublishOnCurrentThread(new CursorMoveMessage { DeltaX = deltaMouseX, DeltaY = deltaMouseY });
-            _mouseX = mouseX;
-            _mouseY = mouseY;
+                if (horizontalMovement != 0 || verticalMovement != 0)
+                    EventAggregator.PublishOnCurrentThread(new PositionMoveMessage { Horizontal = horizontalMovement, Vertical = verticalMovement });
+
+                var mouseX = Input.GetAxis("Mouse X");
+                var mouseY = Input.GetAxis("Mouse Y");
+                if (mouseX != 0 || mouseY != 0)
+                    EventAggregator.PublishOnCurrentThread(new CursorMoveMessage { DeltaX = mouseX, DeltaY = mouseY });
+            }
         }
     }
 }

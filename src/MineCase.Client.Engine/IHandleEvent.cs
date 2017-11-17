@@ -9,7 +9,7 @@ namespace MineCase.Engine
     /// 处理消息接口
     /// </summary>
     /// <typeparam name="TMessage">消息类型</typeparam>
-    public interface IHandle<TMessage>
+    public interface IHandleEvent<TMessage>
     {
         /// <summary>
         /// 处理消息

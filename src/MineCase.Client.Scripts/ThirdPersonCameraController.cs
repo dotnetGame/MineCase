@@ -10,20 +10,18 @@ using UnityEngine;
 namespace MineCase.Client
 {
     [RequireComponent(typeof(Camera))]
-    public class ThirdPersonCameraController : SmartBehaviour, IHandle<CursorMoveMessage>
+    public class ThirdPersonCameraController : SmartBehaviour, IHandleEvent<CursorMoveMessage>
     {
         public float RotateFactor = 0.1f;
-        public float Backward = 2;
+        public float Distance;
+        public Vector3 Forward;
 
         public IEventAggregator EventAggregator { get; set; }
 
         private Camera _camera;
         private Transform _player;
         private PlayerMovement _playerMovement;
-        private float _height;
-
-        private float _rotateX;
-        private float _rotateY;
+        private Vector3 _angles;
 
         private void Start()
         {
@@ -31,37 +29,29 @@ namespace MineCase.Client
             var player = GameObject.FindGameObjectWithTag("Player");
             _player = player.transform;
             _playerMovement = player.GetComponent<PlayerMovement>();
-            _height = (transform.position - _player.position).y;
-            _rotateX = transform.localRotation.eulerAngles.x;
-            _rotateY = transform.localRotation.eulerAngles.y;
-            UpdateLookAt();
 
             EventAggregator.Subscribe(this);
         }
 
         private void LateUpdate()
         {
-            transform.position = new Vector3(0, _height, 0) + _player.position + GetForward() * -Backward;
+            transform.eulerAngles = _angles;
+            transform.position = _player.transform.position - (transform.localRotation * Forward * Distance);
         }
 
-        private Vector3 GetForward()
+        void IHandleEvent<CursorMoveMessage>.Handle(CursorMoveMessage message)
         {
-            var forward = transform.forward;
-            forward.y = 0;
-            return forward.normalized;
-        }
+            var angles = transform.localEulerAngles;
+            angles.y += message.DeltaX * RotateFactor;
+            angles.x += -message.DeltaY * RotateFactor;
+            _angles = angles;
 
-        void IHandle<CursorMoveMessage>.Handle(CursorMoveMessage message)
-        {
-            _rotateY += message.DeltaX * RotateFactor;
-            _rotateX += -message.DeltaY * RotateFactor;
-            transform.localRotation = Quaternion.Euler(_rotateX, _rotateY, 0);
             UpdateLookAt();
         }
 
         private void UpdateLookAt()
         {
-            var lookAt = transform.forward * 50 + transform.position;
+            var lookAt = Quaternion.Euler(_angles) * Forward * 50 + transform.position;
             _playerMovement.SetLookAtPosition(lookAt);
         }
     }

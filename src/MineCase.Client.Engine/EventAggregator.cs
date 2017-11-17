@@ -124,8 +124,8 @@ namespace MineCase.Engine
             {
                 var paramExp = Expression.Parameter(typeof(object), "c");
                 var messageParamExp = Expression.Parameter(typeof(object), "m");
-                var handlerType = typeof(IHandle<>).MakeGenericType(messageType);
-                var handleMethod = handlerType.GetMethod(nameof(IHandle<object>.Handle));
+                var handlerType = typeof(IHandleEvent<>).MakeGenericType(messageType);
+                var handleMethod = handlerType.GetMethod(nameof(IHandleEvent<object>.Handle));
                 return Expression.Lambda(
                     Expression.Call(
                         Expression.Convert(paramExp, handlerType),
@@ -143,7 +143,7 @@ namespace MineCase.Engine
                 if (iface.IsConstructedGenericType)
                 {
                     var genface = iface.GetGenericTypeDefinition();
-                    if (genface == typeof(IHandle<>))
+                    if (genface == typeof(IHandleEvent<>))
                     {
                         yield return iface.GetGenericArguments()[0];
                     }

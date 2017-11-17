@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Client.Messages;
 using MineCase.Engine;
+using MineCase.World;
 using UnityEngine;
 
 namespace MineCase.Client
 {
     [RequireComponent(typeof(Rigidbody), typeof(Animator))]
-    public class PlayerMovement : SmartBehaviour, IHandle<PositionMoveMessage>
+    public class PlayerMovement : SmartBehaviour, IHandleEvent<PositionMoveMessage>
     {
         public float Speed = 0.3f;
 
@@ -26,7 +27,7 @@ namespace MineCase.Client
             EventAggregator.Subscribe(this);
         }
 
-        void IHandle<PositionMoveMessage>.Handle(PositionMoveMessage message)
+        void IHandleEvent<PositionMoveMessage>.Handle(PositionMoveMessage message)
         {
             var velocity = (transform.forward * message.Vertical + transform.right * message.Horizontal) * Speed;
             _animator.SetFloat("Speed", velocity.magnitude);
@@ -37,14 +38,26 @@ namespace MineCase.Client
             _rigidbody.velocity = velocity;
         }
 
+        private ChunkWorldPos? _lastChunkWorldPos;
+
         private void FixedUpdate()
         {
-            var forward = _lookAt - transform.position;
-            forward.y = 0;
-            _rigidbody.transform.rotation = Quaternion.LookRotation(forward);
+            if (_lookAt is Vector3 lookAt)
+            {
+                var forward = lookAt - transform.position;
+                forward.y = 0;
+                _rigidbody.transform.rotation = Quaternion.LookRotation(forward);
+            }
+
+            var position = transform.position;
+            var chunkWorldPos = new EntityWorldPos(position.x, position.y, position.z).ToChunkWorldPos();
+            if (_lastChunkWorldPos != chunkWorldPos)
+            {
+                _lastChunkWorldPos = chunkWorldPos;
+            }
         }
 
-        private Vector3 _lookAt;
+        private Vector3? _lookAt;
 
         public void SetLookAtPosition(Vector3 lookAt)
         {
@@ -53,8 +66,11 @@ namespace MineCase.Client
 
         private void OnAnimatorIK(int layerIndex)
         {
-            _animator.SetLookAtWeight(1);
-            _animator.SetLookAtPosition(_lookAt);
+            if (_lookAt is Vector3 lookAt)
+            {
+                _animator.SetLookAtWeight(1);
+                _animator.SetLookAtPosition(lookAt);
+            }
         }
     }
 }

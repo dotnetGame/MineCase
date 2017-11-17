@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,11 +52,13 @@ namespace MineCase.Client.Game.Blocks
             };
 
             int x = 0, y = 0;
-            foreach (var texName in _textureNames)
+            var textureFiles = Directory.EnumerateFiles(Path.Combine(Application.streamingAssetsPath, "textures/blocks/"), "*.png");
+
+            foreach (var texFile in textureFiles)
             {
-                var tex = Resources.Load<Texture2D>("textures/blocks/" + texName);
+                var tex = new WWW(texFile).texture;
                 texture.SetPixels(x, y, 16, 16, tex.GetPixels());
-                TextureOffsets.Add(texName, new Vector2Int(x, y));
+                TextureOffsets.Add(Path.GetFileNameWithoutExtension(texFile), new Vector2Int(x, y));
                 x += 16;
 
                 if (x >= maxWidth)

@@ -99,12 +99,24 @@ namespace MineCase.Engine.Builder
 
         internal void OnMainThread(Action action)
         {
-            _mainThreadSyncContext.Send(s => ((Action)s)(), action);
+            _mainThreadSyncContext.Send(
+                s =>
+                {
+                    if (!Application.isPlaying)
+                        throw new InvalidOperationException();
+                    ((Action)s)();
+                }, action);
         }
 
         internal void OnMainThreadAsync(Action action)
         {
-            _mainThreadSyncContext.Post(s => ((Action)s)(), action);
+            _mainThreadSyncContext.Post(
+                s =>
+                {
+                    if (!Application.isPlaying)
+                        throw new InvalidOperationException();
+                    ((Action)s)();
+                }, action);
         }
 
         [RuntimeInitializeOnLoadMethod]
