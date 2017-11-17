@@ -10,10 +10,14 @@
 
   <ItemGroup>
     <None Remove="OrleansConfiguration.dev.xml" />
+    <None Remove="OrleansConfiguration.docker.xml" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="OrleansConfiguration.dev.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OrleansConfiguration.docker.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -29,6 +33,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="2.0.0" />
     <PackageReference Include="Microsoft.Orleans.Client" Version="2.0.0-beta1" />
+    <PackageReference Include="Polly" Version="5.5.0" />
   </ItemGroup>
 
   <ItemGroup>
