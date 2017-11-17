@@ -34,7 +34,7 @@ deploy_script:
     
     docker tag minecase.server sunnycase/minecase.server:ci-latest-nanoserver
 
-    IF ($env:APPVEYOR_REPO_BRANCH -ne "master")
+    IF ($env:APPVEYOR_REPO_BRANCH -eq "master")
     {
         docker login -u="$env:DOCKER_USER" -p="$env:DOCKER_PASS"
     
