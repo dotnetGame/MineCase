@@ -6,6 +6,9 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using MineCase.Gateway.Network;
 using System.Reflection;
+using System.Threading.Tasks;
+using Orleans.Runtime;
+using Polly;
 
 namespace MineCase.Gateway
 {
@@ -20,15 +23,7 @@ namespace MineCase.Gateway
         static void Main(string[] args)
         {
             Console.CancelKeyPress += (s, e) => _exitEvent.Set();
-
             Configuration = LoadConfiguration();
-            var builder = new ClientBuilder()
-                .LoadConfiguration("OrleansConfiguration.dev.xml")
-                .ConfigureServices(ConfigureServices)
-                .ConfigureLogging(ConfigureLogging);
-            SelectAssemblies();
-            ConfigureApplicationParts(builder);
-            _clusterClient = builder.Build();
             Startup();
             _exitEvent.WaitOne();
         }
@@ -41,22 +36,37 @@ namespace MineCase.Gateway
 
         private static async void Startup()
         {
-            var serviceProvider = _clusterClient.ServiceProvider;
-            var logger = _clusterClient.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
-            try
+            ILogger logger = null;
+
+            var retryPolicy = Policy.Handle<OrleansException>()
+                .WaitAndRetryForeverAsync(
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (ex, timeSpan) => logger?.LogError($"Cluster connection failed. Next retry: {timeSpan.TotalSeconds} secs later."));
+            await retryPolicy.ExecuteAsync(async () =>
             {
-                logger.LogInformation("Connecting to cluster...");
-                await _clusterClient.Connect();
-                logger.LogInformation("Connected to cluster.");
-            }
-            catch (Exception e)
-            {
-                logger.LogError("Cluster connection failed.\n" + "Exception stack trace:" + e.StackTrace);
-                _exitEvent.Set();
-                return;
-            }
-            var connectionRouter = serviceProvider.GetRequiredService<ConnectionRouter>();
+                var builder = new ClientBuilder()
+                    .LoadConfiguration("OrleansConfiguration.dev.xml")
+                    .ConfigureServices(ConfigureServices)
+                    .ConfigureLogging(ConfigureLogging);
+                SelectAssemblies();
+                ConfigureApplicationParts(builder);
+                _clusterClient = builder.Build();
+
+                var serviceProvider = _clusterClient.ServiceProvider;
+                logger = _clusterClient.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
+
+                await Connect(logger);
+            });
+
+            var connectionRouter = _clusterClient.ServiceProvider.GetRequiredService<ConnectionRouter>();
             await connectionRouter.Startup(default(CancellationToken));
+        }
+
+        private static async Task Connect(ILogger logger)
+        {
+            logger.LogInformation("Connecting to cluster...");
+            await _clusterClient.Connect();
+            logger.LogInformation("Connected to cluster.");
         }
     }
 }

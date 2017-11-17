@@ -55,6 +55,7 @@
     <None Remove="banned-ips.json" />
     <None Remove="banned-players.json" />
     <None Remove="ops.json" />
+    <None Remove="OrleansConfiguration.docker.xml" />
     <None Remove="server.json" />
     <None Remove="whitelist.json" />
   </ItemGroup>
@@ -73,6 +74,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ops.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OrleansConfiguration.docker.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="server.json">
