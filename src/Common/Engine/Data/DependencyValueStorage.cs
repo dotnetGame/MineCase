@@ -22,13 +22,24 @@ namespace MineCase.Engine.Data
             }
         }
 
-        public event AsyncEventHandler<CurrentValueChangedEventArgs> CurrentValueChanged;
+        public event
+#if ECS_SERVER
+        AsyncEventHandler<CurrentValueChangedEventArgs>
+#else
+        EventHandler<CurrentValueChangedEventArgs>
+#endif
+            CurrentValueChanged;
 
         public DependencyValueStorage()
         {
         }
 
-        public async Task<IEffectiveValue> AddOrUpdate<T>(IDependencyValueProvider provider, DependencyProperty<T> key, Func<DependencyProperty, IEffectiveValue<T>> addValueFactory, Func<DependencyProperty, IEffectiveValue<T>, Task<IEffectiveValue<T>>> updateValueFactory)
+        public
+#if ECS_SERVER
+        async Task<IEffectiveValue> AddOrUpdate<T>(IDependencyValueProvider provider, DependencyProperty<T> key, Func<DependencyProperty, IEffectiveValue<T>> addValueFactory, Func<DependencyProperty, IEffectiveValue<T>, Task<IEffectiveValue<T>>> updateValueFactory)
+#else
+        IEffectiveValue AddOrUpdate<T>(IDependencyValueProvider provider, DependencyProperty<T> key, Func<DependencyProperty, IEffectiveValue<T>> addValueFactory, Func<DependencyProperty, IEffectiveValue<T>, IEffectiveValue<T>> updateValueFactory)
+#endif
         {
             var storage = GetStorage(provider, key);
             var priority = provider.Priority;
@@ -42,12 +53,21 @@ namespace MineCase.Engine.Data
                 result = value;
                 var raiseChanged = storage.IndexOfKey(priority) == 0;
                 if (raiseChanged)
-                    await OnCurrentValueChanged(key, false, null, true, value.Value);
+                {
+#if ECS_SERVER
+                await
+#endif
+                    OnCurrentValueChanged(key, false, null, true, value.Value);
+                }
             }
             else
             {
                 var oldValue = (IEffectiveValue<T>)storage.Values[oldIdx];
-                var newValue = await updateValueFactory(key, oldValue);
+                var newValue =
+#if ECS_SERVER
+                await
+#endif
+                    updateValueFactory(key, oldValue);
                 if (oldValue != newValue)
                 {
                     oldValue.ValueChanged = null;
@@ -55,7 +75,12 @@ namespace MineCase.Engine.Data
                     storage[priority] = newValue;
                     var raiseChanged = oldIdx == 0;
                     if (raiseChanged)
-                        await OnCurrentValueChanged(key, true, oldValue.Value, true, newValue.Value);
+                    {
+#if ECS_SERVER
+                    await
+#endif
+                        OnCurrentValueChanged(key, true, oldValue.Value, true, newValue.Value);
+                    }
                 }
 
                 result = newValue;
@@ -103,12 +128,27 @@ namespace MineCase.Engine.Data
             return false;
         }
 
-        private Task OnCurrentValueChanged(DependencyProperty key, bool hasOldValue, object oldValue, bool hasNewValue, object newValue)
+        private
+#if ECS_SERVER
+        Task
+#else
+        void
+#endif
+            OnCurrentValueChanged(DependencyProperty key, bool hasOldValue, object oldValue, bool hasNewValue, object newValue)
         {
-            return CurrentValueChanged.InvokeSerial(this, new CurrentValueChangedEventArgs(key, hasOldValue, oldValue, hasNewValue, newValue));
+#if ECS_SERVER
+            return
+#endif
+            CurrentValueChanged.InvokeSerial(this, new CurrentValueChangedEventArgs(key, hasOldValue, oldValue, hasNewValue, newValue));
         }
 
-        private Task OnEffectiveValueCleared(int index, DependencyProperty key, object oldValue)
+        private
+#if ECS_SERVER
+        Task
+#else
+        void
+#endif
+            OnEffectiveValueCleared(int index, DependencyProperty key, object oldValue)
         {
             if (index == 0)
             {
@@ -121,17 +161,36 @@ namespace MineCase.Engine.Data
                     newValue = ((dynamic)list.Values[0]).Value;
                 }
 
-                return OnCurrentValueChanged(key, true, oldValue, hasNewValue, newValue);
+#if ECS_SERVER
+                return
+#endif
+                OnCurrentValueChanged(key, true, oldValue, hasNewValue, newValue);
             }
 
+#if ECS_SERVER
             return Task.CompletedTask;
+#endif
         }
 
-        private async Task OnEffectiveValueChanged(float priority, DependencyProperty key, object oldValue, object newValue)
+        private
+#if ECS_SERVER
+        Task
+#else
+        void
+#endif
+            OnEffectiveValueChanged(float priority, DependencyProperty key, object oldValue, object newValue)
         {
             SortedList<float, IEffectiveValue> list;
             if (_dict.TryGetValue(key, out list) && list.IndexOfKey(priority) == 0)
-                await OnCurrentValueChanged(key, true, oldValue, true, newValue);
+            {
+#if ECS_SERVER
+            return
+#endif
+                OnCurrentValueChanged(key, true, oldValue, true, newValue);
+            }
+#if ECS_SERVER
+            return Task.CompletedTask;
+#endif
         }
 
         public bool TryGetValue<T>(IDependencyValueProvider provider, DependencyProperty<T> key, out IEffectiveValue<T> value)
@@ -148,7 +207,13 @@ namespace MineCase.Engine.Data
             return false;
         }
 
-        public Task<bool> TryRemove<T>(IDependencyValueProvider provider, DependencyProperty<T> key, out IEffectiveValue<T> value)
+        public
+#if ECS_SERVER
+        Task<bool>
+#else
+        bool
+#endif
+            TryRemove<T>(IDependencyValueProvider provider, DependencyProperty<T> key, out IEffectiveValue<T> value)
         {
             var storage = GetStorage(provider, key);
             var priority = provider.Priority;
@@ -158,12 +223,21 @@ namespace MineCase.Engine.Data
                 value = (IEffectiveValue<T>)eValue;
                 var index = storage.IndexOfKey(priority);
                 storage.RemoveAt(index);
+#if ECS_SERVER
                 return OnEffectiveValueCleared(index, key, value.Value)
                     .ContinueWith(t => true);
+#else
+                OnEffectiveValueCleared(index, key, value.Value);
+                return true;
+#endif
             }
 
             value = null;
+#if ECS_SERVER
             return Task.FromResult(false);
+#else
+            return false;
+#endif
         }
 
         private SortedList<float, IEffectiveValue> GetStorage(IDependencyValueProvider provider, DependencyProperty key)
@@ -175,18 +249,44 @@ namespace MineCase.Engine.Data
         }
     }
 
+    /// <summary>
+    /// 当前值变更
+    /// </summary>
     public class CurrentValueChangedEventArgs : EventArgs
     {
+        /// <summary>
+        /// 获取依赖属性
+        /// </summary>
         public DependencyProperty Property { get; }
 
+        /// <summary>
+        /// 获取原始值
+        /// </summary>
         public object OldValue { get; }
 
+        /// <summary>
+        /// 获取新值
+        /// </summary>
         public object NewValue { get; }
 
+        /// <summary>
+        /// 获取是否有原始值
+        /// </summary>
         public bool HasOldValue { get; }
 
+        /// <summary>
+        /// 获取是否有新值
+        /// </summary>
         public bool HasNewValue { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CurrentValueChangedEventArgs"/> class.
+        /// </summary>
+        /// <param name="property">依赖属性</param>
+        /// <param name="hasOldValue">是否有原始值</param>
+        /// <param name="oldValue">原始值</param>
+        /// <param name="hasNewValue">是否有新值</param>
+        /// <param name="newValue">新值</param>
         public CurrentValueChangedEventArgs(DependencyProperty property, bool hasOldValue, object oldValue, bool hasNewValue, object newValue)
         {
             Property = property;

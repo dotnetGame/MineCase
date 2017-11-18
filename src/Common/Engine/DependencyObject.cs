@@ -7,27 +7,48 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine.Data;
+#if ECS_SERVER
 using Orleans;
+#endif
 
 namespace MineCase.Engine
 {
-    public abstract class DependencyObject : Grain, IDependencyObject
+    /// <summary>
+    /// 依赖对象
+    /// </summary>
+    public abstract class DependencyObject
+        :
+#if ECS_SERVER
+        Grain,
+#else
+        SmartBehaviour,
+#endif
+        IDependencyObject
     {
         private Dictionary<string, IComponentIntern> _components;
         private Dictionary<IComponentIntern, int> _indexes;
         private int _index = 0;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DependencyObject"/> class.
+        /// </summary>
         public DependencyObject()
         {
             _realType = this.GetType();
             _valueStorage.CurrentValueChanged += ValueStorage_CurrentValueChanged;
         }
 
-        public override async Task OnActivateAsync()
+        private void LoadState()
         {
             _components = new Dictionary<string, IComponentIntern>();
             _indexes = new Dictionary<IComponentIntern, int>();
             _messageHandlers = new MultiValueDictionary<Type, IComponentIntern>();
+        }
+
+#if ECS_SERVER
+        public override async Task OnActivateAsync()
+        {
+            LoadState();
             await InitializeComponents();
         }
 
@@ -35,8 +56,34 @@ namespace MineCase.Engine
         {
             return Task.CompletedTask;
         }
+#else
+        /// <inheritdoc/>
+        protected override void Awake()
+        {
+            base.Awake();
+            LoadState();
+            InitializeComponents();
+        }
 
-        public T GetComponent<T>()
+        /// <summary>
+        /// 初始化组件
+        /// </summary>
+        protected virtual void InitializeComponents()
+        {
+        }
+#endif
+
+        /// <summary>
+        /// 获取组件
+        /// </summary>
+        /// <typeparam name="T">组件类型</typeparam>
+        /// <returns>组件</returns>
+#if ECS_SERVER
+        public
+#else
+        public new
+#endif
+            T GetComponent<T>()
             where T : Component
         {
             foreach (var component in _components)
@@ -48,32 +95,72 @@ namespace MineCase.Engine
             return null;
         }
 
-        public async Task SetComponent(Component component)
+#if !ECS_SERVER
+        /// <summary>
+        /// 获取 Unity 组件
+        /// </summary>
+        /// <typeparam name="T">组件类型</typeparam>
+        /// <returns>组件</returns>
+        public T GetUnityComponent<T>()
+            where T : UnityEngine.Component =>
+            base.GetComponent<T>();
+#endif
+
+        /// <summary>
+        /// 设置组件
+        /// </summary>
+        /// <param name="component">组件</param>
+        public
+#if ECS_SERVER
+        async Task
+#else
+        void
+#endif
+            SetComponent(Component component)
         {
             var name = component.Name;
             if (_components.TryGetValue(name, out var old))
             {
                 if (old == component) return;
                 Unsubscribe(old);
-                await old.Detach();
+#if ECS_SERVER
+                await
+#endif
+                old.Detach();
                 _indexes.Remove(old);
                 _components.Remove(name);
             }
 
             _components.Add(name, component);
             _indexes.Add(component, _index++);
-            await ((IComponentIntern)component).Attach(this, ServiceProvider);
+#if ECS_SERVER
+            await
+#endif
+            ((IComponentIntern)component).Attach(this, ServiceProvider);
             Subscribe(component);
         }
 
-        public async Task ClearComponent<T>()
+        /// <summary>
+        /// 清除组件
+        /// </summary>
+        /// <typeparam name="T">组件类型</typeparam>
+        public
+#if ECS_SERVER
+        async Task
+#else
+        void
+#endif
+            ClearComponent<T>()
             where T : Component
         {
             var components = _components.Where(o => o.Value is T);
             foreach (var component in components)
             {
                 Unsubscribe(component.Value);
-                await component.Value.Detach();
+#if ECS_SERVER
+                await
+#endif
+                component.Value.Detach();
                 _indexes.Remove(component.Value);
                 _components.Remove(component.Key);
             }
@@ -89,6 +176,12 @@ namespace MineCase.Engine
         private readonly ConcurrentDictionary<DependencyProperty, Delegate> _propertyChangedHandlersGen = new ConcurrentDictionary<DependencyProperty, Delegate>();
         private Delegate _anyPropertyChangedHandler;
 
+        /// <summary>
+        /// 获取值
+        /// </summary>
+        /// <typeparam name="T">值类型</typeparam>
+        /// <param name="property">依赖属性</param>
+        /// <returns>值</returns>
         public T GetValue<T>(DependencyProperty<T> property)
         {
             T value;
@@ -98,28 +191,86 @@ namespace MineCase.Engine
             return value;
         }
 
-        public Task SetCurrentValue<T>(DependencyProperty<T> property, T value)
+        /// <summary>
+        /// 设置当前值
+        /// </summary>
+        /// <typeparam name="T">值类型</typeparam>
+        /// <param name="property">依赖属性</param>
+        /// <param name="value">值</param>
+        public
+#if ECS_SERVER
+        Task
+#else
+        void
+#endif
+            SetCurrentValue<T>(DependencyProperty<T> property, T value)
         {
             IEffectiveValue<T> eValue;
             if (_valueStorage.TryGetCurrentEffectiveValue(property, out eValue) && eValue.CanSetValue)
-                return eValue.SetValue(value);
+            {
+#if ECS_SERVER
+                return
+#endif
+                eValue.SetValue(value);
+            }
             else
-                return this.SetLocalValue(property, value);
+            {
+#if ECS_SERVER
+                return
+#endif
+                this.SetLocalValue(property, value);
+            }
         }
 
         private static readonly MethodInfo _raisePropertyChangedHelper = typeof(DependencyObject).GetRuntimeMethods().Single(o => o.Name == nameof(RaisePropertyChangedHelper));
 
-        private Task ValueStorage_CurrentValueChanged(object sender, CurrentValueChangedEventArgs e)
+        private
+#if ECS_SERVER
+        Task
+#else
+        void
+#endif
+            ValueStorage_CurrentValueChanged(object sender, CurrentValueChangedEventArgs e)
         {
+#if ECS_SERVER
             return (Task)_raisePropertyChangedHelper.MakeGenericMethod(e.Property.PropertyType).Invoke(this, new object[] { e.Property, e });
+#else
+            _raisePropertyChangedHelper.MakeGenericMethod(e.Property.PropertyType).Invoke(this, new object[] { e.Property, e });
+#endif
         }
 
-        public void RegisterPropertyChangedHandler<T>(DependencyProperty<T> property, AsyncEventHandler<PropertyChangedEventArgs<T>> handler)
+        /// <summary>
+        /// 注册属性变更处理器
+        /// </summary>
+        /// <typeparam name="T">值类型</typeparam>
+        /// <param name="property">依赖属性</param>
+        /// <param name="handler">处理器</param>
+        public void RegisterPropertyChangedHandler<T>(
+            DependencyProperty<T> property,
+#if ECS_SERVER
+            AsyncEventHandler<PropertyChangedEventArgs<T>>
+#else
+            EventHandler<PropertyChangedEventArgs<T>>
+#endif
+            handler)
         {
             _propertyChangedHandlers.AddOrUpdate(property, handler, (k, old) => Delegate.Combine(old, handler));
         }
 
-        public void RemovePropertyChangedHandler<T>(DependencyProperty<T> property, AsyncEventHandler<PropertyChangedEventArgs<T>> handler)
+        /// <summary>
+        /// 删除属性变更处理器
+        /// </summary>
+        /// <typeparam name="T">值类型</typeparam>
+        /// <param name="property">依赖属性</param>
+        /// <param name="handler">处理器</param>
+        public void RemovePropertyChangedHandler<T>(
+            DependencyProperty<T> property,
+#if ECS_SERVER
+            AsyncEventHandler<PropertyChangedEventArgs<T>>
+#else
+            EventHandler<PropertyChangedEventArgs<T>>
+#endif
+            handler)
         {
             Delegate d = null;
             _propertyChangedHandlers.TryRemove(property, out d);
@@ -127,12 +278,36 @@ namespace MineCase.Engine
                 _propertyChangedHandlers.AddOrUpdate(property, k => Delegate.Remove(d, handler), (k, old) => Delegate.Combine(old, Delegate.Remove(d, handler)));
         }
 
-        public void RegisterPropertyChangedHandler(DependencyProperty property, AsyncEventHandler<PropertyChangedEventArgs> handler)
+        /// <summary>
+        /// 注册属性变更处理器
+        /// </summary>
+        /// <param name="property">依赖属性</param>
+        /// <param name="handler">处理器</param>
+        public void RegisterPropertyChangedHandler(
+            DependencyProperty property,
+#if ECS_SERVER
+            AsyncEventHandler<PropertyChangedEventArgs>
+#else
+            EventHandler<PropertyChangedEventArgs>
+#endif
+            handler)
         {
             _propertyChangedHandlersGen.AddOrUpdate(property, handler, (k, old) => Delegate.Combine(old, handler));
         }
 
-        public void RemovePropertyChangedHandler(DependencyProperty property, AsyncEventHandler<PropertyChangedEventArgs> handler)
+        /// <summary>
+        /// 删除属性变更处理器
+        /// </summary>
+        /// <param name="property">依赖属性</param>
+        /// <param name="handler">处理器</param>
+        public void RemovePropertyChangedHandler(
+            DependencyProperty property,
+#if ECS_SERVER
+            AsyncEventHandler<PropertyChangedEventArgs>
+#else
+            EventHandler<PropertyChangedEventArgs>
+#endif
+            handler)
         {
             Delegate d = null;
             _propertyChangedHandlersGen.TryRemove(property, out d);
@@ -140,17 +315,43 @@ namespace MineCase.Engine
                 _propertyChangedHandlersGen.AddOrUpdate(property, k => Delegate.Remove(d, handler), (k, old) => Delegate.Combine(old, Delegate.Remove(d, handler)));
         }
 
-        public void RegisterAnyPropertyChangedHandler(AsyncEventHandler<PropertyChangedEventArgs> handler)
+        /// <summary>
+        /// 注册任意属性变更处理器
+        /// </summary>
+        /// <param name="handler">处理器</param>
+        public void RegisterAnyPropertyChangedHandler(
+#if ECS_SERVER
+            AsyncEventHandler<PropertyChangedEventArgs>
+#else
+            EventHandler<PropertyChangedEventArgs>
+#endif
+            handler)
         {
             _anyPropertyChangedHandler = Delegate.Combine(_anyPropertyChangedHandler, handler);
         }
 
-        public void RemoveAnyPropertyChangedHandler(AsyncEventHandler<PropertyChangedEventArgs> handler)
+        /// <summary>
+        /// 删除任意属性变更处理器
+        /// </summary>
+        /// <param name="handler">处理器</param>
+        public void RemoveAnyPropertyChangedHandler(
+#if ECS_SERVER
+            AsyncEventHandler<PropertyChangedEventArgs>
+#else
+            EventHandler<PropertyChangedEventArgs>
+#endif
+            handler)
         {
             _anyPropertyChangedHandler = Delegate.Remove(_anyPropertyChangedHandler, handler);
         }
 
-        internal async Task RaisePropertyChangedHelper<T>(DependencyProperty<T> property, CurrentValueChangedEventArgs e)
+        internal
+#if ECS_SERVER
+        async Task
+#else
+        void
+#endif
+            RaisePropertyChangedHelper<T>(DependencyProperty<T> property, CurrentValueChangedEventArgs e)
         {
             var oldValue = e.HasOldValue ? (T)e.OldValue : GetDefaultValue(property);
             var newValue = e.HasNewValue ? (T)e.NewValue : GetDefaultValue(property);
@@ -158,16 +359,38 @@ namespace MineCase.Engine
             if (e.HasOldValue && e.HasNewValue && EqualityComparer<T>.Default.Equals((T)e.OldValue, (T)e.NewValue))
                 return;
             var args = new PropertyChangedEventArgs<T>(property, oldValue, newValue);
-            await property.RaisePropertyChanged(_realType, this, args);
-            await InvokeLocalPropertyChangedHandlers(args);
-            await OnDependencyPropertyChanged(args);
+
+#if ECS_SERVER
+            await
+#endif
+            property.RaisePropertyChanged(_realType, this, args);
+#if ECS_SERVER
+            await
+#endif
+            InvokeLocalPropertyChangedHandlers(args);
+#if ECS_SERVER
+            await
+#endif
+            OnDependencyPropertyChanged(args);
         }
 
+        /// <summary>
+        /// 依赖属性发生变更时
+        /// </summary>
+        /// <typeparam name="T">值类型</typeparam>
+        /// <param name="args">参数</param>
+#if ECS_SERVER
         public virtual Task OnDependencyPropertyChanged<T>(PropertyChangedEventArgs<T> args)
         {
             return Task.CompletedTask;
         }
+#else
+        public virtual void OnDependencyPropertyChanged<T>(PropertyChangedEventArgs<T> args)
+        {
+        }
+#endif
 
+#if ECS_SERVER
         private async Task InvokeLocalPropertyChangedHandlers<T>(PropertyChangedEventArgs<T> e)
         {
             Delegate d;
@@ -178,6 +401,18 @@ namespace MineCase.Engine
                 await ((AsyncEventHandler<PropertyChangedEventArgs>)d).InvokeSerial(this, e);
             await ((AsyncEventHandler<PropertyChangedEventArgs>)_anyPropertyChangedHandler).InvokeSerial(this, e);
         }
+#else
+        private void InvokeLocalPropertyChangedHandlers<T>(PropertyChangedEventArgs<T> e)
+        {
+            Delegate d;
+            if (_propertyChangedHandlers.TryGetValue(e.Property, out d))
+                ((EventHandler<PropertyChangedEventArgs<T>>)d).InvokeSerial(this, e);
+
+            if (_propertyChangedHandlersGen.TryGetValue(e.Property, out d))
+                ((EventHandler<PropertyChangedEventArgs>)d).InvokeSerial(this, e);
+            ((EventHandler<PropertyChangedEventArgs>)_anyPropertyChangedHandler).InvokeSerial(this, e);
+        }
+#endif
 
         private T GetDefaultValue<T>(DependencyProperty<T> property)
         {
@@ -256,55 +491,129 @@ namespace MineCase.Engine
                 _messageHandlers.Remove(type, component);
         }
 
-        public Task Tell(IEntityMessage message)
+        /// <inheritdoc />
+        public
+#if ECS_SERVER
+        Task
+#else
+        void
+#endif
+            Tell(IEntityMessage message)
         {
-            return Tell(message, message.GetType());
+#if ECS_SERVER
+            return
+#endif
+            Tell(message, message.GetType());
         }
 
-        public Task Tell<T>(T message)
+        /// <summary>
+        /// 告知
+        /// </summary>
+        /// <typeparam name="T">消息类型</typeparam>
+        /// <param name="message">消息</param>
+        public
+#if ECS_SERVER
+        Task
+#else
+        void
+#endif
+            Tell<T>(T message)
             where T : IEntityMessage
         {
-            return Tell(message, typeof(T));
+#if ECS_SERVER
+            return
+#endif
+            Tell(message, typeof(T));
         }
 
-        private async Task Tell(IEntityMessage message, Type messageType)
+        private
+#if ECS_SERVER
+        async Task
+#else
+        void
+#endif
+            Tell(IEntityMessage message, Type messageType)
         {
-            var invoker = (Func<IComponentIntern, IEntityMessage, Task>)GetOrAddMessageCaller(messageType);
+            var invoker =
+#if ECS_SERVER
+                (Func<IComponentIntern, IEntityMessage, Task>
+#else
+                (Action<IComponentIntern, IEntityMessage>
+#endif
+)GetOrAddMessageCaller(messageType);
             if (_messageHandlers.TryGetValue(messageType, out var handlers))
             {
                 foreach (var handler in from h in handlers
                                         orderby h.GetMessageOrder(message), _indexes[h]
                                         select h)
-                    await invoker(handler, message);
+                {
+#if ECS_SERVER
+                await
+#endif
+                    invoker(handler, message);
+                }
             }
         }
 
-        public async Task<TResponse> Ask<TResponse>(IEntityMessage<TResponse> message)
+        /// <inheritdoc />
+        public
+#if ECS_SERVER
+        async Task<TResponse>
+#else
+        TResponse
+#endif
+            Ask<TResponse>(IEntityMessage<TResponse> message)
         {
-            var response = await TryAsk(message);
+            var response =
+#if ECS_SERVER
+            await
+#endif
+                TryAsk(message);
             if (!response.Succeeded)
                 throw new ReceiverNotFoundException();
             return response.Response;
         }
 
-        public async Task<AskResult<TResponse>> TryAsk<TResponse>(IEntityMessage<TResponse> message)
+        /// <inheritdoc />
+        public
+#if ECS_SERVER
+        async Task<AskResult<TResponse>>
+#else
+        AskResult<TResponse>
+#endif
+            TryAsk<TResponse>(IEntityMessage<TResponse> message)
         {
             var messageType = message.GetType();
-            var invoker = (Func<IComponentIntern, IEntityMessage<TResponse>, Task<TResponse>>)GetOrAddMessageCaller(messageType);
+            var invoker =
+#if ECS_SERVER
+                (Func<IComponentIntern, IEntityMessage<TResponse>, Task<TResponse>>
+#else
+                (Func<IComponentIntern, IEntityMessage<TResponse>, TResponse>
+#endif
+)GetOrAddMessageCaller(messageType);
             if (_messageHandlers.TryGetValue(messageType, out var handlers))
             {
                 foreach (var handler in from h in handlers
                                         orderby h.GetMessageOrder(message), _indexes[h]
                                         select h)
-                    return new AskResult<TResponse> { Succeeded = true, Response = await invoker(handler, message) };
+                {
+                    var response =
+#if ECS_SERVER
+            await
+#endif
+                    invoker(handler, message);
+                    return new AskResult<TResponse> { Succeeded = true, Response = response };
+                }
             }
 
             return AskResult<TResponse>.Failed;
         }
 
+#if ECS_SERVER
         public virtual void Destroy()
         {
             DeactivateOnIdle();
         }
+#endif
     }
 }

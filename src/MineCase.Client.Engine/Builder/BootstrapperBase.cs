@@ -48,10 +48,7 @@ namespace MineCase.Engine.Builder
             {
                 _mainThreadSyncContext = SynchronizationContext.Current;
 
-                var assemblies = new List<Assembly>
-                {
-                    typeof(BootstrapperBase).Assembly
-                };
+                var assemblies = new List<Assembly>();
                 ConfigureApplicationParts(assemblies);
 
                 var containerBuilder = new ContainerBuilder();
