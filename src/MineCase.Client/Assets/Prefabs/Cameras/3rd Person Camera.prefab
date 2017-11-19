@@ -99,6 +99,7 @@ MonoBehaviour:
   RotateFactor: 2
   Distance: 5
   Forward: {x: 0, y: -0.3, z: 1}
+  Player: {fileID: 0}
 --- !u!124 &124734776929340208
 Behaviour:
   m_ObjectHideFlags: 1

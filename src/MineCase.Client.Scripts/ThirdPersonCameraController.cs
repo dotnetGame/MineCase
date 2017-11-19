@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Client.Game.Entities;
 using MineCase.Client.Messages;
 using MineCase.Engine;
 using UnityEngine;
@@ -15,20 +16,16 @@ namespace MineCase.Client
         public float RotateFactor = 0.1f;
         public float Distance;
         public Vector3 Forward;
+        public DependencyObject Player;
 
         public IEventAggregator EventAggregator { get; set; }
 
         private Camera _camera;
-        private Transform _player;
-        private PlayerMovement _playerMovement;
         private Vector3 _angles;
 
         private void Start()
         {
             _camera = GetComponent<Camera>();
-            var player = GameObject.FindGameObjectWithTag("Player");
-            _player = player.transform;
-            _playerMovement = player.GetComponent<PlayerMovement>();
 
             EventAggregator.Subscribe(this);
         }
@@ -36,7 +33,7 @@ namespace MineCase.Client
         private void LateUpdate()
         {
             transform.eulerAngles = _angles;
-            transform.position = _player.transform.position - (transform.localRotation * Forward * Distance);
+            transform.position = Player.transform.position - (transform.localRotation * Forward * Distance);
         }
 
         void IHandleEvent<CursorMoveMessage>.Handle(CursorMoveMessage message)
@@ -52,7 +49,7 @@ namespace MineCase.Client
         private void UpdateLookAt()
         {
             var lookAt = Quaternion.Euler(_angles) * Forward * 50 + transform.position;
-            _playerMovement.SetLookAtPosition(lookAt);
+            Player.Tell( new LookAt { Position = lookAt });
         }
     }
 }

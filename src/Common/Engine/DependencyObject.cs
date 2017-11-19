@@ -16,7 +16,7 @@ namespace MineCase.Engine
     /// <summary>
     /// 依赖对象
     /// </summary>
-    public abstract class DependencyObject
+    public abstract partial class DependencyObject
         :
 #if ECS_SERVER
         Grain,
