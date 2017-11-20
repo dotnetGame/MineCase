@@ -11,7 +11,7 @@ namespace MineCase.Engine
     /// 防止对象被回收的延迟初始化器
     /// </summary>
     /// <typeparam name="T">对象类型</typeparam>
-    public sealed class KeepAliveLazy<T> : MonoBehaviour
+    public sealed class KeepAliveLazy<T>
         where T : MonoBehaviour
     {
         /// <summary>
@@ -39,7 +39,7 @@ namespace MineCase.Engine
                 () =>
                 {
                     var containerObject = new GameObject(typeof(T).Name, typeof(T));
-                    DontDestroyOnLoad(containerObject);
+                    UnityEngine.Object.DontDestroyOnLoad(containerObject);
                     return new ValuePair { Container = containerObject, Value = containerObject.GetComponent<T>() };
                 }, isThreadSafe);
         }
@@ -47,10 +47,10 @@ namespace MineCase.Engine
         private void OnApplicationQuit()
         {
             if (_containerObject.IsValueCreated && _containerObject.Value.Container)
-                Destroy(_containerObject.Value.Container);
+                UnityEngine.Object.Destroy(_containerObject.Value.Container);
         }
 
-        private struct ValuePair
+        private class ValuePair
         {
             public GameObject Container;
 

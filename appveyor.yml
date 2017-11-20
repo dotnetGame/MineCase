@@ -19,7 +19,7 @@ before_build:
     choco install codecov
 build:
   project: ./src/
-  parallel: true
+  parallel: false
   verbosity: minimal
 test_script:
 - ps: >-
