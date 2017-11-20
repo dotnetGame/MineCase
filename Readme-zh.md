@@ -30,7 +30,7 @@ docker-compose up
 
 #### 前置要求
 
-你需要先安装 `.NET Core` sdk2.0，可以在 [这里](https://www.microsoft.com/net/download/windows) 找到你需要的版本。
+你需要先安装 `.NET Core` sdk2.0，可以在 [这里](https://www.microsoft.com/net/download) 找到你需要的版本。
 
 #### 获取源码
 

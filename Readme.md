@@ -30,7 +30,7 @@ You can use `docker-compose stop` to stop the application。
 
 #### Pre-requirement
 
-You need to install `.NET Core` sdk 2.0 first, you can find the version you need from [here](https://www.microsoft.com/net/download/windows).
+You need to install `.NET Core` sdk 2.0 first, you can find the version you need from [here](https://www.microsoft.com/net/download).
 
 #### Get source
 
