@@ -15,16 +15,17 @@ namespace MineCase.Client
 
         public Material CubeMaterial;
 
-        private void Start()
+        private async void Start()
         {
-            BlockTextureLoader.Initialize(CubeMaterial);
+            await BlockTextureLoader.Initialize(CubeMaterial);
 
             FindObjectOfType<ServerManager>().ConnectServer(0, false);
         }
 
         private void OnGUI()
         {
-            GUI.DrawTexture(new Rect(0, 0, 1024, 16), BlockTextureLoader.Texture);
+            if (BlockTextureLoader.Texture)
+                GUI.DrawTexture(new Rect(0, 0, 1024, 16), BlockTextureLoader.Texture);
         }
     }
 }

@@ -13,73 +13,100 @@ namespace MineCase.Client.World
     [RequireComponent(typeof(MeshFilter), typeof(MeshCollider))]
     public class ChunkSectionTerrainMeshUpdater : SmartBehaviour
     {
-        private Mesh _columnMesh;
         private MeshFilter _meshFilter;
         private MeshCollider _meshCollider;
+        private BuildResult _buildResult;
+        private UserChunkLoaderComponent _chunkLoader;
 
         protected override void Awake()
         {
             base.Awake();
             _meshFilter = GetComponent<MeshFilter>();
             _meshCollider = GetComponent<MeshCollider>();
+            _chunkLoader = FindObjectOfType<UserChunkLoaderComponent>();
         }
 
-        public async Task LoadFromSectionData(ChunkSectionCompactStorage section, NeighborSections neighbor)
+        public void LoadFromSectionData(ChunkSectionCompactStorage section, NeighborSections neighbor)
         {
-            _columnMesh = await BuildMesh(section, neighbor);
-            _meshFilter.mesh = _columnMesh;
+            _buildResult = BuildMesh(section, neighbor);
+            _chunkLoader.QueueSectionUpdate(this);
+        }
+
+        private BuildResult BuildMesh(ChunkSectionCompactStorage section, NeighborSections neighbor)
+        {
+            // 计算面总数
+            int planeCount = 0;
+            for (int z = 0; z < ChunkConstants.BlockEdgeWidthInSection; z++)
+            {
+                for (int y = 0; y < ChunkConstants.BlockEdgeWidthInSection; y++)
+                {
+                    for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; x++)
+                    {
+                        var blockHandler = BlockHandler.Create((BlockId)section.Data[x, y, z].Id, ServiceProvider);
+                        planeCount += blockHandler.CalculatePlanesCount(new Vector3Int(x, y, z), section, neighbor);
+                    }
+                }
+            }
+
+            if (planeCount == 0) return null;
+
+            // 填充 Mesh
+            var vertices = new Vector3[planeCount * 4];
+            var normals = new Vector3[planeCount * 4];
+            var uvs = new Vector2[planeCount * 4];
+            var triangles = new int[planeCount * 6];
+            int planeIndex = 0;
+            for (int z = 0; z < ChunkConstants.BlockEdgeWidthInSection; z++)
+            {
+                for (int y = 0; y < ChunkConstants.BlockEdgeWidthInSection; y++)
+                {
+                    for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; x++)
+                    {
+                        var blockHandler = BlockHandler.Create((BlockId)section.Data[x, y, z].Id, ServiceProvider);
+                        blockHandler.CreateMesh(vertices, normals, uvs, triangles, ref planeIndex, new Vector3Int(x, y, z), section, neighbor);
+                    }
+                }
+            }
+
+            return new BuildResult
+            {
+                Vertices = vertices,
+                Normals = normals,
+                UVs = uvs,
+                Triangles = triangles
+            };
+        }
+
+        public void InstallMesh()
+        {
+            Mesh mesh;
+            if (_buildResult is BuildResult buildResult)
+            {
+                mesh = new Mesh { name = "Chunk Section" };
+
+                mesh.vertices = buildResult.Vertices;
+                mesh.normals = buildResult.Normals;
+                mesh.uv = buildResult.UVs;
+                mesh.triangles = buildResult.Triangles;
+            }
+            else
+            {
+                mesh = null;
+            }
+
+            _meshFilter.mesh = mesh;
             _meshCollider.sharedMesh = _meshFilter.sharedMesh;
         }
 
-        private async Task<Mesh> BuildMesh(ChunkSectionCompactStorage section, NeighborSections neighbor)
+        private class BuildResult
         {
-            var mesh = new Mesh { name = "Chunk Section" };
-            var result = await Task.Run(() =>
-            {
-                // 计算面总数
-                int planeCount = 0;
-                for (int z = 0; z < ChunkConstants.BlockEdgeWidthInSection; z++)
-                {
-                    for (int y = 0; y < ChunkConstants.BlockEdgeWidthInSection; y++)
-                    {
-                        for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; x++)
-                        {
-                            var blockHandler = BlockHandler.Create((BlockId)section.Data[x, y, z].Id, ServiceProvider);
-                            planeCount += blockHandler.CalculatePlanesCount(new Vector3Int(x, y, z), section, neighbor);
-                        }
-                    }
-                }
+            public Vector3[] Vertices;
 
-                // 填充 Mesh
-                var vertices = new Vector3[planeCount * 4];
-                var normals = new Vector3[planeCount * 4];
-                var uvs = new Vector2[planeCount * 4];
-                var triangles = new int[planeCount * 6];
-                int planeIndex = 0;
-                for (int z = 0; z < ChunkConstants.BlockEdgeWidthInSection; z++)
-                {
-                    for (int y = 0; y < ChunkConstants.BlockEdgeWidthInSection; y++)
-                    {
-                        for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; x++)
-                        {
-                            var blockHandler = BlockHandler.Create((BlockId)section.Data[x, y, z].Id, ServiceProvider);
-                            blockHandler.CreateMesh(vertices, normals, uvs, triangles, ref planeIndex, new Vector3Int(x, y, z), section, neighbor);
-                        }
-                    }
-                }
+            public Vector3[] Normals;
 
-                return (vertices, normals, uvs, triangles);
-            });
+            public Vector2[] UVs;
 
-            if (result.vertices.Length == 0) return null;
-
-            mesh.vertices = result.vertices;
-            mesh.normals = result.normals;
-            mesh.uv = result.uvs;
-            mesh.triangles = result.triangles;
-            mesh.RecalculateBounds();
-            mesh.RecalculateTangents();
-            return mesh;
+            public int[] Triangles;
         }
     }
 }

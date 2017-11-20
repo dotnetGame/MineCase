@@ -7,6 +7,7 @@
     <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
     <RootNamespace>MineCase.Engine</RootNamespace>
     <Configurations>Debug;Release;Appveyor;TravisCI</Configurations>
+    <DefineConstants>$(DefineConstants);ECS_SERVER</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +23,29 @@
 
   <ItemGroup>
     <AdditionalFiles Include="..\..\build\stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Common\Engine\AsyncEventHandler.cs" Link="AsyncEventHandler.cs" />
+    <Compile Include="..\Common\Engine\Component.cs" Link="Component.cs" />
+    <Compile Include="..\Common\Engine\Data\DependencyValueStorage.cs" Link="Data\DependencyValueStorage.cs" />
+    <Compile Include="..\Common\Engine\Data\IDependencyValueProvider.cs" Link="Data\IDependencyValueProvider.cs" />
+    <Compile Include="..\Common\Engine\Data\IDependencyValueStorage.cs" Link="Data\IDependencyValueStorage.cs" />
+    <Compile Include="..\Common\Engine\Data\IEffectiveValue.cs" Link="Data\IEffectiveValue.cs" />
+    <Compile Include="..\Common\Engine\Data\LocalDependencyValueExtensions.cs" Link="Data\LocalDependencyValueExtensions.cs" />
+    <Compile Include="..\Common\Engine\Data\LocalDependencyValueProvider.cs" Link="Data\LocalDependencyValueProvider.cs" />
+    <Compile Include="..\Common\Engine\DependencyObject.cs" Link="DependencyObject.cs" />
+    <Compile Include="..\Common\Engine\DependencyProperty.cs" Link="DependencyProperty.cs" />
+    <Compile Include="..\Common\Engine\EngineAssemblyExtensions.cs" Link="EngineAssemblyExtensions.cs" />
+    <Compile Include="..\Common\Engine\IDependencyObject.cs" Link="IDependencyObject.cs" />
+    <Compile Include="..\Common\Engine\IEntityMessage.cs" Link="IEntityMessage.cs" />
+    <Compile Include="..\Common\Engine\IHandle.cs" Link="IHandle.cs" />
+    <Compile Include="..\Common\Engine\PropertyChangedEventArgs.cs" Link="PropertyChangedEventArgs.cs" />
+    <Compile Include="..\Common\Engine\PropertyMetadata.cs" Link="PropertyMetadata.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\" />
   </ItemGroup>
 
 </Project>

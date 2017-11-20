@@ -25,6 +25,7 @@ namespace MineCase.Client
 
         protected override void ConfigureApplicationParts(ICollection<Assembly> assemblies)
         {
+            assemblies.AddEngine();
             assemblies.Add(typeof(AppBootstrapper).Assembly);
         }
     }
