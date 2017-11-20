@@ -9,5 +9,9 @@ popd
 echo start MineCase.Server...
 pushd src\MineCase.Server
 start dotnet run
-echo run "run_gateway.bat" when server is ready.
+popd
+
+echo start MineCase.Gateway...
+pushd src\MineCase.Gateway
+start dotnet run
 popd
