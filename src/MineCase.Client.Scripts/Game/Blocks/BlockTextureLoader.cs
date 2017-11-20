@@ -16,48 +16,44 @@ namespace MineCase.Client.Game.Blocks
 
         Dictionary<string, Vector2Int> TextureOffsets { get; }
 
-        void Initialize(Material cubeMaterial);
+        Task Initialize(Material cubeMaterial);
 
         Vector2 GetCubeUV(Vector2Int coord, BlockHandler.BlockFace face, int vertexIndex);
     }
 
     internal class BlockTextureLoader : IBlockTextureLoader
     {
-        private static readonly string[] _textureNames = new[]
-        {
-            "stone",
-            "grass_side",
-            "grass_top",
-            "dirt",
-            "water_overlay",
-            "planks_oak",
-            "log_oak",
-            "leaves_oak"
-        };
-
         public Dictionary<string, Vector2Int> TextureOffsets { get; } = new Dictionary<string, Vector2Int>();
 
         public Vector2Int TextureSize { get; private set; }
 
         public Texture2D Texture { get; private set; }
 
-        public void Initialize(Material cubeMaterial)
+        public async Task Initialize(Material cubeMaterial)
         {
             const int maxWidth = 1024;
-            var height = (int)Math.Ceiling((float)_textureNames.Length / (maxWidth / 16)) * 16;
+
+            int x = 0, y = 0;
+            var textureFiles = Directory.EnumerateFiles(Path.Combine(Application.streamingAssetsPath, "textures/blocks/"), "*.png").ToList();
+            var height = (int)Math.Ceiling((float)textureFiles.Count / (maxWidth / 16)) * 16;
             var texture = new Texture2D(maxWidth, height, TextureFormat.ARGB32, true)
             {
                 filterMode = FilterMode.Bilinear,
                 alphaIsTransparency = true
             };
 
-            int x = 0, y = 0;
-            var textureFiles = Directory.EnumerateFiles(Path.Combine(Application.streamingAssetsPath, "textures/blocks/"), "*.png");
-
             foreach (var texFile in textureFiles)
             {
-                var tex = new WWW(texFile).texture;
-                texture.SetPixels(x, y, 16, 16, tex.GetPixels());
+                using (var www = new WWW(texFile))
+                {
+                    Debug.Log("before");
+                    await www;
+                    Debug.Log("after");
+                    Debug.Log(www.isDone);
+                    var tex = www.texture;
+                    texture.SetPixels(x, y, 16, 16, tex.GetPixels());
+                }
+
                 TextureOffsets.Add(Path.GetFileNameWithoutExtension(texFile), new Vector2Int(x, y));
                 x += 16;
 
