@@ -1,4 +1,5 @@
-﻿using Orleans.Hosting;
+﻿using Microsoft.Extensions.Configuration;
+using Orleans.Hosting;
 using Orleans.Runtime.Configuration;
 using System;
 using System.Reflection;
@@ -13,11 +14,16 @@ namespace MineCase.Server
         private static ISiloHost _siloHost;
         private static Assembly[] _assemblies;
 
+        public static IConfiguration Configuration { get; private set; }
+
         static async Task Main(string[] args)
         {
+            var configBuilder = new ConfigurationBuilder();
+            ConfigureAppConfiguration(configBuilder);
+            Configuration = configBuilder.Build();
+
             var builder = new SiloHostBuilder()
                 .ConfigureLogging(ConfigureLogging)
-                .ConfigureAppConfiguration(ConfigureAppConfiguration)
                 .UseConfiguration(LoadClusterConfiguration())
                 .UseServiceProviderFactory(ConfigureServices);
             SelectAssemblies();
