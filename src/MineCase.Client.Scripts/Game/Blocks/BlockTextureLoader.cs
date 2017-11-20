@@ -46,10 +46,7 @@ namespace MineCase.Client.Game.Blocks
             {
                 using (var www = new WWW(texFile))
                 {
-                    Debug.Log("before");
                     await www;
-                    Debug.Log("after");
-                    Debug.Log(www.isDone);
                     var tex = www.texture;
                     texture.SetPixels(x, y, 16, 16, tex.GetPixels());
                 }

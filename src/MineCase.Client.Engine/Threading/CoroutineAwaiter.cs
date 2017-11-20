@@ -31,7 +31,6 @@ namespace MineCase.Engine.Threading
         {
             yield return enumerator;
             continuation();
-            Debug.Log("hah");
         }
     }
 
