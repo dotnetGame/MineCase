@@ -1,104 +1,59 @@
-﻿MineCase
-[![Build status](https://ci.appveyor.com/api/projects/status/w9h243k1lqee2ke5/branch/master?svg=true)](https://ci.appveyor.com/project/sunnycase/minecase/branch/master)
-===
+﻿# MineCase [![Build Status](https://travis-ci.org/dotnetGame/MineCase.svg?branch=master)](https://travis-ci.org/dotnetGame/MineCase) [![Build status](https://ci.appveyor.com/api/projects/status/w9h243k1lqee2ke5/branch/master?svg=true)](https://ci.appveyor.com/project/sunnycase/minecase/branch/master)
 
-![Screenshots](screenshots/mc5.png)
+![Screenshots](screenshots/1.jpg)
 
-## 介绍
-`MineCase` 是一个分布式的 `minecraft` 服务端应用。`MineCase` 采用 `.net core` 编写，使用 `Orleans` 框架。<br>
-`MineCase` 具有以下特性：
-
-* 跨平台
-* 分布式
-
-## 要求
-运行这个服务器之前，请保证你的环境满足：
-
-* `.net core` sdk 2.0
-
-目前支持的 `minecraft` 版本：
-
-* 1.12
-
-## 开始
-
->注：本项目还在施工阶段，还没有完成所有的功能。
-
-1. 获取源码
-```bash
-git clone git@github.com:dotnetGame/MineCase.git
-```
-或者 [下载ZIP](https://github.com/dotnetGame/MineCase/archive/master.zip)。
-
-2. 构建并运行
-
-进入 `MineCase` 目录下，运行 `run_server.bat`，看到下面这一行提示的时候：
-```
-Press Ctrl+C to terminate...
-```
-再运行 `run_gateway.bat` 。
-
-## 进度
-
-| 模块 | 完成情况 |
-|:---:|:---:|
-|握手协议|:white_check_mark:|
-|登陆游戏|:white_check_mark:|
-|进入世界|:white_check_mark:|
-|地图生成|:x:|
-|怪物生成|:x:|
-|AI|:x:|
-
-## 反馈
-
-如果你在使用 `MineCase` 的过程中遇到任何问题，请在 [Issues](https://github.com/dotnetGame/MineCase/issues) 中提出。
-
-***
+[English](https://github.com/dotnetGame/MineCase/blob/master/Readme.md) | [中文文档](https://github.com/dotnetGame/MineCase/blob/master/Readme-zh.md)
 
 ## Introduction
-`MineCase` is a distributed `minecraft` server application. It is written in `.net core`, and using the `Orleans` framework. <br>
-`MineCase` has the following features:
 
-* cross-platform
-* distributed
+`MineCase` is a cross-platform, distributed `Minecraft` server application developed using `.NET Core` that uses the `Orleans` framework.
 
-## Required
-Before running this server, please make sure your environment meet:
+We currently support [Release 1.12](https://minecraft.net/en-us/article/minecraft-112-pre-release-6) Minecraft protocol versions.
 
-* `.net core` sdk 2.0
+## Setup
 
-Currently supported version of `minecraft`:
+### From docker(Only support Linux)
 
-* 1.12
+#### Install docker
 
-## Getting Start
+You can install docker according to [this guide](https://docs.docker.com/engine/installation/).
 
->Note: This project is still in the construction phase, has not completed all the feature.
+#### Run the application
 
-1. Get source
+```bash
+curl -o docker-compose.yml https://raw.githubusercontent.com/dotnetGame/MineCase/master/build/docker/linux/docker-compose.yml
+docker-compose up
+```
+You can use `docker-compose stop` to stop the application。
+
+### From source
+
+#### Pre-requirement
+
+You need to install `.NET Core` sdk 2.0 first, you can find the version you need from [here](https://www.microsoft.com/net/download/windows).
+
+#### Get source
+
 ```bash
 git clone git@github.com:dotnetGame/MineCase.git
+cd MineCase
 ```
-or [Download ZIP](https://github.com/dotnetGame/MineCase/archive/master.zip).
+or [Download ZIP](https://github.com/dotnetGame/MineCase/archive/master.zip) and entry the `MineCase` directory.
 
-2. Build and run
+#### Build and run
 
-Entry the `MineCase` directory, run `run_server.bat`, and when you see the following line：
-```
-Press Ctrl+C to terminate...
-```
-run `run_gateway.bat` .
+* Windows
 
-## Schedule
+Double click the `build_and_run.bat`.
 
-|Module|Finished|
-|:----:|:----:|
-|handshake|:white_check_mark:|
-|log in|:white_check_mark:|
-|entry the world|:white_check_mark:|
-|map generation|:x:|
-|monster generation|:x:|
-|AI|:x:|
+* Linux or Mac
 
-## Feedback
-If you encounter any problems with the use of `MineCase`, please point out that in [Issues](https://github.com/dotnetGame/MineCase/issues).
+Run the `build_and_run.sh`.
+
+## Contributing
+
+This project is still under development. We welcome and thank you for your contribution to this project.
+
+If you are a developer, we welcome you to fork this project and submit a `Pull Request` with your changes, and if you have any questions we can discuss together in the [Issues](https://github.com/dotnetGame/MineCase/issues).
+
+If you are a user, any questions you may have while using this server, or any good suggestions, can be addressed to us in [Issues](https://github.com/dotnetGame/MineCase/issues).
