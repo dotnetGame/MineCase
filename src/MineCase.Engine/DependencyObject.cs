@@ -14,6 +14,8 @@ namespace MineCase.Engine
     public abstract class DependencyObject : Grain, IDependencyObject
     {
         private Dictionary<string, IComponentIntern> _components;
+        private Dictionary<IComponentIntern, int> _indexes;
+        private int _index = 0;
 
         public DependencyObject()
         {
@@ -24,6 +26,7 @@ namespace MineCase.Engine
         public override async Task OnActivateAsync()
         {
             _components = new Dictionary<string, IComponentIntern>();
+            _indexes = new Dictionary<IComponentIntern, int>();
             _messageHandlers = new MultiValueDictionary<Type, IComponentIntern>();
             await InitializeComponents();
         }
@@ -53,10 +56,12 @@ namespace MineCase.Engine
                 if (old == component) return;
                 Unsubscribe(old);
                 await old.Detach();
+                _indexes.Remove(old);
                 _components.Remove(name);
             }
 
             _components.Add(name, component);
+            _indexes.Add(component, _index++);
             await ((IComponentIntern)component).Attach(this, ServiceProvider);
             Subscribe(component);
         }
@@ -69,6 +74,7 @@ namespace MineCase.Engine
             {
                 Unsubscribe(component.Value);
                 await component.Value.Detach();
+                _indexes.Remove(component.Value);
                 _components.Remove(component.Key);
             }
         }
@@ -250,28 +256,55 @@ namespace MineCase.Engine
                 _messageHandlers.Remove(type, component);
         }
 
-        public async Task Tell(IEntityMessage message)
+        public Task Tell(IEntityMessage message)
         {
-            var messageType = message.GetType();
+            return Tell(message, message.GetType());
+        }
+
+        public Task Tell<T>(T message)
+            where T : IEntityMessage
+        {
+            return Tell(message, typeof(T));
+        }
+
+        private async Task Tell(IEntityMessage message, Type messageType)
+        {
             var invoker = (Func<IComponentIntern, IEntityMessage, Task>)GetOrAddMessageCaller(messageType);
             if (_messageHandlers.TryGetValue(messageType, out var handlers))
             {
-                foreach (var handler in handlers)
+                foreach (var handler in from h in handlers
+                                        orderby h.GetMessageOrder(message), _indexes[h]
+                                        select h)
                     await invoker(handler, message);
             }
         }
 
         public async Task<TResponse> Ask<TResponse>(IEntityMessage<TResponse> message)
         {
+            var response = await TryAsk(message);
+            if (!response.Succeeded)
+                throw new ReceiverNotFoundException();
+            return response.Response;
+        }
+
+        public async Task<AskResult<TResponse>> TryAsk<TResponse>(IEntityMessage<TResponse> message)
+        {
             var messageType = message.GetType();
             var invoker = (Func<IComponentIntern, IEntityMessage<TResponse>, Task<TResponse>>)GetOrAddMessageCaller(messageType);
             if (_messageHandlers.TryGetValue(messageType, out var handlers))
             {
-                foreach (var handler in handlers)
-                    return await invoker(handler, message);
+                foreach (var handler in from h in handlers
+                                        orderby h.GetMessageOrder(message), _indexes[h]
+                                        select h)
+                    return new AskResult<TResponse> { Succeeded = true, Response = await invoker(handler, message) };
             }
 
-            throw new ReceiverNotFoundException();
+            return AskResult<TResponse>.Failed;
+        }
+
+        public virtual void Destroy()
+        {
+            DeactivateOnIdle();
         }
     }
 }

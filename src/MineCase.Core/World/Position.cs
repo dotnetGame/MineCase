@@ -49,8 +49,8 @@ namespace MineCase.World
         {
             int chunkPosX = X / ChunkConstants.BlockEdgeWidthInSection;
             int chunkPosZ = Z / ChunkConstants.BlockEdgeWidthInSection;
-            if (chunkPosX < 0) chunkPosX -= 1;
-            if (chunkPosZ < 0) chunkPosZ -= 1;
+            if (X < 0) chunkPosX -= 1;
+            if (Z < 0) chunkPosZ -= 1;
             return new ChunkWorldPos(chunkPosX, chunkPosZ);
         }
 
@@ -272,12 +272,20 @@ namespace MineCase.World
             return new ChunkWorldPos((int)chunkX, (int)chunkZ);
         }
 
+        public BlockWorldPos ToBlockWorldPos()
+        {
+            int x = (int)Math.Floor(X);
+            int y = (int)Math.Floor(Y);
+            int z = (int)Math.Floor(Z);
+            return new BlockWorldPos(x, y, z);
+        }
+
         public EntityChunkPos ToEntityChunkPos()
         {
             float entityX = X % ChunkConstants.BlockEdgeWidthInSection;
             float entityZ = Z % ChunkConstants.BlockEdgeWidthInSection;
-            if (entityX < 0) entityX += ChunkConstants.BlockEdgeWidthInSection;
-            if (entityZ < 0) entityZ += ChunkConstants.BlockEdgeWidthInSection;
+            if (X < 0) entityX += ChunkConstants.BlockEdgeWidthInSection;
+            if (Z < 0) entityZ += ChunkConstants.BlockEdgeWidthInSection;
             return new EntityChunkPos(entityX, Y, entityZ);
         }
 

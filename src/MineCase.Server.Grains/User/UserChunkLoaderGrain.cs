@@ -79,7 +79,8 @@ namespace MineCase.Server.User
             if (!_sentChunks.Contains(chunkPos) && _sendingChunks.Add(chunkPos))
             {
                 await trunkSender.PostChunk(chunkPos, new[] { _sink }, new[] { this.AsReference<IUserChunkLoader>() });
-                await GrainFactory.GetGrain<IChunkTrackingHub>(_world.MakeAddressByPartitionKey(chunkPos)).Subscribe(_player);
+                await GrainFactory.GetPartitionGrain<IChunkTrackingHub>(_world, chunkPos).Subscribe(_player);
+                await GrainFactory.GetPartitionGrain<IWorldPartition>(_world, chunkPos).Enter(_player);
                 return true;
             }
 
@@ -98,14 +99,15 @@ namespace MineCase.Server.User
         private async Task UnloadOutOfRangeChunks()
         {
             var currentChunk = (await _player.GetPosition()).ToChunkWorldPos();
-            foreach (var chunk in CloneSentChunks())
+            foreach (var chunkPos in CloneSentChunks())
             {
-                var distance = Math.Abs(chunk.X - currentChunk.X) + Math.Abs(chunk.Z - currentChunk.Z);
+                var distance = Math.Abs(chunkPos.X - currentChunk.X) + Math.Abs(chunkPos.Z - currentChunk.Z);
                 if (distance > _viewDistance)
                 {
-                    await GrainFactory.GetGrain<IChunkTrackingHub>(_world.MakeAddressByPartitionKey(chunk)).Unsubscribe(_player);
-                    await _generator.UnloadChunk(chunk.X, chunk.Z);
-                    _sentChunks.Remove(chunk);
+                    await GrainFactory.GetPartitionGrain<IChunkTrackingHub>(_world, chunkPos).Unsubscribe(_player);
+                    await GrainFactory.GetPartitionGrain<IWorldPartition>(_world, chunkPos).Leave(_player);
+                    await _generator.UnloadChunk(chunkPos.X, chunkPos.Z);
+                    _sentChunks.Remove(chunkPos);
                 }
             }
         }

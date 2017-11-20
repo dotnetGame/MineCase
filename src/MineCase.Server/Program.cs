@@ -1,58 +1,47 @@
-﻿using Orleans.Runtime.Configuration;
+﻿using Orleans.Hosting;
+using Orleans.Runtime.Configuration;
 using System;
+using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MineCase.Server
 {
-    class Program
+    partial class Program
     {
         private static readonly ManualResetEvent _exitEvent = new ManualResetEvent(false);
+        private static ISiloHost _siloHost;
+        private static Assembly[] _assemblies;
 
-        private static OrleansHostWrapper hostWrapper;
-
-        static int Main(string[] args)
+        static async Task Main(string[] args)
         {
-            int exitCode = StartSilo(args);
-
+            var builder = new SiloHostBuilder()
+                .ConfigureLogging(ConfigureLogging)
+                .ConfigureAppConfiguration(ConfigureAppConfiguration)
+                .UseConfiguration(LoadClusterConfiguration())
+                .UseServiceProviderFactory(ConfigureServices);
+            SelectAssemblies();
+            ConfigureApplicationParts(builder);
+            _siloHost = builder.Build();
+            await _siloHost.StartAsync();
             Console.WriteLine("Press Ctrl+C to terminate...");
             Console.CancelKeyPress += (s, e) => _exitEvent.Set();
             _exitEvent.WaitOne();
-
-            exitCode += ShutdownSilo();
-
-            //either StartSilo or ShutdownSilo failed would result on a non-zero exit code. 
-            return exitCode;
+            await _siloHost.StopAsync();
         }
 
-
-        private static int StartSilo(string[] args)
+        private static ClusterConfiguration LoadClusterConfiguration()
         {
-            // define the cluster configuration
-            var config = new ClusterConfiguration();
-            config.LoadFromFile("OrleansConfiguration.dev.xml");
-            config.AddMemoryStorageProvider();
-            config.UseStartupType<Startup>();
-
-            hostWrapper = new OrleansHostWrapper(config, args);
-            return hostWrapper.Run();
+            var cluster = new ClusterConfiguration();
+            cluster.LoadFromFile("OrleansConfiguration.dev.xml");
+            cluster.AddMemoryStorageProvider();
+            return cluster;
         }
 
-        private static int ShutdownSilo()
+        private static void ConfigureApplicationParts(ISiloHostBuilder builder)
         {
-            if (hostWrapper != null)
-            {
-                return hostWrapper.Stop();
-            }
-            return 0;
-        }
-
-        // Workaroud for assembly references
-        private void Dummy()
-        {
-            var type = new[]
-            {
-                typeof(Orleans.Storage.MemoryStorage)
-            };
+            foreach (var assembly in _assemblies)
+                builder.AddApplicationPart(assembly);
         }
     }
 }

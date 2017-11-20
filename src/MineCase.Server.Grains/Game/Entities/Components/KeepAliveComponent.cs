@@ -8,7 +8,7 @@ using MineCase.Server.Network.Play;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class KeepAliveComponent : Component
+    internal class KeepAliveComponent : Component, IHandle<PlayerLoggedIn>, IHandle<KickPlayer>
     {
         private uint _keepAliveId = 0;
         public readonly HashSet<uint> _keepAliveWaiters = new HashSet<uint>();
@@ -37,22 +37,6 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
-        protected override Task OnAttached()
-        {
-            AttachedObject.GetComponent<GameTickComponent>()
-                .Tick += OnGameTick;
-            _isOnline = true;
-            return base.OnAttached();
-        }
-
-        protected override Task OnDetached()
-        {
-            AttachedObject.GetComponent<GameTickComponent>()
-                .Tick -= OnGameTick;
-            _keepAliveWaiters.Clear();
-            return base.OnDetached();
-        }
-
         public Task ReceiveResponse(uint keepAliveId)
         {
             _keepAliveWaiters.Remove(keepAliveId);
@@ -66,15 +50,32 @@ namespace MineCase.Server.Game.Entities.Components
             if (_isOnline && _keepAliveWaiters.Count >= ClientKeepInterval)
             {
                 _isOnline = false;
-                await AttachedObject.GetComponent<ClientboundPacketComponent>().Kick();
+                await AttachedObject.Tell(new KickPlayer());
             }
-            else
+            else if (e.worldAge % 20 == 0)
             {
                 var id = _keepAliveId++;
                 _keepAliveWaiters.Add(id);
                 _keepAliveRequestTime = DateTime.UtcNow;
                 await AttachedObject.GetComponent<ClientboundPacketComponent>().GetGenerator().KeepAlive(id);
             }
+        }
+
+        Task IHandle<PlayerLoggedIn>.Handle(PlayerLoggedIn message)
+        {
+            _keepAliveWaiters.Clear();
+            _isOnline = true;
+            AttachedObject.GetComponent<GameTickComponent>()
+                .Tick += OnGameTick;
+            return Task.CompletedTask;
+        }
+
+        Task IHandle<KickPlayer>.Handle(KickPlayer message)
+        {
+            AttachedObject.GetComponent<GameTickComponent>()
+                .Tick -= OnGameTick;
+            _isOnline = false;
+            return Task.CompletedTask;
         }
     }
 }

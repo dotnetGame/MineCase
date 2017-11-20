@@ -55,6 +55,7 @@
     <Rule Id="SA1615" Action="None" />
     <!-- Generic type parameters must be documented -->
     <Rule Id="SA1618" Action="None" />
+    <Rule Id="SA1623" Action="None" />
     <!-- Don't copy/paste documentation -->
     <Rule Id="SA1625" Action="None" />
     <!-- Exception documentation must not be empty -->

@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MineCase.Serialization;
-using Orleans.Concurrency;
 
 namespace MineCase.Protocol.Play
 {
-    [Immutable]
+#if !NET46
+    [Orleans.Concurrency.Immutable]
+#endif
     [Packet(0x03)]
     public sealed class ServerboundChatMessage
     {
@@ -24,7 +25,9 @@ namespace MineCase.Protocol.Play
     }
 
     // TODO
-    [Immutable]
+#if !NET46
+    [Orleans.Concurrency.Immutable]
+#endif
     [Packet(0x0F)]
     public sealed class ClientboundChatMessage : ISerializablePacket
     {

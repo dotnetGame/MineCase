@@ -6,11 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Buffers;
 using MineCase.Serialization;
-using Orleans.Concurrency;
 
 namespace MineCase.Protocol
 {
-    [Immutable]
+#if !NET46
+    [Orleans.Concurrency.Immutable]
+#endif
     public class UncompressedPacket
     {
         [SerializeAs(DataType.VarInt)]
@@ -52,7 +53,9 @@ namespace MineCase.Protocol
         }
     }
 
-    [Immutable]
+#if !NET46
+    [Orleans.Concurrency.Immutable]
+#endif
     public class CompressedPacket
     {
         [SerializeAs(DataType.VarInt)]

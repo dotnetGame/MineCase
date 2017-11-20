@@ -11,6 +11,7 @@ using MineCase.Server.Network.Play;
 using MineCase.Server.Settings;
 using MineCase.Server.World.Generation;
 using MineCase.World;
+using MineCase.World.Biomes;
 using MineCase.World.Generation;
 using Orleans;
 using Orleans.Concurrency;
@@ -37,6 +38,12 @@ namespace MineCase.Server.World
         {
             await EnsureChunkGenerated();
             return _state;
+        }
+
+        public async Task<BiomeId> GetBlockBiome(int x, int z)
+        {
+            await EnsureChunkGenerated();
+            return (BiomeId)_state.Biomes[(z * ChunkConstants.BlockEdgeWidthInSection) + x];
         }
 
         public override Task OnActivateAsync()
@@ -69,7 +76,7 @@ namespace MineCase.Server.World
                 if (oldState.Id != blockState.Id)
                 {
                     bool replaceOld = true;
-                    var newEntity = BlockEntity.Create(GrainFactory, _world, blockWorldPos, (BlockId)blockState.Id);
+                    var newEntity = BlockEntity.Create(GrainFactory, (BlockId)blockState.Id);
 
                     // 删除旧的 BlockEntity
                     if (_blockEntities.TryGetValue(chunkPos, out var entity))
@@ -79,7 +86,7 @@ namespace MineCase.Server.World
 
                         if (replaceOld)
                         {
-                            await entity.Destroy();
+                            await entity.Tell(DestroyBlockEntity.Default);
                             _blockEntities.Remove(chunkPos);
                         }
                     }
@@ -88,7 +95,7 @@ namespace MineCase.Server.World
                     if (newEntity != null && replaceOld)
                     {
                         _blockEntities.Add(chunkPos, newEntity);
-                        await newEntity.OnCreated();
+                        await newEntity.Tell(new SpawnBlockEntity { World = _world, Position = blockWorldPos });
                     }
                 }
 

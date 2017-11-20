@@ -15,5 +15,7 @@ namespace MineCase.Server.World
         Task Subscribe(IPlayer player);
 
         Task Unsubscribe(IPlayer player);
+
+        Task<List<IPlayer>> GetTrackedPlayers();
     }
 }

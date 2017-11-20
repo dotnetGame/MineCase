@@ -11,7 +11,7 @@ using MineCase.World;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class DiggingComponent : Component<PlayerGrain>
+    internal class DiggingComponent : Component<EntityGrain>
     {
         public const float MaxDiggingRadius = 6;
 

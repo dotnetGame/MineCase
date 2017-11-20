@@ -12,7 +12,7 @@ using MineCase.World;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class BlockPlacementComponent : Component<PlayerGrain>
+    internal class BlockPlacementComponent : Component<EntityGrain>
     {
         public BlockPlacementComponent(string name = "blockPlacement")
             : base(name)
@@ -38,8 +38,7 @@ namespace MineCase.Server.Game.Entities.Components
                         var itemHandler = ItemHandler.Create((uint)heldItem.slot.BlockId);
                         if (itemHandler.IsPlaceable)
                         {
-                            var inventory = AttachedObject.GetComponent<InventoryComponent>().GetInventoryWindow();
-                            await itemHandler.PlaceBy(AttachedObject, GrainFactory, world, location, inventory, heldItem.index, face, cursorPosition);
+                            await itemHandler.PlaceBy(AttachedObject, GrainFactory, world, location, heldItem.slot, face, cursorPosition);
                         }
                     }
                 }

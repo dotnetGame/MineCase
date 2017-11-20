@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Engine;
 using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.Game.BlockEntities
 {
-    public interface IBlockEntity : IGrainWithStringKey
+    public interface IBlockEntity : IDependencyObject, IGrainWithGuidKey
     {
-        Task OnCreated();
+        Task<IWorld> GetWorld();
 
-        Task Destroy();
+        Task<BlockWorldPos> GetPosition();
     }
 
     [AttributeUsage(AttributeTargets.Interface, Inherited = false, AllowMultiple = true)]
@@ -23,26 +24,6 @@ namespace MineCase.Server.Game.BlockEntities
         public BlockEntityAttribute(BlockId blockId)
         {
             BlockId = blockId;
-        }
-    }
-
-    public static class BlockEntityExtensions
-    {
-        public static string MakeBlockEntityKey(this IWorld world, BlockWorldPos position)
-        {
-            return $"{world.GetPrimaryKeyString()},{position.X},{position.Y},{position.Z}";
-        }
-
-        public static BlockWorldPos GetBlockEntityPosition(this IBlockEntity blockEntity)
-        {
-            var key = blockEntity.GetPrimaryKeyString().Split(',');
-            return new BlockWorldPos(int.Parse(key[1]), int.Parse(key[2]), int.Parse(key[3]));
-        }
-
-        public static (string worldKey, BlockWorldPos position) GetWorldAndBlockEntityPosition(this IBlockEntity blockEntity)
-        {
-            var key = blockEntity.GetPrimaryKeyString().Split(',');
-            return (key[0], new BlockWorldPos(int.Parse(key[1]), int.Parse(key[2]), int.Parse(key[3])));
         }
     }
 }

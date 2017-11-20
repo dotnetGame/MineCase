@@ -6,7 +6,7 @@ using Orleans;
 
 namespace MineCase.Algorithm.World.Plants
 {
-    public class TreeGenerator : PlantsGenerator
+    public class TreeGenerator : AbstractTreeGenerator
     {
         private int _minTreeHeight;
 
@@ -88,19 +88,6 @@ namespace MineCase.Algorithm.World.Plants
             return result;
         }
 
-        public static bool CanSustainTree(PlantsType type, BlockState state)
-        {
-            if (state == BlockStates.Dirt() ||
-                state == BlockStates.GrassBlock())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         public override void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
         {
             int height = random.Next(3) + _minTreeHeight;
@@ -168,7 +155,71 @@ namespace MineCase.Algorithm.World.Plants
                                 chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z] = _wood;
                             }
 
+                            // 生成藤蔓
+                            if (_vines && y > 0)
+                            {
+                                if (random.Next(3) > 0 && chunk[chunkUpPos.X - 1, chunkUpPos.Y, chunkUpPos.Z].IsAir())
+                                {
+                                    chunk[chunkUpPos.X - 1, chunkUpPos.Y, chunkUpPos.Z] = BlockStates.Vines(VineType.East);
+                                }
+
+                                if (random.Next(3) > 0 && chunk[chunkUpPos.X + 1, chunkUpPos.Y, chunkUpPos.Z].IsAir())
+                                {
+                                    chunk[chunkUpPos.X + 1, chunkUpPos.Y, chunkUpPos.Z] = BlockStates.Vines(VineType.West);
+                                }
+
+                                if (random.Next(3) > 0 && chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z - 1].IsAir())
+                                {
+                                    chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z - 1] = BlockStates.Vines(VineType.South);
+                                }
+
+                                if (random.Next(3) > 0 && chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z + 1].IsAir())
+                                {
+                                    chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z + 1] = BlockStates.Vines(VineType.North);
+                                }
+                            }
+
                             ++upPos.Y;
+                        }
+
+                        // 生成藤蔓
+                        BlockChunkPos chunkPos = pos.ToBlockChunkPos();
+                        if (_vines)
+                        {
+                            for (int y = chunkPos.Y + height - 3; y <= chunkPos.Y + height; ++y)
+                            {
+                                int restHeight = y - (chunkPos.Y + height);
+                                int xzSize = 2 - restHeight / 2;
+
+                                for (int x = chunkPos.X - xzSize; x <= chunkPos.X + xzSize; ++x)
+                                {
+                                    for (int z = chunkPos.Z - xzSize; z <= chunkPos.Z + xzSize; ++z)
+                                    {
+                                        if (chunk[x, y, z].IsLeaves())
+                                        {
+                                            if (random.Next(4) == 0 && chunk[x - 1, y, z].IsAir())
+                                            {
+                                                chunk[x - 1, y, z] = BlockStates.Vines(VineType.East);
+                                            }
+
+                                            if (random.Next(4) == 0 && chunk[x + 1, y, z].IsAir())
+                                            {
+                                                chunk[x + 1, y, z] = BlockStates.Vines(VineType.West);
+                                            }
+
+                                            if (random.Next(4) == 0 && chunk[x, y, z - 1].IsAir())
+                                            {
+                                                chunk[x, y, z - 1] = BlockStates.Vines(VineType.South);
+                                            }
+
+                                            if (random.Next(4) == 0 && chunk[x, y, z + 1].IsAir())
+                                            {
+                                                chunk[x, y, z + 1] = BlockStates.Vines(VineType.North);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

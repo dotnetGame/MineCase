@@ -22,9 +22,9 @@ namespace MineCase.Server.Game.Items
         {
         }
 
-        protected override async Task<BlockState> ConvertToBlock(IPlayer player, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, Slot slot)
+        protected override async Task<BlockState> ConvertToBlock(IEntity entity, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, Slot slot)
         {
-            var facing = ChestBlockHandler.PlayerYawToFacing(await player.GetYaw());
+            var facing = ChestBlockHandler.PlayerYawToFacing(await entity.GetYaw());
             return BlockStates.Furnace(facing);
         }
     }

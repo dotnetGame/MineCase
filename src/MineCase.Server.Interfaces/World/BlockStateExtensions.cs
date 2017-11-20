@@ -10,21 +10,73 @@ namespace MineCase.Server.World
     public static class BlockStateExtensions
     {
         // 一些特性
-        public static float IsLightOpacity(this BlockState state)
+        public static int IsLightOpacity(this BlockState state)
         {
-            if (state.Id == (uint)BlockId.Glass)
+            if (state.IsSameId(BlockStates.Air()))
             {
-                return 1.0F;
+                return 255;
+            }
+            else if (state.IsSameId(BlockStates.Water()))
+            {
+                return 255;
+            }
+            else if (state.IsSameId(BlockStates.Lava()))
+            {
+                return 255;
+            }
+            else if (state.IsSameId(BlockStates.Glass()))
+            {
+                return 255;
+            }
+            else if (state.IsSameId(BlockStates.Grass()))
+            {
+                return 255;
+            }
+            else if (state.IsSameId(BlockStates.Poppy()))
+            {
+                return 255;
+            }
+            else if (state.IsSameId(BlockStates.Dandelion()))
+            {
+                return 255;
+            }
+            else if (state.IsSameId(BlockStates.LargeFlowers()))
+            {
+                return 255;
             }
             else
             {
-                return 0.0F;
+                return 0;
             }
         }
 
         public static bool IsAir(this BlockState state)
         {
             return state.Id == (uint)BlockId.Air;
+        }
+
+        public static bool IsLeaves(this BlockState state)
+        {
+            return state.IsSameId(BlockStates.Leaves()) || state.IsSameId(BlockStates.Leaves2());
+        }
+
+        public static bool CanMobStand(this BlockState state)
+        {
+            return !state.IsSameId(BlockStates.Air()) &&
+                !state.IsSameId(BlockStates.Grass()) &&
+                !state.IsSameId(BlockStates.Water()) &&
+                !state.IsSameId(BlockStates.LargeFlowers()) &&
+                !state.IsSameId(BlockStates.Poppy()) &&
+                !state.IsSameId(BlockStates.Dandelion());
+        }
+
+        public static bool IsMobCollided(this BlockState state)
+        {
+            return !state.IsSameId(BlockStates.Air()) &&
+                !state.IsSameId(BlockStates.Grass()) &&
+                !state.IsSameId(BlockStates.LargeFlowers()) &&
+                !state.IsSameId(BlockStates.Poppy()) &&
+                !state.IsSameId(BlockStates.Dandelion());
         }
 
         public static async Task<bool> CanBlockStay(this BlockState state, IWorld world, IGrainFactory grainFactory, int x, int y, int z)

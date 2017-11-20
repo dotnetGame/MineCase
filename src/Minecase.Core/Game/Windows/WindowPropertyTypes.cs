@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MineCase.Game.Windows
 {
-    public enum FurnaceWindowProperty : short
+    public enum FurnaceWindowPropertyType : short
     {
         FireIcon = 0,
         MaximumFuelBurnTime = 1,

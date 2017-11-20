@@ -49,7 +49,6 @@ artifacts/
 *_p.c
 *_i.h
 *.ilk
-*.meta
 *.obj
 *.pch
 *.pdb
@@ -263,3 +262,5 @@ src/**/*.txt
 
 # vscode
 .vscode/
+
+*.diagsession

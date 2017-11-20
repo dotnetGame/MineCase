@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Engine;
+using MineCase.Graphics;
+using MineCase.Server.Components;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.Components;
+using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
 
@@ -16,40 +21,56 @@ namespace MineCase.Server.World
     {
         private IWorld _world;
 
+        private List<(Cuboid box, ICollectableFinder finder)> _neighborFinders;
+
+        public static readonly (int x, int z)[] CrossCoords = new[]
+        {
+            (0, 0), (-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1)
+        };
+
         /*
         private List<ICollectable> _collectables;
         */
         public override Task OnActivateAsync()
         {
             _world = GrainFactory.GetGrain<IWorld>(this.GetWorldAndChunkWorldPos().worldKey);
+            var selfPos = this.GetChunkWorldPos();
+            _neighborFinders = new List<(Cuboid box, ICollectableFinder finder)>();
+            foreach (var crossCoord in CrossCoords)
+            {
+                var newPos = new ChunkWorldPos(selfPos.X + crossCoord.x, selfPos.Z + crossCoord.z);
+                var shape = new Cuboid(new Point3d(newPos.X * 16, newPos.Z * 16, 0), new Size(16, 16, 256));
+                _neighborFinders.Add((shape, GrainFactory.GetPartitionGrain<ICollectableFinder>(_world, newPos)));
+            }
 
-            // _collectables = new List<ICollectable>();
+            _colliders = new Dictionary<IDependencyObject, Shape>();
             return base.OnActivateAsync();
         }
 
-        /*
-        public Task<IReadOnlyCollection<ICollectable>> Collision(IEntity entity)
+        private Dictionary<IDependencyObject, Shape> _colliders;
+
+        public Task RegisterCollider(IDependencyObject entity, Shape colliderShape)
         {
-            return CollisionInChunk(entity);
+            _colliders[entity] = colliderShape;
+            return Collision(entity, colliderShape);
         }
 
-        public Task<IReadOnlyCollection<ICollectable>> CollisionInChunk(IEntity entity)
+        public Task UnregisterCollider(IDependencyObject entity)
         {
-            return Task.FromResult<IReadOnlyCollection<ICollectable>>(_collectables);
-        }
-
-        public Task Register(ICollectable collectable)
-        {
-            if (!_collectables.Contains(collectable))
-                _collectables.Add(collectable);
+            _colliders.Remove(entity);
             return Task.CompletedTask;
         }
 
-        public Task Unregister(ICollectable collectable)
+        private async Task Collision(IDependencyObject entity, Shape colliderShape)
         {
-            _collectables.Remove(collectable);
-            return Task.CompletedTask;
-        }*/
+            var result = (await Task.WhenAll(from finder in _neighborFinders
+                                             where colliderShape.CollideWith(finder.box)
+                                             select finder.finder.CollisionInChunk(colliderShape)))
+                                             .SelectMany(o => o).ToList();
+            result.Remove(entity);
+            if (result.Any())
+                await entity.Tell(new CollisionWith { Entities = result });
+        }
 
         public async Task SpawnPickup(Vector3 position, Immutable<Slot[]> slots)
         {
@@ -64,6 +85,22 @@ namespace MineCase.Server.World
                 });
                 await pickup.Tell(new SetSlot { Slot = slot });
             }
+        }
+
+        public Task<IReadOnlyCollection<IDependencyObject>> CollisionInChunk(Shape colliderShape)
+        {
+            List<IDependencyObject> result = null;
+            foreach (var collider in _colliders)
+            {
+                if (collider.Value.CollideWith(colliderShape))
+                {
+                    if (result == null)
+                        result = new List<IDependencyObject>();
+                    result.Add(collider.Key);
+                }
+            }
+
+            return Task.FromResult((IReadOnlyCollection<IDependencyObject>)result ?? Array.Empty<IDependencyObject>());
         }
     }
 }

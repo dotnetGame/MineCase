@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MineCase.Serialization;
-using Orleans.Concurrency;
 
 namespace MineCase.Protocol.Status
 {
-    [Immutable]
+#if !NET46
+    [Orleans.Concurrency.Immutable]
+#endif
     [Packet(0x01)]
-    public sealed class Ping
+    public sealed class Ping : ISerializablePacket
     {
         [SerializeAs(DataType.Long)]
         public long Payload;
@@ -21,14 +22,29 @@ namespace MineCase.Protocol.Status
                 Payload = br.ReadAsLong(),
             };
         }
+
+        public void Serialize(BinaryWriter bw)
+        {
+            bw.WriteAsLong(Payload);
+        }
     }
 
-    [Immutable]
+#if !NET46
+    [Orleans.Concurrency.Immutable]
+#endif
     [Packet(0x01)]
     public sealed class Pong : ISerializablePacket
     {
         [SerializeAs(DataType.Long)]
         public long Payload;
+
+        public static Pong Deserialize(ref SpanReader br)
+        {
+            return new Pong
+            {
+                Payload = br.ReadAsLong(),
+            };
+        }
 
         public void Serialize(BinaryWriter bw)
         {

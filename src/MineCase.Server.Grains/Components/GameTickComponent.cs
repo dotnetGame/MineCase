@@ -9,7 +9,7 @@ using Orleans.Concurrency;
 
 namespace MineCase.Server.Components
 {
-    internal class GameTickComponent : Component, IHandle<GameTick>
+    internal class GameTickComponent : Component, IHandle<GameTick>, IHandle<Disable>
     {
         public event AsyncEventHandler<(TimeSpan deltaTime, long worldAge)> Tick;
 
@@ -48,6 +48,13 @@ namespace MineCase.Server.Components
         Task IHandle<GameTick>.Handle(GameTick message)
         {
             return Tick.InvokeSerial(this, (message.DeltaTime, message.WorldAge));
+        }
+
+        async Task IHandle<Disable>.Handle(Disable message)
+        {
+            var key = AttachedObject.GetAddressByPartitionKey();
+            if (!string.IsNullOrEmpty(key))
+                await GrainFactory.GetGrain<ITickEmitter>(key).Unsubscribe(AttachedObject);
         }
     }
 }

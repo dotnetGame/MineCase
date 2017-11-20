@@ -1,21 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.Game.BlockEntities;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Entities.Components;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.World
 {
+    [Reentrant]
     internal class WorldPartitionGrain : AddressByPartitionGrain, IWorldPartition
     {
         private ITickEmitter _tickEmitter;
         private HashSet<IPlayer> _players;
+        private HashSet<IEntity> _discoveryEntities;
 
         public override Task OnActivateAsync()
         {
             _tickEmitter = GrainFactory.GetPartitionGrain<ITickEmitter>(this);
             _players = new HashSet<IPlayer>();
+            _discoveryEntities = new HashSet<IEntity>();
             return base.OnActivateAsync();
         }
 
@@ -23,6 +30,10 @@ namespace MineCase.Server.World
         {
             var active = _players.Count == 0;
             _players.Add(player);
+
+            var message = new DiscoveredByPlayer { Player = player };
+            await Task.WhenAll(from e in _discoveryEntities
+                               select e.Tell(message));
 
             if (active)
                 await World.ActivePartition(this);
@@ -41,6 +52,18 @@ namespace MineCase.Server.World
         public Task OnGameTick(TimeSpan deltaTime, long worldAge)
         {
             _tickEmitter.InvokeOneWay(e => e.OnGameTick(deltaTime, worldAge));
+            return Task.CompletedTask;
+        }
+
+        async Task IWorldPartition.SubscribeDiscovery(IEntity entity)
+        {
+            _discoveryEntities.Add(entity);
+            await entity.Tell(BroadcastDiscovered.Default);
+        }
+
+        Task IWorldPartition.UnsubscribeDiscovery(IEntity entity)
+        {
+            _discoveryEntities.Remove(entity);
             return Task.CompletedTask;
         }
     }

@@ -34,12 +34,22 @@ namespace MineCase.World
 
         public ChunkSectionCompactStorage[] Sections { get; } = new ChunkSectionCompactStorage[ChunkConstants.SectionsPerChunk];
 
-        public byte[] Biomes { get; } = new byte[256];
+        public byte[] Biomes { get; }
 
         public BlockState this[int x, int y, int z]
         {
             get => Sections[y / 16].Data[x, y % 16, z];
             set => Sections[y / 16].Data[x, y % 16, z] = value;
+        }
+
+        public ChunkColumnCompactStorage()
+        {
+            Biomes = new byte[256];
+        }
+
+        public ChunkColumnCompactStorage(byte[] biomes)
+        {
+            Biomes = biomes;
         }
     }
 
@@ -54,21 +64,30 @@ namespace MineCase.World
 
         public byte BitsPerBlock => _bitsPerBlock;
 
-        public DataArray Data { get; } = new DataArray();
+        public DataArray Data { get; }
 
-        public NibbleArray BlockLight { get; } = new NibbleArray();
+        public NibbleArray BlockLight { get; }
 
         public NibbleArray SkyLight { get; }
 
         public ChunkSectionCompactStorage(bool hasSkylight)
         {
+            Data = new DataArray();
+            BlockLight = new NibbleArray();
             if (hasSkylight)
                 SkyLight = new NibbleArray();
         }
 
+        public ChunkSectionCompactStorage(DataArray data, NibbleArray blockLight, NibbleArray skyLight)
+        {
+            Data = data;
+            BlockLight = blockLight;
+            SkyLight = skyLight;
+        }
+
         public sealed class DataArray
         {
-            public ulong[] Storage { get; } = new ulong[ChunkConstants.BlocksInSection * _bitsPerBlock / 64];
+            public ulong[] Storage { get; }
 
             public BlockState this[int x, int y, int z]
             {
@@ -102,6 +121,16 @@ namespace MineCase.World
                 }
             }
 
+            public DataArray(ulong[] storage)
+            {
+                Storage = storage;
+            }
+
+            public DataArray()
+            {
+                Storage = new ulong[ChunkConstants.BlocksInSection * _bitsPerBlock / 64];
+            }
+
             private static (int indexOffset, int bitOffset) GetOffset(int x, int y, int z)
             {
                 var index = GetBlockSerialIndex(x, y, z) * _bitsPerBlock;
@@ -111,7 +140,7 @@ namespace MineCase.World
 
         public sealed class NibbleArray
         {
-            public byte[] Storage { get; } = new byte[ChunkConstants.BlocksInSection / 2];
+            public byte[] Storage { get; }
 
             public byte this[int x, int y, int z]
             {
@@ -131,6 +160,16 @@ namespace MineCase.World
                     else
                         Storage[offset / 2] = (byte)((tmpValue & 0xF0) | (value & 0xF));
                 }
+            }
+
+            public NibbleArray(byte[] storage)
+            {
+                Storage = storage;
+            }
+
+            public NibbleArray()
+            {
+                Storage = new byte[ChunkConstants.BlocksInSection / 2];
             }
         }
 

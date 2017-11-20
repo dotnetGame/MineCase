@@ -17,6 +17,12 @@ namespace MineCase.Server.Game.Entities.Components
     }
 
     [Immutable]
+    public sealed class KickPlayer : IEntityMessage
+    {
+        public Chat Reason { get; set; }
+    }
+
+    [Immutable]
     public sealed class BindToUser : IEntityMessage
     {
         public IUser User { get; set; }
@@ -26,6 +32,12 @@ namespace MineCase.Server.Game.Entities.Components
     public sealed class SetHeldItemIndex : IEntityMessage
     {
         public int Index { get; set; }
+    }
+
+    [Immutable]
+    public sealed class SetHeldItem : IEntityMessage
+    {
+        public Slot Slot { get; set; }
     }
 
     [Immutable]
@@ -53,7 +65,7 @@ namespace MineCase.Server.Game.Entities.Components
     }
 
     [Immutable]
-    public sealed class SpawnEntity : IEntityMessage
+    public class SpawnEntity : IEntityMessage
     {
         public IWorld World { get; set; }
 
@@ -64,6 +76,39 @@ namespace MineCase.Server.Game.Entities.Components
         public float Pitch { get; set; }
 
         public float Yaw { get; set; }
+    }
+
+    [Immutable]
+    public class SpawnMob : SpawnEntity
+    {
+        public MobType MobType { get; set; }
+    }
+
+    [Immutable]
+    public class EntityLook : IEntityMessage
+    {
+        public float Yaw { get; set; }
+
+        public float Pitch { get; set; }
+    }
+
+    [Immutable]
+    public class EntityMove : IEntityMessage
+    {
+        // 实际的相对位移，并非mc协议中位移/(32*128)
+        public float DeltaX { get; set; }
+
+        public float DeltaY { get; set; }
+
+        public float DeltaZ { get; set; }
+
+        public bool OnGround { get; set; }
+    }
+
+    [Immutable]
+    public sealed class DestroyEntity : IEntityMessage
+    {
+        public static readonly DestroyEntity Default = new DestroyEntity();
     }
 
     [Immutable]
@@ -102,5 +147,31 @@ namespace MineCase.Server.Game.Entities.Components
     public sealed class TossPickup : IEntityMessage
     {
         public Slot[] Slots { get; set; }
+    }
+
+    [Immutable]
+    public sealed class DiscoveredByPlayer : IEntityMessage
+    {
+        public IPlayer Player { get; set; }
+    }
+
+    [Immutable]
+    public sealed class BroadcastDiscovered : IEntityMessage
+    {
+        public static readonly BroadcastDiscovered Default = new BroadcastDiscovered();
+    }
+
+    [Immutable]
+    public sealed class CollectBy : IEntityMessage
+    {
+        public IEntity Entity { get; set; }
+    }
+
+    [Immutable]
+    public sealed class AskCollectionResult : IEntityMessage<Slot>
+    {
+        public IEntity Source { get; set; }
+
+        public Slot Slot { get; set; }
     }
 }
