@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Options;
-using MineCase.Server.Settings;
-using MongoDB.Driver;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.Options;
+using MineCase.Server.Settings;
+using MongoDB.Driver;
 
 namespace MineCase.Server.Persistence
 {

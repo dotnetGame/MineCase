@@ -35,6 +35,7 @@
     <PackageReference Include="Unity.TargetingPack.Modules.2017.2.0f3" Version="1.0.0" />
     <PackageReference Include="Autofac" Version="4.6.2" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+    <PackageReference Include="MongoDB.Bson" Version="2.4.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +45,7 @@
   <ItemGroup>
     <Compile Include="..\Common\Engine\Component.cs" Link="Component.cs" />
     <Compile Include="..\Common\Engine\Data\DependencyValueStorage.cs" Link="Data\DependencyValueStorage.cs" />
+    <Compile Include="..\Common\Engine\Data\DependencyValueStorage.Serialize.cs" Link="Data\DependencyValueStorage.Serialize.cs" />
     <Compile Include="..\Common\Engine\Data\IDependencyValueProvider.cs" Link="Data\IDependencyValueProvider.cs" />
     <Compile Include="..\Common\Engine\Data\IDependencyValueStorage.cs" Link="Data\IDependencyValueStorage.cs" />
     <Compile Include="..\Common\Engine\Data\IEffectiveValue.cs" Link="Data\IEffectiveValue.cs" />

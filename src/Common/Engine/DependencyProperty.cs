@@ -34,6 +34,7 @@ namespace MineCase.Engine
     {
         private static int _nextAvailableGlobalId = 0;
         private static readonly ConcurrentDictionary<FromNameKey, DependencyProperty> _fromNameMaps = new ConcurrentDictionary<FromNameKey, DependencyProperty>();
+        private static readonly ConcurrentDictionary<string, Type> _ownerTypes = new ConcurrentDictionary<string, Type>();
 
         /// <summary>
         /// 获取名称
@@ -153,6 +154,21 @@ namespace MineCase.Engine
             return property != null ? property : throw new InvalidOperationException($"Property {ownerType.Name}.{name} not found.");
         }
 
+        internal static string OwnerTypeToString(Type type)
+        {
+            var str = type.FullName;
+            if (!_ownerTypes.ContainsKey(str))
+                throw new InvalidOperationException($"OwnerType: {type.Name} is not registered.");
+            return str;
+        }
+
+        internal static Type StringToOwnerType(string str)
+        {
+            if (!_ownerTypes.TryGetValue(str, out var type))
+                throw new ArgumentException($"OwnerType: {str} is not registered.");
+            return type;
+        }
+
         /// <summary>
         /// 添加从名称获取
         /// </summary>
@@ -162,6 +178,8 @@ namespace MineCase.Engine
         {
             if (!_fromNameMaps.TryAdd(new FromNameKey(name, ownerType), this))
                 throw new ArgumentException($"Property {ownerType.Name}.{name} is already registered.");
+            else
+                _ownerTypes.TryAdd(ownerType.FullName, ownerType);
         }
 
         /// <summary>

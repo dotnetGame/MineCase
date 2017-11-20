@@ -36,42 +36,11 @@ namespace MineCase.Engine
         {
             _realType = this.GetType();
             _valueStorage.CurrentValueChanged += ValueStorage_CurrentValueChanged;
-        }
 
-        private void LoadState()
-        {
             _components = new Dictionary<string, IComponentIntern>();
             _indexes = new Dictionary<IComponentIntern, int>();
             _messageHandlers = new MultiValueDictionary<Type, IComponentIntern>();
         }
-
-#if ECS_SERVER
-        public override async Task OnActivateAsync()
-        {
-            LoadState();
-            await InitializeComponents();
-        }
-
-        protected virtual Task InitializeComponents()
-        {
-            return Task.CompletedTask;
-        }
-#else
-        /// <inheritdoc/>
-        protected override void Awake()
-        {
-            base.Awake();
-            LoadState();
-            InitializeComponents();
-        }
-
-        /// <summary>
-        /// 初始化组件
-        /// </summary>
-        protected virtual void InitializeComponents()
-        {
-        }
-#endif
 
         /// <summary>
         /// 获取组件

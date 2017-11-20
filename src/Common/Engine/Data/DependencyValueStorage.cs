@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 
 namespace MineCase.Engine.Data
 {
-    internal class DependencyValueStorage : IDependencyValueStorage
+    /// <summary>
+    /// 依赖值存储 - CRUD
+    /// </summary>
+    internal partial class DependencyValueStorage : IDependencyValueStorage
     {
         private readonly Dictionary<DependencyProperty, SortedList<float, IEffectiveValue>> _dict = new Dictionary<DependencyProperty, SortedList<float, IEffectiveValue>>();
 

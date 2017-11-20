@@ -11,6 +11,11 @@ namespace MineCase.Engine.Data
     public interface IEffectiveValue
     {
         /// <summary>
+        /// 获取值
+        /// </summary>
+        object Value { get; }
+
+        /// <summary>
         /// 获取值改变处理器
         /// </summary>
 #if ECS_SERVER
@@ -35,7 +40,7 @@ namespace MineCase.Engine.Data
         /// <summary>
         /// 获取值
         /// </summary>
-        T Value { get; }
+        new T Value { get; }
 
         /// <summary>
         /// 设置值

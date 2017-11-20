@@ -106,6 +106,8 @@ namespace MineCase.Engine.Data
             /// <inheritdoc/>
             public T Value => _value;
 
+            object IEffectiveValue.Value => _value;
+
             public LocalEffectiveValue(T value)
             {
                 _value = value;
