@@ -31,16 +31,11 @@ namespace MineCase.Server.Game.Entities.Components
         public static readonly DependencyProperty<List<CreatureAnimation>> CreatureAnimationListProperty =
             DependencyProperty.Register<List<CreatureAnimation>>(nameof(CreatureAnimationList), typeof(EntityAiComponent));
 
-        public static readonly DependencyProperty<CreatureAnimation> CurrentCreatureAnimationProperty =
-            DependencyProperty.Register<CreatureAnimation>(nameof(CurrentCreatureAnimation), typeof(EntityAiComponent));
-
         public CreatureAi AiType => AttachedObject.GetValue(AiTypeProperty);
 
         public CreatureState CreatureState => AttachedObject.GetValue(CreatureStateProperty);
 
         public List<CreatureAnimation> CreatureAnimationList => AttachedObject.GetValue(CreatureAnimationListProperty);
-
-        public CreatureAnimation CurrentCreatureAnimation => AttachedObject.GetValue(CurrentCreatureAnimationProperty);
 
         private Random random;
 
@@ -316,67 +311,66 @@ namespace MineCase.Server.Game.Entities.Components
 
             // CreatureAiAction action = AttachedObject.GetValue(EntityAiComponent.CreatureAiActionProperty);
             // action.Action(AttachedObject);
-            await GenerateEvent();
-
-            // get state
-            var newState = AiType.State;
-            switch (newState)
+            if (e.worldAge % 16 == 0)
             {
-                case CreatureState.Attacking:
-                    break;
-                case CreatureState.Burned:
-                    break;
-                case CreatureState.BurnedBySunshine:
-                    break;
-                case CreatureState.EatingGrass:
-                    break;
-                case CreatureState.Escaping:
-                    break;
-                case CreatureState.Explosion:
-                    break;
-                case CreatureState.Follow:
-                    await ActionFollow();
-                    break;
-                case CreatureState.Walk:
-                    await ActionWalk();
-                    break;
-                case CreatureState.Stop:
-                    await ActionStop();
-                    break;
-                case CreatureState.Look:
-                    await ActionLook();
-                    break;
-                default:
-                    System.Console.WriteLine(newState);
-                    throw new NotSupportedException("Unsupported state.");
+                await GenerateEvent();
+
+                // get state
+                var newState = AiType.State;
+                switch (newState)
+                {
+                    case CreatureState.Attacking:
+                        break;
+                    case CreatureState.Burned:
+                        break;
+                    case CreatureState.BurnedBySunshine:
+                        break;
+                    case CreatureState.EatingGrass:
+                        break;
+                    case CreatureState.Escaping:
+                        break;
+                    case CreatureState.Explosion:
+                        break;
+                    case CreatureState.Follow:
+                        await ActionFollow();
+                        break;
+                    case CreatureState.Walk:
+                        await ActionWalk();
+                        break;
+                    case CreatureState.Stop:
+                        await ActionStop();
+                        break;
+                    case CreatureState.Look:
+                        await ActionLook();
+                        break;
+                    default:
+                        System.Console.WriteLine(newState);
+                        throw new NotSupportedException("Unsupported state.");
+                }
             }
 
             // Get actions from list and send to client
-            if (e.worldAge % 4 == 0)
+            List<CreatureAnimation> animationList = AttachedObject.GetValue(EntityAiComponent.CreatureAnimationListProperty);
+
+            if (animationList.Count != 0)
             {
-                CreatureAnimation animation = AttachedObject.GetValue(EntityAiComponent.CurrentCreatureAnimationProperty);
-                List<CreatureAnimation> animationList = AttachedObject.GetValue(EntityAiComponent.CreatureAnimationListProperty);
-                if (animation == null && animationList.Count != 0)
+                if (!animationList[0].HasBeginAction())
+                    animationList[0].SetBeginAction(GetCurrentCreatureAction());
+
+                CreatureAction action = animationList[0].GetCreatureAction();
+                if (action.Yaw.HasValue)
+                    await AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, action.Yaw.Value);
+                if (action.HeadYaw.HasValue)
+                    await AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, action.HeadYaw.Value);
+                if (action.Pitch.HasValue)
+                    await AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, action.Pitch.Value);
+                if (action.Position.HasValue)
+                    await AttachedObject.SetLocalValue(EntityWorldPositionComponent.EntityWorldPositionProperty, action.Position.Value);
+
+                if (!animationList[0].Step(1))
                 {
-                    animation = animationList[0];
                     animationList.RemoveAt(0);
-                    animation.SetBeginAction(GetCurrentCreatureAction());
-                }
-
-                if (animation != null)
-                {
-                    CreatureAction action = animation.GetCreatureAction();
-                    if (action.Yaw.HasValue)
-                        await AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, action.Yaw.Value);
-                    if (action.HeadYaw.HasValue)
-                        await AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, action.HeadYaw.Value);
-                    if (action.Pitch.HasValue)
-                        await AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, action.Pitch.Value);
-                    if (action.Position.HasValue)
-                        await AttachedObject.SetLocalValue(EntityWorldPositionComponent.EntityWorldPositionProperty, action.Position.Value);
-
-                    if (!animation.Step(4))
-                        await AttachedObject.SetLocalValue(EntityAiComponent.CurrentCreatureAnimationProperty, null);
+                    animationList[0].SetBeginAction(GetCurrentCreatureAction());
                 }
             }
         }

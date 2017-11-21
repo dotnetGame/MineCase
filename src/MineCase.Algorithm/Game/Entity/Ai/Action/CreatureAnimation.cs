@@ -17,7 +17,6 @@ namespace MineCase.Algorithm.Game.Entity.Ai.Action
             _end = end;
             _time = time;
             _curtime = 0;
-            _step = (_end - _begin) / _time;
         }
 
         public abstract CreatureAction GetCreatureAction();
@@ -25,6 +24,12 @@ namespace MineCase.Algorithm.Game.Entity.Ai.Action
         public void SetBeginAction(CreatureAction action)
         {
             _begin = action;
+            _step = (_end - _begin) / _time;
+        }
+
+        public bool HasBeginAction()
+        {
+            return _begin != null;
         }
 
         public bool Step(int time)
