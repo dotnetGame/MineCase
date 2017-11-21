@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Algorithm;
+using MineCase.Algorithm.Game.Entity.Ai.Action;
 using MineCase.Algorithm.Game.Entity.Ai.MobAi;
 using MineCase.Engine;
 using MineCase.Graphics;
@@ -27,9 +28,19 @@ namespace MineCase.Server.Game.Entities.Components
         public static readonly DependencyProperty<CreatureState> CreatureStateProperty =
             DependencyProperty.Register<CreatureState>(nameof(CreatureState), typeof(EntityAiComponent));
 
+        public static readonly DependencyProperty<List<CreatureAnimation>> CreatureAnimationListProperty =
+            DependencyProperty.Register<List<CreatureAnimation>>(nameof(CreatureAnimationList), typeof(EntityAiComponent));
+
+        public static readonly DependencyProperty<CreatureAnimation> CurrentCreatureAnimationProperty =
+            DependencyProperty.Register<CreatureAnimation>(nameof(CurrentCreatureAnimation), typeof(EntityAiComponent));
+
         public CreatureAi AiType => AttachedObject.GetValue(AiTypeProperty);
 
         public CreatureState CreatureState => AttachedObject.GetValue(CreatureStateProperty);
+
+        public List<CreatureAnimation> CreatureAnimationList => AttachedObject.GetValue(CreatureAnimationListProperty);
+
+        public CreatureAnimation CurrentCreatureAnimation => AttachedObject.GetValue(CurrentCreatureAnimationProperty);
 
         private Random random;
 
@@ -43,6 +54,7 @@ namespace MineCase.Server.Game.Entities.Components
         {
             Register();
             await AttachedObject.SetLocalValue(EntityAiComponent.CreatureStateProperty, CreatureState.Stop);
+            await AttachedObject.SetLocalValue(EntityAiComponent.CreatureAnimationListProperty, new List<CreatureAnimation>());
         }
 
         protected override Task OnDetached()
@@ -102,6 +114,20 @@ namespace MineCase.Server.Game.Entities.Components
             }
 
             await AttachedObject.SetLocalValue(AiTypeProperty, ai);
+        }
+
+        private CreatureAction GetCurrentCreatureAction()
+        {
+            float yaw = AttachedObject.GetValue(EntityLookComponent.YawProperty);
+            float headyaw = AttachedObject.GetValue(EntityLookComponent.HeadYawProperty);
+            float pitch = AttachedObject.GetValue(EntityLookComponent.PitchProperty);
+            EntityWorldPos position = AttachedObject.GetValue(EntityWorldPositionComponent.EntityWorldPositionProperty);
+            CreatureAction action = new CreatureAction();
+            action.Pitch = pitch;
+            action.Yaw = yaw;
+            action.HeadYaw = headyaw;
+            action.Position = position;
+            return action;
         }
 
         private Task ActionStop()
@@ -197,7 +223,7 @@ namespace MineCase.Server.Game.Entities.Components
             IChunkTrackingHub tracker = GrainFactory.GetGrain<IChunkTrackingHub>(AttachedObject.GetAddressByPartitionKey());
             var list = await tracker.GetTrackedPlayers();
 
-            // TODO 多位玩家的话只看一位
+            // FixMe 多位玩家的话只看一位
             foreach (IPlayer each in list)
             {
                 EntityWorldPos playerPosition = await each.GetPosition();
@@ -206,10 +232,13 @@ namespace MineCase.Server.Game.Entities.Components
                 if (EntityWorldPos.Distance(playerPosition, entityPos) < 3)
                 {
                     (var yaw, var pitch) = VectorToYawAndPitch(entityPos, playerPosition);
-
-                    await AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, yaw);
-                    await AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, yaw);
-                    await AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, pitch);
+                    CreatureAction nextCreatureAction = new CreatureAction();
+                    nextCreatureAction.HeadYaw = yaw;
+                    nextCreatureAction.Yaw = yaw;
+                    nextCreatureAction.Pitch = pitch;
+                    CreatureAnimation animation = new CreatureAnimationLinear(nextCreatureAction, 4);
+                    List<CreatureAnimation> animationList = AttachedObject.GetValue(EntityAiComponent.CreatureAnimationListProperty);
+                    animationList.Add(animation);
                     break;
                 }
             }
@@ -320,6 +349,35 @@ namespace MineCase.Server.Game.Entities.Components
                 default:
                     System.Console.WriteLine(newState);
                     throw new NotSupportedException("Unsupported state.");
+            }
+
+            // Get actions from list and send to client
+            if (e.worldAge % 4 == 0)
+            {
+                CreatureAnimation animation = AttachedObject.GetValue(EntityAiComponent.CurrentCreatureAnimationProperty);
+                List<CreatureAnimation> animationList = AttachedObject.GetValue(EntityAiComponent.CreatureAnimationListProperty);
+                if (animation == null && animationList.Count != 0)
+                {
+                    animation = animationList[0];
+                    animationList.RemoveAt(0);
+                    animation.SetBeginAction(GetCurrentCreatureAction());
+                }
+
+                if (animation != null)
+                {
+                    CreatureAction action = animation.GetCreatureAction();
+                    if (action.Yaw.HasValue)
+                        await AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, action.Yaw.Value);
+                    if (action.HeadYaw.HasValue)
+                        await AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, action.HeadYaw.Value);
+                    if (action.Pitch.HasValue)
+                        await AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, action.Pitch.Value);
+                    if (action.Position.HasValue)
+                        await AttachedObject.SetLocalValue(EntityWorldPositionComponent.EntityWorldPositionProperty, action.Position.Value);
+
+                    if (!animation.Step(4))
+                        await AttachedObject.SetLocalValue(EntityAiComponent.CurrentCreatureAnimationProperty, null);
+                }
             }
         }
 
