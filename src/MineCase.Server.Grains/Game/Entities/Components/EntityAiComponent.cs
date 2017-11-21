@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MineCase.Algorithm;
+using MineCase.Algorithm.Game.Entity.Ai.Action;
 using MineCase.Algorithm.Game.Entity.Ai.MobAi;
 using MineCase.Engine;
 using MineCase.Graphics;
@@ -25,7 +26,7 @@ namespace MineCase.Server.Game.Entities.Components
         public static readonly DependencyProperty<CreatureState> CreatureStateProperty =
             DependencyProperty.Register<CreatureState>(nameof(CreatureState), typeof(EntityAiComponent));
 
-        public MobType MobType => AttachedObject.GetValue(MobTypeComponent.MobTypeProperty);
+        public CreatureAi AiType => AttachedObject.GetValue(AiTypeProperty);
 
         public CreatureState CreatureState => AttachedObject.GetValue(CreatureStateProperty);
 
@@ -111,6 +112,20 @@ namespace MineCase.Server.Game.Entities.Components
             }
 
             _ai = ai;
+        }
+
+        private CreatureAction GetCurrentCreatureAction()
+        {
+            float yaw = AttachedObject.GetValue(EntityLookComponent.YawProperty);
+            float headyaw = AttachedObject.GetValue(EntityLookComponent.HeadYawProperty);
+            float pitch = AttachedObject.GetValue(EntityLookComponent.PitchProperty);
+            EntityWorldPos position = AttachedObject.GetValue(EntityWorldPositionComponent.EntityWorldPositionProperty);
+            CreatureAction action = new CreatureAction();
+            action.Pitch = pitch;
+            action.Yaw = yaw;
+            action.HeadYaw = headyaw;
+            action.Position = position;
+            return action;
         }
 
         private Task ActionStop()
@@ -206,7 +221,7 @@ namespace MineCase.Server.Game.Entities.Components
             IChunkTrackingHub tracker = GrainFactory.GetGrain<IChunkTrackingHub>(AttachedObject.GetAddressByPartitionKey());
             var list = await tracker.GetTrackedPlayers();
 
-            // TODO 多位玩家的话只看一位
+            // FixMe 多位玩家的话只看一位
             foreach (IPlayer each in list)
             {
                 EntityWorldPos playerPosition = await each.GetPosition();
