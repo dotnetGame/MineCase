@@ -312,10 +312,12 @@ namespace MineCase.Server.Game.Entities.Components
 
             // CreatureAiAction action = AttachedObject.GetValue(EntityAiComponent.CreatureAiActionProperty);
             // action.Action(AttachedObject);
-            await GenerateEvent();
+            if (e.worldAge % 16 == 0)
+            {
+                await GenerateEvent();
 
             // get state
-            var newState = _ai.State;
+            var newState = AiType.State;
             switch (newState)
             {
                 case CreatureState.Attacking:
@@ -345,6 +347,35 @@ namespace MineCase.Server.Game.Entities.Components
                 default:
                     System.Console.WriteLine(newState);
                     throw new NotSupportedException("Unsupported state.");
+            }
+
+            // Get actions from list and send to client
+            if (e.worldAge % 4 == 0)
+            {
+                CreatureAnimation animation = AttachedObject.GetValue(EntityAiComponent.CurrentCreatureAnimationProperty);
+                List<CreatureAnimation> animationList = AttachedObject.GetValue(EntityAiComponent.CreatureAnimationListProperty);
+                if (animation == null && animationList.Count != 0)
+                {
+                    animation = animationList[0];
+                    animationList.RemoveAt(0);
+                    animation.SetBeginAction(GetCurrentCreatureAction());
+                }
+
+                if (animation != null)
+                {
+                    CreatureAction action = animation.GetCreatureAction();
+                    if (action.Yaw.HasValue)
+                        await AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, action.Yaw.Value);
+                    if (action.HeadYaw.HasValue)
+                        await AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, action.HeadYaw.Value);
+                    if (action.Pitch.HasValue)
+                        await AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, action.Pitch.Value);
+                    if (action.Position.HasValue)
+                        await AttachedObject.SetLocalValue(EntityWorldPositionComponent.EntityWorldPositionProperty, action.Position.Value);
+
+                    if (!animation.Step(4))
+                        await AttachedObject.SetLocalValue(EntityAiComponent.CurrentCreatureAnimationProperty, null);
+                }
             }
         }
 
