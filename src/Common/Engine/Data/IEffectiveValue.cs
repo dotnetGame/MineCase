@@ -11,9 +11,9 @@ namespace MineCase.Engine.Data
     public interface IEffectiveValue
     {
         /// <summary>
-        /// 获取值
+        /// 获取提供程序
         /// </summary>
-        object Value { get; }
+        IDependencyValueProvider Provider { get; }
 
         /// <summary>
         /// 获取值改变处理器
@@ -40,7 +40,7 @@ namespace MineCase.Engine.Data
         /// <summary>
         /// 获取值
         /// </summary>
-        new T Value { get; }
+        T Value { get; }
 
         /// <summary>
         /// 设置值

@@ -35,8 +35,6 @@ namespace MineCase.Engine
         public DependencyObject()
         {
             _realType = this.GetType();
-            _valueStorage.CurrentValueChanged += ValueStorage_CurrentValueChanged;
-
             _components = new Dictionary<string, IComponentIntern>();
             _indexes = new Dictionary<IComponentIntern, int>();
             _messageHandlers = new MultiValueDictionary<Type, IComponentIntern>();
@@ -137,9 +135,12 @@ namespace MineCase.Engine
 
         internal readonly Type _realType;
 
-        private readonly DependencyValueStorage _valueStorage = new DependencyValueStorage();
+        private DependencyValueStorage _valueStorage;
 
-        internal IDependencyValueStorage ValueStorage => _valueStorage;
+        /// <summary>
+        /// 获取值存储
+        /// </summary>
+        public IDependencyValueStorage ValueStorage => _valueStorage;
 
         private readonly ConcurrentDictionary<DependencyProperty, Delegate> _propertyChangedHandlers = new ConcurrentDictionary<DependencyProperty, Delegate>();
         private readonly ConcurrentDictionary<DependencyProperty, Delegate> _propertyChangedHandlersGen = new ConcurrentDictionary<DependencyProperty, Delegate>();

@@ -38,6 +38,7 @@
     <Compile Include="..\Common\Engine\Data\LocalDependencyValueProvider.cs" Link="Data\LocalDependencyValueProvider.cs" />
     <Compile Include="..\Common\Engine\DependencyObject.cs" Link="DependencyObject.cs" />
     <Compile Include="..\Common\Engine\DependencyProperty.cs" Link="DependencyProperty.cs" />
+    <Compile Include="..\Common\Engine\DependencyPropertyHelper.cs" Link="DependencyPropertyHelper.cs" />
     <Compile Include="..\Common\Engine\EngineAssemblyExtensions.cs" Link="EngineAssemblyExtensions.cs" />
     <Compile Include="..\Common\Engine\IDependencyObject.cs" Link="IDependencyObject.cs" />
     <Compile Include="..\Common\Engine\IEntityMessage.cs" Link="IEntityMessage.cs" />

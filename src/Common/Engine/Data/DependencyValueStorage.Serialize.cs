@@ -1,66 +1,98 @@
-using System;
+Ôªøusing System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MongoDB.Bson;
+using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+using NorminalType = System.Collections.Generic.Dictionary<MineCase.Engine.DependencyProperty, System.Collections.Generic.SortedList<float, MineCase.Engine.Data.IEffectiveValue>>;
 
 namespace MineCase.Engine.Data
 {
     /// <summary>
-    /// “¿¿µ÷µ¥Ê¥¢ - –Ú¡–ªØ
+    /// ‰æùËµñÂÄºÂ≠òÂÇ® - Â∫èÂàóÂåñ
     /// </summary>
     internal partial class DependencyValueStorage
     {
-        public void Serialize(BsonDocument document)
+        internal class DependencyValueStorageSerializer : ClassSerializerBase<DependencyValueStorage>
         {
-            foreach (var keyPair in _dict)
-                document.Add(PropertyToString(keyPair.Key), SerializeValues(keyPair.Key.PropertyType, keyPair.Value));
-        }
-
-        private static BsonValue SerializeValues(Type valueType, SortedList<float, IEffectiveValue> values)
-        {
-            var doc = new BsonDocument();
-            foreach (var valuePair in values)
-                doc.Add(valuePair.Key.ToString(), SerializeValue(valueType, valuePair.Value));
-            return doc;
-        }
-
-        private static BsonValue SerializeValue(Type valueType, IEffectiveValue value)
-        {
-            var serializer = BsonSerializer.LookupSerializer(valueType);
-            return serializer.ToBsonValue(value);
-        }
-
-        private static string PropertyToString(DependencyProperty key) =>
-            $"{DependencyProperty.OwnerTypeToString(key.OwnerType)}.{key.Name}";
-
-        public void Deserialize(BsonDocument document)
-        {
-            foreach (var keyPair in document.Elements)
+            protected override void SerializeValue(BsonSerializationContext context, BsonSerializationArgs args, DependencyValueStorage value)
             {
-                var property = ParsePropertyFromString(keyPair.Name);
-                DeserializeValues(property, keyPair.Value.AsBsonDocument);
+                var writer = context.Writer;
+                writer.WriteStartDocument();
+
+                foreach (var keyPair in value._dict)
+                {
+                    writer.WriteName(PropertyToString(keyPair.Key));
+                    SerializeValues(context, keyPair.Key, keyPair.Value);
+                }
+
+                writer.WriteEndDocument();
             }
-        }
 
-        private void DeserializeValues(DependencyProperty property, BsonDocument values)
-        {
-            var container = new SortedList<float, IEffectiveValue>(values.ElementCount);
-            _dict.Add(property, container);
-            foreach (var value in values)
-                DeserializeValue(container, value);
-        }
+            private void SerializeValues(BsonSerializationContext context, DependencyProperty key, SortedList<float, IEffectiveValue> values)
+            {
+                var writer = context.Writer;
+                writer.WriteStartDocument();
+                foreach (var valuePair in values)
+                {
+                    writer.WriteName(valuePair.Key.ToString());
+                    var value = key.Helper.GetValue(valuePair.Value);
+                    var serializer = BsonSerializer.LookupSerializer(key.PropertyType);
+                    serializer.Serialize(context, value);
+                }
 
-        private static void DeserializeValue(SortedList<float, IEffectiveValue> container, BsonElement value)
-        {
-        }
+                writer.WriteEndDocument();
+            }
 
-        private static DependencyProperty ParsePropertyFromString(string name)
-        {
-            var lastPoint = name.LastIndexOf('.');
-            var ownerType = DependencyProperty.StringToOwnerType(name.Substring(0, lastPoint));
-            return DependencyProperty.FromName(name.Substring(lastPoint + 1), ownerType);
+            protected override DependencyValueStorage DeserializeValue(BsonDeserializationContext context, BsonDeserializationArgs args)
+            {
+                var dict = new Dictionary<DependencyProperty, SortedList<float, IEffectiveValue>>();
+                var reader = context.Reader;
+                reader.ReadStartDocument();
+
+                while (reader.ReadBsonType() != BsonType.EndOfDocument)
+                    DeserializeValues(context, dict);
+
+                reader.ReadEndDocument();
+                return new DependencyValueStorage(dict);
+            }
+
+            private void DeserializeValues(BsonDeserializationContext context, NorminalType dict)
+            {
+                var reader = context.Reader;
+                var key = ParsePropertyFromString(reader.ReadName());
+                dict.Add(key, DeserializeValues(key, context));
+            }
+
+            private SortedList<float, IEffectiveValue> DeserializeValues(DependencyProperty key, BsonDeserializationContext context)
+            {
+                var list = new SortedList<float, IEffectiveValue>();
+                var serializer = BsonSerializer.LookupSerializer(key.PropertyType);
+                var reader = context.Reader;
+                reader.ReadStartDocument();
+
+                while (reader.ReadBsonType() != BsonType.EndOfDocument)
+                {
+                    var priority = float.Parse(reader.ReadName());
+                    var value = serializer.Deserialize(context);
+                    list.Add(priority, key.Helper.FromValue(value));
+                }
+
+                reader.ReadEndDocument();
+                return list;
+            }
+
+            private static string PropertyToString(DependencyProperty key) =>
+                $"{DependencyProperty.OwnerTypeToString(key.OwnerType)}.{key.Name}";
+
+            private static DependencyProperty ParsePropertyFromString(string name)
+            {
+                var lastPoint = name.LastIndexOf('.');
+                var ownerType = DependencyProperty.StringToOwnerType(name.Substring(0, lastPoint));
+                return DependencyProperty.FromName(name.Substring(lastPoint + 1), ownerType);
+            }
         }
     }
 }

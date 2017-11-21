@@ -7,13 +7,15 @@ using MineCase.Engine;
 using MineCase.Server.Components;
 using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Network.Play;
+using MineCase.Server.Persistence;
 using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.Game.Entities
 {
-    internal abstract class EntityGrain : DependencyObject, IEntity
+    [PersistTableName("entity")]
+    internal abstract class EntityGrain : PersistableDependencyObject, IEntity
     {
         public Guid UUID => this.GetPrimaryKey();
 

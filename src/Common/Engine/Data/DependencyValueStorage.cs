@@ -10,7 +10,7 @@ namespace MineCase.Engine.Data
     /// </summary>
     internal partial class DependencyValueStorage : IDependencyValueStorage
     {
-        private readonly Dictionary<DependencyProperty, SortedList<float, IEffectiveValue>> _dict = new Dictionary<DependencyProperty, SortedList<float, IEffectiveValue>>();
+        private readonly Dictionary<DependencyProperty, SortedList<float, IEffectiveValue>> _dict;
 
         public IEnumerable<DependencyProperty> Keys
         {
@@ -35,6 +35,21 @@ namespace MineCase.Engine.Data
 
         public DependencyValueStorage()
         {
+            _dict = new Dictionary<DependencyProperty, SortedList<float, IEffectiveValue>>();
+        }
+
+        public DependencyValueStorage(Dictionary<DependencyProperty, SortedList<float, IEffectiveValue>> values)
+        {
+            _dict = values;
+
+            foreach (var keyPair in values)
+            {
+                foreach (var valuePairs in keyPair.Value)
+                {
+                    var priority = valuePairs.Value.Provider.Priority;
+                    valuePairs.Value.ValueChanged = (s, e) => OnEffectiveValueChanged(priority, keyPair.Key, e.OldValue, e.NewValue);
+                }
+            }
         }
 
         public

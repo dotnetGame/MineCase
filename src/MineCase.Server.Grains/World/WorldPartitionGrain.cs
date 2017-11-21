@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using MineCase.Server.Game.BlockEntities;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.Components;
+using MineCase.Server.Persistence;
 using Orleans;
 using Orleans.Concurrency;
 
 namespace MineCase.Server.World
 {
     [Reentrant]
-    internal class WorldPartitionGrain : AddressByPartitionGrain, IWorldPartition
+    internal class WorldPartitionGrain : PersistableAddressByPartitionGrain<WorldPartitionGrain.State>, IWorldPartition
     {
         private ITickEmitter _tickEmitter;
         private HashSet<IPlayer> _players;
@@ -65,6 +66,29 @@ namespace MineCase.Server.World
         {
             _discoveryEntities.Remove(entity);
             return Task.CompletedTask;
+        }
+
+        protected override Task LoadStateAsync(State state)
+        {
+            if (state.Players != null)
+            {
+                foreach (var player in state.Players)
+                    _players.Add(GetGrainFromKeyString<IPlayer>(player));
+            }
+
+            return Task.CompletedTask;
+        }
+
+        protected override Task<State> SaveStateAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal class State : PersistableStateBase
+        {
+            public string[] Players { get; set; }
+
+            public string[] DiscoveryEntities { get; set; }
         }
     }
 }

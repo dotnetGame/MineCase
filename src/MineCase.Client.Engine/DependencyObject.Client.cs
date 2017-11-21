@@ -12,6 +12,9 @@ namespace MineCase.Engine
         protected override void Awake()
         {
             base.Awake();
+
+            _valueStorage = new Data.DependencyValueStorage();
+            _valueStorage.CurrentValueChanged += ValueStorage_CurrentValueChanged;
             InitializeComponents();
         }
 

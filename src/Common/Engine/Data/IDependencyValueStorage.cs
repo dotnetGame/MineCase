@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MongoDB.Bson;
 
 namespace MineCase.Engine.Data
 {
@@ -92,17 +91,5 @@ namespace MineCase.Engine.Data
         /// 获取包含的依赖属性
         /// </summary>
         IEnumerable<DependencyProperty> Keys { get; }
-
-        /// <summary>
-        /// 序列化
-        /// </summary>
-        /// <param name="document">文档</param>
-        void Serialize(BsonDocument document);
-
-        /// <summary>
-        /// 反序列化
-        /// </summary>
-        /// <param name="document">文档</param>
-        void Deserialize(BsonDocument document);
     }
 }

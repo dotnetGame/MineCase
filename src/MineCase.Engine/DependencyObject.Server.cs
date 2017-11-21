@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Engine.Serialization;
 
 namespace MineCase.Engine
 {
@@ -24,12 +25,30 @@ namespace MineCase.Engine
             return Task.CompletedTask;
         }
 
-        public Task LoadStateAsync()
+        public async Task LoadStateAsync()
         {
-            return Task.CompletedTask;
+            var state = await DeserializeStateAsync();
+            _valueStorage = (Data.DependencyValueStorage)state?.ValueStorage ?? new Data.DependencyValueStorage();
+            _valueStorage.CurrentValueChanged += ValueStorage_CurrentValueChanged;
         }
 
         public Task SaveStateAsync()
+        {
+            var state = new DependencyObjectState
+            {
+                GrainKeyString = GrainReference.ToKeyString(),
+                ValueStorage = _valueStorage
+            };
+
+            return SerializeStateAsync(state);
+        }
+
+        protected virtual Task<DependencyObjectState> DeserializeStateAsync()
+        {
+            return Task.FromResult<DependencyObjectState>(null);
+        }
+
+        protected virtual Task SerializeStateAsync(DependencyObjectState state)
         {
             return Task.CompletedTask;
         }

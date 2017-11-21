@@ -63,6 +63,8 @@ namespace MineCase.Engine
 
         internal DependencyPropertyFlags Flags { get; }
 
+        internal abstract IDependencyPropertyHelper Helper { get; }
+
         private readonly int _globalId;
 
         internal DependencyProperty(string name, Type ownerType, DependencyPropertyFlags flags)
@@ -239,6 +241,8 @@ namespace MineCase.Engine
 
         /// <inheritdoc/>
         public override Type PropertyType => typeof(T);
+
+        internal override IDependencyPropertyHelper Helper { get; } = new DependencyPropertyHelper<T>();
 
         internal DependencyProperty(string name, Type ownerType, DependencyPropertyFlags flags, PropertyMetadata<T> metadata)
             : base(name, ownerType, flags)
