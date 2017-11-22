@@ -46,13 +46,13 @@ Block世界坐标转chunk内坐标
 
 Block世界坐标转chunk坐标
 ```cs
-public ChunkWorldPos ToChunkWorldPos()
-{
-    int chunkPosX = X / ChunkConstants.BlockEdgeWidthInSection;
-    int chunkPosZ = Z / ChunkConstants.BlockEdgeWidthInSection;
-    if (chunkPosX < 0) chunkPosX -= 1;
-    if (chunkPosZ < 0) chunkPosZ -= 1;
-    return new ChunkWorldPos(chunkPosX, chunkPosZ);
+    public ChunkWorldPos ToChunkWorldPos()
+    {
+        int chunkPosX = X / ChunkConstants.BlockEdgeWidthInSection;
+        int chunkPosZ = Z / ChunkConstants.BlockEdgeWidthInSection;
+        if (chunkPosX < 0) chunkPosX -= 1;
+        if (chunkPosZ < 0) chunkPosZ -= 1;
+        return new ChunkWorldPos(chunkPosX, chunkPosZ);
     }
 ```
 
