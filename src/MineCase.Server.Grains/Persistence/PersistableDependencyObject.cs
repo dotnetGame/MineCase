@@ -37,6 +37,13 @@ namespace MineCase.Server.Persistence
             return await coll.Find(o => o.GrainKeyString == key).FirstOrDefaultAsync();
         }
 
+        protected override async Task ClearStateAsync()
+        {
+            var coll = GetStateCollection();
+            var key = GrainReference.ToKeyString();
+            await coll.DeleteOneAsync(o => o.GrainKeyString == key);
+        }
+
         private IMongoCollection<DependencyObjectState> GetStateCollection()
         {
             var db = ServiceProvider.GetRequiredService<AppDbContext>();

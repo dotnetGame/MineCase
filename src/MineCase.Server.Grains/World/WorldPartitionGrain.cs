@@ -32,14 +32,15 @@ namespace MineCase.Server.World
         {
             var players = State.Players;
             var active = players.Count == 0;
-            players.Add(player);
+            if (players.Add(player))
+            {
+                var message = new DiscoveredByPlayer { Player = player };
+                await Task.WhenAll(from e in State.DiscoveryEntities
+                                   select e.Tell(message));
 
-            var message = new DiscoveredByPlayer { Player = player };
-            await Task.WhenAll(from e in State.DiscoveryEntities
-                               select e.Tell(message));
-
-            if (active)
-                await World.ActivePartition(this);
+                if (active)
+                    await World.ActivePartition(this);
+            }
         }
 
         public async Task Leave(IPlayer player)
@@ -61,8 +62,8 @@ namespace MineCase.Server.World
 
         async Task IWorldPartition.SubscribeDiscovery(IEntity entity)
         {
-            State.DiscoveryEntities.Add(entity);
-            await entity.Tell(BroadcastDiscovered.Default);
+            if (State.DiscoveryEntities.Add(entity))
+                await entity.Tell(BroadcastDiscovered.Default);
         }
 
         Task IWorldPartition.UnsubscribeDiscovery(IEntity entity)

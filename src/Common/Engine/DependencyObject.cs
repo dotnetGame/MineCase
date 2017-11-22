@@ -523,6 +523,10 @@ namespace MineCase.Engine
                     invoker(handler, message);
                 }
             }
+
+#if ECS_SERVER
+            await ClearOperationQueue();
+#endif
         }
 
         /// <inheritdoc />
@@ -572,18 +576,14 @@ namespace MineCase.Engine
             await
 #endif
                     invoker(handler, message);
+#if ECS_SERVER
+                    await ClearOperationQueue();
+#endif
                     return new AskResult<TResponse> { Succeeded = true, Response = response };
                 }
             }
 
             return AskResult<TResponse>.Failed;
         }
-
-#if ECS_SERVER
-        public virtual void Destroy()
-        {
-            DeactivateOnIdle();
-        }
-#endif
     }
 }

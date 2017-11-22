@@ -10,7 +10,7 @@ using Orleans.Concurrency;
 
 namespace MineCase.Server.Network.Play
 {
-    internal class ClientboundPacketComponent : Component, IHandle<BindToUser>, IHandle<KickPlayer>, IHandle<PacketForwardToPlayer>
+    internal class ClientboundPacketComponent : Component, IHandle<BindToUser>, IHandle<KickPlayer>, IHandle<PacketForwardToPlayer>, IHandle<SpawnEntity>
     {
         private IClientboundPacketSink _sink;
         private IUser _user;
@@ -43,6 +43,12 @@ namespace MineCase.Server.Network.Play
         Task IHandle<PacketForwardToPlayer>.Handle(PacketForwardToPlayer message)
         {
             return _sink.SendPacket(message.PacketId, message.Data.AsImmutable());
+        }
+
+        Task IHandle<SpawnEntity>.Handle(SpawnEntity message)
+        {
+            // return AttachedObject.Tell(Enable.Default);
+            return Task.CompletedTask;
         }
     }
 }

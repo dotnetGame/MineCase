@@ -22,6 +22,12 @@ namespace MineCase.Server.Components
     }
 
     [Immutable]
+    public sealed class Enable : IEntityMessage
+    {
+        public static readonly Enable Default = new Enable();
+    }
+
+    [Immutable]
     public sealed class CollisionWith : IEntityMessage
     {
         public IReadOnlyCollection<IDependencyObject> Entities { get; set; }

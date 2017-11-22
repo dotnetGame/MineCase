@@ -9,7 +9,7 @@ using Orleans.Concurrency;
 
 namespace MineCase.Server.Components
 {
-    internal class GameTickComponent : Component, IHandle<GameTick>, IHandle<Disable>
+    internal class GameTickComponent : Component, IHandle<GameTick>, IHandle<Disable>, IHandle<Enable>
     {
         public event AsyncEventHandler<(TimeSpan deltaTime, long worldAge)> Tick;
 
@@ -22,14 +22,15 @@ namespace MineCase.Server.Components
         {
             AttachedObject.GetComponent<AddressByPartitionKeyComponent>()
                 .KeyChanged += OnAddressByPartitionKeyChanged;
+            AttachedObject.QueueOperation(TrySubscribe);
             return base.OnAttached();
         }
 
-        protected override Task OnDetached()
+        protected override async Task OnDetached()
         {
             AttachedObject.GetComponent<AddressByPartitionKeyComponent>()
                 .KeyChanged -= OnAddressByPartitionKeyChanged;
-            return base.OnDetached();
+            await TryUnsubscribe();
         }
 
         private async Task OnAddressByPartitionKeyChanged(object sender, (string oldKey, string newKey) e)
@@ -50,7 +51,24 @@ namespace MineCase.Server.Components
             return Tick.InvokeSerial(this, (message.DeltaTime, message.WorldAge));
         }
 
-        async Task IHandle<Disable>.Handle(Disable message)
+        Task IHandle<Enable>.Handle(Enable message)
+        {
+            return TrySubscribe();
+        }
+
+        Task IHandle<Disable>.Handle(Disable message)
+        {
+            return TryUnsubscribe();
+        }
+
+        private async Task TrySubscribe()
+        {
+            var key = AttachedObject.GetAddressByPartitionKey();
+            if (!string.IsNullOrEmpty(key))
+                await GrainFactory.GetGrain<ITickEmitter>(key).Subscribe(AttachedObject);
+        }
+
+        private async Task TryUnsubscribe()
         {
             var key = AttachedObject.GetAddressByPartitionKey();
             if (!string.IsNullOrEmpty(key))

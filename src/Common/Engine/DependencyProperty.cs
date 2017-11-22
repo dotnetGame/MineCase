@@ -37,6 +37,11 @@ namespace MineCase.Engine
         private static readonly ConcurrentDictionary<string, Type> _ownerTypes = new ConcurrentDictionary<string, Type>();
 
         /// <summary>
+        /// 所有者类型加载器
+        /// </summary>
+        public static Func<string, Type> OwnerTypeLoader { get; set; } = t => Type.GetType(t);
+
+        /// <summary>
         /// 获取名称
         /// </summary>
         public string Name { get; }
@@ -167,6 +172,12 @@ namespace MineCase.Engine
         internal static Type StringToOwnerType(string str)
         {
             if (!_ownerTypes.TryGetValue(str, out var type))
+            {
+                var ownerType = UnescapeOwnerTypeString(str);
+                System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(ownerType.TypeHandle);
+            }
+
+            if (!_ownerTypes.TryGetValue(str, out type))
                 throw new ArgumentException($"OwnerType: {str} is not registered.");
             return type;
         }
@@ -175,6 +186,12 @@ namespace MineCase.Engine
         {
             var str = type.FullName;
             return type.ToString().Replace('.', ':');
+        }
+
+        private static Type UnescapeOwnerTypeString(string str)
+        {
+            str = str.Replace(':', '.');
+            return OwnerTypeLoader(str);
         }
 
         /// <summary>

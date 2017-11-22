@@ -8,18 +8,26 @@ using MineCase.Server.World;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class DiscoveryRegisterComponent : Component<EntityGrain>, IHandle<Disable>
+    internal class DiscoveryRegisterComponent : Component<EntityGrain>, IHandle<Disable>, IHandle<Enable>
     {
         public DiscoveryRegisterComponent(string name = "discoveryRegister")
             : base(name)
         {
         }
 
-        protected override async Task OnAttached()
+        protected override Task OnAttached()
         {
-            await base.OnAttached();
             AttachedObject.GetComponent<AddressByPartitionKeyComponent>()
                 .KeyChanged += AddressByPartitionKeyChanged;
+            AttachedObject.QueueOperation(TrySubscribe);
+            return base.OnAttached();
+        }
+
+        protected override async Task OnDetached()
+        {
+            AttachedObject.GetComponent<AddressByPartitionKeyComponent>()
+                .KeyChanged -= AddressByPartitionKeyChanged;
+            await TryUnsubscribe();
         }
 
         private async Task AddressByPartitionKeyChanged(object sender, (string oldKey, string newKey) e)
@@ -30,7 +38,24 @@ namespace MineCase.Server.Game.Entities.Components
                 await GrainFactory.GetGrain<IWorldPartition>(e.newKey).SubscribeDiscovery(AttachedObject);
         }
 
-        async Task IHandle<Disable>.Handle(Disable message)
+        Task IHandle<Enable>.Handle(Enable message)
+        {
+            return TrySubscribe();
+        }
+
+        Task IHandle<Disable>.Handle(Disable message)
+        {
+            return TryUnsubscribe();
+        }
+
+        private async Task TrySubscribe()
+        {
+            var key = AttachedObject.GetAddressByPartitionKey();
+            if (!string.IsNullOrEmpty(key))
+                await GrainFactory.GetGrain<IWorldPartition>(key).SubscribeDiscovery(AttachedObject);
+        }
+
+        private async Task TryUnsubscribe()
         {
             var key = AttachedObject.GetAddressByPartitionKey();
             if (!string.IsNullOrEmpty(key))

@@ -8,10 +8,12 @@ using MineCase.Server.Game.Entities;
 using MineCase.Server.Persistence;
 using MineCase.Server.Persistence.Components;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.World
 {
     [PersistTableName("tickEmitter")]
+    [Reentrant]
     internal class TickEmitterGrain : PersistableDependencyObject, ITickEmitter
     {
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);

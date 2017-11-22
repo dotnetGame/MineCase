@@ -25,12 +25,6 @@ namespace MineCase.Server.User
 
         private int _viewDistance = 10;
 
-        public override Task OnActivateAsync()
-        {
-            _player = GrainFactory.GetGrain<IPlayer>(this.GetPrimaryKey());
-            return Task.CompletedTask;
-        }
-
         public Task OnChunkSent(ChunkWorldPos chunkPos)
         {
             _sendingChunks.Remove(chunkPos);

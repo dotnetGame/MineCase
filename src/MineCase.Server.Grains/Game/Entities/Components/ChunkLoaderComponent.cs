@@ -12,6 +12,7 @@ namespace MineCase.Server.Game.Entities.Components
     internal class ChunkLoaderComponent : Component<PlayerGrain>, IHandle<PlayerLoggedIn>, IHandle<BindToUser>
     {
         private IUserChunkLoader _chunkLoader;
+        private bool _loaded = false;
 
         public ChunkLoaderComponent(string name = "chunkLoader")
             : base(name)
@@ -28,7 +29,9 @@ namespace MineCase.Server.Game.Entities.Components
 
         private Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
         {
-            return _chunkLoader.OnGameTick(e.worldAge);
+            if (_loaded)
+                return _chunkLoader.OnGameTick(e.worldAge);
+            return Task.CompletedTask;
         }
 
         private Task OnViewDistanceChanged(object sender, PropertyChangedEventArgs<byte> e)
@@ -39,6 +42,7 @@ namespace MineCase.Server.Game.Entities.Components
         async Task IHandle<PlayerLoggedIn>.Handle(PlayerLoggedIn message)
         {
             await _chunkLoader.JoinGame(AttachedObject.GetWorld(), AttachedObject);
+            _loaded = true;
         }
 
         async Task IHandle<BindToUser>.Handle(BindToUser message)
