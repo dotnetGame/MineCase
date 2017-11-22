@@ -19,6 +19,7 @@ namespace MineCase.Server.Game.BlockEntities
 
         protected override async Task InitializeComponents()
         {
+            await SetComponent(new IsEnabledComponent());
             await SetComponent(new WorldComponent());
             await SetComponent(new BlockWorldPositionComponent());
             await SetComponent(new AddressByPartitionKeyComponent());

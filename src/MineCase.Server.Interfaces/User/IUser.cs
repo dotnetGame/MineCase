@@ -47,5 +47,7 @@ namespace MineCase.Server.User
         Task<Slot[]> GetInventorySlots();
 
         Task ForwardPacket(UncompressedPacket packet);
+
+        Task SetInventorySlot(int index, Slot slot);
     }
 }

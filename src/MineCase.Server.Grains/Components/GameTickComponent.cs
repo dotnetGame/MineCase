@@ -9,7 +9,7 @@ using Orleans.Concurrency;
 
 namespace MineCase.Server.Components
 {
-    internal class GameTickComponent : Component, IHandle<GameTick>, IHandle<Disable>, IHandle<Enable>
+    internal class GameTickComponent : Component, IHandle<GameTick>
     {
         public event AsyncEventHandler<(TimeSpan deltaTime, long worldAge)> Tick;
 
@@ -22,6 +22,7 @@ namespace MineCase.Server.Components
         {
             AttachedObject.GetComponent<AddressByPartitionKeyComponent>()
                 .KeyChanged += OnAddressByPartitionKeyChanged;
+            AttachedObject.RegisterPropertyChangedHandler(IsEnabledComponent.IsEnabledProperty, OnIsEnabledChanged);
             AttachedObject.QueueOperation(TrySubscribe);
             return base.OnAttached();
         }
@@ -37,8 +38,15 @@ namespace MineCase.Server.Components
         {
             if (!string.IsNullOrEmpty(e.oldKey))
                 await GrainFactory.GetGrain<ITickEmitter>(e.oldKey).Unsubscribe(AttachedObject);
-            if (!string.IsNullOrEmpty(e.newKey))
-                await GrainFactory.GetGrain<ITickEmitter>(e.newKey).Subscribe(AttachedObject);
+            await TrySubscribe();
+        }
+
+        private Task OnIsEnabledChanged(object sender, PropertyChangedEventArgs<bool> e)
+        {
+            if (e.NewValue)
+                return TrySubscribe();
+            else
+                return TryUnsubscribe();
         }
 
         public void OnGameTick(TimeSpan deltaTime, long worldAge)
@@ -51,21 +59,14 @@ namespace MineCase.Server.Components
             return Tick.InvokeSerial(this, (message.DeltaTime, message.WorldAge));
         }
 
-        Task IHandle<Enable>.Handle(Enable message)
-        {
-            return TrySubscribe();
-        }
-
-        Task IHandle<Disable>.Handle(Disable message)
-        {
-            return TryUnsubscribe();
-        }
-
         private async Task TrySubscribe()
         {
-            var key = AttachedObject.GetAddressByPartitionKey();
-            if (!string.IsNullOrEmpty(key))
-                await GrainFactory.GetGrain<ITickEmitter>(key).Subscribe(AttachedObject);
+            if (AttachedObject.GetValue(IsEnabledComponent.IsEnabledProperty))
+            {
+                var key = AttachedObject.GetAddressByPartitionKey();
+                if (!string.IsNullOrEmpty(key))
+                    await GrainFactory.GetGrain<ITickEmitter>(key).Subscribe(AttachedObject);
+            }
         }
 
         private async Task TryUnsubscribe()

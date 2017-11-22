@@ -9,7 +9,7 @@ using MineCase.Server.Network.Play;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class PlayerDiscoveryComponent : EntityDiscoveryComponentBase<PlayerGrain>, IHandle<SpawnEntity>
+    internal class PlayerDiscoveryComponent : EntityDiscoveryComponentBase<PlayerGrain>, IHandle<PlayerLoggedIn>
     {
         public PlayerDiscoveryComponent(string name = "playerDiscovery")
             : base(name)
@@ -21,7 +21,7 @@ namespace MineCase.Server.Game.Entities.Components
             return Task.CompletedTask;
         }
 
-        Task IHandle<SpawnEntity>.Handle(SpawnEntity message)
+        Task IHandle<PlayerLoggedIn>.Handle(PlayerLoggedIn message)
         {
             CompleteSpawn();
             return Task.CompletedTask;

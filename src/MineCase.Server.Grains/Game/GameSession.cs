@@ -10,9 +10,11 @@ using MineCase.Server.Network.Play;
 using MineCase.Server.User;
 using MineCase.Server.World;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Game
 {
+    [Reentrant]
     internal class GameSession : Grain, IGameSession
     {
         private IWorld _world;

@@ -31,6 +31,7 @@ namespace MineCase.Server.Game.Entities
 
         protected override async Task InitializeComponents()
         {
+            await SetComponent(new IsEnabledComponent());
             await SetComponent(new EntityIdComponent());
             await SetComponent(new WorldComponent());
             await SetComponent(new EntityWorldPositionComponent());

@@ -10,7 +10,7 @@ using MineCase.World;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class ColliderComponent : Component<EntityGrain>, IHandle<Disable>, IHandle<Enable>
+    internal class ColliderComponent : Component<EntityGrain>
     {
         public static readonly DependencyProperty<Shape> ColliderShapeProperty =
             DependencyProperty.Register<Shape>("ColliderShape", typeof(ColliderComponent), new PropertyMetadata<Shape>(null, OnColliderShapeChanged));
@@ -26,6 +26,7 @@ namespace MineCase.Server.Game.Entities.Components
         {
             AttachedObject.GetComponent<AddressByPartitionKeyComponent>()
                 .KeyChanged += AddressByPartitionKeyChanged;
+            AttachedObject.RegisterPropertyChangedHandler(IsEnabledComponent.IsEnabledProperty, OnIsEnabledChanged);
             AttachedObject.QueueOperation(TrySubscribe);
             return base.OnAttached();
         }
@@ -42,8 +43,15 @@ namespace MineCase.Server.Game.Entities.Components
             var shape = ColliderShape;
             if (!string.IsNullOrEmpty(e.oldKey))
                 await GrainFactory.GetGrain<ICollectableFinder>(e.oldKey).UnregisterCollider(AttachedObject);
-            if (!string.IsNullOrEmpty(e.newKey) && shape != null)
-                await GrainFactory.GetGrain<ICollectableFinder>(e.newKey).RegisterCollider(AttachedObject, shape);
+            await TrySubscribe();
+        }
+
+        private Task OnIsEnabledChanged(object sender, PropertyChangedEventArgs<bool> e)
+        {
+            if (e.NewValue)
+                return TrySubscribe();
+            else
+                return TryUnsubscribe();
         }
 
         private async Task OnColliderShapeChanged(PropertyChangedEventArgs<Shape> e)
@@ -53,7 +61,7 @@ namespace MineCase.Server.Game.Entities.Components
             if (shape != null)
                 await GrainFactory.GetGrain<ICollectableFinder>(key).RegisterCollider(AttachedObject, shape);
             else
-                await GrainFactory.GetGrain<ICollectableFinder>(key).UnregisterCollider(AttachedObject);
+                await TrySubscribe();
         }
 
         private static Task OnColliderShapeChanged(object sender, PropertyChangedEventArgs<Shape> e)
@@ -65,22 +73,15 @@ namespace MineCase.Server.Game.Entities.Components
         public Task SetColliderShape(Shape value) =>
             AttachedObject.SetLocalValue(ColliderShapeProperty, value);
 
-        Task IHandle<Enable>.Handle(Enable message)
-        {
-            return TrySubscribe();
-        }
-
-        Task IHandle<Disable>.Handle(Disable message)
-        {
-            return TryUnsubscribe();
-        }
-
         private async Task TrySubscribe()
         {
-            var key = AttachedObject.GetAddressByPartitionKey();
-            var shape = ColliderShape;
-            if (!string.IsNullOrEmpty(key) && shape != null)
-                await GrainFactory.GetGrain<ICollectableFinder>(key).RegisterCollider(AttachedObject, ColliderShape);
+            if (AttachedObject.GetValue(IsEnabledComponent.IsEnabledProperty))
+            {
+                var key = AttachedObject.GetAddressByPartitionKey();
+                var shape = ColliderShape;
+                if (!string.IsNullOrEmpty(key) && shape != null)
+                    await GrainFactory.GetGrain<ICollectableFinder>(key).RegisterCollider(AttachedObject, ColliderShape);
+            }
         }
 
         private async Task TryUnsubscribe()

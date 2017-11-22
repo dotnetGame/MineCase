@@ -24,7 +24,9 @@ namespace MineCase.Server.Game.Entities.Components
 
         protected override async Task OnAttached()
         {
-            await AttachedObject.SetLocalValue(SlotsProperty, Enumerable.Repeat(Slot.Empty, _slotsCount).ToArray());
+            var slots = AttachedObject.GetValue(SlotsProperty);
+            if (slots == null || slots.Length != _slotsCount)
+                await AttachedObject.SetLocalValue(SlotsProperty, Enumerable.Repeat(Slot.Empty, _slotsCount).ToArray());
             await base.OnAttached();
         }
 

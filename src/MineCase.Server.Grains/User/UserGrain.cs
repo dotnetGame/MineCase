@@ -25,6 +25,7 @@ namespace MineCase.Server.User
     internal class UserGrain : PersistableDependencyObject, IUser
     {
         private uint _protocolVersion;
+        private bool _needSaveState = false;
         private IClientboundPacketSink _sink;
         private IPacketRouter _packetRouter;
         private ClientPlayPacketGenerator _generator;
@@ -130,7 +131,7 @@ namespace MineCase.Server.User
             return Task.CompletedTask;
         }
 
-        public Task OnGameTick(TimeSpan deltaTime, long worldAge)
+        public async Task OnGameTick(TimeSpan deltaTime, long worldAge)
         {
             if (_userState == UserState.DownloadingWorld)
             {
@@ -141,7 +142,11 @@ namespace MineCase.Server.User
             /*
             if (_state >= UserState.JoinedGame && _state < UserState.Destroying)
                 await _chunkLoader.OnGameTick(worldAge);*/
-            return Task.CompletedTask;
+            if (_needSaveState)
+            {
+                await WriteStateAsync();
+                _needSaveState = false;
+            }
         }
 
         public Task SetPacketRouter(IPacketRouter packetRouter)
@@ -158,6 +163,13 @@ namespace MineCase.Server.User
             {
                 Packet = packet
             });
+        }
+
+        public Task SetInventorySlot(int index, Slot slot)
+        {
+            State.Slots[index] = slot;
+            _needSaveState = true;
+            return Task.CompletedTask;
         }
 
         private enum UserState : uint

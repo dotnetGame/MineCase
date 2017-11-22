@@ -8,7 +8,7 @@ using MineCase.Server.World;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class DiscoveryRegisterComponent : Component<EntityGrain>, IHandle<Disable>, IHandle<Enable>
+    internal class DiscoveryRegisterComponent : Component<EntityGrain>
     {
         public DiscoveryRegisterComponent(string name = "discoveryRegister")
             : base(name)
@@ -19,6 +19,7 @@ namespace MineCase.Server.Game.Entities.Components
         {
             AttachedObject.GetComponent<AddressByPartitionKeyComponent>()
                 .KeyChanged += AddressByPartitionKeyChanged;
+            AttachedObject.RegisterPropertyChangedHandler(IsEnabledComponent.IsEnabledProperty, OnIsEnabledChanged);
             AttachedObject.QueueOperation(TrySubscribe);
             return base.OnAttached();
         }
@@ -34,25 +35,25 @@ namespace MineCase.Server.Game.Entities.Components
         {
             if (!string.IsNullOrEmpty(e.oldKey))
                 await GrainFactory.GetGrain<IWorldPartition>(e.oldKey).UnsubscribeDiscovery(AttachedObject);
-            if (!string.IsNullOrEmpty(e.newKey))
-                await GrainFactory.GetGrain<IWorldPartition>(e.newKey).SubscribeDiscovery(AttachedObject);
+            await TrySubscribe();
         }
 
-        Task IHandle<Enable>.Handle(Enable message)
+        private Task OnIsEnabledChanged(object sender, PropertyChangedEventArgs<bool> e)
         {
-            return TrySubscribe();
-        }
-
-        Task IHandle<Disable>.Handle(Disable message)
-        {
-            return TryUnsubscribe();
+            if (e.NewValue)
+                return TrySubscribe();
+            else
+                return TryUnsubscribe();
         }
 
         private async Task TrySubscribe()
         {
-            var key = AttachedObject.GetAddressByPartitionKey();
-            if (!string.IsNullOrEmpty(key))
-                await GrainFactory.GetGrain<IWorldPartition>(key).SubscribeDiscovery(AttachedObject);
+            if (AttachedObject.GetValue(IsEnabledComponent.IsEnabledProperty))
+            {
+                var key = AttachedObject.GetAddressByPartitionKey();
+                if (!string.IsNullOrEmpty(key))
+                    await GrainFactory.GetGrain<IWorldPartition>(key).SubscribeDiscovery(AttachedObject);
+            }
         }
 
         private async Task TryUnsubscribe()

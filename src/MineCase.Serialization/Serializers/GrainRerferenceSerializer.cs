@@ -10,8 +10,8 @@ using Orleans.Runtime;
 
 namespace MineCase.Serialization.Serializers
 {
-    public class GrainRerferenceSerializer<TInterface> : SealedClassSerializerBase<IAddressable>
-        where TInterface : IAddressable
+    public class GrainRerferenceSerializer<TInterface> : SealedClassSerializerBase<TInterface>
+        where TInterface : class, IAddressable
     {
         private IGrainReferenceConverter _grainReferenceConverter;
         private IGrainFactory _grainFactory;
@@ -22,14 +22,14 @@ namespace MineCase.Serialization.Serializers
             _grainFactory = serviceProvider.GetRequiredService<IGrainFactory>();
         }
 
-        protected override void SerializeValue(BsonSerializationContext context, BsonSerializationArgs args, IAddressable value)
+        protected override void SerializeValue(BsonSerializationContext context, BsonSerializationArgs args, TInterface value)
         {
-            var refer = (GrainReference)value;
+            var refer = (GrainReference)(object)value;
             var key = refer.ToKeyString();
             context.Writer.WriteString(key);
         }
 
-        protected override IAddressable DeserializeValue(BsonDeserializationContext context, BsonDeserializationArgs args)
+        protected override TInterface DeserializeValue(BsonDeserializationContext context, BsonDeserializationArgs args)
         {
             var key = context.Reader.ReadString();
             var refer = _grainReferenceConverter.GetGrainFromKeyString(key);
@@ -39,7 +39,7 @@ namespace MineCase.Serialization.Serializers
                 return refer.AsReference<TInterface>();
             }
 
-            return refer;
+            return null;
         }
     }
 
