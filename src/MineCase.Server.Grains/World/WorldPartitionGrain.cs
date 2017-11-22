@@ -7,33 +7,35 @@ using MineCase.Server.Game.BlockEntities;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Persistence;
+using MineCase.Server.Persistence.Components;
 using Orleans;
 using Orleans.Concurrency;
 
 namespace MineCase.Server.World
 {
+    [PersistTableName("worldPartition")]
     [Reentrant]
-    internal class WorldPartitionGrain : PersistableAddressByPartitionGrain<WorldPartitionGrain.State>, IWorldPartition
+    internal class WorldPartitionGrain : AddressByPartitionGrain, IWorldPartition
     {
         private ITickEmitter _tickEmitter;
-        private HashSet<IPlayer> _players;
-        private HashSet<IEntity> _discoveryEntities;
 
-        public override Task OnActivateAsync()
+        private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
+
+        protected override async Task InitializePreLoadComponent()
         {
+            await SetComponent(new StateComponent<StateHolder>());
+
             _tickEmitter = GrainFactory.GetPartitionGrain<ITickEmitter>(this);
-            _players = new HashSet<IPlayer>();
-            _discoveryEntities = new HashSet<IEntity>();
-            return base.OnActivateAsync();
         }
 
         public async Task Enter(IPlayer player)
         {
-            var active = _players.Count == 0;
-            _players.Add(player);
+            var players = State.Players;
+            var active = players.Count == 0;
+            players.Add(player);
 
             var message = new DiscoveredByPlayer { Player = player };
-            await Task.WhenAll(from e in _discoveryEntities
+            await Task.WhenAll(from e in State.DiscoveryEntities
                                select e.Tell(message));
 
             if (active)
@@ -42,8 +44,9 @@ namespace MineCase.Server.World
 
         public async Task Leave(IPlayer player)
         {
-            _players.Remove(player);
-            if (_players.Count == 0)
+            var playrs = State.Players;
+            playrs.Remove(player);
+            if (playrs.Count == 0)
             {
                 await World.DeactivePartition(this);
                 DeactivateOnIdle();
@@ -58,37 +61,31 @@ namespace MineCase.Server.World
 
         async Task IWorldPartition.SubscribeDiscovery(IEntity entity)
         {
-            _discoveryEntities.Add(entity);
+            State.DiscoveryEntities.Add(entity);
             await entity.Tell(BroadcastDiscovered.Default);
         }
 
         Task IWorldPartition.UnsubscribeDiscovery(IEntity entity)
         {
-            _discoveryEntities.Remove(entity);
+            State.DiscoveryEntities.Remove(entity);
             return Task.CompletedTask;
         }
 
-        protected override Task LoadStateAsync(State state)
+        internal class StateHolder
         {
-            if (state.Players != null)
+            public HashSet<IPlayer> Players { get; set; }
+
+            public HashSet<IEntity> DiscoveryEntities { get; set; }
+
+            public StateHolder()
             {
-                foreach (var player in state.Players)
-                    _players.Add(GetGrainFromKeyString<IPlayer>(player));
             }
 
-            return Task.CompletedTask;
-        }
-
-        protected override Task<State> SaveStateAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        internal class State : PersistableStateBase
-        {
-            public string[] Players { get; set; }
-
-            public string[] DiscoveryEntities { get; set; }
+            public StateHolder(InitializeStateMark mark)
+            {
+                Players = new HashSet<IPlayer>();
+                DiscoveryEntities = new HashSet<IEntity>();
+            }
         }
     }
 }

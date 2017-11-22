@@ -5,38 +5,54 @@ using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.Components;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Persistence;
+using MineCase.Server.Persistence.Components;
 using Orleans;
 
 namespace MineCase.Server.World
 {
-    internal class TickEmitterGrain : Grain, ITickEmitter
+    [PersistTableName("tickEmitter")]
+    internal class TickEmitterGrain : PersistableDependencyObject, ITickEmitter
     {
-        private HashSet<IDependencyObject> _subscription;
+        private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
-        public override Task OnActivateAsync()
+        protected override async Task InitializePreLoadComponent()
         {
-            _subscription = new HashSet<IDependencyObject>();
-            return base.OnActivateAsync();
+            await SetComponent(new StateComponent<StateHolder>());
         }
 
         public Task OnGameTick(TimeSpan deltaTime, long worldAge)
         {
             var message = new GameTick { DeltaTime = deltaTime, WorldAge = worldAge };
-            foreach (var entity in _subscription)
+            foreach (var entity in State.Subscription)
                 entity.InvokeOneWay(e => e.Tell(message));
             return Task.CompletedTask;
         }
 
         public Task Subscribe(IDependencyObject observer)
         {
-            _subscription.Add(observer);
+            State.Subscription.Add(observer);
             return Task.CompletedTask;
         }
 
         public Task Unsubscribe(IDependencyObject observer)
         {
-            _subscription.Remove(observer);
+            State.Subscription.Remove(observer);
             return Task.CompletedTask;
+        }
+
+        internal class StateHolder
+        {
+            public HashSet<IDependencyObject> Subscription { get; set; }
+
+            public StateHolder()
+            {
+            }
+
+            public StateHolder(InitializeStateMark mark)
+            {
+                Subscription = new HashSet<IDependencyObject>();
+            }
         }
     }
 }

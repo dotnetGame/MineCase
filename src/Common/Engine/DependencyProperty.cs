@@ -158,7 +158,7 @@ namespace MineCase.Engine
 
         internal static string OwnerTypeToString(Type type)
         {
-            var str = type.FullName;
+            var str = EscapeOwnerTypeString(type);
             if (!_ownerTypes.ContainsKey(str))
                 throw new InvalidOperationException($"OwnerType: {type.Name} is not registered.");
             return str;
@@ -171,6 +171,12 @@ namespace MineCase.Engine
             return type;
         }
 
+        private static string EscapeOwnerTypeString(Type type)
+        {
+            var str = type.FullName;
+            return type.ToString().Replace('.', ':');
+        }
+
         /// <summary>
         /// 添加从名称获取
         /// </summary>
@@ -181,7 +187,7 @@ namespace MineCase.Engine
             if (!_fromNameMaps.TryAdd(new FromNameKey(name, ownerType), this))
                 throw new ArgumentException($"Property {ownerType.Name}.{name} is already registered.");
             else
-                _ownerTypes.TryAdd(ownerType.FullName, ownerType);
+                _ownerTypes.TryAdd(EscapeOwnerTypeString(ownerType), ownerType);
         }
 
         /// <summary>

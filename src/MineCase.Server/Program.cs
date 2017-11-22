@@ -5,6 +5,7 @@ using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using MineCase.Serialization.Serializers;
 
 namespace MineCase.Server
 {
@@ -29,11 +30,19 @@ namespace MineCase.Server
             SelectAssemblies();
             ConfigureApplicationParts(builder);
             _siloHost = builder.Build();
-            await _siloHost.StartAsync();
+            await StartAsync();
             Console.WriteLine("Press Ctrl+C to terminate...");
             Console.CancelKeyPress += (s, e) => _exitEvent.Set();
             _exitEvent.WaitOne();
+            Console.WriteLine("Stopping...");
             await _siloHost.StopAsync();
+            Console.WriteLine("Stopped.");
+        }
+
+        private static async Task StartAsync()
+        {
+            Serializers.RegisterAll(_siloHost.Services);
+            await _siloHost.StartAsync();
         }
 
         private static ClusterConfiguration LoadClusterConfiguration()

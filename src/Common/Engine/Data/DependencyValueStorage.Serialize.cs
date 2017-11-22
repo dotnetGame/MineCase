@@ -85,11 +85,11 @@ namespace MineCase.Engine.Data
             }
 
             private static string PropertyToString(DependencyProperty key) =>
-                $"{DependencyProperty.OwnerTypeToString(key.OwnerType)}.{key.Name}";
+                $"{DependencyProperty.OwnerTypeToString(key.OwnerType)}:{key.Name}";
 
             private static DependencyProperty ParsePropertyFromString(string name)
             {
-                var lastPoint = name.LastIndexOf('.');
+                var lastPoint = name.LastIndexOf(':');
                 var ownerType = DependencyProperty.StringToOwnerType(name.Substring(0, lastPoint));
                 return DependencyProperty.FromName(name.Substring(lastPoint + 1), ownerType);
             }

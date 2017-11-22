@@ -28,6 +28,8 @@ namespace MineCase.Server.User
 
         Task<IPlayer> GetPlayer();
 
+        Task Kick();
+
         Task SetClientPacketSink(IClientboundPacketSink sink);
 
         Task<IClientboundPacketSink> GetClientPacketSink();

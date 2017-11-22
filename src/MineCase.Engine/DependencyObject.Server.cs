@@ -10,13 +10,14 @@ namespace MineCase.Engine
     {
         public override async Task OnActivateAsync()
         {
-            await LoadStateAsync();
+            await InitializePreLoadComponent();
+            await ReadStateAsync();
             await InitializeComponents();
         }
 
         public override async Task OnDeactivateAsync()
         {
-            await SaveStateAsync();
+            await WriteStateAsync();
             await base.OnDeactivateAsync();
         }
 
@@ -25,14 +26,21 @@ namespace MineCase.Engine
             return Task.CompletedTask;
         }
 
-        public async Task LoadStateAsync()
+        protected virtual Task InitializePreLoadComponent()
         {
+            return Task.CompletedTask;
+        }
+
+        public async Task ReadStateAsync()
+        {
+            await Tell(BeforeReadState.Default);
             var state = await DeserializeStateAsync();
             _valueStorage = (Data.DependencyValueStorage)state?.ValueStorage ?? new Data.DependencyValueStorage();
             _valueStorage.CurrentValueChanged += ValueStorage_CurrentValueChanged;
+            await Tell(AfterReadState.Default);
         }
 
-        public Task SaveStateAsync()
+        public async Task WriteStateAsync()
         {
             var state = new DependencyObjectState
             {
@@ -40,7 +48,7 @@ namespace MineCase.Engine
                 ValueStorage = _valueStorage
             };
 
-            return SerializeStateAsync(state);
+            await SerializeStateAsync(state);
         }
 
         protected virtual Task<DependencyObjectState> DeserializeStateAsync()

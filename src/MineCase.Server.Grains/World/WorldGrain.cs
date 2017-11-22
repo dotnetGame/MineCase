@@ -3,32 +3,35 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game;
+using MineCase.Server.Persistence;
+using MineCase.Server.Persistence.Components;
 using MineCase.Server.Settings;
-using MineCase.Server.World.Generation;
 using MineCase.World.Generation;
 using Orleans;
 using Orleans.Concurrency;
 
 namespace MineCase.Server.World
 {
+    [PersistTableName("world")]
     [Reentrant]
-    internal class WorldGrain : Grain, IWorld
+    internal class WorldGrain : PersistableDependencyObject, IWorld
     {
         private uint _nextAvailEId;
         private long _worldAge;
         private GeneratorSettings _genSettings; // 生成设置
         private string _seed; // 世界种子
-        private HashSet<IWorldPartition> _activedPartitions;
 
-        public override async Task OnActivateAsync()
+        private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
+
+        protected override async Task InitializePreLoadComponent()
         {
-            IServerSettings serverSettings = GrainFactory.GetGrain<IServerSettings>(0);
+            await SetComponent(new StateComponent<StateHolder>());
+
+            var serverSettings = GrainFactory.GetGrain<IServerSettings>(0);
             _nextAvailEId = 0;
             _genSettings = new GeneratorSettings();
             await InitGeneratorSettings(_genSettings);
             _seed = (await serverSettings.GetSettings()).LevelSeed;
-            _activedPartitions = new HashSet<IWorldPartition>();
-            await base.OnActivateAsync();
         }
 
         public Task<WorldTime> GetTime()
@@ -45,7 +48,7 @@ namespace MineCase.Server.World
         public Task OnGameTick(TimeSpan deltaTime)
         {
             _worldAge++;
-            foreach (var partition in _activedPartitions)
+            foreach (var partition in State.ActivedPartitions)
                 partition.InvokeOneWay(p => p.OnGameTick(deltaTime, _worldAge));
             return Task.CompletedTask;
         }
@@ -78,14 +81,28 @@ namespace MineCase.Server.World
 
         public Task ActivePartition(IWorldPartition worldPartition)
         {
-            _activedPartitions.Add(worldPartition);
+            State.ActivedPartitions.Add(worldPartition);
             return Task.CompletedTask;
         }
 
         public Task DeactivePartition(IWorldPartition worldPartition)
         {
-            _activedPartitions.Remove(worldPartition);
+            State.ActivedPartitions.Remove(worldPartition);
             return Task.CompletedTask;
+        }
+
+        internal class StateHolder
+        {
+            public HashSet<IWorldPartition> ActivedPartitions { get; set; }
+
+            public StateHolder()
+            {
+            }
+
+            public StateHolder(InitializeStateMark mark)
+            {
+                ActivedPartitions = new HashSet<IWorldPartition>();
+            }
         }
     }
 }
