@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game;
@@ -16,10 +17,9 @@ namespace MineCase.Server.World
     [Reentrant]
     internal class WorldGrain : PersistableDependencyObject, IWorld
     {
-        private uint _nextAvailEId;
-        private long _worldAge;
         private GeneratorSettings _genSettings; // 生成设置
         private string _seed; // 世界种子
+        private AutoSaveStateComponent _autoSave;
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
@@ -28,32 +28,38 @@ namespace MineCase.Server.World
             await SetComponent(new StateComponent<StateHolder>());
 
             var serverSettings = GrainFactory.GetGrain<IServerSettings>(0);
-            _nextAvailEId = 0;
             _genSettings = new GeneratorSettings();
             await InitGeneratorSettings(_genSettings);
             _seed = (await serverSettings.GetSettings()).LevelSeed;
         }
 
+        protected override async Task InitializeComponents()
+        {
+            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
+            await SetComponent(_autoSave);
+        }
+
         public Task<WorldTime> GetTime()
         {
-            return Task.FromResult(new WorldTime { WorldAge = _worldAge, TimeOfDay = _worldAge % 24000 });
+            return Task.FromResult(new WorldTime { WorldAge = State.WorldAge, TimeOfDay = State.WorldAge % 24000 });
         }
 
         public Task<uint> NewEntityId()
         {
-            var id = _nextAvailEId++;
+            var id = State.NextAvailEId++;
+            MarkDirty();
             return Task.FromResult(id);
         }
 
-        public Task OnGameTick(TimeSpan deltaTime)
+        public async Task OnGameTick(TimeSpan deltaTime)
         {
-            _worldAge++;
-            foreach (var partition in State.ActivedPartitions)
-                partition.InvokeOneWay(p => p.OnGameTick(deltaTime, _worldAge));
-            return Task.CompletedTask;
+            State.WorldAge++;
+            MarkDirty();
+            await Task.WhenAll(from p in State.ActivedPartitions select p.OnGameTick(deltaTime, State.WorldAge));
+            await _autoSave.OnGameTick(this, (deltaTime, State.WorldAge));
         }
 
-        public Task<long> GetAge() => Task.FromResult(_worldAge);
+        public Task<long> GetAge() => Task.FromResult(State.WorldAge);
 
         public Task<int> GetSeed()
         {
@@ -81,19 +87,30 @@ namespace MineCase.Server.World
 
         public Task ActivePartition(IWorldPartition worldPartition)
         {
-            State.ActivedPartitions.Add(worldPartition);
+            if (State.ActivedPartitions.Add(worldPartition))
+                MarkDirty();
             return Task.CompletedTask;
         }
 
         public Task DeactivePartition(IWorldPartition worldPartition)
         {
-            State.ActivedPartitions.Remove(worldPartition);
+            if (State.ActivedPartitions.Remove(worldPartition))
+                MarkDirty();
             return Task.CompletedTask;
+        }
+
+        private void MarkDirty()
+        {
+            _autoSave.IsDirty = true;
         }
 
         internal class StateHolder
         {
             public HashSet<IWorldPartition> ActivedPartitions { get; set; }
+
+            public long WorldAge { get; set; }
+
+            public uint NextAvailEId { get; set; }
 
             public StateHolder()
             {

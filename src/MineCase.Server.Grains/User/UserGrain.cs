@@ -25,12 +25,13 @@ namespace MineCase.Server.User
     internal class UserGrain : PersistableDependencyObject, IUser
     {
         private uint _protocolVersion;
-        private bool _needSaveState = false;
         private IClientboundPacketSink _sink;
         private IPacketRouter _packetRouter;
         private ClientPlayPacketGenerator _generator;
         private IPlayer _player;
         private UserState _userState;
+
+        private AutoSaveStateComponent _autoSave;
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
@@ -39,6 +40,9 @@ namespace MineCase.Server.User
             var stateComponent = new StateComponent<StateHolder>();
             await SetComponent(stateComponent);
             stateComponent.AfterReadState += StateComponent_AfterReadState;
+
+            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
+            await SetComponent(_autoSave);
         }
 
         private async Task StateComponent_AfterReadState(object sender, EventArgs e)
@@ -47,6 +51,7 @@ namespace MineCase.Server.User
             {
                 var world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetDefaultWorld();
                 State.World = world;
+                MarkDirty();
             }
         }
 
@@ -117,6 +122,7 @@ namespace MineCase.Server.User
         public Task SetName(string name)
         {
             State.Name = name;
+            MarkDirty();
             return Task.CompletedTask;
         }
 
@@ -142,11 +148,7 @@ namespace MineCase.Server.User
             /*
             if (_state >= UserState.JoinedGame && _state < UserState.Destroying)
                 await _chunkLoader.OnGameTick(worldAge);*/
-            if (_needSaveState)
-            {
-                await WriteStateAsync();
-                _needSaveState = false;
-            }
+            await _autoSave.OnGameTick(this, (deltaTime, worldAge));
         }
 
         public Task SetPacketRouter(IPacketRouter packetRouter)
@@ -168,7 +170,7 @@ namespace MineCase.Server.User
         public Task SetInventorySlot(int index, Slot slot)
         {
             State.Slots[index] = slot;
-            _needSaveState = true;
+            MarkDirty();
             return Task.CompletedTask;
         }
 
@@ -179,6 +181,11 @@ namespace MineCase.Server.User
             DownloadingWorld,
             Playing,
             Destroying
+        }
+
+        private void MarkDirty()
+        {
+            _autoSave.IsDirty = true;
         }
 
         internal class StateHolder

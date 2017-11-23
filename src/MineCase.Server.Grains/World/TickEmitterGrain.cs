@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
@@ -16,6 +17,8 @@ namespace MineCase.Server.World
     [Reentrant]
     internal class TickEmitterGrain : PersistableDependencyObject, ITickEmitter
     {
+        private AutoSaveStateComponent _autoSave;
+
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
         protected override async Task InitializePreLoadComponent()
@@ -23,24 +26,36 @@ namespace MineCase.Server.World
             await SetComponent(new StateComponent<StateHolder>());
         }
 
-        public Task OnGameTick(TimeSpan deltaTime, long worldAge)
+        protected override async Task InitializeComponents()
+        {
+            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
+            await SetComponent(_autoSave);
+        }
+
+        public async Task OnGameTick(TimeSpan deltaTime, long worldAge)
         {
             var message = new GameTick { DeltaTime = deltaTime, WorldAge = worldAge };
-            foreach (var entity in State.Subscription)
-                entity.InvokeOneWay(e => e.Tell(message));
-            return Task.CompletedTask;
+            await Task.WhenAll(from e in State.Subscription select e.Tell(message));
+            await _autoSave.OnGameTick(this, (deltaTime, worldAge));
         }
 
         public Task Subscribe(IDependencyObject observer)
         {
-            State.Subscription.Add(observer);
+            if (State.Subscription.Add(observer))
+                MarkDirty();
             return Task.CompletedTask;
         }
 
         public Task Unsubscribe(IDependencyObject observer)
         {
-            State.Subscription.Remove(observer);
+            if (State.Subscription.Remove(observer))
+                MarkDirty();
             return Task.CompletedTask;
+        }
+
+        private void MarkDirty()
+        {
+            _autoSave.IsDirty = true;
         }
 
         internal class StateHolder

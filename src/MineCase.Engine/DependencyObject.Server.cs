@@ -43,11 +43,23 @@ namespace MineCase.Engine
 
         public async Task ReadStateAsync()
         {
-            await Tell(BeforeReadState.Default);
+            bool needSave = false;
             var state = await DeserializeStateAsync();
-            _valueStorage = (Data.DependencyValueStorage)state?.ValueStorage ?? new Data.DependencyValueStorage();
+            if (state == null || state.ValueStorage == null)
+            {
+                _valueStorage = new Data.DependencyValueStorage();
+                needSave = true;
+            }
+            else
+            {
+                _valueStorage = (Data.DependencyValueStorage)state.ValueStorage;
+            }
+
             _valueStorage.CurrentValueChanged += ValueStorage_CurrentValueChanged;
             await Tell(AfterReadState.Default);
+
+            if (needSave)
+                await WriteStateAsync();
         }
 
         public async Task WriteStateAsync()
@@ -58,6 +70,7 @@ namespace MineCase.Engine
             }
             else
             {
+                await Tell(BeforeWriteState.Default);
                 var state = new DependencyObjectState
                 {
                     GrainKeyString = GrainReference.ToKeyString(),

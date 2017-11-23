@@ -18,6 +18,10 @@ namespace MineCase.Server.World
     internal class WorldPartitionGrain : AddressByPartitionGrain, IWorldPartition
     {
         private ITickEmitter _tickEmitter;
+        private ICollectableFinder _collectableFinder;
+        private IChunkTrackingHub _chunkTrackingHub;
+        private IChunkColumn _chunkColumn;
+        private AutoSaveStateComponent _autoSave;
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
@@ -26,6 +30,15 @@ namespace MineCase.Server.World
             await SetComponent(new StateComponent<StateHolder>());
 
             _tickEmitter = GrainFactory.GetPartitionGrain<ITickEmitter>(this);
+            _collectableFinder = GrainFactory.GetPartitionGrain<ICollectableFinder>(this);
+            _chunkTrackingHub = GrainFactory.GetPartitionGrain<IChunkTrackingHub>(this);
+            _chunkColumn = GrainFactory.GetPartitionGrain<IChunkColumn>(this);
+        }
+
+        protected override async Task InitializeComponents()
+        {
+            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
+            await SetComponent(_autoSave);
         }
 
         public async Task Enter(IPlayer player)
@@ -34,6 +47,7 @@ namespace MineCase.Server.World
             var active = players.Count == 0;
             if (players.Add(player))
             {
+                MarkDirty();
                 var message = new DiscoveredByPlayer { Player = player };
                 await Task.WhenAll(from e in State.DiscoveryEntities
                                    select e.Tell(message));
@@ -45,31 +59,47 @@ namespace MineCase.Server.World
 
         public async Task Leave(IPlayer player)
         {
-            var playrs = State.Players;
-            playrs.Remove(player);
-            if (playrs.Count == 0)
+            var players = State.Players;
+            if (players.Remove(player))
             {
-                await World.DeactivePartition(this);
-                DeactivateOnIdle();
+                MarkDirty();
+                if (players.Count == 0)
+                {
+                    await World.DeactivePartition(this);
+                    DeactivateOnIdle();
+                }
             }
         }
 
-        public Task OnGameTick(TimeSpan deltaTime, long worldAge)
+        public async Task OnGameTick(TimeSpan deltaTime, long worldAge)
         {
-            _tickEmitter.InvokeOneWay(e => e.OnGameTick(deltaTime, worldAge));
-            return Task.CompletedTask;
+            await Task.WhenAll(
+                _tickEmitter.OnGameTick(deltaTime, worldAge),
+                _collectableFinder.OnGameTick(deltaTime, worldAge),
+                _chunkTrackingHub.OnGameTick(deltaTime, worldAge),
+                _chunkColumn.OnGameTick(deltaTime, worldAge));
+            await _autoSave.OnGameTick(this, (deltaTime, worldAge));
         }
 
         async Task IWorldPartition.SubscribeDiscovery(IEntity entity)
         {
             if (State.DiscoveryEntities.Add(entity))
+            {
+                MarkDirty();
                 await entity.Tell(BroadcastDiscovered.Default);
+            }
         }
 
         Task IWorldPartition.UnsubscribeDiscovery(IEntity entity)
         {
-            State.DiscoveryEntities.Remove(entity);
+            if (State.DiscoveryEntities.Remove(entity))
+                MarkDirty();
             return Task.CompletedTask;
+        }
+
+        private void MarkDirty()
+        {
+            _autoSave.IsDirty = true;
         }
 
         internal class StateHolder

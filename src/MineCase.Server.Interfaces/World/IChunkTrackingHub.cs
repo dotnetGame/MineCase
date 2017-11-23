@@ -17,5 +17,7 @@ namespace MineCase.Server.World
         Task Unsubscribe(IPlayer player);
 
         Task<List<IPlayer>> GetTrackedPlayers();
+
+        Task OnGameTick(TimeSpan deltaTime, long worldAge);
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MineCase.Engine;
 using MineCase.Engine.Serialization;
 using MongoDB.Driver;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Persistence
 {
@@ -21,6 +22,7 @@ namespace MineCase.Server.Persistence
         }
     }
 
+    [Reentrant]
     public abstract class PersistableDependencyObject : DependencyObject
     {
         protected override async Task SerializeStateAsync(DependencyObjectState state)

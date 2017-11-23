@@ -6,9 +6,11 @@ using MineCase.Protocol.Login;
 using MineCase.Server.Game;
 using MineCase.Server.User;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Network.Login
 {
+    [Reentrant]
     internal class LoginFlowGrain : Grain, ILoginFlow
     {
         private bool _useAuthentication = false;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using MineCase.Engine.Serialization;
+using MineCase.Graphics;
 using MongoDB.Bson.Serialization;
 
 namespace MineCase.Serialization.Serializers
@@ -13,6 +14,18 @@ namespace MineCase.Serialization.Serializers
             BsonSerializer.RegisterSerializer(new SlotSerializer());
             BsonSerializer.RegisterSerializer(new DependencyObjectStateSerializer());
             BsonSerializer.RegisterSerializationProvider(new GrainRerferenceSerializerProvider(serviceProvider));
+            BsonSerializer.RegisterSerializer(new BlockChunkPosSerializer());
+            BsonSerializer.RegisterSerializer(new CuboidSerializer());
+            BsonSerializer.RegisterSerializer(new Point3dSerializer());
+            BsonSerializer.RegisterSerializer(new ChunkColumnCompactStorageSerializer());
+            BsonSerializer.RegisterSerializer(new ChunkSectionCompactStorageSerializer());
+
+            BsonClassMap.RegisterClassMap<Shape>(c =>
+            {
+                c.AutoMap();
+                c.SetIsRootClass(true);
+                c.AddKnownType(typeof(Cuboid));
+            });
         }
     }
 }

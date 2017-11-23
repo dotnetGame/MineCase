@@ -95,27 +95,35 @@ namespace MineCase.Server.Game
             }
         }
 
+        private List<Task> _tasks = new List<Task>();
+
         private async Task OnGameTick(object state)
         {
             try
             {
                 var now = DateTime.UtcNow;
                 var deltaTime = now - _lastGameTickTime;
+
                 _lastGameTickTime = now;
 
                 var worldTime = await _world.GetTime();
 
                 if (worldTime.WorldAge % 20 == 0)
                 {
-                    await Task.WhenAll(from u in _users.Values
-                                       select u.Generator.TimeUpdate(worldTime.WorldAge, worldTime.TimeOfDay));
+                    _tasks.AddRange(from u in _users.Values
+                                    select u.Generator.TimeUpdate(worldTime.WorldAge, worldTime.TimeOfDay));
                 }
 
-                await _world.OnGameTick(deltaTime);
-                await Task.WhenAll(from u in _users.Keys
-                                   select u.OnGameTick(deltaTime, worldTime.WorldAge));
-                await Task.WhenAll(from u in _tickables
-                                   select u.OnGameTick(deltaTime, worldTime.WorldAge));
+                _tasks.Add(_world.OnGameTick(deltaTime));
+                _tasks.AddRange(from u in _users.Keys
+                                select u.OnGameTick(deltaTime, worldTime.WorldAge));
+                _tasks.AddRange(from u in _tickables
+                                select u.OnGameTick(deltaTime, worldTime.WorldAge));
+
+                await Task.WhenAll(_tasks);
+                _tasks.Clear();
+                if (worldTime.WorldAge % 20 == 0)
+                    _logger.LogInformation($"Delta Game Tick: {deltaTime.TotalMilliseconds}ms.");
             }
             catch (Exception ex)
             {

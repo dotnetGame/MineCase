@@ -49,14 +49,14 @@ namespace MineCase.Server.Components
                 return TryUnsubscribe();
         }
 
-        public void OnGameTick(TimeSpan deltaTime, long worldAge)
+        public Task OnGameTick(TimeSpan deltaTime, long worldAge)
         {
-            Tick.InvokeSerial(this, (deltaTime, worldAge)).Ignore();
+            return Tick.InvokeSerial(this, (deltaTime, worldAge));
         }
 
         Task IHandle<GameTick>.Handle(GameTick message)
         {
-            return Tick.InvokeSerial(this, (message.DeltaTime, message.WorldAge));
+            return OnGameTick(message.DeltaTime, message.WorldAge);
         }
 
         private async Task TrySubscribe()

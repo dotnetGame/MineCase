@@ -8,29 +8,56 @@ using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
-using MineCase.Server.User;
+using MineCase.Server.Persistence;
+using MineCase.Server.Persistence.Components;
 using Orleans;
 using Orleans.Concurrency;
 
 namespace MineCase.Server.World
 {
+    [PersistTableName("chunkTrackingHub")]
     [Reentrant]
-    internal class ChunkTrackingHub : Grain, IChunkTrackingHub
+    internal class ChunkTrackingHub : AddressByPartitionGrain, IChunkTrackingHub
     {
         private readonly IPacketPackager _packetPackager;
         private Dictionary<IPlayer, IPacketSink> _trackingPlayers;
         private BroadcastPacketSink _broadcastPacketSink;
+        private AutoSaveStateComponent _autoSave;
+
+        private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
         public ChunkTrackingHub(IPacketPackager packetPackager)
         {
             _packetPackager = packetPackager;
         }
 
-        public override Task OnActivateAsync()
+        protected override async Task InitializePreLoadComponent()
         {
-            _trackingPlayers = new Dictionary<IPlayer, IPacketSink>();
+            var state = new StateComponent<StateHolder>();
+            await SetComponent(state);
+            state.BeforeWriteState += State_BeforeWriteState;
+            state.AfterReadState += State_AfterReadState;
+        }
+
+        protected override async Task InitializeComponents()
+        {
+            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
+            await SetComponent(_autoSave);
+        }
+
+        private Task State_AfterReadState(object sender, EventArgs e)
+        {
+            _trackingPlayers = (from p in State.Players
+                                let sink = (IPacketSink)new ForwardToPlayerPacketSink(p, _packetPackager)
+                                select new { Player = p, Sink = sink }).ToDictionary(o => o.Player, o => o.Sink);
             _broadcastPacketSink = new BroadcastPacketSink(_trackingPlayers.Values, _packetPackager);
-            return base.OnActivateAsync();
+            return Task.CompletedTask;
+        }
+
+        private Task State_BeforeWriteState(object sender, EventArgs e)
+        {
+            State.Players = _trackingPlayers.Keys.ToList();
+            return Task.CompletedTask;
         }
 
         public Task SendPacket(ISerializablePacket packet)
@@ -46,19 +73,48 @@ namespace MineCase.Server.World
         public Task Subscribe(IPlayer player)
         {
             if (!_trackingPlayers.ContainsKey(player))
+            {
                 _trackingPlayers.Add(player, new ForwardToPlayerPacketSink(player, _packetPackager));
+                MarkDirty();
+            }
+
             return Task.CompletedTask;
         }
 
         public Task Unsubscribe(IPlayer player)
         {
-            _trackingPlayers.Remove(player);
+            if (_trackingPlayers.Remove(player))
+                MarkDirty();
             return Task.CompletedTask;
         }
 
         public Task<List<IPlayer>> GetTrackedPlayers()
         {
             return Task.FromResult(_trackingPlayers.Keys.ToList());
+        }
+
+        public Task OnGameTick(TimeSpan deltaTime, long worldAge)
+        {
+            return _autoSave.OnGameTick(this, (deltaTime, worldAge));
+        }
+
+        private void MarkDirty()
+        {
+            _autoSave.IsDirty = true;
+        }
+
+        internal class StateHolder
+        {
+            public List<IPlayer> Players { get; set; }
+
+            public StateHolder()
+            {
+            }
+
+            public StateHolder(InitializeStateMark mark)
+            {
+                Players = new List<IPlayer>();
+            }
         }
     }
 }

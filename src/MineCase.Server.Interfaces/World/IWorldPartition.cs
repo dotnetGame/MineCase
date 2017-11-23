@@ -13,7 +13,6 @@ namespace MineCase.Server.World
 
         Task Leave(IPlayer player);
 
-        [OneWay]
         Task OnGameTick(TimeSpan deltaTime, long worldAge);
 
         Task SubscribeDiscovery(IEntity entity);

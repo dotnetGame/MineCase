@@ -11,10 +11,12 @@ using MineCase.Server.Persistence;
 using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Game.Entities
 {
     [PersistTableName("entity")]
+    [Reentrant]
     internal abstract class EntityGrain : PersistableDependencyObject, IEntity
     {
         public Guid UUID => this.GetPrimaryKey();

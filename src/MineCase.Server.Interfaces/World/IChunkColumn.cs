@@ -24,5 +24,7 @@ namespace MineCase.Server.World
         Task<IBlockEntity> GetBlockEntity(int x, int y, int z);
 
         Task OnBlockNeighborChanged(int x, int y, int z, BlockWorldPos neighborPosition, BlockState oldState, BlockState newState);
+
+        Task OnGameTick(TimeSpan deltaTime, long worldAge);
     }
 }

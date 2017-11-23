@@ -11,7 +11,6 @@ namespace MineCase.Server.World
 {
     public interface ITickEmitter : IAddressByPartition
     {
-        [OneWay]
         Task OnGameTick(TimeSpan deltaTime, long worldAge);
 
         Task Subscribe(IDependencyObject observer);

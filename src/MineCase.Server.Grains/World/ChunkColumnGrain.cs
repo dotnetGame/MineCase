@@ -8,6 +8,8 @@ using MineCase.Server.Game.BlockEntities;
 using MineCase.Server.Game.Blocks;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Network.Play;
+using MineCase.Server.Persistence;
+using MineCase.Server.Persistence.Components;
 using MineCase.Server.Settings;
 using MineCase.Server.World.Generation;
 using MineCase.World;
@@ -18,41 +20,41 @@ using Orleans.Concurrency;
 
 namespace MineCase.Server.World
 {
+    [PersistTableName("chunkColumn")]
     [Reentrant]
-    internal class ChunkColumnGrain : Grain, IChunkColumn
+    internal class ChunkColumnGrain : AddressByPartitionGrain, IChunkColumn
     {
-        private IWorld _world;
-        private ChunkWorldPos _chunkPos;
+        private AutoSaveStateComponent _autoSave;
 
-        private bool _generated = false;
-        private ChunkColumnCompactStorage _state;
-        private Dictionary<BlockChunkPos, IBlockEntity> _blockEntities;
+        private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
+
+        protected override async Task InitializePreLoadComponent()
+        {
+            await SetComponent(new StateComponent<StateHolder>());
+        }
+
+        protected override async Task InitializeComponents()
+        {
+            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute * 5);
+            await SetComponent(_autoSave);
+        }
 
         public async Task<BlockState> GetBlockState(int x, int y, int z)
         {
             await EnsureChunkGenerated();
-            return _state[x, y, z];
+            return State.Storage[x, y, z];
         }
 
         public async Task<ChunkColumnCompactStorage> GetState()
         {
             await EnsureChunkGenerated();
-            return _state;
+            return State.Storage;
         }
 
         public async Task<BiomeId> GetBlockBiome(int x, int z)
         {
             await EnsureChunkGenerated();
-            return (BiomeId)_state.Biomes[(z * ChunkConstants.BlockEdgeWidthInSection) + x];
-        }
-
-        public override Task OnActivateAsync()
-        {
-            var keys = this.GetWorldAndChunkWorldPos();
-            _world = GrainFactory.GetGrain<IWorld>(keys.worldKey);
-            _chunkPos = keys.chunkWorldPos;
-            _blockEntities = new Dictionary<BlockChunkPos, IBlockEntity>();
-            return Task.CompletedTask;
+            return (BiomeId)State.Storage.Biomes[(z * ChunkConstants.BlockEdgeWidthInSection) + x];
         }
 
         public static readonly (int x, int z)[] CrossCoords = new[]
@@ -63,14 +65,15 @@ namespace MineCase.Server.World
         public async Task SetBlockState(int x, int y, int z, BlockState blockState)
         {
             await EnsureChunkGenerated();
-            var oldState = _state[x, y, z];
+            var state = State;
+            var oldState = state.Storage[x, y, z];
 
             if (oldState != blockState)
             {
-                _state[x, y, z] = blockState;
+                state.Storage[x, y, z] = blockState;
 
                 var chunkPos = new BlockChunkPos(x, y, z);
-                var blockWorldPos = chunkPos.ToBlockWorldPos(_chunkPos);
+                var blockWorldPos = chunkPos.ToBlockWorldPos(ChunkWorldPos);
                 await GetBroadcastGenerator().BlockChange(blockWorldPos, blockState);
 
                 if (oldState.Id != blockState.Id)
@@ -79,7 +82,7 @@ namespace MineCase.Server.World
                     var newEntity = BlockEntity.Create(GrainFactory, (BlockId)blockState.Id);
 
                     // 删除旧的 BlockEntity
-                    if (_blockEntities.TryGetValue(chunkPos, out var entity))
+                    if (state.BlockEntities.TryGetValue(chunkPos, out var entity))
                     {
                         if (newEntity != null && entity.GetPrimaryKeyString() == newEntity.GetPrimaryKeyString())
                             replaceOld = false;
@@ -87,15 +90,15 @@ namespace MineCase.Server.World
                         if (replaceOld)
                         {
                             await entity.Tell(DestroyBlockEntity.Default);
-                            _blockEntities.Remove(chunkPos);
+                            state.BlockEntities.Remove(chunkPos);
                         }
                     }
 
                     // 添加新的 BlockEntity
                     if (newEntity != null && replaceOld)
                     {
-                        _blockEntities.Add(chunkPos, newEntity);
-                        await newEntity.Tell(new SpawnBlockEntity { World = _world, Position = blockWorldPos });
+                        state.BlockEntities.Add(chunkPos, newEntity);
+                        await newEntity.Tell(new SpawnBlockEntity { World = World, Position = blockWorldPos });
                     }
                 }
 
@@ -107,29 +110,30 @@ namespace MineCase.Server.World
                    neighborPos.Z += crossCoord.z;
                    var chunk = neighborPos.ToChunkWorldPos();
                    var blockChunkPos = neighborPos.ToBlockChunkPos();
-                   return GrainFactory.GetPartitionGrain<IChunkColumn>(_world, chunk).OnBlockNeighborChanged(
+                   return GrainFactory.GetPartitionGrain<IChunkColumn>(World, chunk).OnBlockNeighborChanged(
                        blockChunkPos.X, blockChunkPos.Y, blockChunkPos.Z, blockWorldPos, oldState, blockState);
                }));
+                MarkDirty();
             }
         }
 
         private async Task EnsureChunkGenerated()
         {
-            if (!_generated)
+            if (!State.Generated)
             {
                 var serverSetting = GrainFactory.GetGrain<IServerSettings>(0);
                 string worldType = (await serverSetting.GetSettings()).LevelType;
                 if (worldType == "DEFAULT" || worldType == "default")
                 {
-                    var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(await _world.GetSeed());
+                    var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(await World.GetSeed());
                     GeneratorSettings settings = new GeneratorSettings
                     {
                     };
-                    _state = await generator.Generate(_world, _chunkPos.X, _chunkPos.Z, settings);
+                    State.Storage = await generator.Generate(World, ChunkWorldPos.X, ChunkWorldPos.Z, settings);
                 }
                 else if (worldType == "FLAT" || worldType == "flat")
                 {
-                    var generator = GrainFactory.GetGrain<IChunkGeneratorFlat>(await _world.GetSeed());
+                    var generator = GrainFactory.GetGrain<IChunkGeneratorFlat>(await World.GetSeed());
                     GeneratorSettings settings = new GeneratorSettings
                     {
                         FlatBlockId = new BlockState?[]
@@ -142,39 +146,74 @@ namespace MineCase.Server.World
                             BlockStates.Grass()
                         }
                     };
-                    _state = await generator.Generate(_world, _chunkPos.X, _chunkPos.Z, settings);
+                    State.Storage = await generator.Generate(World, ChunkWorldPos.X, ChunkWorldPos.Z, settings);
                 }
                 else
                 {
-                    var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(await _world.GetSeed());
+                    var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(await World.GetSeed());
                     GeneratorSettings settings = new GeneratorSettings
                     {
                     };
-                    _state = await generator.Generate(_world, _chunkPos.X, _chunkPos.Z, settings);
+                    State.Storage = await generator.Generate(World, ChunkWorldPos.X, ChunkWorldPos.Z, settings);
                 }
 
-                _generated = true;
+                State.Generated = true;
+                await WriteStateAsync();
+                _autoSave.IsDirty = false;
             }
         }
 
         protected ClientPlayPacketGenerator GetBroadcastGenerator()
         {
-            return new ClientPlayPacketGenerator(GrainFactory.GetPartitionGrain<IChunkTrackingHub>(_world, _chunkPos));
+            return new ClientPlayPacketGenerator(GrainFactory.GetPartitionGrain<IChunkTrackingHub>(World, ChunkWorldPos));
         }
 
         public Task<IBlockEntity> GetBlockEntity(int x, int y, int z)
         {
-            if (_blockEntities.TryGetValue(new BlockChunkPos(x, y, z), out var entity))
+            if (State.BlockEntities.TryGetValue(new BlockChunkPos(x, y, z), out var entity))
                 return Task.FromResult(entity);
             return Task.FromResult<IBlockEntity>(null);
         }
 
         public Task OnBlockNeighborChanged(int x, int y, int z, BlockWorldPos neighborPosition, BlockState oldState, BlockState newState)
         {
-            var block = _state[x, y, z];
-            var blockHandler = BlockHandler.Create((BlockId)block.Id);
-            var selfPosition = new BlockChunkPos(x, y, z).ToBlockWorldPos(_chunkPos);
-            return blockHandler.OnNeighborChanged(selfPosition, neighborPosition, oldState, newState, GrainFactory, _world);
+            if (State.Generated)
+            {
+                var block = State.Storage[x, y, z];
+                var blockHandler = BlockHandler.Create((BlockId)block.Id);
+                var selfPosition = new BlockChunkPos(x, y, z).ToBlockWorldPos(ChunkWorldPos);
+                return blockHandler.OnNeighborChanged(selfPosition, neighborPosition, oldState, newState, GrainFactory, World);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task OnGameTick(TimeSpan deltaTime, long worldAge)
+        {
+            return _autoSave.OnGameTick(this, (deltaTime, worldAge));
+        }
+
+        private void MarkDirty()
+        {
+            _autoSave.IsDirty = true;
+        }
+
+        internal class StateHolder
+        {
+            public bool Generated { get; set; }
+
+            public ChunkColumnCompactStorage Storage { get; set; }
+
+            public Dictionary<BlockChunkPos, IBlockEntity> BlockEntities { get; set; }
+
+            public StateHolder()
+            {
+            }
+
+            public StateHolder(InitializeStateMark mark)
+            {
+                BlockEntities = new Dictionary<BlockChunkPos, IBlockEntity>();
+            }
         }
     }
 }

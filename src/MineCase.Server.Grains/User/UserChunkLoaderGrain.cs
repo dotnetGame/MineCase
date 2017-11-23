@@ -9,9 +9,11 @@ using MineCase.Server.Network.Play;
 using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.User
 {
+    [Reentrant]
     internal class UserChunkLoaderGrain : Grain, IUserChunkLoader
     {
         private IPlayer _player;
