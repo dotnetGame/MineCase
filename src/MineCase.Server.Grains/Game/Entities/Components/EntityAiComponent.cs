@@ -227,13 +227,9 @@ namespace MineCase.Server.Game.Entities.Components
                 if (EntityWorldPos.Distance(playerPosition, entityPos) < 3)
                 {
                     (var yaw, var pitch) = VectorToYawAndPitch(entityPos, playerPosition);
-                    CreatureAction nextCreatureAction = new CreatureAction();
-                    nextCreatureAction.HeadYaw = yaw;
-                    nextCreatureAction.Yaw = yaw;
-                    nextCreatureAction.Pitch = pitch;
-                    CreatureAnimation animation = new CreatureAnimationLinear(nextCreatureAction, 4);
-                    List<CreatureAnimation> animationList = AttachedObject.GetValue(EntityAiComponent.CreatureAnimationListProperty);
-                    animationList.Add(animation);
+                    await AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, yaw);
+                    await AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, yaw);
+                    await AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, pitch);
                     break;
                 }
             }
