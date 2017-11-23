@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.Components;
 using MineCase.Server.User;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.Game.Entities.Components
@@ -27,10 +28,10 @@ namespace MineCase.Server.Game.Entities.Components
             return base.OnAttached();
         }
 
-        private Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
+        private Task OnGameTick(object sender, GameTickArgs e)
         {
             if (_loaded)
-                return _chunkLoader.OnGameTick(e.worldAge);
+                _chunkLoader.OnGameTick(e.WorldAge).Ignore();
             return Task.CompletedTask;
         }
 

@@ -7,6 +7,7 @@ using MineCase.Server.Game;
 using MineCase.Server.Persistence;
 using MineCase.Server.Persistence.Components;
 using MineCase.Server.Settings;
+using MineCase.World;
 using MineCase.World.Generation;
 using Orleans;
 using Orleans.Concurrency;
@@ -51,12 +52,12 @@ namespace MineCase.Server.World
             return Task.FromResult(id);
         }
 
-        public async Task OnGameTick(TimeSpan deltaTime)
+        public async Task OnGameTick(GameTickArgs e)
         {
             State.WorldAge++;
             MarkDirty();
-            await Task.WhenAll(from p in State.ActivedPartitions select p.OnGameTick(deltaTime, State.WorldAge));
-            await _autoSave.OnGameTick(this, (deltaTime, State.WorldAge));
+            await Task.WhenAll(from p in State.ActivedPartitions select p.OnGameTick(e));
+            await _autoSave.OnGameTick(this, e);
         }
 
         public Task<long> GetAge() => Task.FromResult(State.WorldAge);

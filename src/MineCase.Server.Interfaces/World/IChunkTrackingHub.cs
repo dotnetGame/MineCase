@@ -6,6 +6,7 @@ using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Network;
 using MineCase.Server.User;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.World
@@ -18,6 +19,6 @@ namespace MineCase.Server.World
 
         Task<List<IPlayer>> GetTrackedPlayers();
 
-        Task OnGameTick(TimeSpan deltaTime, long worldAge);
+        Task OnGameTick(GameTickArgs e);
     }
 }

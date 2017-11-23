@@ -188,9 +188,9 @@ namespace MineCase.Server.World
             return Task.CompletedTask;
         }
 
-        public Task OnGameTick(TimeSpan deltaTime, long worldAge)
+        public Task OnGameTick(GameTickArgs e)
         {
-            return _autoSave.OnGameTick(this, (deltaTime, worldAge));
+            return _autoSave.OnGameTick(this, e);
         }
 
         private void MarkDirty()

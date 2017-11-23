@@ -8,6 +8,7 @@ using MineCase.Server.Components;
 using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.World;
+using MineCase.World;
 
 namespace MineCase.Server.Game.BlockEntities.Components
 {
@@ -45,7 +46,7 @@ namespace MineCase.Server.Game.BlockEntities.Components
 
         private bool CanCook() => _currentRecipe != null && (_fuelLeft > 0 || _currentFuel != null);
 
-        private async Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
+        private async Task OnGameTick(object sender, GameTickArgs e)
         {
             if (CanCook())
             {
@@ -61,7 +62,7 @@ namespace MineCase.Server.Game.BlockEntities.Components
                     _cookProgress++;
                     _fuelLeft--;
 
-                    if (FurnaceWindow != null && e.worldAge % 10 == 0)
+                    if (FurnaceWindow != null && e.WorldAge % 10 == 0)
                     {
                         await FurnaceWindow.SetProperty(FurnaceWindowPropertyType.ProgressArrow, (short)_cookProgress);
                         await FurnaceWindow.SetProperty(FurnaceWindowPropertyType.FireIcon, (short)_fuelLeft);

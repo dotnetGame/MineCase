@@ -133,9 +133,9 @@ namespace MineCase.Server.World
             _autoSave.IsDirty = true;
         }
 
-        public Task OnGameTick(TimeSpan deltaTime, long worldAge)
+        public Task OnGameTick(GameTickArgs e)
         {
-            return _autoSave.OnGameTick(this, (deltaTime, worldAge));
+            return _autoSave.OnGameTick(this, e);
         }
 
         internal class CollectablePair

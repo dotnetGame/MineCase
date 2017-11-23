@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.Components;
+using MineCase.World;
 
 namespace MineCase.Server.Persistence.Components
 {
@@ -29,13 +30,15 @@ namespace MineCase.Server.Persistence.Components
             return base.OnAttached();
         }
 
-        public async Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
+        public Task OnGameTick(object sender, GameTickArgs e)
         {
-            if (IsDirty && (e.worldAge % _periodTime == 0))
+            if (IsDirty && (e.WorldAge % _periodTime == 0))
             {
                 IsDirty = false;
-                await AttachedObject.WriteStateAsync();
+                return AttachedObject.WriteStateAsync();
             }
+
+            return Task.CompletedTask;
         }
     }
 }

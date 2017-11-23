@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.World;
+using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
 
@@ -11,7 +12,7 @@ namespace MineCase.Server.Components
 {
     internal class GameTickComponent : Component, IHandle<GameTick>
     {
-        public event AsyncEventHandler<(TimeSpan deltaTime, long worldAge)> Tick;
+        public event AsyncEventHandler<GameTickArgs> Tick;
 
         public GameTickComponent(string name = "gameTick")
             : base(name)
@@ -49,14 +50,14 @@ namespace MineCase.Server.Components
                 return TryUnsubscribe();
         }
 
-        public Task OnGameTick(TimeSpan deltaTime, long worldAge)
+        public Task OnGameTick(GameTickArgs e)
         {
-            return Tick.InvokeSerial(this, (deltaTime, worldAge));
+            return Tick.InvokeSerial(this, e);
         }
 
         Task IHandle<GameTick>.Handle(GameTick message)
         {
-            return OnGameTick(message.DeltaTime, message.WorldAge);
+            return OnGameTick(message.Args);
         }
 
         private async Task TrySubscribe()

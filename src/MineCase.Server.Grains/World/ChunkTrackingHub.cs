@@ -10,6 +10,7 @@ using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
 using MineCase.Server.Persistence;
 using MineCase.Server.Persistence.Components;
+using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
 
@@ -93,9 +94,9 @@ namespace MineCase.Server.World
             return Task.FromResult(_trackingPlayers.Keys.ToList());
         }
 
-        public Task OnGameTick(TimeSpan deltaTime, long worldAge)
+        public Task OnGameTick(GameTickArgs e)
         {
-            return _autoSave.OnGameTick(this, (deltaTime, worldAge));
+            return _autoSave.OnGameTick(this, e);
         }
 
         private void MarkDirty()

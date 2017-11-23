@@ -263,7 +263,7 @@ namespace MineCase.Server.Game.Entities.Components
             await AiType.FireAsync(nextEvent);
         }
 
-        private async Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
+        private async Task OnGameTick(object sender, GameTickArgs e)
         {
             /*
             if (e.worldAge % 16 == 0)

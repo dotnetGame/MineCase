@@ -8,6 +8,7 @@ using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Persistence;
 using MineCase.Server.Persistence.Components;
+using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
 
@@ -71,14 +72,14 @@ namespace MineCase.Server.World
             }
         }
 
-        public async Task OnGameTick(TimeSpan deltaTime, long worldAge)
+        public async Task OnGameTick(GameTickArgs e)
         {
             await Task.WhenAll(
-                _tickEmitter.OnGameTick(deltaTime, worldAge),
-                _collectableFinder.OnGameTick(deltaTime, worldAge),
-                _chunkTrackingHub.OnGameTick(deltaTime, worldAge),
-                _chunkColumn.OnGameTick(deltaTime, worldAge));
-            await _autoSave.OnGameTick(this, (deltaTime, worldAge));
+                _tickEmitter.OnGameTick(e),
+                _collectableFinder.OnGameTick(e),
+                _chunkTrackingHub.OnGameTick(e),
+                _chunkColumn.OnGameTick(e));
+            await _autoSave.OnGameTick(this, e);
         }
 
         async Task IWorldPartition.SubscribeDiscovery(IEntity entity)

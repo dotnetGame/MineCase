@@ -137,7 +137,7 @@ namespace MineCase.Server.User
             return Task.CompletedTask;
         }
 
-        public async Task OnGameTick(TimeSpan deltaTime, long worldAge)
+        public async Task OnGameTick(GameTickArgs e)
         {
             if (_userState == UserState.DownloadingWorld)
             {
@@ -148,7 +148,8 @@ namespace MineCase.Server.User
             /*
             if (_state >= UserState.JoinedGame && _state < UserState.Destroying)
                 await _chunkLoader.OnGameTick(worldAge);*/
-            await _autoSave.OnGameTick(this, (deltaTime, worldAge));
+            await _generator.TimeUpdate(e.WorldAge, e.TimeOfDay);
+            await _autoSave.OnGameTick(this, e);
         }
 
         public Task SetPacketRouter(IPacketRouter packetRouter)

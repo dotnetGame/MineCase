@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game;
+using MineCase.World;
 using MineCase.World.Generation;
 using Orleans;
 
@@ -16,7 +17,7 @@ namespace MineCase.Server.World
 
         Task<long> GetAge();
 
-        Task OnGameTick(TimeSpan deltaTime);
+        Task OnGameTick(GameTickArgs e);
 
         Task<int> GetSeed();
 

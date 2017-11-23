@@ -8,7 +8,9 @@ using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Network;
 using MineCase.Server.World;
+using MineCase.World;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.User
 {
@@ -40,7 +42,8 @@ namespace MineCase.Server.User
 
         Task SendChatMessage(Chat jsonData, Byte position);
 
-        Task OnGameTick(TimeSpan deltaTime, long worldAge);
+        [OneWay]
+        Task OnGameTick(GameTickArgs e);
 
         Task SetPacketRouter(IPacketRouter packetRouter);
 

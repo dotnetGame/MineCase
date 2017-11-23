@@ -8,6 +8,7 @@ using MineCase.Server.Components;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Persistence;
 using MineCase.Server.Persistence.Components;
+using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
 
@@ -32,11 +33,11 @@ namespace MineCase.Server.World
             await SetComponent(_autoSave);
         }
 
-        public async Task OnGameTick(TimeSpan deltaTime, long worldAge)
+        public async Task OnGameTick(GameTickArgs e)
         {
-            var message = new GameTick { DeltaTime = deltaTime, WorldAge = worldAge };
-            await Task.WhenAll(from e in State.Subscription select e.Tell(message));
-            await _autoSave.OnGameTick(this, (deltaTime, worldAge));
+            var message = new GameTick { Args = e };
+            await Task.WhenAll(from en in State.Subscription select en.Tell(message));
+            await _autoSave.OnGameTick(this, e);
         }
 
         public Task Subscribe(IDependencyObject observer)

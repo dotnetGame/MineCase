@@ -7,6 +7,7 @@ using MineCase.Engine;
 using MineCase.Graphics;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
+using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
 
@@ -22,6 +23,6 @@ namespace MineCase.Server.World
 
         Task SpawnPickup(Vector3 position, Immutable<Slot[]> slots);
 
-        Task OnGameTick(TimeSpan deltaTime, long worldAge);
+        Task OnGameTick(GameTickArgs e);
     }
 }
