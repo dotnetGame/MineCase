@@ -6,7 +6,7 @@
 
 ## Introduction
 
-`MineCase` is a cross-platform, distributed `Minecraft` server application developed using `.NET Core` that uses the `Orleans` framework.
+`MineCase` is a cross-platform application with distributed server. It's written in `.NET Core` and based on the `Orleans` framework.
 
 We currently support [Release 1.12](https://minecraft.net/en-us/article/minecraft-112-pre-release-6) Minecraft protocol versions.
 
