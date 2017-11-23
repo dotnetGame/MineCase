@@ -130,19 +130,9 @@ namespace MineCase.Server.Game.Entities.Components
 
         private Task ActionStop()
         {
-            float theta = (float)(random.NextDouble() * 360);
             float yaw = AttachedObject.GetValue(EntityLookComponent.YawProperty);
-            if (random.Next(20) == 0)
-            {
-                AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, theta);
-                AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, theta);
-            }
-            else
-            {
-                // AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, yaw);
-                AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, yaw);
-            }
-
+            AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, yaw);
+            AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, 0);
             return Task.CompletedTask;
         }
 
@@ -251,20 +241,40 @@ namespace MineCase.Server.Game.Entities.Components
             return Task.CompletedTask;
         }
 
-        private async Task GenerateEvent()
+        private async Task<CreatureEvent> GenerateEvent()
         {
             // get state
             var state = _ai.State;
             var nextEvent = CreatureEvent.Nothing;
 
             // player approaching event
-            if (state == CreatureState.Stop)
             {
                 IChunkTrackingHub tracker = GrainFactory.GetGrain<IChunkTrackingHub>(AttachedObject.GetAddressByPartitionKey());
                 var list = await tracker.GetTrackedPlayers();
-                if (list.Count != 0)
+                EntityWorldPos entityPos = AttachedObject.GetValue(EntityWorldPositionComponent.EntityWorldPositionProperty);
+                bool hasPlayerNearby = false;
+                foreach (IPlayer each in list)
+                {
+                    EntityWorldPos playerPosition = await each.GetPosition();
+
+                    // players in three blocks
+                    if (EntityWorldPos.Distance(playerPosition, entityPos) < 3)
+                    {
+                        hasPlayerNearby = true;
+                        break;
+                    }
+                }
+
+                if (hasPlayerNearby)
                 {
                     nextEvent = CreatureEvent.PlayerApproaching;
+                }
+                else
+                {
+                    if (state == CreatureState.Stop)
+                        nextEvent = CreatureEvent.Nothing;
+                    else
+                        nextEvent = CreatureEvent.Stop;
                 }
             }
 
@@ -314,7 +324,7 @@ namespace MineCase.Server.Game.Entities.Components
             // action.Action(AttachedObject);
             if (e.worldAge % 16 == 0)
             {
-                await GenerateEvent();
+                var nextEvent = await GenerateEvent();
 
             // get state
             var newState = AiType.State;
