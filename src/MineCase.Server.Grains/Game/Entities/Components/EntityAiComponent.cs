@@ -127,19 +127,9 @@ namespace MineCase.Server.Game.Entities.Components
 
         private Task ActionStop()
         {
-            float theta = (float)(random.NextDouble() * 360);
             float yaw = AttachedObject.GetValue(EntityLookComponent.YawProperty);
-            if (random.Next(20) == 0)
-            {
-                AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, theta);
-                AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, theta);
-            }
-            else
-            {
-                // AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, yaw);
-                AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, yaw);
-            }
-
+            AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, yaw);
+            AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, 0);
             return Task.CompletedTask;
         }
 
@@ -247,20 +237,40 @@ namespace MineCase.Server.Game.Entities.Components
             return Task.CompletedTask;
         }
 
-        private async Task GenerateEvent()
+        private async Task<CreatureEvent> GenerateEvent()
         {
             // get state
             var state = AiType.State;
             var nextEvent = CreatureEvent.Nothing;
 
             // player approaching event
-            if (state == CreatureState.Stop)
             {
                 IChunkTrackingHub tracker = GrainFactory.GetGrain<IChunkTrackingHub>(AttachedObject.GetAddressByPartitionKey());
                 var list = await tracker.GetTrackedPlayers();
-                if (list.Count != 0)
+                EntityWorldPos entityPos = AttachedObject.GetValue(EntityWorldPositionComponent.EntityWorldPositionProperty);
+                bool hasPlayerNearby = false;
+                foreach (IPlayer each in list)
+                {
+                    EntityWorldPos playerPosition = await each.GetPosition();
+
+                    // players in three blocks
+                    if (EntityWorldPos.Distance(playerPosition, entityPos) < 3)
+                    {
+                        hasPlayerNearby = true;
+                        break;
+                    }
+                }
+
+                if (hasPlayerNearby)
                 {
                     nextEvent = CreatureEvent.PlayerApproaching;
+                }
+                else
+                {
+                    if (state == CreatureState.Stop)
+                        nextEvent = CreatureEvent.Nothing;
+                    else
+                        nextEvent = CreatureEvent.Stop;
                 }
             }
 
@@ -281,6 +291,8 @@ namespace MineCase.Server.Game.Entities.Components
             }
 
             await AiType.FireAsync(nextEvent);
+
+            return nextEvent;
         }
 
         private async Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
@@ -309,7 +321,7 @@ namespace MineCase.Server.Game.Entities.Components
             // action.Action(AttachedObject);
             if (e.worldAge % 16 == 0)
             {
-                await GenerateEvent();
+                var nextEvent = await GenerateEvent();
 
                 // get state
                 var newState = AiType.State;
@@ -342,31 +354,6 @@ namespace MineCase.Server.Game.Entities.Components
                     default:
                         System.Console.WriteLine(newState);
                         throw new NotSupportedException("Unsupported state.");
-                }
-            }
-
-            // Get actions from list and send to client
-            List<CreatureAnimation> animationList = AttachedObject.GetValue(EntityAiComponent.CreatureAnimationListProperty);
-
-            if (animationList.Count != 0)
-            {
-                if (!animationList[0].HasBeginAction())
-                    animationList[0].SetBeginAction(GetCurrentCreatureAction());
-
-                CreatureAction action = animationList[0].GetCreatureAction();
-                if (action.Yaw.HasValue)
-                    await AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, action.Yaw.Value);
-                if (action.HeadYaw.HasValue)
-                    await AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, action.HeadYaw.Value);
-                if (action.Pitch.HasValue)
-                    await AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, action.Pitch.Value);
-                if (action.Position.HasValue)
-                    await AttachedObject.SetLocalValue(EntityWorldPositionComponent.EntityWorldPositionProperty, action.Position.Value);
-
-                if (!animationList[0].Step(1))
-                {
-                    animationList.RemoveAt(0);
-                    animationList[0].SetBeginAction(GetCurrentCreatureAction());
                 }
             }
         }
