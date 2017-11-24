@@ -6,7 +6,7 @@
 
 ## 介绍
 
-`MineCase` 是使用 `.NET Core` 开发的一个跨平台、分布式的 `Minecraft` 服务端应用，使用了 `Orleans` 框架。<br>
+`MineCase` 是使用 `.NET Core` 开发的一个跨平台、分布式的 `Minecraft` 服务端应用，基于 `Orleans` 框架。<br>
 
 目前仅支持 `Minecraft` [1.12](https://minecraft.net/en-us/article/minecraft-112-pre-release-6) 的版本。
 
