@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 using MineCase.Server.Persistence;
 using MineCase.Server.Persistence.Components;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.User
 {
     [PersistTableName("nonAuthenticatedUser")]
+    [Reentrant]
     internal class NonAuthenticatedUserGrain : PersistableDependencyObject, INonAuthenticatedUser
     {
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);

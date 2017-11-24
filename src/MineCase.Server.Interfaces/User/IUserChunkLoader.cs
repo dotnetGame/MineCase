@@ -17,7 +17,6 @@ namespace MineCase.Server.User
 
         Task JoinGame(IWorld world, IPlayer player);
 
-        [OneWay]
         Task OnGameTick(long worldAge);
 
         [OneWay]

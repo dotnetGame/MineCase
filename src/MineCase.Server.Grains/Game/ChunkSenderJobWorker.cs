@@ -31,6 +31,7 @@ namespace MineCase.Server.Game
     }
 
     [ImplicitStreamSubscription(StreamProviders.Namespaces.ChunkSender)]
+    [Reentrant]
     internal class ChunkSenderJobWorker : Grain, IChunkSenderJobWorker
     {
         private readonly IPacketPackager _packetPackager;

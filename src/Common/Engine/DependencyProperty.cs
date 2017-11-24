@@ -155,7 +155,7 @@ namespace MineCase.Engine
             while (property == null && ownerType != null)
             {
                 if (!_fromNameMaps.TryGetValue(new FromNameKey(name, ownerType), out property))
-                    ownerType = ownerType.GetType().BaseType;
+                    ownerType = ownerType.BaseType;
             }
 
             return property != null ? property : throw new InvalidOperationException($"Property {ownerType.Name}.{name} not found.");

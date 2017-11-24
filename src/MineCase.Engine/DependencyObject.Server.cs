@@ -21,7 +21,6 @@ namespace MineCase.Engine
             await InitializePreLoadComponent();
             await ReadStateAsync();
             await InitializeComponents();
-            await ClearOperationQueue();
         }
 
         public override async Task OnDeactivateAsync()

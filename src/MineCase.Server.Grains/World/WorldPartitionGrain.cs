@@ -45,12 +45,16 @@ namespace MineCase.Server.World
 
         public async Task Enter(IPlayer player)
         {
-            _players.Add(player);
-            var message = new DiscoveredByPlayer { Player = player };
-            await Task.WhenAll(from e in State.DiscoveryEntities
-                               select e.Tell(message));
+            bool active = _players.Count == 0;
+            if (_players.Add(player))
+            {
+                var message = new DiscoveredByPlayer { Player = player };
+                await Task.WhenAll(from e in State.DiscoveryEntities
+                                   select e.Tell(message));
 
-            await World.ActivePartition(this);
+                if (active)
+                    await World.ActivePartition(this);
+            }
         }
 
         public async Task Leave(IPlayer player)

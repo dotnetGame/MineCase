@@ -9,7 +9,7 @@ namespace MineCase.Server.Persistence
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<AppDbContext>();
+            builder.RegisterType<AppDbContext>().SingleInstance();
         }
     }
 }

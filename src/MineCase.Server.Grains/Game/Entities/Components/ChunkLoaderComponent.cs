@@ -32,7 +32,7 @@ namespace MineCase.Server.Game.Entities.Components
         private Task OnGameTick(object sender, GameTickArgs e)
         {
             if (_loaded)
-                _chunkLoader.OnGameTick(e.WorldAge).Ignore();
+                return _chunkLoader.OnGameTick(e.WorldAge);
             return Task.CompletedTask;
         }
 

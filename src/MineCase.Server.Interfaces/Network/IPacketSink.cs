@@ -9,10 +9,8 @@ namespace MineCase.Server.Network
 {
     public interface IPacketSink
     {
-        [OneWay]
         Task SendPacket(ISerializablePacket packet);
 
-        [OneWay]
         Task SendPacket(uint packetId, Immutable<byte[]> data);
     }
 }
