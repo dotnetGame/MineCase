@@ -39,6 +39,7 @@ namespace MineCase.Server.Game.Entities.Components
             if (old != slot)
             {
                 old = slot;
+                MarkDirty();
                 return SlotChanged.InvokeSerial(this, (index, slot));
             }
 
@@ -60,5 +61,10 @@ namespace MineCase.Server.Game.Entities.Components
 
         Task<Slot> IHandle<AskSlot, Slot>.Handle(AskSlot message) =>
             Task.FromResult(GetSlot(message.Index));
+
+        private void MarkDirty()
+        {
+            AttachedObject.ValueStorage.IsDirty = true;
+        }
     }
 }

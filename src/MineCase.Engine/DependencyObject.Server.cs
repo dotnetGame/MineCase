@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MineCase.Engine.Serialization;
 
 namespace MineCase.Engine
@@ -11,8 +13,11 @@ namespace MineCase.Engine
         private bool _isDestroyed = false;
         private readonly Queue<Func<Task>> _operationQueue = new Queue<Func<Task>>();
 
+        protected ILogger Logger { get; private set; }
+
         public override async Task OnActivateAsync()
         {
+            Logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
             await InitializePreLoadComponent();
             await ReadStateAsync();
             await InitializeComponents();
@@ -43,12 +48,10 @@ namespace MineCase.Engine
 
         public async Task ReadStateAsync()
         {
-            bool needSave = false;
             var state = await DeserializeStateAsync();
             if (state == null || state.ValueStorage == null)
             {
                 _valueStorage = new Data.DependencyValueStorage();
-                needSave = true;
             }
             else
             {
@@ -57,27 +60,32 @@ namespace MineCase.Engine
 
             _valueStorage.CurrentValueChanged += ValueStorage_CurrentValueChanged;
             await Tell(AfterReadState.Default);
-
-            if (needSave)
-                await WriteStateAsync();
         }
 
         public async Task WriteStateAsync()
         {
-            if (_isDestroyed)
+            try
             {
-                await ClearStateAsync();
-            }
-            else
-            {
-                await Tell(BeforeWriteState.Default);
-                var state = new DependencyObjectState
+                if (_isDestroyed)
                 {
-                    GrainKeyString = GrainReference.ToKeyString(),
-                    ValueStorage = _valueStorage
-                };
+                    await ClearStateAsync();
+                }
+                else
+                {
+                    await Tell(BeforeWriteState.Default);
+                    var state = new DependencyObjectState
+                    {
+                        GrainKeyString = GrainReference.ToKeyString(),
+                        ValueStorage = _valueStorage
+                    };
 
-                await SerializeStateAsync(state);
+                    await SerializeStateAsync(state);
+                    ValueStorage.IsDirty = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, ex.Message);
             }
         }
 

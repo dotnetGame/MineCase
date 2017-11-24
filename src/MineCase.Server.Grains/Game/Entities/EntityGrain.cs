@@ -8,6 +8,7 @@ using MineCase.Server.Components;
 using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Network.Play;
 using MineCase.Server.Persistence;
+using MineCase.Server.Persistence.Components;
 using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
@@ -42,6 +43,7 @@ namespace MineCase.Server.Game.Entities
             await SetComponent(new ChunkEventBroadcastComponent());
             await SetComponent(new GameTickComponent());
             await SetComponent(new ChunkAccessorComponent());
+            await SetComponent(new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute));
         }
 
         Task<uint> IEntity.GetEntityId() =>

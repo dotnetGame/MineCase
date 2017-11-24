@@ -24,6 +24,7 @@ namespace MineCase.Server.User
         {
             var user = GrainFactory.GetGrain<IUser>(State.UUID);
             await user.SetName(this.GetPrimaryKeyString());
+            await WriteStateAsync();
             return user;
         }
 

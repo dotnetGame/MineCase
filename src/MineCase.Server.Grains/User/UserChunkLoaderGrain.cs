@@ -115,14 +115,33 @@ namespace MineCase.Server.User
             return Task.CompletedTask;
         }
 
-        public Task JoinGame(IWorld world, IPlayer player)
+        public async Task JoinGame(IWorld world, IPlayer player)
         {
             _world = world;
             _player = player;
             _lastStreamedChunk = null;
+
+            if (_sendingChunks != null)
+            {
+                foreach (var chunkPos in _sendingChunks)
+                {
+                    await GrainFactory.GetPartitionGrain<IChunkTrackingHub>(_world, chunkPos).Unsubscribe(_player);
+                    await GrainFactory.GetPartitionGrain<IWorldPartition>(_world, chunkPos).Leave(_player);
+                }
+            }
+
             _sendingChunks = new HashSet<ChunkWorldPos>();
+
+            if (_sentChunks != null)
+            {
+                foreach (var chunkPos in _sentChunks)
+                {
+                    await GrainFactory.GetPartitionGrain<IChunkTrackingHub>(_world, chunkPos).Unsubscribe(_player);
+                    await GrainFactory.GetPartitionGrain<IWorldPartition>(_world, chunkPos).Leave(_player);
+                }
+            }
+
             _sentChunks = new HashSet<ChunkWorldPos>();
-            return Task.CompletedTask;
         }
 
         public Task SetViewDistance(int viewDistance)

@@ -41,7 +41,12 @@ namespace MineCase.Server.Game.Entities.Components
 
         protected void CompleteSpawn()
         {
-            AttachedObject.QueueOperation(() => AttachedObject.Tell(Enable.Default));
+            AttachedObject.QueueOperation(async () =>
+            {
+                await AttachedObject.Tell(Enable.Default);
+                if (AttachedObject.ValueStorage.IsDirty)
+                    await AttachedObject.WriteStateAsync();
+            });
         }
     }
 }

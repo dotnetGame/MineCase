@@ -21,6 +21,11 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
+        protected override Task OnAttached()
+        {
+            return AttachedObject.SetLocalValue(IsEnabledComponent.IsEnabledProperty, false);
+        }
+
         async Task IHandle<PlayerLoggedIn>.Handle(PlayerLoggedIn message)
         {
             var generator = AttachedObject.GetComponent<ClientboundPacketComponent>().GetGenerator();

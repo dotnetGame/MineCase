@@ -11,21 +11,30 @@ namespace MineCase.Serialization.Serializers
     {
         public static void RegisterAll(IServiceProvider serviceProvider)
         {
-            BsonSerializer.RegisterSerializer(new SlotSerializer());
-            BsonSerializer.RegisterSerializer(new DependencyObjectStateSerializer());
             BsonSerializer.RegisterSerializationProvider(new GrainRerferenceSerializerProvider(serviceProvider));
-            BsonSerializer.RegisterSerializer(new BlockChunkPosSerializer());
-            BsonSerializer.RegisterSerializer(new CuboidSerializer());
-            BsonSerializer.RegisterSerializer(new Point3dSerializer());
-            BsonSerializer.RegisterSerializer(new ChunkColumnCompactStorageSerializer());
-            BsonSerializer.RegisterSerializer(new ChunkSectionCompactStorageSerializer());
+        }
 
+        public static void RegisterAll()
+        {
             BsonClassMap.RegisterClassMap<Shape>(c =>
             {
-                c.AutoMap();
+                c.SetDiscriminatorIsRequired(true);
                 c.SetIsRootClass(true);
                 c.AddKnownType(typeof(Cuboid));
             });
+
+            BsonSerializer.RegisterSerializer(new SlotSerializer());
+            BsonSerializer.RegisterSerializer(new DependencyObjectStateSerializer());
+            BsonSerializer.RegisterSerializer(new BlockChunkPosSerializer());
+            BsonSerializer.RegisterSerializer(new BlockWorldPosSerializer());
+            BsonSerializer.RegisterSerializer(new ChunkWorldPosSerializer());
+            BsonSerializer.RegisterSerializer(new BlockSectionPosSerializer());
+            BsonSerializer.RegisterSerializer(new EntityWorldPosSerializer());
+            BsonSerializer.RegisterSerializer(new EntityChunkPosSerializer());
+            BsonSerializer.RegisterSerializer(new Point3dSerializer());
+            BsonSerializer.RegisterSerializer(new SizeSerializer());
+            BsonSerializer.RegisterSerializer(new ChunkColumnCompactStorageSerializer());
+            BsonSerializer.RegisterSerializer(new ChunkSectionCompactStorageSerializer());
         }
     }
 }

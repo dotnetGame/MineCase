@@ -9,7 +9,7 @@ using MineCase.World;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class KeepAliveComponent : Component, IHandle<PlayerLoggedIn>, IHandle<KickPlayer>
+    internal class KeepAliveComponent : Component, IHandle<BeginLogin>, IHandle<PlayerLoggedIn>, IHandle<KickPlayer>
     {
         private uint _keepAliveId = 0;
         public readonly HashSet<uint> _keepAliveWaiters = new HashSet<uint>();
@@ -72,6 +72,14 @@ namespace MineCase.Server.Game.Entities.Components
         }
 
         Task IHandle<KickPlayer>.Handle(KickPlayer message)
+        {
+            AttachedObject.GetComponent<GameTickComponent>()
+                .Tick -= OnGameTick;
+            _isOnline = false;
+            return Task.CompletedTask;
+        }
+
+        Task IHandle<BeginLogin>.Handle(BeginLogin message)
         {
             AttachedObject.GetComponent<GameTickComponent>()
                 .Tick -= OnGameTick;

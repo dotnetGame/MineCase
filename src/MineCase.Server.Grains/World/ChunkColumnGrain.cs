@@ -159,7 +159,6 @@ namespace MineCase.Server.World
 
                 State.Generated = true;
                 await WriteStateAsync();
-                _autoSave.IsDirty = false;
             }
         }
 
@@ -195,7 +194,7 @@ namespace MineCase.Server.World
 
         private void MarkDirty()
         {
-            _autoSave.IsDirty = true;
+            ValueStorage.IsDirty = true;
         }
 
         internal class StateHolder

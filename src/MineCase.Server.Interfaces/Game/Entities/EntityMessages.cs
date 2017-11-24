@@ -65,6 +65,12 @@ namespace MineCase.Server.Game.Entities.Components
     }
 
     [Immutable]
+    public sealed class BeginLogin : IEntityMessage
+    {
+        public static readonly BeginLogin Default = new BeginLogin();
+    }
+
+    [Immutable]
     public class SpawnEntity : IEntityMessage
     {
         public IWorld World { get; set; }

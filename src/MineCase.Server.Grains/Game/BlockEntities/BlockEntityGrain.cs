@@ -5,13 +5,18 @@ using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.Components;
 using MineCase.Server.Game.BlockEntities.Components;
+using MineCase.Server.Persistence;
+using MineCase.Server.Persistence.Components;
 using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Game.BlockEntities
 {
-    internal abstract class BlockEntityGrain : DependencyObject, IBlockEntity
+    [PersistTableName("blockEntity")]
+    [Reentrant]
+    internal abstract class BlockEntityGrain : PersistableDependencyObject, IBlockEntity
     {
         public IWorld World => GetValue(WorldComponent.WorldProperty);
 
@@ -26,6 +31,7 @@ namespace MineCase.Server.Game.BlockEntities
             await SetComponent(new ChunkEventBroadcastComponent());
             await SetComponent(new GameTickComponent());
             await SetComponent(new BlockEntityLiftTimeComponent());
+            await SetComponent(new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute));
         }
 
         Task<IWorld> IBlockEntity.GetWorld() =>

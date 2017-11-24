@@ -21,6 +21,7 @@ namespace MineCase.Server.World
         private GeneratorSettings _genSettings; // 生成设置
         private string _seed; // 世界种子
         private AutoSaveStateComponent _autoSave;
+        private readonly HashSet<IWorldPartition> _activedPartitions = new HashSet<IWorldPartition>();
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
@@ -56,7 +57,7 @@ namespace MineCase.Server.World
         {
             State.WorldAge++;
             MarkDirty();
-            await Task.WhenAll(from p in State.ActivedPartitions select p.OnGameTick(e));
+            await Task.WhenAll(from p in _activedPartitions select p.OnGameTick(e));
             await _autoSave.OnGameTick(this, e);
         }
 
@@ -88,27 +89,23 @@ namespace MineCase.Server.World
 
         public Task ActivePartition(IWorldPartition worldPartition)
         {
-            if (State.ActivedPartitions.Add(worldPartition))
-                MarkDirty();
+            _activedPartitions.Add(worldPartition);
             return Task.CompletedTask;
         }
 
         public Task DeactivePartition(IWorldPartition worldPartition)
         {
-            if (State.ActivedPartitions.Remove(worldPartition))
-                MarkDirty();
+            _activedPartitions.Remove(worldPartition);
             return Task.CompletedTask;
         }
 
         private void MarkDirty()
         {
-            _autoSave.IsDirty = true;
+            ValueStorage.IsDirty = true;
         }
 
         internal class StateHolder
         {
-            public HashSet<IWorldPartition> ActivedPartitions { get; set; }
-
             public long WorldAge { get; set; }
 
             public uint NextAvailEId { get; set; }
@@ -119,7 +116,6 @@ namespace MineCase.Server.World
 
             public StateHolder(InitializeStateMark mark)
             {
-                ActivedPartitions = new HashSet<IWorldPartition>();
             }
         }
     }

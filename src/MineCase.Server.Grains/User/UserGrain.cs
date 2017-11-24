@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Protocol;
+using MineCase.Server.Components;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.Components;
@@ -78,6 +79,7 @@ namespace MineCase.Server.User
         public async Task JoinGame()
         {
             _player = GrainFactory.GetGrain<IPlayer>(this.GetPrimaryKey());
+            await _player.Tell(Disable.Default);
             await _player.Tell(new BindToUser { User = this.AsReference<IUser>() });
 
             _userState = UserState.JoinedGame;
@@ -186,7 +188,7 @@ namespace MineCase.Server.User
 
         private void MarkDirty()
         {
-            _autoSave.IsDirty = true;
+            ValueStorage.IsDirty = true;
         }
 
         internal class StateHolder

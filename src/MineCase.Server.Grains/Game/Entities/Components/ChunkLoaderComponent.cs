@@ -10,10 +10,10 @@ using Orleans;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class ChunkLoaderComponent : Component<PlayerGrain>, IHandle<PlayerLoggedIn>, IHandle<BindToUser>
+    internal class ChunkLoaderComponent : Component<PlayerGrain>, IHandle<BeginLogin>, IHandle<PlayerLoggedIn>, IHandle<BindToUser>
     {
         private IUserChunkLoader _chunkLoader;
-        private bool _loaded = false;
+        private bool _loaded;
 
         public ChunkLoaderComponent(string name = "chunkLoader")
             : base(name)
@@ -22,6 +22,7 @@ namespace MineCase.Server.Game.Entities.Components
 
         protected override Task OnAttached()
         {
+            _loaded = false;
             _chunkLoader = GrainFactory.GetGrain<IUserChunkLoader>(AttachedObject.GetPrimaryKey());
             AttachedObject.RegisterPropertyChangedHandler(ViewDistanceComponent.ViewDistanceProperty, OnViewDistanceChanged);
             AttachedObject.GetComponent<GameTickComponent>().Tick += OnGameTick;
@@ -49,6 +50,12 @@ namespace MineCase.Server.Game.Entities.Components
         async Task IHandle<BindToUser>.Handle(BindToUser message)
         {
             await _chunkLoader.SetClientPacketSink(await message.User.GetClientPacketSink());
+        }
+
+        Task IHandle<BeginLogin>.Handle(BeginLogin message)
+        {
+            _loaded = false;
+            return Task.CompletedTask;
         }
     }
 }

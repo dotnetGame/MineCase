@@ -89,5 +89,10 @@ namespace MineCase.Server.Game.BlockEntities.Components
                     orderby e.position.X, e.position.Z
                     select e.entity).First();
         }
+
+        private void MarkDirty()
+        {
+            AttachedObject.ValueStorage.IsDirty = true;
+        }
     }
 }

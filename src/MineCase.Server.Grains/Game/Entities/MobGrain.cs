@@ -23,8 +23,7 @@ namespace MineCase.Server.Game.Entities
             await SetComponent(new HealthComponent());
             await SetComponent(new StandaloneHeldItemComponent());
             await SetComponent(new NameComponent());
-
-            // await SetComponent(new EntityAiComponent());
+            await SetComponent(new EntityAiComponent());
             await SetComponent(new DiscoveryRegisterComponent());
             await SetComponent(new MobDiscoveryComponent());
             await SetComponent(new MobTypeComponent());

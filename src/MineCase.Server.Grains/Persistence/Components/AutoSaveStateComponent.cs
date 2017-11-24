@@ -14,8 +14,6 @@ namespace MineCase.Server.Persistence.Components
 
         public const int PerMinute = 20 * 60;
 
-        public bool IsDirty { get; set; }
-
         public AutoSaveStateComponent(int periodTime, string name = "autoSaveState")
             : base(name)
         {
@@ -32,9 +30,8 @@ namespace MineCase.Server.Persistence.Components
 
         public Task OnGameTick(object sender, GameTickArgs e)
         {
-            if (IsDirty && (e.WorldAge % _periodTime == 0))
+            if (AttachedObject.ValueStorage.IsDirty && (e.WorldAge % _periodTime == 0))
             {
-                IsDirty = false;
                 return AttachedObject.WriteStateAsync();
             }
 

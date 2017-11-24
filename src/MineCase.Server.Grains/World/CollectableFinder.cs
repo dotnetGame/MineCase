@@ -48,20 +48,6 @@ namespace MineCase.Server.World
         {
             var state = new StateComponent<StateHolder>();
             await SetComponent(state);
-            state.BeforeWriteState += State_BeforeWriteState;
-            state.AfterReadState += State_AfterReadState;
-        }
-
-        private Task State_AfterReadState(object sender, EventArgs e)
-        {
-            _colliders = State.Colliders.ToDictionary(o => o.Object, o => o.Collider);
-            return Task.CompletedTask;
-        }
-
-        private Task State_BeforeWriteState(object sender, EventArgs e)
-        {
-            State.Colliders = (from c in _colliders select new CollectablePair { Object = c.Key, Collider = c.Value }).ToList();
-            return Task.CompletedTask;
         }
 
         protected override async Task InitializeComponents()
@@ -70,18 +56,16 @@ namespace MineCase.Server.World
             await SetComponent(_autoSave);
         }
 
-        private Dictionary<IDependencyObject, Shape> _colliders;
-
         public Task RegisterCollider(IDependencyObject entity, Shape colliderShape)
         {
-            _colliders[entity] = colliderShape;
+            State.Colliders[entity] = colliderShape;
             MarkDirty();
             return Collision(entity, colliderShape);
         }
 
         public Task UnregisterCollider(IDependencyObject entity)
         {
-            if (_colliders.Remove(entity))
+            if (State.Colliders.Remove(entity))
                 MarkDirty();
             return Task.CompletedTask;
         }
@@ -115,7 +99,7 @@ namespace MineCase.Server.World
         public Task<IReadOnlyCollection<IDependencyObject>> CollisionInChunk(Shape colliderShape)
         {
             List<IDependencyObject> result = null;
-            foreach (var collider in _colliders)
+            foreach (var collider in State.Colliders)
             {
                 if (collider.Value.CollideWith(colliderShape))
                 {
@@ -130,7 +114,7 @@ namespace MineCase.Server.World
 
         private void MarkDirty()
         {
-            _autoSave.IsDirty = true;
+            ValueStorage.IsDirty = true;
         }
 
         public Task OnGameTick(GameTickArgs e)
@@ -138,16 +122,9 @@ namespace MineCase.Server.World
             return _autoSave.OnGameTick(this, e);
         }
 
-        internal class CollectablePair
+        public class StateHolder
         {
-            public IDependencyObject Object { get; set; }
-
-            public Shape Collider { get; set; }
-        }
-
-        internal class StateHolder
-        {
-            public List<CollectablePair> Colliders { get; set; }
+            public Dictionary<IDependencyObject, Shape> Colliders { get; set; }
 
             public StateHolder()
             {
@@ -155,7 +132,7 @@ namespace MineCase.Server.World
 
             public StateHolder(InitializeStateMark mark)
             {
-                Colliders = new List<CollectablePair>();
+                Colliders = new Dictionary<IDependencyObject, Shape>();
             }
         }
     }

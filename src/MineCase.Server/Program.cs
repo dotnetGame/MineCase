@@ -19,6 +19,8 @@ namespace MineCase.Server
 
         static async Task Main(string[] args)
         {
+            Serializers.RegisterAll();
+
             var configBuilder = new ConfigurationBuilder();
             ConfigureAppConfiguration(configBuilder);
             Configuration = configBuilder.Build();
@@ -36,6 +38,7 @@ namespace MineCase.Server
             _exitEvent.WaitOne();
             Console.WriteLine("Stopping...");
             await _siloHost.StopAsync();
+            await _siloHost.Stopped;
             Console.WriteLine("Stopped.");
         }
 

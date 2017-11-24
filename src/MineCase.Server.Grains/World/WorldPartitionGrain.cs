@@ -23,6 +23,7 @@ namespace MineCase.Server.World
         private IChunkTrackingHub _chunkTrackingHub;
         private IChunkColumn _chunkColumn;
         private AutoSaveStateComponent _autoSave;
+        private HashSet<IPlayer> _players = new HashSet<IPlayer>();
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
@@ -44,27 +45,19 @@ namespace MineCase.Server.World
 
         public async Task Enter(IPlayer player)
         {
-            var players = State.Players;
-            var active = players.Count == 0;
-            if (players.Add(player))
-            {
-                MarkDirty();
-                var message = new DiscoveredByPlayer { Player = player };
-                await Task.WhenAll(from e in State.DiscoveryEntities
-                                   select e.Tell(message));
+            _players.Add(player);
+            var message = new DiscoveredByPlayer { Player = player };
+            await Task.WhenAll(from e in State.DiscoveryEntities
+                               select e.Tell(message));
 
-                if (active)
-                    await World.ActivePartition(this);
-            }
+            await World.ActivePartition(this);
         }
 
         public async Task Leave(IPlayer player)
         {
-            var players = State.Players;
-            if (players.Remove(player))
+            if (_players.Remove(player))
             {
-                MarkDirty();
-                if (players.Count == 0)
+                if (_players.Count == 0)
                 {
                     await World.DeactivePartition(this);
                     DeactivateOnIdle();
@@ -100,13 +93,11 @@ namespace MineCase.Server.World
 
         private void MarkDirty()
         {
-            _autoSave.IsDirty = true;
+            ValueStorage.IsDirty = true;
         }
 
         internal class StateHolder
         {
-            public HashSet<IPlayer> Players { get; set; }
-
             public HashSet<IEntity> DiscoveryEntities { get; set; }
 
             public StateHolder()
@@ -115,7 +106,6 @@ namespace MineCase.Server.World
 
             public StateHolder(InitializeStateMark mark)
             {
-                Players = new HashSet<IPlayer>();
                 DiscoveryEntities = new HashSet<IEntity>();
             }
         }

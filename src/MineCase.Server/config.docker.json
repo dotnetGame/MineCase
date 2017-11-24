@@ -1,0 +1,5 @@
+﻿{
+  "persistenceOptions": {
+    "connectionString": "mongodb://minecase.persistdb:27017"
+  }
+}

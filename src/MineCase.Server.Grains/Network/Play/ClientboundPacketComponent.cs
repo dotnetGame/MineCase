@@ -4,8 +4,10 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.Components;
+using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.User;
+using Orleans;
 using Orleans.Concurrency;
 
 namespace MineCase.Server.Network.Play
@@ -26,7 +28,8 @@ namespace MineCase.Server.Network.Play
         public async Task Kick()
         {
             await AttachedObject.Tell(Disable.Default);
-            await _user.Kick();
+            if (_user.GetPlayer() == AttachedObject.AsReference<IPlayer>())
+                await _user.Kick();
         }
 
         async Task IHandle<BindToUser>.Handle(BindToUser message)

@@ -25,6 +25,8 @@ namespace MineCase.Engine.Data
             }
         }
 
+        public bool IsDirty { get; set; }
+
         public event
 #if ECS_SERVER
         AsyncEventHandler<CurrentValueChangedEventArgs>
@@ -104,6 +106,7 @@ namespace MineCase.Engine.Data
                 result = newValue;
             }
 
+            IsDirty = true;
             return result;
         }
 
@@ -154,6 +157,7 @@ namespace MineCase.Engine.Data
 #endif
             OnCurrentValueChanged(DependencyProperty key, bool hasOldValue, object oldValue, bool hasNewValue, object newValue)
         {
+            IsDirty = true;
 #if ECS_SERVER
             return
 #endif
@@ -168,6 +172,7 @@ namespace MineCase.Engine.Data
 #endif
             OnEffectiveValueCleared(int index, DependencyProperty key, object oldValue)
         {
+            IsDirty = true;
             if (index == 0)
             {
                 bool hasNewValue = false;
@@ -198,6 +203,7 @@ namespace MineCase.Engine.Data
 #endif
             OnEffectiveValueChanged(float priority, DependencyProperty key, object oldValue, object newValue)
         {
+            IsDirty = true;
             SortedList<float, IEffectiveValue> list;
             if (_dict.TryGetValue(key, out list) && list.IndexOfKey(priority) == 0)
             {
