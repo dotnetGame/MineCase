@@ -322,7 +322,7 @@ namespace MineCase.Server.Game.Entities.Components
 
             // CreatureAiAction action = AttachedObject.GetValue(EntityAiComponent.CreatureAiActionProperty);
             // action.Action(AttachedObject);
-            if (e.worldAge % 16 == 0)
+            if (e.worldAge % 4 == 0)
             {
                 var nextEvent = await GenerateEvent();
 

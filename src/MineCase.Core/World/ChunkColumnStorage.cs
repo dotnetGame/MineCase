@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MineCase.World
 {
-    public sealed class ChunkColumnStorage
+    public sealed class ChunkColumnStorage : IChunkColumnStorage
     {
         public ChunkSectionStorage[] Sections { get; } = new ChunkSectionStorage[ChunkConstants.SectionsPerChunk];
 

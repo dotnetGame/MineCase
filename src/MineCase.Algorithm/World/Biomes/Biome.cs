@@ -287,7 +287,7 @@ namespace MineCase.Algorithm.World.Biomes
         }
 
         // 添加生物群系特有的怪物
-        public virtual void SpawnMonster(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
+        public virtual void SpawnMonster(IWorld world, IGrainFactory grainFactory, IChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
         {
             ChunkWorldPos chunkPos = pos.ToChunkWorldPos();
             int seed = chunkPos.Z * 16384 + chunkPos.X;
