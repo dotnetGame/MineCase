@@ -14,7 +14,7 @@ namespace MineCase.World
         public const int BlocksInSection = BlockEdgeWidthInSection * BlockEdgeWidthInSection * BlockEdgeWidthInSection;
     }
 
-    public sealed class ChunkColumnCompactStorage
+    public sealed class ChunkColumnCompactStorage : IChunkColumnStorage
     {
         public uint SectionBitMask
         {
