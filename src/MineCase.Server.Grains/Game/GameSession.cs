@@ -131,6 +131,15 @@ namespace MineCase.Server.Game
             await receiver.SendChatMessage(jsonData, position);
         }
 
+        public async Task SendGameInfoMessage(IUser receiver, string message)
+        {
+            var receiverName = await receiver.GetName();
+
+            var jsonData = await CreateStandardGameInfoMessage(message);
+            const byte position = 2; // It represents user message as system message
+            await receiver.SendChatMessage(jsonData, position);
+        }
+
         private async Task OnGameTick(object state)
         {
             var now = DateTime.UtcNow;
@@ -168,6 +177,12 @@ namespace MineCase.Server.Game
         }
 
         private Task<Chat> CreateStandardSystemMessage(string message)
+        {
+            var jsonData = new Chat(new StringComponent(message));
+            return Task.FromResult(jsonData);
+        }
+
+        private Task<Chat> CreateStandardGameInfoMessage(string message)
         {
             var jsonData = new Chat(new StringComponent(message));
             return Task.FromResult(jsonData);
