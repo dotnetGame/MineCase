@@ -6,9 +6,11 @@
 
 ## Introduction
 
-`MineCase` is a cross-platform, distributed `Minecraft` server application developed using `.NET Core` that uses the `Orleans` framework.
+`MineCase` is a cross-platform application with distributed server of `Minecraft`. 
 
-We currently support [Release 1.12](https://minecraft.net/en-us/article/minecraft-112-pre-release-6) Minecraft protocol versions.
+It's written in `.NET Core` and based on the [orleans](https://github.com/dotnet/orleans) framework. It constructs a high-performance, distributed system by isolating different components through actor mode.
+
+We currently support [Release 1.12](https://minecraft.net/en-us/article/minecraft-112-pre-release-6) Minecraft protocol version.
 
 ## Setup
 
@@ -30,7 +32,8 @@ You can use `docker-compose stop` to stop the application。
 
 #### Pre-requirement
 
-You need to install `.NET Core` sdk 2.0 first, you can find the version you need from [here](https://www.microsoft.com/net/download).
+* You need to install **`.NET Core` sdk 2.0** first, you can find the version you need from [here](https://www.microsoft.com/net/download).
+* **MongoDB**, you can build it following [this document](https://github.com/mongodb/mongo/blob/master/docs/building.md).
 
 #### Get source
 
