@@ -54,7 +54,7 @@ namespace MineCase.Server.Commands.Vanilla
                     throw new CommandWrongUsageException(this);
             }
 
-            var target = player;
+            var targets = new List<IPlayer>();
 
             if (args.Count == 2)
             {
@@ -85,19 +85,24 @@ namespace MineCase.Server.Commands.Vanilla
                     var user = await player.GetUser();
                     var session = await user.GetGameSession();
 
-                    target = await (await session.FindUserByName(rawArg.RawContent)).GetPlayer();
+                    var targetPlayer = await (await session.FindUserByName(rawArg.RawContent)).GetPlayer();
 
-                    if (target == null)
+                    if (targetPlayer == null)
                     {
                         throw new CommandException(this, $"Player \"{rawArg.RawContent}\" not found, may be offline or not existing.");
                     }
+
+                    targets.Add(targetPlayer);
                 }
             }
 
-            var targetDesc = await target.GetDescription();
-            var mode = targetDesc.GameMode;
-            mode.ModeClass = gameModeClass;
-            targetDesc.GameMode = mode;
+            foreach (var target in targets)
+            {
+                var targetDesc = await target.GetDescription();
+                var mode = targetDesc.GameMode;
+                mode.ModeClass = gameModeClass;
+                targetDesc.GameMode = mode;
+            }
 
             return true;
         }
