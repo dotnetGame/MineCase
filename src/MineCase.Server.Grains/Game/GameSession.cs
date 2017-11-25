@@ -91,10 +91,7 @@ namespace MineCase.Server.Game
                 {
                     if (!await _commandMap.Dispatch(await sender.GetPlayer(), message))
                     {
-                        await sender.SendChatMessage(
-                            await CreateStandardChatMessage(
-                                senderName,
-                                $"试图执行指令 \"{command}\" 时被拒绝，请检查是否具有足够的权限以及指令语法是否正确"), 0);
+                        await SendSystemMessage(sender, $"试图执行指令 \"{command}\" 时被拒绝，请检查是否具有足够的权限以及指令语法是否正确");
                     }
 
                     return;
@@ -123,6 +120,15 @@ namespace MineCase.Server.Game
                     await item.GetName() == senderName)
                     await item.SendChatMessage(jsonData, position);
             }
+        }
+
+        public async Task SendSystemMessage(IUser receiver, string message)
+        {
+            var receiverName = await receiver.GetName();
+
+            var jsonData = await CreateStandardSystemMessage(message);
+            const byte position = 1; // It represents user message as system message
+            await receiver.SendChatMessage(jsonData, position);
         }
 
         private async Task OnGameTick(object state)
@@ -158,6 +164,12 @@ namespace MineCase.Server.Game
             };
 
             var jsonData = new Chat(new TranslationComponent("chat.type.text", list));
+            return Task.FromResult(jsonData);
+        }
+
+        private Task<Chat> CreateStandardSystemMessage(string message)
+        {
+            var jsonData = new Chat(new StringComponent(message));
             return Task.FromResult(jsonData);
         }
 
