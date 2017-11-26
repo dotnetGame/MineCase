@@ -25,6 +25,7 @@ namespace MineCase.Server.World.EntitySpawner
 
         public async void Spawn(IWorld world, IGrainFactory grainFactory, IChunkColumnStorage chunk, Random random, BlockWorldPos pos)
         {
+            ChunkWorldPos chunkPos = pos.ToChunkWorldPos();
             int num = random.Next(_groupMaxNum);
             for (int n = 0; n < num; ++n)
             {
@@ -40,7 +41,7 @@ namespace MineCase.Server.World.EntitySpawner
                     }
                 }
 
-                BlockWorldPos standPos = new BlockWorldPos(pos.X + x, height + 1, pos.Z + z);
+                BlockWorldPos standPos = new BlockWorldPos(chunkPos.X * 16 + x, height + 1, chunkPos.Z * 16 + z);
                 if (CanMobStand(world, grainFactory, chunk, random, standPos.ToBlockChunkPos()))
                 {
                     // 添加一个生物
@@ -59,7 +60,7 @@ namespace MineCase.Server.World.EntitySpawner
                     {
                         World = world,
                         EntityId = await world.NewEntityId(),
-                        Position = new EntityWorldPos(pos.X + x + 0.5F, height + 1, pos.Z + z + 0.5F),
+                        Position = new EntityWorldPos(chunkPos.X * 16 + x + 0.5F, height + 1, chunkPos.Z * 16 + z + 0.5F),
                         MobType = _mobType,
                     });
                 }
