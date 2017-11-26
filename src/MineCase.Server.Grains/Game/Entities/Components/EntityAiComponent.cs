@@ -97,7 +97,10 @@ namespace MineCase.Server.Game.Entities.Components
                 case Entities.MobType.Skeleton:
                     ai = new AiSkeleton(getter, setter);
                     break;
-                case Entities.MobType.Squid:
+                case MobType.Spider:
+                    ai = new AiSpider(getter, setter);
+                    break;
+                case MobType.Squid:
                     // TODO new ai for squid
                     ai = new AiChicken(getter, setter);
                     break;
