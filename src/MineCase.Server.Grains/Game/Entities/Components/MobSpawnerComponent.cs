@@ -58,8 +58,8 @@ namespace MineCase.Server.Game.Entities.Components
 
         private async Task OnGameTick(object sender, GameTickArgs e)
         {
-            long timeOfDay = e.worldAge % 24000;
-            if (e.worldAge % 16 == 0 && timeOfDay > 12000 && timeOfDay < 24000)
+            long timeOfDay = e.WorldAge % 24000;
+            if (e.WorldAge % 16 == 0 && timeOfDay > 12000 && timeOfDay < 24000)
             {
                 EntityWorldPos playerPosition = AttachedObject.GetValue(EntityWorldPositionComponent.EntityWorldPositionProperty);
                 int distance = random.Next(16) + 16;

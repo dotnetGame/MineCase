@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MineCase.Algorithm;
-using MineCase.Algorithm.Game.Entity.Ai.Action;
 using MineCase.Algorithm.Game.Entity.Ai.MobAi;
 using MineCase.Engine;
 using MineCase.Graphics;
@@ -26,7 +25,7 @@ namespace MineCase.Server.Game.Entities.Components
         public static readonly DependencyProperty<CreatureState> CreatureStateProperty =
             DependencyProperty.Register<CreatureState>(nameof(CreatureState), typeof(EntityAiComponent));
 
-        public CreatureAi AiType => AttachedObject.GetValue(AiTypeProperty);
+        public MobType MobType => AttachedObject.GetValue(MobTypeComponent.MobTypeProperty);
 
         public CreatureState CreatureState => AttachedObject.GetValue(CreatureStateProperty);
 
@@ -97,10 +96,7 @@ namespace MineCase.Server.Game.Entities.Components
                 case Entities.MobType.Skeleton:
                     ai = new AiSkeleton(getter, setter);
                     break;
-                case MobType.Spider:
-                    ai = new AiSpider(getter, setter);
-                    break;
-                case MobType.Squid:
+                case Entities.MobType.Squid:
                     // TODO new ai for squid
                     ai = new AiChicken(getter, setter);
                     break;
@@ -117,25 +113,21 @@ namespace MineCase.Server.Game.Entities.Components
             _ai = ai;
         }
 
-        private CreatureAction GetCurrentCreatureAction()
-        {
-            float yaw = AttachedObject.GetValue(EntityLookComponent.YawProperty);
-            float headyaw = AttachedObject.GetValue(EntityLookComponent.HeadYawProperty);
-            float pitch = AttachedObject.GetValue(EntityLookComponent.PitchProperty);
-            EntityWorldPos position = AttachedObject.GetValue(EntityWorldPositionComponent.EntityWorldPositionProperty);
-            CreatureAction action = new CreatureAction();
-            action.Pitch = pitch;
-            action.Yaw = yaw;
-            action.HeadYaw = headyaw;
-            action.Position = position;
-            return action;
-        }
-
         private Task ActionStop()
         {
+            float theta = (float)(random.NextDouble() * 360);
             float yaw = AttachedObject.GetValue(EntityLookComponent.YawProperty);
-            AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, yaw);
-            AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, 0);
+            if (random.Next(20) == 0)
+            {
+                AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, theta);
+                AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, theta);
+            }
+            else
+            {
+                // AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, yaw);
+                AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, yaw);
+            }
+
             return Task.CompletedTask;
         }
 
@@ -214,7 +206,7 @@ namespace MineCase.Server.Game.Entities.Components
             IChunkTrackingHub tracker = GrainFactory.GetGrain<IChunkTrackingHub>(AttachedObject.GetAddressByPartitionKey());
             var list = await tracker.GetTrackedPlayers();
 
-            // FixMe 多位玩家的话只看一位
+            // TODO 多位玩家的话只看一位
             foreach (IPlayer each in list)
             {
                 EntityWorldPos playerPosition = await each.GetPosition();
@@ -244,40 +236,20 @@ namespace MineCase.Server.Game.Entities.Components
             return Task.CompletedTask;
         }
 
-        private async Task<CreatureEvent> GenerateEvent()
+        private async Task GenerateEvent()
         {
             // get state
             var state = _ai.State;
             var nextEvent = CreatureEvent.Nothing;
 
             // player approaching event
+            if (state == CreatureState.Stop)
             {
                 IChunkTrackingHub tracker = GrainFactory.GetGrain<IChunkTrackingHub>(AttachedObject.GetAddressByPartitionKey());
                 var list = await tracker.GetTrackedPlayers();
-                EntityWorldPos entityPos = AttachedObject.GetValue(EntityWorldPositionComponent.EntityWorldPositionProperty);
-                bool hasPlayerNearby = false;
-                foreach (IPlayer each in list)
-                {
-                    EntityWorldPos playerPosition = await each.GetPosition();
-
-                    // players in three blocks
-                    if (EntityWorldPos.Distance(playerPosition, entityPos) < 3)
-                    {
-                        hasPlayerNearby = true;
-                        break;
-                    }
-                }
-
-                if (hasPlayerNearby)
+                if (list.Count != 0)
                 {
                     nextEvent = CreatureEvent.PlayerApproaching;
-                }
-                else
-                {
-                    if (state == CreatureState.Stop)
-                        nextEvent = CreatureEvent.Nothing;
-                    else
-                        nextEvent = CreatureEvent.Stop;
                 }
             }
 
@@ -292,8 +264,7 @@ namespace MineCase.Server.Game.Entities.Components
             {
                 nextEvent = CreatureEvent.Stop;
             }
-
-            if (state == CreatureState.Look && random.Next(10) == 0)
+            else if (state == CreatureState.Look && random.Next(10) == 0)
             {
                 nextEvent = CreatureEvent.Stop;
             }
@@ -303,12 +274,32 @@ namespace MineCase.Server.Game.Entities.Components
 
         private async Task OnGameTick(object sender, GameTickArgs e)
         {
-            if (e.worldAge % 4 == 0)
+            if (_ai == null) return;
+            /*
+            if (e.worldAge % 16 == 0)
             {
-                var nextEvent = await GenerateEvent();
+                float pitch = AttachedObject.GetValue(EntityLookComponent.PitchProperty);
+                pitch += 30 * 360.0f / 255;
+                if (pitch > 360)
+                {
+                    pitch = 0;
+                }
+                AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, pitch);
+            }
+            */
+
+            /*
+            ICreatureAi ai = AttachedObject.GetValue(EntityAiComponent.AiTypeProperty);
+            IWorld world = AttachedObject.GetWorld();
+            var chunkAccessor = AttachedObject.GetComponent<ChunkAccessorComponent>();
+            */
+
+            // CreatureAiAction action = AttachedObject.GetValue(EntityAiComponent.CreatureAiActionProperty);
+            // action.Action(AttachedObject);
+            await GenerateEvent();
 
             // get state
-            var newState = AiType.State;
+            var newState = _ai.State;
             switch (newState)
             {
                 case CreatureState.Attacking:
@@ -338,35 +329,6 @@ namespace MineCase.Server.Game.Entities.Components
                 default:
                     System.Console.WriteLine(newState);
                     throw new NotSupportedException("Unsupported state.");
-            }
-
-            // Get actions from list and send to client
-            if (e.worldAge % 4 == 0)
-            {
-                CreatureAnimation animation = AttachedObject.GetValue(EntityAiComponent.CurrentCreatureAnimationProperty);
-                List<CreatureAnimation> animationList = AttachedObject.GetValue(EntityAiComponent.CreatureAnimationListProperty);
-                if (animation == null && animationList.Count != 0)
-                {
-                    animation = animationList[0];
-                    animationList.RemoveAt(0);
-                    animation.SetBeginAction(GetCurrentCreatureAction());
-                }
-
-                if (animation != null)
-                {
-                    CreatureAction action = animation.GetCreatureAction();
-                    if (action.Yaw.HasValue)
-                        await AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, action.Yaw.Value);
-                    if (action.HeadYaw.HasValue)
-                        await AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, action.HeadYaw.Value);
-                    if (action.Pitch.HasValue)
-                        await AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, action.Pitch.Value);
-                    if (action.Position.HasValue)
-                        await AttachedObject.SetLocalValue(EntityWorldPositionComponent.EntityWorldPositionProperty, action.Position.Value);
-
-                    if (!animation.Step(4))
-                        await AttachedObject.SetLocalValue(EntityAiComponent.CurrentCreatureAnimationProperty, null);
-                }
             }
         }
 
