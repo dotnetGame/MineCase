@@ -1,76 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.Components;
 using MineCase.Server.Game.Entities;
-using MineCase.Server.Persistence;
-using MineCase.Server.Persistence.Components;
-using MineCase.World;
 using Orleans;
-using Orleans.Concurrency;
 
 namespace MineCase.Server.World
 {
-    [PersistTableName("tickEmitter")]
-    [Reentrant]
-    internal class TickEmitterGrain : PersistableDependencyObject, ITickEmitter
+    internal class TickEmitterGrain : Grain, ITickEmitter
     {
-        private AutoSaveStateComponent _autoSave;
+        private HashSet<IDependencyObject> _subscription;
 
-        private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
-
-        protected override async Task InitializePreLoadComponent()
+        public override Task OnActivateAsync()
         {
-            await SetComponent(new StateComponent<StateHolder>());
+            _subscription = new HashSet<IDependencyObject>();
+            return base.OnActivateAsync();
         }
 
-        protected override async Task InitializeComponents()
+        public Task OnGameTick(TimeSpan deltaTime, long worldAge)
         {
-            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
-            await SetComponent(_autoSave);
-        }
-
-        public async Task OnGameTick(GameTickArgs e)
-        {
-            var message = new GameTick { Args = e };
-            await Task.WhenAll(from en in State.Subscription select en.Tell(message));
-            await _autoSave.OnGameTick(this, e);
+            var message = new GameTick { DeltaTime = deltaTime, WorldAge = worldAge };
+            foreach (var entity in _subscription)
+                entity.InvokeOneWay(e => e.Tell(message));
+            return Task.CompletedTask;
         }
 
         public Task Subscribe(IDependencyObject observer)
         {
-            if (State.Subscription.Add(observer))
-                MarkDirty();
+            _subscription.Add(observer);
             return Task.CompletedTask;
         }
 
         public Task Unsubscribe(IDependencyObject observer)
         {
-            if (State.Subscription.Remove(observer))
-                MarkDirty();
+            _subscription.Remove(observer);
             return Task.CompletedTask;
-        }
-
-        private void MarkDirty()
-        {
-            ValueStorage.IsDirty = true;
-        }
-
-        internal class StateHolder
-        {
-            public HashSet<IDependencyObject> Subscription { get; set; }
-
-            public StateHolder()
-            {
-            }
-
-            public StateHolder(InitializeStateMark mark)
-            {
-                Subscription = new HashSet<IDependencyObject>();
-            }
         }
     }
 }

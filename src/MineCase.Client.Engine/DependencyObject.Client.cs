@@ -8,23 +8,6 @@ namespace MineCase.Engine
 {
     public partial class DependencyObject
     {
-        /// <inheritdoc/>
-        protected override void Awake()
-        {
-            base.Awake();
-
-            _valueStorage = new Data.DependencyValueStorage();
-            _valueStorage.CurrentValueChanged += ValueStorage_CurrentValueChanged;
-            InitializeComponents();
-        }
-
-        /// <summary>
-        /// 初始化组件
-        /// </summary>
-        protected virtual void InitializeComponents()
-        {
-        }
-
         private void Update()
         {
             Tell(Messages.Update.Default);

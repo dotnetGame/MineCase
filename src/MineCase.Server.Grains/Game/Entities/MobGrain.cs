@@ -6,11 +6,9 @@ using MineCase.Engine;
 using MineCase.Server.Components;
 using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Network.Play;
-using Orleans.Concurrency;
 
 namespace MineCase.Server.Game.Entities
 {
-    [Reentrant]
     internal class MobGrain : EntityGrain, IMob
     {
         protected override async Task InitializeComponents()

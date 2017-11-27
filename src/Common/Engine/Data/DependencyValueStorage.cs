@@ -5,12 +5,9 @@ using System.Threading.Tasks;
 
 namespace MineCase.Engine.Data
 {
-    /// <summary>
-    /// 依赖值存储 - CRUD
-    /// </summary>
-    internal partial class DependencyValueStorage : IDependencyValueStorage
+    internal class DependencyValueStorage : IDependencyValueStorage
     {
-        private readonly Dictionary<DependencyProperty, SortedList<float, IEffectiveValue>> _dict;
+        private readonly Dictionary<DependencyProperty, SortedList<float, IEffectiveValue>> _dict = new Dictionary<DependencyProperty, SortedList<float, IEffectiveValue>>();
 
         public IEnumerable<DependencyProperty> Keys
         {
@@ -25,8 +22,6 @@ namespace MineCase.Engine.Data
             }
         }
 
-        public bool IsDirty { get; set; }
-
         public event
 #if ECS_SERVER
         AsyncEventHandler<CurrentValueChangedEventArgs>
@@ -37,21 +32,6 @@ namespace MineCase.Engine.Data
 
         public DependencyValueStorage()
         {
-            _dict = new Dictionary<DependencyProperty, SortedList<float, IEffectiveValue>>();
-        }
-
-        public DependencyValueStorage(Dictionary<DependencyProperty, SortedList<float, IEffectiveValue>> values)
-        {
-            _dict = values;
-
-            foreach (var keyPair in values)
-            {
-                foreach (var valuePairs in keyPair.Value)
-                {
-                    var priority = valuePairs.Value.Provider.Priority;
-                    valuePairs.Value.ValueChanged = (s, e) => OnEffectiveValueChanged(priority, keyPair.Key, e.OldValue, e.NewValue);
-                }
-            }
         }
 
         public
@@ -106,7 +86,6 @@ namespace MineCase.Engine.Data
                 result = newValue;
             }
 
-            IsDirty = true;
             return result;
         }
 
@@ -157,7 +136,6 @@ namespace MineCase.Engine.Data
 #endif
             OnCurrentValueChanged(DependencyProperty key, bool hasOldValue, object oldValue, bool hasNewValue, object newValue)
         {
-            IsDirty = true;
 #if ECS_SERVER
             return
 #endif
@@ -172,7 +150,6 @@ namespace MineCase.Engine.Data
 #endif
             OnEffectiveValueCleared(int index, DependencyProperty key, object oldValue)
         {
-            IsDirty = true;
             if (index == 0)
             {
                 bool hasNewValue = false;
@@ -203,7 +180,6 @@ namespace MineCase.Engine.Data
 #endif
             OnEffectiveValueChanged(float priority, DependencyProperty key, object oldValue, object newValue)
         {
-            IsDirty = true;
             SortedList<float, IEffectiveValue> list;
             if (_dict.TryGetValue(key, out list) && list.IndexOfKey(priority) == 0)
             {

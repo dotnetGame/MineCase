@@ -1,67 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game;
-using MineCase.Server.Persistence;
-using MineCase.Server.Persistence.Components;
 using MineCase.Server.Settings;
-using MineCase.World;
+using MineCase.Server.World.Generation;
 using MineCase.World.Generation;
 using Orleans;
 using Orleans.Concurrency;
 
 namespace MineCase.Server.World
 {
-    [PersistTableName("world")]
     [Reentrant]
-    internal class WorldGrain : PersistableDependencyObject, IWorld
+    internal class WorldGrain : Grain, IWorld
     {
+        private uint _nextAvailEId;
+        private long _worldAge;
         private GeneratorSettings _genSettings; // 生成设置
         private string _seed; // 世界种子
-        private AutoSaveStateComponent _autoSave;
-        private readonly HashSet<IWorldPartition> _activedPartitions = new HashSet<IWorldPartition>();
+        private HashSet<IWorldPartition> _activedPartitions;
 
-        private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
-
-        protected override async Task InitializePreLoadComponent()
+        public override async Task OnActivateAsync()
         {
-            await SetComponent(new StateComponent<StateHolder>());
-
-            var serverSettings = GrainFactory.GetGrain<IServerSettings>(0);
+            IServerSettings serverSettings = GrainFactory.GetGrain<IServerSettings>(0);
+            _nextAvailEId = 0;
             _genSettings = new GeneratorSettings();
             await InitGeneratorSettings(_genSettings);
             _seed = (await serverSettings.GetSettings()).LevelSeed;
-        }
-
-        protected override async Task InitializeComponents()
-        {
-            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
-            await SetComponent(_autoSave);
+            _activedPartitions = new HashSet<IWorldPartition>();
+            await base.OnActivateAsync();
         }
 
         public Task<WorldTime> GetTime()
         {
-            return Task.FromResult(new WorldTime { WorldAge = State.WorldAge, TimeOfDay = State.WorldAge % 24000 });
+            return Task.FromResult(new WorldTime { WorldAge = _worldAge, TimeOfDay = _worldAge % 24000 });
         }
 
         public Task<uint> NewEntityId()
         {
-            var id = State.NextAvailEId++;
-            MarkDirty();
+            var id = _nextAvailEId++;
             return Task.FromResult(id);
         }
 
-        public async Task OnGameTick(GameTickArgs e)
+        public Task OnGameTick(TimeSpan deltaTime)
         {
-            State.WorldAge++;
-            MarkDirty();
-            await Task.WhenAll(from p in _activedPartitions select p.OnGameTick(e));
-            await _autoSave.OnGameTick(this, e);
+            _worldAge++;
+            foreach (var partition in _activedPartitions)
+                partition.InvokeOneWay(p => p.OnGameTick(deltaTime, _worldAge));
+            return Task.CompletedTask;
         }
 
-        public Task<long> GetAge() => Task.FromResult(State.WorldAge);
+        public Task<long> GetAge() => Task.FromResult(_worldAge);
 
         public Task<int> GetSeed()
         {
@@ -97,26 +86,6 @@ namespace MineCase.Server.World
         {
             _activedPartitions.Remove(worldPartition);
             return Task.CompletedTask;
-        }
-
-        private void MarkDirty()
-        {
-            ValueStorage.IsDirty = true;
-        }
-
-        internal class StateHolder
-        {
-            public long WorldAge { get; set; }
-
-            public uint NextAvailEId { get; set; }
-
-            public StateHolder()
-            {
-            }
-
-            public StateHolder(InitializeStateMark mark)
-            {
-            }
         }
     }
 }
