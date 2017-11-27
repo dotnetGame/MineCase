@@ -284,7 +284,6 @@ namespace MineCase.Server.Game.Entities.Components
                 {
                     pitch = 0;
                 }
-
                 AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, pitch);
             }
             */

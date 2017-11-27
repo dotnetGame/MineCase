@@ -8,36 +8,21 @@ using MineCase.Server.Components;
 using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Game.Windows;
 using MineCase.Server.World;
-using MineCase.World;
 
 namespace MineCase.Server.Game.BlockEntities.Components
 {
     internal class FurnaceComponent : Component<BlockEntityGrain>, IHandle<SetSlot>, IHandle<SpawnBlockEntity>, IHandle<DestroyBlockEntity>, IHandle<UseBy>
     {
-        public class FurnaceState
-        {
-            public bool IsCooking;
-
-            public FurnaceRecipe CurrentRecipe;
-
-            public FurnaceFuel CurrentFuel;
-
-            public int FuelLeft;
-
-            public int MaxFuelTime;
-
-            public int CookProgress;
-
-            public int MaxProgress;
-        }
-
-        public static readonly DependencyProperty<FurnaceState> StateProperty =
-            DependencyProperty.Register<FurnaceState>(nameof(State), typeof(FurnaceComponent));
+        private bool _isCooking;
+        private FurnaceRecipe _currentRecipe;
+        private FurnaceFuel _currentFuel;
+        private int _fuelLeft;
+        private int _maxFuelTime;
+        private int _cookProgress;
+        private int _maxProgress;
 
         public static readonly DependencyProperty<IFurnaceWindow> FurnaceWindowProperty =
             DependencyProperty.Register<IFurnaceWindow>("FurnaceWindow", typeof(FurnaceComponent));
-
-        public FurnaceState State => AttachedObject.GetValue(StateProperty);
 
         public IFurnaceWindow FurnaceWindow => AttachedObject.GetValue(FurnaceWindowProperty);
 
@@ -48,53 +33,45 @@ namespace MineCase.Server.Game.BlockEntities.Components
 
         protected override Task OnAttached()
         {
-            if (State == null)
-            {
-                AttachedObject.SetLocalValue(StateProperty, new FurnaceState
-                {
-                    MaxFuelTime = 200
-                });
-            }
-
+            _currentRecipe = null;
+            _isCooking = false;
+            _fuelLeft = 0;
+            _maxFuelTime = 0;
+            _cookProgress = 0;
+            _maxFuelTime = 200;
             Register();
             return base.OnAttached();
         }
 
-        private bool CanCook()
-        {
-            var state = State;
-            return state.CurrentRecipe != null && (state.FuelLeft > 0 || state.CurrentFuel != null);
-        }
+        private bool CanCook() => _currentRecipe != null && (_fuelLeft > 0 || _currentFuel != null);
 
-        private async Task OnGameTick(object sender, GameTickArgs e)
+        private async Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
         {
-            var state = State;
             if (CanCook())
             {
-                if (!state.IsCooking)
+                if (!_isCooking)
                     await StartCooking();
-                if (state.CookProgress == 0)
+                if (_cookProgress == 0)
                     await TakeIngredient();
-                if (state.FuelLeft == 0)
+                if (_fuelLeft == 0)
                     await TakeFuel();
 
-                if (state.CurrentRecipe != null)
+                if (_currentRecipe != null)
                 {
-                    state.CookProgress++;
-                    state.FuelLeft--;
-                    MarkDirty();
+                    _cookProgress++;
+                    _fuelLeft--;
 
-                    if (FurnaceWindow != null && e.WorldAge % 10 == 0)
+                    if (FurnaceWindow != null && e.worldAge % 10 == 0)
                     {
-                        await FurnaceWindow.SetProperty(FurnaceWindowPropertyType.ProgressArrow, (short)state.CookProgress);
-                        await FurnaceWindow.SetProperty(FurnaceWindowPropertyType.FireIcon, (short)state.FuelLeft);
+                        await FurnaceWindow.SetProperty(FurnaceWindowPropertyType.ProgressArrow, (short)_cookProgress);
+                        await FurnaceWindow.SetProperty(FurnaceWindowPropertyType.FireIcon, (short)_fuelLeft);
                     }
                 }
 
-                if (state.CookProgress == state.MaxProgress)
+                if (_cookProgress == _maxProgress)
                     await Produce();
             }
-            else if (state.IsCooking)
+            else if (_isCooking)
             {
                 await StopCooking();
             }
@@ -102,12 +79,11 @@ namespace MineCase.Server.Game.BlockEntities.Components
 
         async Task IHandle<SetSlot>.Handle(SetSlot message)
         {
-            var state = State;
-            if (state.CurrentRecipe == null && message.Index == 0)
+            if (_currentRecipe == null && message.Index == 0)
                 await UpdateRecipe();
             if (message.Index == 1)
                 await UpdateFuel();
-            if (!state.IsCooking && CanCook())
+            if (!_isCooking && CanCook())
                 Register();
         }
 
@@ -119,8 +95,7 @@ namespace MineCase.Server.Game.BlockEntities.Components
 
         private async Task UpdateFuel()
         {
-            State.CurrentFuel = await GrainFactory.GetGrain<IFurnaceRecipes>(0).FindFuel(GetSlot(1));
-            MarkDirty();
+            _currentFuel = await GrainFactory.GetGrain<IFurnaceRecipes>(0).FindFuel(GetSlot(1));
         }
 
         private async Task UpdateRecipe()
@@ -130,44 +105,39 @@ namespace MineCase.Server.Game.BlockEntities.Components
             {
                 if (GetSlot(2).IsEmpty || GetSlot(2).CanStack(recipe.Output))
                 {
-                    State.CurrentRecipe = recipe;
+                    _currentRecipe = recipe;
                     return;
                 }
             }
 
-            State.CurrentRecipe = null;
-            MarkDirty();
+            _currentRecipe = null;
         }
 
         private async Task Produce()
         {
-            var state = State;
             if (GetSlot(2).IsEmpty)
-                await SetSlot(2, state.CurrentRecipe.Output);
+                await SetSlot(2, _currentRecipe.Output);
             else
-                await SetSlot(2, GetSlot(2).AddItemCount(state.CurrentRecipe.Output.ItemCount));
-            state.CookProgress = 0;
-            MarkDirty();
+                await SetSlot(2, GetSlot(2).AddItemCount(_currentRecipe.Output.ItemCount));
+            _cookProgress = 0;
             if (FurnaceWindow != null)
             {
                 await FurnaceWindow.BroadcastSlotChanged(2, GetSlot(2));
-                await FurnaceWindow.SetProperty(FurnaceWindowPropertyType.ProgressArrow, (short)state.CookProgress);
+                await FurnaceWindow.SetProperty(FurnaceWindowPropertyType.ProgressArrow, (short)_cookProgress);
             }
         }
 
         private async Task TakeFuel()
         {
-            var state = State;
-            var slot = GetSlot(1).AddItemCount(-state.CurrentFuel.Slot.ItemCount);
+            var slot = GetSlot(1).AddItemCount(-_currentFuel.Slot.ItemCount);
             slot.MakeEmptyIfZero();
             await SetSlot(1, slot);
-            state.MaxFuelTime = state.FuelLeft = state.CurrentFuel.Time;
-            MarkDirty();
+            _maxFuelTime = _fuelLeft = _currentFuel.Time;
             if (FurnaceWindow != null)
             {
                 await FurnaceWindow.BroadcastSlotChanged(1, slot);
-                await FurnaceWindow.SetProperty(FurnaceWindowPropertyType.MaximumFuelBurnTime, (short)state.MaxFuelTime);
-                await FurnaceWindow.SetProperty(FurnaceWindowPropertyType.FireIcon, (short)state.FuelLeft);
+                await FurnaceWindow.SetProperty(FurnaceWindowPropertyType.MaximumFuelBurnTime, (short)_maxFuelTime);
+                await FurnaceWindow.SetProperty(FurnaceWindowPropertyType.FireIcon, (short)_fuelLeft);
             }
 
             await UpdateFuel();
@@ -175,37 +145,33 @@ namespace MineCase.Server.Game.BlockEntities.Components
 
         private async Task TakeIngredient()
         {
-            var state = State;
             await UpdateRecipe();
-            if (state.CurrentRecipe != null)
+            if (_currentRecipe != null)
             {
-                var slot = GetSlot(0).AddItemCount(-state.CurrentRecipe.Input.ItemCount);
+                var slot = GetSlot(0).AddItemCount(-_currentRecipe.Input.ItemCount);
                 slot.MakeEmptyIfZero();
                 await SetSlot(0, slot);
-                state.CookProgress = 0;
-                state.MaxProgress = state.CurrentRecipe.Time;
-                MarkDirty();
+                _cookProgress = 0;
+                _maxProgress = _currentRecipe.Time;
                 if (FurnaceWindow != null)
                 {
                     await FurnaceWindow.BroadcastSlotChanged(0, slot);
-                    await FurnaceWindow.SetProperty(FurnaceWindowPropertyType.ProgressArrow, (short)state.CookProgress);
-                    await FurnaceWindow.SetProperty(FurnaceWindowPropertyType.MaximumProgress, (short)state.MaxProgress);
+                    await FurnaceWindow.SetProperty(FurnaceWindowPropertyType.ProgressArrow, (short)_cookProgress);
+                    await FurnaceWindow.SetProperty(FurnaceWindowPropertyType.MaximumProgress, (short)_maxProgress);
                 }
             }
         }
 
         private async Task StartCooking()
         {
-            State.IsCooking = true;
-            MarkDirty();
+            _isCooking = true;
             var meta = (await AttachedObject.World.GetBlockState(GrainFactory, AttachedObject.Position)).MetaValue;
             await AttachedObject.World.SetBlockState(GrainFactory, AttachedObject.Position, new BlockState { Id = (uint)BlockId.BurningFurnace, MetaValue = meta });
         }
 
         private async Task StopCooking()
         {
-            State.IsCooking = false;
-            MarkDirty();
+            _isCooking = false;
             var meta = (await AttachedObject.World.GetBlockState(GrainFactory, AttachedObject.Position)).MetaValue;
             await AttachedObject.World.SetBlockState(GrainFactory, AttachedObject.Position, new BlockState { Id = (uint)BlockId.Furnace, MetaValue = meta });
             Unregister();
@@ -225,15 +191,13 @@ namespace MineCase.Server.Game.BlockEntities.Components
 
         async Task IHandle<SpawnBlockEntity>.Handle(SpawnBlockEntity message)
         {
-            State.IsCooking = (await AttachedObject.World.GetBlockState(GrainFactory, AttachedObject.Position))
+            _isCooking = (await AttachedObject.World.GetBlockState(GrainFactory, AttachedObject.Position))
                 .IsSameId(BlockStates.BurningFurnace());
-            MarkDirty();
         }
 
         Task IHandle<DestroyBlockEntity>.Handle(DestroyBlockEntity message)
         {
-            State.IsCooking = false;
-            MarkDirty();
+            _isCooking = false;
             Unregister();
             return Task.CompletedTask;
         }
@@ -247,11 +211,6 @@ namespace MineCase.Server.Game.BlockEntities.Components
             }
 
             await message.Entity.Tell(new OpenWindow { Window = FurnaceWindow });
-        }
-
-        private void MarkDirty()
-        {
-            AttachedObject.ValueStorage.IsDirty = true;
         }
     }
 }

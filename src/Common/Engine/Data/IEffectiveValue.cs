@@ -11,11 +11,6 @@ namespace MineCase.Engine.Data
     public interface IEffectiveValue
     {
         /// <summary>
-        /// 获取提供程序
-        /// </summary>
-        IDependencyValueProvider Provider { get; }
-
-        /// <summary>
         /// 获取值改变处理器
         /// </summary>
 #if ECS_SERVER

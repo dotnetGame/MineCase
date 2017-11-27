@@ -11,11 +11,6 @@ namespace MineCase.Engine.Data
     public interface IDependencyValueStorage
     {
         /// <summary>
-        /// 获取或设置是否有脏数据
-        /// </summary>
-        bool IsDirty { get; set; }
-
-        /// <summary>
         /// 当前值变更事件
         /// </summary>
         event

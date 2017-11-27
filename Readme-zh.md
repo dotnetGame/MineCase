@@ -6,9 +6,7 @@
 
 ## 介绍
 
-`MineCase` 是一个跨平台、分布式的 `Minecraft` 服务端应用。
-
-本项目使用 `.NET Core` 编写，基于 [orleans](https://github.com/dotnet/orleans) 框架。它通过 Actor 模型将各个模块分离开来，从而构建一个高效的分布式系统。
+`MineCase` 是使用 `.NET Core` 开发的一个跨平台、分布式的 `Minecraft` 服务端应用，使用了 `Orleans` 框架。<br>
 
 目前仅支持 `Minecraft` [1.12](https://minecraft.net/en-us/article/minecraft-112-pre-release-6) 的版本。
 
@@ -32,8 +30,7 @@ docker-compose up
 
 #### 前置要求
 
-* 你需要先安装 **`.NET Core` sdk 2.0**，可以在 [这里](https://www.microsoft.com/net/download) 找到你需要的版本。
-* **MongoDB**, 你可以从 [这里](https://www.mongodb.com/download-center?jmp=nav#community) 下载。
+你需要先安装 `.NET Core` sdk2.0，可以在 [这里](https://www.microsoft.com/net/download) 找到你需要的版本。
 
 #### 获取源码
 

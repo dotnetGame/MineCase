@@ -16,13 +16,6 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
-        protected override Task OnAttached()
-        {
-            if (AttachedObject.GetValue(IsEnabledComponent.IsEnabledProperty))
-                InstallPropertyChangedHandlers();
-            return base.OnAttached();
-        }
-
         Task IHandle<SpawnMob>.Handle(SpawnMob message)
         {
             InstallPropertyChangedHandlers();
@@ -41,7 +34,10 @@ namespace MineCase.Server.Game.Entities.Components
         {
             uint eid = AttachedObject.GetValue(EntityIdComponent.EntityIdProperty);
             byte headyaw = (byte)(AttachedObject.GetValue(EntityLookComponent.HeadYawProperty) / 360 * 255);
-            return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator().EntityHeadLook(eid, headyaw);
+            if (e.NewValue != e.OldValue)
+                return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator().EntityHeadLook(eid, headyaw);
+            else
+                return Task.CompletedTask;
         }
 
         private Task OnYawChanged(object sender, PropertyChangedEventArgs<float> e)
@@ -66,7 +62,10 @@ namespace MineCase.Server.Game.Entities.Components
             bool onGround = AttachedObject.GetValue(EntityOnGroundComponent.IsOnGroundProperty);
 
             // return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator().EntityLook(eid, yaw, pitch, onGround);
-            return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator().EntityLookAndRelativeMove(eid, 0, 0, 0, yaw, pitch, onGround);
+            if (e.NewValue != e.OldValue)
+                return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator().EntityLookAndRelativeMove(eid, 0, 0, 0, yaw, pitch, onGround);
+            else
+                return Task.CompletedTask;
         }
 
         private Task OnPositionChanged(object sender, PropertyChangedEventArgs<EntityWorldPos> e)
@@ -79,7 +78,10 @@ namespace MineCase.Server.Game.Entities.Components
             byte pitch = (byte)(AttachedObject.GetValue(EntityLookComponent.PitchProperty) / 360 * 255);
             bool isOnGround = AttachedObject.GetValue(EntityOnGroundComponent.IsOnGroundProperty);
 
-            return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator().EntityLookAndRelativeMove(eid, x, y, z, yaw, pitch, isOnGround);
+            if (e.NewValue != e.OldValue)
+                return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator().EntityLookAndRelativeMove(eid, x, y, z, yaw, pitch, isOnGround);
+            else
+                return Task.CompletedTask;
         }
     }
 }

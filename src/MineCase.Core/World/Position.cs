@@ -240,7 +240,7 @@ namespace MineCase.World
         }
     }
 
-    public struct EntityWorldPos
+    public struct EntityWorldPos : IEquatable<EntityWorldPos>
     {
         public float X { get; set; }
 
@@ -263,6 +263,16 @@ namespace MineCase.World
         public static implicit operator EntityWorldPos(Vector3 pos)
         {
             return new EntityWorldPos(pos.X, pos.Y, pos.Z);
+        }
+
+        public static bool operator != (EntityWorldPos lhs, EntityWorldPos rhs)
+        {
+            return lhs.X != rhs.X || lhs.Y != rhs.Y || lhs.Z != rhs.Z;
+        }
+
+        public static bool operator ==(EntityWorldPos lhs, EntityWorldPos rhs)
+        {
+            return lhs.X == rhs.X && lhs.Y == rhs.Y && lhs.Z == rhs.Z;
         }
 
         public ChunkWorldPos ToChunkWorldPos()
@@ -317,6 +327,28 @@ namespace MineCase.World
             float y = pos1.Y - pos2.Y;
             float z = pos1.Z - pos2.Z;
             return Math.Sqrt(x * x + y * y + z * z);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is EntityWorldPos && Equals((EntityWorldPos)obj);
+        }
+
+        public bool Equals(EntityWorldPos other)
+        {
+            return X == other.X &&
+                   Y == other.Y &&
+                   Z == other.Z;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -307843816;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + X.GetHashCode();
+            hashCode = hashCode * -1521134295 + Y.GetHashCode();
+            hashCode = hashCode * -1521134295 + Z.GetHashCode();
+            return hashCode;
         }
     }
 

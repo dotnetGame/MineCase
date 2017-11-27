@@ -58,12 +58,15 @@ namespace MineCase.Server.Game.Entities.Components
 
         private async Task OnGameTick(object sender, GameTickArgs e)
         {
-            if (e.WorldAge % 512 == 0 && e.TimeOfDay > 9000 && e.TimeOfDay < 18000)
+            long timeOfDay = e.WorldAge % 24000;
+            if (e.WorldAge % 16 == 0 && timeOfDay > 12000 && timeOfDay < 24000)
             {
                 EntityWorldPos playerPosition = AttachedObject.GetValue(EntityWorldPositionComponent.EntityWorldPositionProperty);
-                int x = random.Next(9) - 4 + (int)playerPosition.X;
-                int z = random.Next(9) - 4 + (int)playerPosition.Z;
-                BlockWorldPos monsterBlockPos = new BlockWorldPos(x, 0, z);
+                int distance = random.Next(16) + 16;
+                double angle = random.NextDouble() * 2 * Math.PI;
+                double deltaX = distance * Math.Cos(angle) + playerPosition.X;
+                double deltaZ = distance * Math.Sin(angle) + playerPosition.Z;
+                BlockWorldPos monsterBlockPos = new BlockWorldPos((int)deltaX, 0, (int)deltaZ);
                 ChunkWorldPos monsterChunkPos = monsterBlockPos.ToChunkWorldPos();
                 var chunkAccessor = AttachedObject.GetComponent<ChunkAccessorComponent>();
                 BiomeId biomeId = await chunkAccessor.GetBlockBiome(monsterBlockPos);
@@ -73,7 +76,7 @@ namespace MineCase.Server.Game.Entities.Components
                 IChunkColumn chunk = await chunkAccessor.GetChunk(monsterChunkPos);
 
                 // TODO
-                // biome.SpawnMonster(world, GrainFactory, await chunk.GetState(), random, monsterBlockPos);
+                biome.SpawnMonster(world, GrainFactory, await chunk.GetState(), random, monsterBlockPos);
             }
         }
     }

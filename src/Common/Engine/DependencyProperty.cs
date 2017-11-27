@@ -34,12 +34,6 @@ namespace MineCase.Engine
     {
         private static int _nextAvailableGlobalId = 0;
         private static readonly ConcurrentDictionary<FromNameKey, DependencyProperty> _fromNameMaps = new ConcurrentDictionary<FromNameKey, DependencyProperty>();
-        private static readonly ConcurrentDictionary<string, Type> _ownerTypes = new ConcurrentDictionary<string, Type>();
-
-        /// <summary>
-        /// 所有者类型加载器
-        /// </summary>
-        public static Func<string, Type> OwnerTypeLoader { get; set; } = t => Type.GetType(t);
 
         /// <summary>
         /// 获取名称
@@ -67,8 +61,6 @@ namespace MineCase.Engine
         public bool IsReadOnly => Flags.HasFlag(DependencyPropertyFlags.ReadOnly);
 
         internal DependencyPropertyFlags Flags { get; }
-
-        internal abstract IDependencyPropertyHelper Helper { get; }
 
         private readonly int _globalId;
 
@@ -155,43 +147,10 @@ namespace MineCase.Engine
             while (property == null && ownerType != null)
             {
                 if (!_fromNameMaps.TryGetValue(new FromNameKey(name, ownerType), out property))
-                    ownerType = ownerType.BaseType;
+                    ownerType = ownerType.GetType().BaseType;
             }
 
             return property != null ? property : throw new InvalidOperationException($"Property {ownerType.Name}.{name} not found.");
-        }
-
-        internal static string OwnerTypeToString(Type type)
-        {
-            var str = EscapeOwnerTypeString(type);
-            if (!_ownerTypes.ContainsKey(str))
-                throw new InvalidOperationException($"OwnerType: {type.Name} is not registered.");
-            return str;
-        }
-
-        internal static Type StringToOwnerType(string str)
-        {
-            if (!_ownerTypes.TryGetValue(str, out var type))
-            {
-                var ownerType = UnescapeOwnerTypeString(str);
-                System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(ownerType.TypeHandle);
-            }
-
-            if (!_ownerTypes.TryGetValue(str, out type))
-                throw new ArgumentException($"OwnerType: {str} is not registered.");
-            return type;
-        }
-
-        private static string EscapeOwnerTypeString(Type type)
-        {
-            var str = type.FullName;
-            return type.ToString().Replace('.', ':');
-        }
-
-        private static Type UnescapeOwnerTypeString(string str)
-        {
-            str = str.Replace(':', '.');
-            return OwnerTypeLoader(str);
         }
 
         /// <summary>
@@ -203,8 +162,6 @@ namespace MineCase.Engine
         {
             if (!_fromNameMaps.TryAdd(new FromNameKey(name, ownerType), this))
                 throw new ArgumentException($"Property {ownerType.Name}.{name} is already registered.");
-            else
-                _ownerTypes.TryAdd(EscapeOwnerTypeString(ownerType), ownerType);
         }
 
         /// <summary>
@@ -264,8 +221,6 @@ namespace MineCase.Engine
 
         /// <inheritdoc/>
         public override Type PropertyType => typeof(T);
-
-        internal override IDependencyPropertyHelper Helper { get; } = new DependencyPropertyHelper<T>();
 
         internal DependencyProperty(string name, Type ownerType, DependencyPropertyFlags flags, PropertyMetadata<T> metadata)
             : base(name, ownerType, flags)

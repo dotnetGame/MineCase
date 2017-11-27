@@ -9,11 +9,9 @@ using MineCase.Server.Network.Play;
 using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
-using Orleans.Concurrency;
 
 namespace MineCase.Server.User
 {
-    [Reentrant]
     internal class UserChunkLoaderGrain : Grain, IUserChunkLoader
     {
         private IPlayer _player;
@@ -26,6 +24,12 @@ namespace MineCase.Server.User
         private HashSet<ChunkWorldPos> _sentChunks;
 
         private int _viewDistance = 10;
+
+        public override Task OnActivateAsync()
+        {
+            _player = GrainFactory.GetGrain<IPlayer>(this.GetPrimaryKey());
+            return Task.CompletedTask;
+        }
 
         public Task OnChunkSent(ChunkWorldPos chunkPos)
         {
@@ -115,32 +119,14 @@ namespace MineCase.Server.User
             return Task.CompletedTask;
         }
 
-        public async Task JoinGame(IWorld world, IPlayer player)
+        public Task JoinGame(IWorld world, IPlayer player)
         {
             _world = world;
             _player = player;
             _lastStreamedChunk = null;
-            if (_sendingChunks != null)
-            {
-                foreach (var chunkPos in _sendingChunks)
-                {
-                    await GrainFactory.GetPartitionGrain<IChunkTrackingHub>(_world, chunkPos).Unsubscribe(_player);
-                    await GrainFactory.GetPartitionGrain<IWorldPartition>(_world, chunkPos).Leave(_player);
-                }
-            }
-
             _sendingChunks = new HashSet<ChunkWorldPos>();
-
-            if (_sentChunks != null)
-            {
-                foreach (var chunkPos in _sentChunks)
-                {
-                    await GrainFactory.GetPartitionGrain<IChunkTrackingHub>(_world, chunkPos).Unsubscribe(_player);
-                    await GrainFactory.GetPartitionGrain<IWorldPartition>(_world, chunkPos).Leave(_player);
-                }
-            }
-
             _sentChunks = new HashSet<ChunkWorldPos>();
+            return Task.CompletedTask;
         }
 
         public Task SetViewDistance(int viewDistance)
