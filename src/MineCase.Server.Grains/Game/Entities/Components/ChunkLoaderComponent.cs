@@ -43,6 +43,7 @@ namespace MineCase.Server.Game.Entities.Components
 
         async Task IHandle<PlayerLoggedIn>.Handle(PlayerLoggedIn message)
         {
+            _loaded = false;
             await _chunkLoader.JoinGame(AttachedObject.GetWorld(), AttachedObject);
             _loaded = true;
         }

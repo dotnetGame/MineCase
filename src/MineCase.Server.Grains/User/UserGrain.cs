@@ -80,6 +80,7 @@ namespace MineCase.Server.User
         {
             _player = GrainFactory.GetGrain<IPlayer>(this.GetPrimaryKey());
             await _player.Tell(Disable.Default);
+            await _player.Tell(BeginLogin.Default);
             await _player.Tell(new BindToUser { User = this.AsReference<IUser>() });
 
             _userState = UserState.JoinedGame;

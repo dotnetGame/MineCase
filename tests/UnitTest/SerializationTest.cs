@@ -46,7 +46,7 @@ namespace MineCase.UnitTest
             var state = new StateHolder { Shape = new List<Pair> { new Pair { Collider = shape } } };
 
             var entity = new TestEntity();
-            await entity.OnActivateAsync();
+            await entity.ReadStateAsync();
             await entity.SetCurrentValue(SlotProperty, slot);
             await entity.SetCurrentValue(ShapeProperty, shape);
             await entity.SetCurrentValue(CuboidProperty, shape);
@@ -62,7 +62,7 @@ namespace MineCase.UnitTest
 
             entity = new TestEntity();
             entity.BsonDocument = doc;
-            await entity.OnActivateAsync();
+            await entity.ReadStateAsync();
             Assert.Equal(4, entity.ValueStorage.Keys.Count());
             Assert.Equal(slot, entity.GetValue(SlotProperty));
             Assert.Equal(shape, entity.GetValue(ShapeProperty));
