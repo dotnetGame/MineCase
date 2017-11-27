@@ -292,7 +292,8 @@ namespace MineCase.Server.Game.Entities.Components
             {
                 nextEvent = CreatureEvent.Stop;
             }
-            else if (state == CreatureState.Look && random.Next(10) == 0)
+
+            if (state == CreatureState.Look && random.Next(10) == 0)
             {
                 nextEvent = CreatureEvent.Stop;
             }
@@ -302,29 +303,6 @@ namespace MineCase.Server.Game.Entities.Components
 
         private async Task OnGameTick(object sender, GameTickArgs e)
         {
-            if (_ai == null) return;
-            /*
-            if (e.worldAge % 16 == 0)
-            {
-                float pitch = AttachedObject.GetValue(EntityLookComponent.PitchProperty);
-                pitch += 30 * 360.0f / 255;
-                if (pitch > 360)
-                {
-                    pitch = 0;
-                }
-
-                AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, pitch);
-            }
-            */
-
-            /*
-            ICreatureAi ai = AttachedObject.GetValue(EntityAiComponent.AiTypeProperty);
-            IWorld world = AttachedObject.GetWorld();
-            var chunkAccessor = AttachedObject.GetComponent<ChunkAccessorComponent>();
-            */
-
-            // CreatureAiAction action = AttachedObject.GetValue(EntityAiComponent.CreatureAiActionProperty);
-            // action.Action(AttachedObject);
             if (e.worldAge % 4 == 0)
             {
                 var nextEvent = await GenerateEvent();
