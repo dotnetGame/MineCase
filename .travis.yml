@@ -20,7 +20,7 @@ script:
  - docker tag minecase.gateway sunnycase/minecase.gateway:ci-latest
  - docker tag minecase.server sunnycase/minecase.server:ci-latest
  - >
-   if [ "$TRAVIS_BRANCH" == "master" ]; then
+   if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
      docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
      docker push sunnycase/minecase.gateway
      docker push sunnycase/minecase.server

@@ -35,43 +35,10 @@ namespace MineCase.Engine
         public DependencyObject()
         {
             _realType = this.GetType();
-            _valueStorage.CurrentValueChanged += ValueStorage_CurrentValueChanged;
-        }
-
-        private void LoadState()
-        {
             _components = new Dictionary<string, IComponentIntern>();
             _indexes = new Dictionary<IComponentIntern, int>();
             _messageHandlers = new MultiValueDictionary<Type, IComponentIntern>();
         }
-
-#if ECS_SERVER
-        public override async Task OnActivateAsync()
-        {
-            LoadState();
-            await InitializeComponents();
-        }
-
-        protected virtual Task InitializeComponents()
-        {
-            return Task.CompletedTask;
-        }
-#else
-        /// <inheritdoc/>
-        protected override void Awake()
-        {
-            base.Awake();
-            LoadState();
-            InitializeComponents();
-        }
-
-        /// <summary>
-        /// 初始化组件
-        /// </summary>
-        protected virtual void InitializeComponents()
-        {
-        }
-#endif
 
         /// <summary>
         /// 获取组件
@@ -168,9 +135,12 @@ namespace MineCase.Engine
 
         internal readonly Type _realType;
 
-        private readonly DependencyValueStorage _valueStorage = new DependencyValueStorage();
+        private DependencyValueStorage _valueStorage;
 
-        internal IDependencyValueStorage ValueStorage => _valueStorage;
+        /// <summary>
+        /// 获取值存储
+        /// </summary>
+        public IDependencyValueStorage ValueStorage => _valueStorage;
 
         private readonly ConcurrentDictionary<DependencyProperty, Delegate> _propertyChangedHandlers = new ConcurrentDictionary<DependencyProperty, Delegate>();
         private readonly ConcurrentDictionary<DependencyProperty, Delegate> _propertyChangedHandlersGen = new ConcurrentDictionary<DependencyProperty, Delegate>();
@@ -553,6 +523,10 @@ namespace MineCase.Engine
                     invoker(handler, message);
                 }
             }
+
+#if ECS_SERVER
+            await ClearOperationQueue();
+#endif
         }
 
         /// <inheritdoc />
@@ -602,18 +576,14 @@ namespace MineCase.Engine
             await
 #endif
                     invoker(handler, message);
+#if ECS_SERVER
+                    await ClearOperationQueue();
+#endif
                     return new AskResult<TResponse> { Succeeded = true, Response = response };
                 }
             }
 
             return AskResult<TResponse>.Failed;
         }
-
-#if ECS_SERVER
-        public virtual void Destroy()
-        {
-            DeactivateOnIdle();
-        }
-#endif
     }
 }

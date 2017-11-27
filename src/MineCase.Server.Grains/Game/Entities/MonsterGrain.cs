@@ -8,9 +8,11 @@ using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.World;
 using MineCase.Server.World.EntitySpawner;
 using MineCase.World;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Game.Entities
 {
+    [Reentrant]
     internal class MonsterGrain : EntityGrain, IMonster
     {
         /*

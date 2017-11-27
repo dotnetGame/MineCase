@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.Components;
 using MineCase.Server.Network.Play;
+using MineCase.World;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class KeepAliveComponent : Component, IHandle<PlayerLoggedIn>, IHandle<KickPlayer>
+    internal class KeepAliveComponent : Component, IHandle<BeginLogin>, IHandle<PlayerLoggedIn>, IHandle<KickPlayer>
     {
         private uint _keepAliveId = 0;
         public readonly HashSet<uint> _keepAliveWaiters = new HashSet<uint>();
@@ -45,14 +46,14 @@ namespace MineCase.Server.Game.Entities.Components
             return Task.CompletedTask;
         }
 
-        private async Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
+        private async Task OnGameTick(object sender, GameTickArgs e)
         {
             if (_isOnline && _keepAliveWaiters.Count >= ClientKeepInterval)
             {
                 _isOnline = false;
                 await AttachedObject.Tell(new KickPlayer());
             }
-            else if (e.worldAge % 20 == 0)
+            else if (e.WorldAge % 20 == 0)
             {
                 var id = _keepAliveId++;
                 _keepAliveWaiters.Add(id);
@@ -71,6 +72,14 @@ namespace MineCase.Server.Game.Entities.Components
         }
 
         Task IHandle<KickPlayer>.Handle(KickPlayer message)
+        {
+            AttachedObject.GetComponent<GameTickComponent>()
+                .Tick -= OnGameTick;
+            _isOnline = false;
+            return Task.CompletedTask;
+        }
+
+        Task IHandle<BeginLogin>.Handle(BeginLogin message)
         {
             AttachedObject.GetComponent<GameTickComponent>()
                 .Tick -= OnGameTick;

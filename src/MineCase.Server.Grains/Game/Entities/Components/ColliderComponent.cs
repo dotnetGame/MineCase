@@ -10,7 +10,7 @@ using MineCase.World;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class ColliderComponent : Component<EntityGrain>, IHandle<Disable>
+    internal class ColliderComponent : Component<EntityGrain>
     {
         public static readonly DependencyProperty<Shape> ColliderShapeProperty =
             DependencyProperty.Register<Shape>("ColliderShape", typeof(ColliderComponent), new PropertyMetadata<Shape>(null, OnColliderShapeChanged));
@@ -24,17 +24,34 @@ namespace MineCase.Server.Game.Entities.Components
 
         protected override Task OnAttached()
         {
-            AttachedObject.RegisterPropertyChangedHandler(AddressByPartitionKeyComponent.AddressByPartitionKeyProperty, OnAddressByPartitionKeyChanged);
+            AttachedObject.GetComponent<AddressByPartitionKeyComponent>()
+                .KeyChanged += AddressByPartitionKeyChanged;
+            AttachedObject.RegisterPropertyChangedHandler(IsEnabledComponent.IsEnabledProperty, OnIsEnabledChanged);
+            AttachedObject.QueueOperation(TrySubscribe);
             return base.OnAttached();
         }
 
-        private async Task OnAddressByPartitionKeyChanged(object sender, PropertyChangedEventArgs<string> e)
+        protected override async Task OnDetached()
+        {
+            AttachedObject.GetComponent<AddressByPartitionKeyComponent>()
+                .KeyChanged -= AddressByPartitionKeyChanged;
+            await TryUnsubscribe();
+        }
+
+        private async Task AddressByPartitionKeyChanged(object sender, (string oldKey, string newKey) e)
         {
             var shape = ColliderShape;
-            if (!string.IsNullOrEmpty(e.OldValue))
-                await GrainFactory.GetGrain<ICollectableFinder>(e.OldValue).UnregisterCollider(AttachedObject);
-            if (!string.IsNullOrEmpty(e.NewValue) && shape != null)
-                await GrainFactory.GetGrain<ICollectableFinder>(e.NewValue).RegisterCollider(AttachedObject, shape);
+            if (!string.IsNullOrEmpty(e.oldKey))
+                await GrainFactory.GetGrain<ICollectableFinder>(e.oldKey).UnregisterCollider(AttachedObject);
+            await TrySubscribe();
+        }
+
+        private Task OnIsEnabledChanged(object sender, PropertyChangedEventArgs<bool> e)
+        {
+            if (e.NewValue)
+                return TrySubscribe();
+            else
+                return TryUnsubscribe();
         }
 
         private async Task OnColliderShapeChanged(PropertyChangedEventArgs<Shape> e)
@@ -44,7 +61,7 @@ namespace MineCase.Server.Game.Entities.Components
             if (shape != null)
                 await GrainFactory.GetGrain<ICollectableFinder>(key).RegisterCollider(AttachedObject, shape);
             else
-                await GrainFactory.GetGrain<ICollectableFinder>(key).UnregisterCollider(AttachedObject);
+                await TrySubscribe();
         }
 
         private static Task OnColliderShapeChanged(object sender, PropertyChangedEventArgs<Shape> e)
@@ -56,10 +73,22 @@ namespace MineCase.Server.Game.Entities.Components
         public Task SetColliderShape(Shape value) =>
             AttachedObject.SetLocalValue(ColliderShapeProperty, value);
 
-        async Task IHandle<Disable>.Handle(Disable message)
+        private async Task TrySubscribe()
         {
-            var key = AttachedObject.GetValue(AddressByPartitionKeyComponent.AddressByPartitionKeyProperty);
-            await GrainFactory.GetGrain<ICollectableFinder>(key).UnregisterCollider(AttachedObject);
+            if (AttachedObject.GetValue(IsEnabledComponent.IsEnabledProperty))
+            {
+                var key = AttachedObject.GetAddressByPartitionKey();
+                var shape = ColliderShape;
+                if (!string.IsNullOrEmpty(key) && shape != null)
+                    await GrainFactory.GetGrain<ICollectableFinder>(key).RegisterCollider(AttachedObject, ColliderShape);
+            }
+        }
+
+        private async Task TryUnsubscribe()
+        {
+            var key = AttachedObject.GetAddressByPartitionKey();
+            if (!string.IsNullOrEmpty(key))
+                await GrainFactory.GetGrain<ICollectableFinder>(key).UnregisterCollider(AttachedObject);
         }
     }
 }

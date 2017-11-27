@@ -54,6 +54,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{C32ACB
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker\docker-compose.dcproj", "{2974A4BE-85D2-454D-ACDE-B4BE63993B95}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Serialization", "MineCase.Serialization\MineCase.Serialization.csproj", "{AA85C7DA-31CB-499B-A74F-CF4FDC8EF669}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Appveyor|Any CPU = Appveyor|Any CPU
@@ -161,6 +163,14 @@ Global
 		{2974A4BE-85D2-454D-ACDE-B4BE63993B95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2974A4BE-85D2-454D-ACDE-B4BE63993B95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2974A4BE-85D2-454D-ACDE-B4BE63993B95}.TravisCI|Any CPU.ActiveCfg = TravisCI|Any CPU
+		{AA85C7DA-31CB-499B-A74F-CF4FDC8EF669}.Appveyor|Any CPU.ActiveCfg = Appveyor|Any CPU
+		{AA85C7DA-31CB-499B-A74F-CF4FDC8EF669}.Appveyor|Any CPU.Build.0 = Appveyor|Any CPU
+		{AA85C7DA-31CB-499B-A74F-CF4FDC8EF669}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA85C7DA-31CB-499B-A74F-CF4FDC8EF669}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA85C7DA-31CB-499B-A74F-CF4FDC8EF669}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA85C7DA-31CB-499B-A74F-CF4FDC8EF669}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA85C7DA-31CB-499B-A74F-CF4FDC8EF669}.TravisCI|Any CPU.ActiveCfg = TravisCI|Any CPU
+		{AA85C7DA-31CB-499B-A74F-CF4FDC8EF669}.TravisCI|Any CPU.Build.0 = TravisCI|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -179,6 +189,7 @@ Global
 		{D586FFBB-7265-47CF-AD80-77AC7ACB0FF1} = {5FE43A62-34E9-44CC-B5FF-D66EC916CFA1}
 		{D2E3FF57-9287-4584-B8A1-57E19D44E0AF} = {5FE43A62-34E9-44CC-B5FF-D66EC916CFA1}
 		{2974A4BE-85D2-454D-ACDE-B4BE63993B95} = {C32ACBC4-BA67-488B-96CD-ED6CF3255767}
+		{AA85C7DA-31CB-499B-A74F-CF4FDC8EF669} = {CB620063-55E2-4694-B1E0-E99BB032BF03}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7AB995C3-E961-463C-8A55-3149C51761B5}

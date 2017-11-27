@@ -5,7 +5,7 @@ using System.Text;
 namespace MineCase.Graphics
 {
     [Serializable]
-    public class Cuboid : Shape
+    public class Cuboid : Shape, IEquatable<Cuboid>
     {
         public override ShapeType Type => ShapeType.Cuboid;
 
@@ -52,6 +52,36 @@ namespace MineCase.Graphics
             }
 
             return false;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Cuboid);
+        }
+
+        public bool Equals(Cuboid other)
+        {
+            return other != null &&
+                   EqualityComparer<Point3d>.Default.Equals(Point, other.Point) &&
+                   EqualityComparer<Size>.Default.Equals(Size, other.Size);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 1392910933;
+            hashCode = hashCode * -1521134295 + EqualityComparer<Point3d>.Default.GetHashCode(Point);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Size>.Default.GetHashCode(Size);
+            return hashCode;
+        }
+
+        public static bool operator ==(Cuboid cuboid1, Cuboid cuboid2)
+        {
+            return EqualityComparer<Cuboid>.Default.Equals(cuboid1, cuboid2);
+        }
+
+        public static bool operator !=(Cuboid cuboid1, Cuboid cuboid2)
+        {
+            return !(cuboid1 == cuboid2);
         }
     }
 }

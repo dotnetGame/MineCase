@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
+using MineCase.Server.Components;
+using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.Components;
+using MineCase.Server.User;
+using Orleans;
 using Orleans.Concurrency;
 
 namespace MineCase.Server.Network.Play
@@ -11,6 +15,7 @@ namespace MineCase.Server.Network.Play
     internal class ClientboundPacketComponent : Component, IHandle<BindToUser>, IHandle<KickPlayer>, IHandle<PacketForwardToPlayer>
     {
         private IClientboundPacketSink _sink;
+        private IUser _user;
 
         public ClientboundPacketComponent(string name = "clientboundPacket")
             : base(name)
@@ -20,13 +25,16 @@ namespace MineCase.Server.Network.Play
         public ClientPlayPacketGenerator GetGenerator()
             => new ClientPlayPacketGenerator(_sink);
 
-        public Task Kick()
+        public async Task Kick()
         {
-            return _sink.Close();
+            await AttachedObject.Tell(Disable.Default);
+            if (_user.GetPlayer() == AttachedObject.AsReference<IPlayer>())
+                await _user.Kick();
         }
 
         async Task IHandle<BindToUser>.Handle(BindToUser message)
         {
+            _user = message.User;
             _sink = await message.User.GetClientPacketSink();
         }
 

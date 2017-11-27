@@ -11,6 +11,7 @@ using Orleans.Concurrency;
 
 namespace MineCase.Server.Network
 {
+    [Reentrant]
     internal class ClientboundPacketSinkGrain : Grain, IClientboundPacketSink
     {
         private ObserverSubscriptionManager<IClientboundPacketObserver> _subsManager;

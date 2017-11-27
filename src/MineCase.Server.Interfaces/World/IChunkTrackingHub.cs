@@ -6,6 +6,7 @@ using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Network;
 using MineCase.Server.User;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.World
@@ -17,5 +18,7 @@ namespace MineCase.Server.World
         Task Unsubscribe(IPlayer player);
 
         Task<List<IPlayer>> GetTrackedPlayers();
+
+        Task OnGameTick(GameTickArgs e);
     }
 }

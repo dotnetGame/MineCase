@@ -10,54 +10,63 @@ using MineCase.Server.Components;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.Components;
+using MineCase.Server.Persistence;
+using MineCase.Server.Persistence.Components;
 using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
 
 namespace MineCase.Server.World
 {
+    [PersistTableName("collectableFinder")]
     [Reentrant]
-    internal class CollectableFinder : Grain, ICollectableFinder
+    internal class CollectableFinder : AddressByPartitionGrain, ICollectableFinder
     {
-        private IWorld _world;
-
-        private List<(Cuboid box, ICollectableFinder finder)> _neighborFinders;
-
         public static readonly (int x, int z)[] CrossCoords = new[]
         {
             (0, 0), (-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1)
         };
 
-        /*
-        private List<ICollectable> _collectables;
-        */
-        public override Task OnActivateAsync()
+        private AutoSaveStateComponent _autoSave;
+        private List<(Cuboid box, ICollectableFinder finder)> _neighborFinders;
+
+        private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
+
+        public override async Task OnActivateAsync()
         {
-            _world = GrainFactory.GetGrain<IWorld>(this.GetWorldAndChunkWorldPos().worldKey);
-            var selfPos = this.GetChunkWorldPos();
+            await base.OnActivateAsync();
             _neighborFinders = new List<(Cuboid box, ICollectableFinder finder)>();
             foreach (var crossCoord in CrossCoords)
             {
-                var newPos = new ChunkWorldPos(selfPos.X + crossCoord.x, selfPos.Z + crossCoord.z);
+                var newPos = new ChunkWorldPos(ChunkWorldPos.X + crossCoord.x, ChunkWorldPos.Z + crossCoord.z);
                 var shape = new Cuboid(new Point3d(newPos.X * 16, newPos.Z * 16, 0), new Size(16, 16, 256));
-                _neighborFinders.Add((shape, GrainFactory.GetPartitionGrain<ICollectableFinder>(_world, newPos)));
+                _neighborFinders.Add((shape, GrainFactory.GetPartitionGrain<ICollectableFinder>(World, newPos)));
             }
-
-            _colliders = new Dictionary<IDependencyObject, Shape>();
-            return base.OnActivateAsync();
         }
 
-        private Dictionary<IDependencyObject, Shape> _colliders;
+        protected override async Task InitializePreLoadComponent()
+        {
+            var state = new StateComponent<StateHolder>();
+            await SetComponent(state);
+        }
+
+        protected override async Task InitializeComponents()
+        {
+            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
+            await SetComponent(_autoSave);
+        }
 
         public Task RegisterCollider(IDependencyObject entity, Shape colliderShape)
         {
-            _colliders[entity] = colliderShape;
+            State.Colliders[entity] = colliderShape;
+            MarkDirty();
             return Collision(entity, colliderShape);
         }
 
         public Task UnregisterCollider(IDependencyObject entity)
         {
-            _colliders.Remove(entity);
+            if (State.Colliders.Remove(entity))
+                MarkDirty();
             return Task.CompletedTask;
         }
 
@@ -79,8 +88,8 @@ namespace MineCase.Server.World
                 var pickup = GrainFactory.GetGrain<IPickup>(Guid.NewGuid());
                 await pickup.Tell(new SpawnEntity
                 {
-                    World = _world,
-                    EntityId = await _world.NewEntityId(),
+                    World = World,
+                    EntityId = await World.NewEntityId(),
                     Position = position
                 });
                 await pickup.Tell(new SetSlot { Slot = slot });
@@ -90,7 +99,7 @@ namespace MineCase.Server.World
         public Task<IReadOnlyCollection<IDependencyObject>> CollisionInChunk(Shape colliderShape)
         {
             List<IDependencyObject> result = null;
-            foreach (var collider in _colliders)
+            foreach (var collider in State.Colliders)
             {
                 if (collider.Value.CollideWith(colliderShape))
                 {
@@ -101,6 +110,30 @@ namespace MineCase.Server.World
             }
 
             return Task.FromResult((IReadOnlyCollection<IDependencyObject>)result ?? Array.Empty<IDependencyObject>());
+        }
+
+        private void MarkDirty()
+        {
+            ValueStorage.IsDirty = true;
+        }
+
+        public Task OnGameTick(GameTickArgs e)
+        {
+            return _autoSave.OnGameTick(this, e);
+        }
+
+        public class StateHolder
+        {
+            public Dictionary<IDependencyObject, Shape> Colliders { get; set; }
+
+            public StateHolder()
+            {
+            }
+
+            public StateHolder(InitializeStateMark mark)
+            {
+                Colliders = new Dictionary<IDependencyObject, Shape>();
+            }
         }
     }
 }

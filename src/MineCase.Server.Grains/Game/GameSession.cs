@@ -9,10 +9,13 @@ using MineCase.Protocol.Play;
 using MineCase.Server.Network.Play;
 using MineCase.Server.User;
 using MineCase.Server.World;
+using MineCase.World;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.Game
 {
+    [Reentrant]
     internal class GameSession : Grain, IGameSession
     {
         private IWorld _world;
@@ -22,8 +25,6 @@ namespace MineCase.Server.Game
         private IDisposable _gameTick;
         private DateTime _lastGameTickTime;
 
-        private HashSet<ITickable> _tickables;
-
         private ILogger _logger;
 
         public override async Task OnActivateAsync()
@@ -32,8 +33,7 @@ namespace MineCase.Server.Game
             _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(this.GetPrimaryKeyString());
             _chunkSender = GrainFactory.GetGrain<IChunkSender>(this.GetPrimaryKeyString());
             _lastGameTickTime = DateTime.UtcNow;
-            _tickables = new HashSet<ITickable>();
-            _gameTick = RegisterTimer(OnGameTick, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(50));
+            _gameTick = RegisterTimer(OnGameTick, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(5));
         }
 
         public async Task JoinGame(IUser user)
@@ -99,21 +99,20 @@ namespace MineCase.Server.Game
             {
                 var now = DateTime.UtcNow;
                 var deltaTime = now - _lastGameTickTime;
+
+                if (deltaTime.TotalMilliseconds < 30) return;
+
                 _lastGameTickTime = now;
 
                 var worldTime = await _world.GetTime();
+                var timeArgs = new GameTickArgs { DeltaTime = deltaTime, WorldAge = worldTime.WorldAge, TimeOfDay = worldTime.TimeOfDay };
+
+                await _world.OnGameTick(timeArgs);
+                Task.WhenAll(from u in _users.Keys
+                             select u.OnGameTick(timeArgs)).Ignore();
 
                 if (worldTime.WorldAge % 20 == 0)
-                {
-                    await Task.WhenAll(from u in _users.Values
-                                       select u.Generator.TimeUpdate(worldTime.WorldAge, worldTime.TimeOfDay));
-                }
-
-                await _world.OnGameTick(deltaTime);
-                await Task.WhenAll(from u in _users.Keys
-                                   select u.OnGameTick(deltaTime, worldTime.WorldAge));
-                await Task.WhenAll(from u in _tickables
-                                   select u.OnGameTick(deltaTime, worldTime.WorldAge));
+                    _logger.LogInformation($"Delta Game Tick: {deltaTime.TotalMilliseconds}ms.");
             }
             catch (Exception ex)
             {
@@ -138,18 +137,6 @@ namespace MineCase.Server.Game
 
             Chat jsonData = new Chat(new TranslationComponent("chat.type.text", list));
             return Task.FromResult(jsonData);
-        }
-
-        public Task Subscribe(ITickable tickable)
-        {
-            _tickables.Add(tickable);
-            return Task.CompletedTask;
-        }
-
-        public Task Unsubscribe(ITickable tickable)
-        {
-            _tickables.Remove(tickable);
-            return Task.CompletedTask;
         }
 
         private class UserContext

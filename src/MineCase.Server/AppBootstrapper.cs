@@ -11,6 +11,7 @@ using System.Linq;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.IO;
 using Autofac;
+using MineCase.Server.Settings;
 
 namespace MineCase.Server
 {
@@ -21,6 +22,7 @@ namespace MineCase.Server
             services.AddOptions();
             services.AddLogging();
             services.AddSingleton<RecyclableMemoryStreamManager>();
+            services.Configure<PersistenceOptions>(Configuration.GetSection("persistenceOptions"));
 
             var container = new ContainerBuilder();
             container.Populate(services);
@@ -31,7 +33,7 @@ namespace MineCase.Server
         private static void ConfigureAppConfiguration(IConfigurationBuilder configurationBuilder)
         {
             configurationBuilder.SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("config.json", true, false);
+                .AddJsonFile("config.json", false, false);
         }
 
         private static void SelectAssemblies()

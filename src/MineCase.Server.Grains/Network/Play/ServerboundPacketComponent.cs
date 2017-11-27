@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using Microsoft.Extensions.Logging;
 using MineCase.Engine;
 using MineCase.Protocol;
@@ -19,11 +21,13 @@ namespace MineCase.Server.Network.Play
 {
     internal class ServerboundPacketComponent : Component<PlayerGrain>, IHandle<ServerboundPacketMessage>
     {
-        private readonly Queue<object> _deferredPacket = new Queue<object>();
+        private readonly ConcurrentQueue<object> _deferredPacket = new ConcurrentQueue<object>();
+        private readonly ActionBlock<UncompressedPacket> _receivePacket;
 
         public ServerboundPacketComponent(string name = "serverboundPacket")
             : base(name)
         {
+            _receivePacket = new ActionBlock<UncompressedPacket>((Action<UncompressedPacket>)OnReceivePacket);
         }
 
         protected override Task OnAttached()
@@ -40,18 +44,23 @@ namespace MineCase.Server.Network.Play
             return base.OnDetached();
         }
 
-        private async Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
+        private async Task OnGameTick(object sender, GameTickArgs e)
         {
-            while (_deferredPacket.Count != 0)
-                await DispatchPacket((dynamic)_deferredPacket.Dequeue());
+            while (_deferredPacket.TryDequeue(out var packet))
+                await DispatchPacket((dynamic)packet);
         }
 
         Task IHandle<ServerboundPacketMessage>.Handle(ServerboundPacketMessage message)
         {
-            var packet = DeserializePlayPacket(message.Packet);
+            _receivePacket.Post(message.Packet);
+            return Task.CompletedTask;
+        }
+
+        private void OnReceivePacket(UncompressedPacket rawPacket)
+        {
+            var packet = DeserializePlayPacket(rawPacket);
             if (packet != null)
                 _deferredPacket.Enqueue(packet);
-            return Task.CompletedTask;
         }
 
         private Task DispatchPacket(object packet)
