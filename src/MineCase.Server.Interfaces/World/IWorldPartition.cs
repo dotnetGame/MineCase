@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Game.Entities;
-using MineCase.World;
 using Orleans.Concurrency;
 
 namespace MineCase.Server.World
@@ -14,7 +13,8 @@ namespace MineCase.Server.World
 
         Task Leave(IPlayer player);
 
-        Task OnGameTick(GameTickArgs e);
+        [OneWay]
+        Task OnGameTick(TimeSpan deltaTime, long worldAge);
 
         Task SubscribeDiscovery(IEntity entity);
 

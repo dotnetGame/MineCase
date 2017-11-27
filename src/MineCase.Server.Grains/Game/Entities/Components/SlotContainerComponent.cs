@@ -24,9 +24,7 @@ namespace MineCase.Server.Game.Entities.Components
 
         protected override async Task OnAttached()
         {
-            var slots = AttachedObject.GetValue(SlotsProperty);
-            if (slots == null || slots.Length != _slotsCount)
-                await AttachedObject.SetLocalValue(SlotsProperty, Enumerable.Repeat(Slot.Empty, _slotsCount).ToArray());
+            await AttachedObject.SetLocalValue(SlotsProperty, Enumerable.Repeat(Slot.Empty, _slotsCount).ToArray());
             await base.OnAttached();
         }
 
@@ -39,7 +37,6 @@ namespace MineCase.Server.Game.Entities.Components
             if (old != slot)
             {
                 old = slot;
-                MarkDirty();
                 return SlotChanged.InvokeSerial(this, (index, slot));
             }
 
@@ -61,10 +58,5 @@ namespace MineCase.Server.Game.Entities.Components
 
         Task<Slot> IHandle<AskSlot, Slot>.Handle(AskSlot message) =>
             Task.FromResult(GetSlot(message.Index));
-
-        private void MarkDirty()
-        {
-            AttachedObject.ValueStorage.IsDirty = true;
-        }
     }
 }

@@ -18,12 +18,6 @@ namespace MineCase.Server.Game.BlockEntities.Components
         {
             await AttachedObject.GetComponent<WorldComponent>().SetWorld(message.World);
             await AttachedObject.GetComponent<BlockWorldPositionComponent>().SetBlockWorldPosition(message.Position);
-            AttachedObject.QueueOperation(async () =>
-            {
-                await AttachedObject.Tell(Enable.Default);
-                if (AttachedObject.ValueStorage.IsDirty)
-                    await AttachedObject.WriteStateAsync();
-            });
         }
 
         Task IHandle<DestroyBlockEntity>.Handle(DestroyBlockEntity message)

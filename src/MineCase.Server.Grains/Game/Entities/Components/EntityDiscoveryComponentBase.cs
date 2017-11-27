@@ -7,7 +7,6 @@ using MineCase.Engine;
 using MineCase.Server.Components;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
-using Orleans;
 
 namespace MineCase.Server.Game.Entities.Components
 {
@@ -19,8 +18,11 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
+        private TaskCompletionSource<object> _spawned;
+
         protected override Task OnAttached()
         {
+            _spawned = new TaskCompletionSource<object>();
             return base.OnAttached();
         }
 
@@ -29,11 +31,13 @@ namespace MineCase.Server.Game.Entities.Components
 
         async Task IHandle<DiscoveredByPlayer>.Handle(DiscoveredByPlayer message)
         {
+            await _spawned.Task;
             await SendSpawnPacket(GetPlayerPacketGenerator(message.Player));
         }
 
         async Task IHandle<BroadcastDiscovered>.Handle(BroadcastDiscovered message)
         {
+            await _spawned.Task;
             await SendSpawnPacket(AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator());
         }
 
@@ -41,12 +45,7 @@ namespace MineCase.Server.Game.Entities.Components
 
         protected void CompleteSpawn()
         {
-            AttachedObject.QueueOperation(async () =>
-            {
-                await AttachedObject.Tell(Enable.Default);
-                if (AttachedObject.ValueStorage.IsDirty)
-                    await AttachedObject.WriteStateAsync();
-            });
+            _spawned.TrySetResult(null);
         }
     }
 }

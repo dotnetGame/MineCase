@@ -10,13 +10,13 @@ namespace MineCase.Server.Components
     internal class EntityLookComponent : Component
     {
         public static readonly DependencyProperty<float> PitchProperty =
-            DependencyProperty.Register<float>("Pitch", typeof(EntityLookComponent));
+            DependencyProperty.Register<float>("Pitch", typeof(EntityWorldPositionComponent));
 
         public static readonly DependencyProperty<float> YawProperty =
-            DependencyProperty.Register<float>("Yaw", typeof(EntityLookComponent));
+            DependencyProperty.Register<float>("Yaw", typeof(EntityWorldPositionComponent));
 
         public static readonly DependencyProperty<float> HeadYawProperty =
-            DependencyProperty.Register<float>("HeadYaw", typeof(EntityLookComponent));
+            DependencyProperty.Register<float>("HeadYaw", typeof(EntityWorldPositionComponent));
 
         public float Pitch => AttachedObject.GetValue(PitchProperty);
 

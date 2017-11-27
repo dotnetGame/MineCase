@@ -6,16 +6,12 @@ using MineCase.Engine;
 using MineCase.Graphics;
 using MineCase.Server.Components;
 using MineCase.Server.Network.Play;
-using MineCase.Server.User;
 using MineCase.World;
-using Orleans;
 
 namespace MineCase.Server.Game.Entities.Components
 {
     internal class SyncPlayerStateComponent : Component<PlayerGrain>, IHandle<PlayerLoggedIn>, IHandle<BindToUser>
     {
-        private IUser _user;
-
         public SyncPlayerStateComponent(string name = "syncPlayerState")
             : base(name)
         {
@@ -67,18 +63,8 @@ namespace MineCase.Server.Game.Entities.Components
 
         async Task IHandle<BindToUser>.Handle(BindToUser message)
         {
-            AttachedObject.GetComponent<SlotContainerComponent>().SlotChanged -= InventorySlotChanged;
-
-            _user = message.User;
             await AttachedObject.GetComponent<NameComponent>().SetName(await message.User.GetName());
             await AttachedObject.GetComponent<SlotContainerComponent>().SetSlots(await message.User.GetInventorySlots());
-
-            AttachedObject.GetComponent<SlotContainerComponent>().SlotChanged += InventorySlotChanged;
-        }
-
-        private Task InventorySlotChanged(object sender, (int index, Slot slot) e)
-        {
-            return _user.SetInventorySlot(e.index, e.slot);
         }
     }
 }

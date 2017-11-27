@@ -44,7 +44,6 @@
   <ItemGroup>
     <Compile Include="..\Common\Engine\Component.cs" Link="Component.cs" />
     <Compile Include="..\Common\Engine\Data\DependencyValueStorage.cs" Link="Data\DependencyValueStorage.cs" />
-    <Compile Include="..\Common\Engine\DependencyPropertyHelper.cs" Link="DependencyPropertyHelper.cs" />
     <Compile Include="..\Common\Engine\Data\IDependencyValueProvider.cs" Link="Data\IDependencyValueProvider.cs" />
     <Compile Include="..\Common\Engine\Data\IDependencyValueStorage.cs" Link="Data\IDependencyValueStorage.cs" />
     <Compile Include="..\Common\Engine\Data\IEffectiveValue.cs" Link="Data\IEffectiveValue.cs" />

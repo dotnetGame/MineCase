@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Autofac;
-using MineCase.Engine;
 
 namespace MineCase.Server
 {
@@ -11,9 +10,7 @@ namespace MineCase.Server
     {
         public static ICollection<Assembly> AddGrains(this ICollection<Assembly> assemblies)
         {
-            var assembly = typeof(GrainsAssemblyExtensions).Assembly;
-            assemblies.Add(assembly);
-            DependencyProperty.OwnerTypeLoader = t => assembly.GetType(t, true);
+            assemblies.Add(typeof(GrainsAssemblyExtensions).Assembly);
             return assemblies;
         }
     }

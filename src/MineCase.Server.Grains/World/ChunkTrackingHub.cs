@@ -8,9 +8,7 @@ using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
-using MineCase.Server.Persistence;
-using MineCase.Server.Persistence.Components;
-using MineCase.World;
+using MineCase.Server.User;
 using Orleans;
 using Orleans.Concurrency;
 
@@ -20,13 +18,19 @@ namespace MineCase.Server.World
     internal class ChunkTrackingHub : Grain, IChunkTrackingHub
     {
         private readonly IPacketPackager _packetPackager;
-        private Dictionary<IPlayer, IPacketSink> _trackingPlayers = new Dictionary<IPlayer, IPacketSink>();
+        private Dictionary<IPlayer, IPacketSink> _trackingPlayers;
         private BroadcastPacketSink _broadcastPacketSink;
 
         public ChunkTrackingHub(IPacketPackager packetPackager)
         {
             _packetPackager = packetPackager;
-            _broadcastPacketSink = new BroadcastPacketSink(_trackingPlayers.Values, packetPackager);
+        }
+
+        public override Task OnActivateAsync()
+        {
+            _trackingPlayers = new Dictionary<IPlayer, IPacketSink>();
+            _broadcastPacketSink = new BroadcastPacketSink(_trackingPlayers.Values, _packetPackager);
+            return base.OnActivateAsync();
         }
 
         public Task SendPacket(ISerializablePacket packet)
@@ -42,10 +46,7 @@ namespace MineCase.Server.World
         public Task Subscribe(IPlayer player)
         {
             if (!_trackingPlayers.ContainsKey(player))
-            {
                 _trackingPlayers.Add(player, new ForwardToPlayerPacketSink(player, _packetPackager));
-            }
-
             return Task.CompletedTask;
         }
 
@@ -58,11 +59,6 @@ namespace MineCase.Server.World
         public Task<List<IPlayer>> GetTrackedPlayers()
         {
             return Task.FromResult(_trackingPlayers.Keys.ToList());
-        }
-
-        public Task OnGameTick(GameTickArgs e)
-        {
-            return Task.CompletedTask;
         }
     }
 }

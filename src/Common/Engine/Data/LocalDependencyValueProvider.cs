@@ -87,11 +87,6 @@ namespace MineCase.Engine.Data
             storage.TryRemove(this, property, out eValue);
         }
 
-        internal static IEffectiveValue<T> FromValue<T>(T value)
-        {
-            return new LocalEffectiveValue<T>(value);
-        }
-
         internal class LocalEffectiveValue<T> : IEffectiveValue<T>
         {
             /// <inheritdoc/>
@@ -110,8 +105,6 @@ namespace MineCase.Engine.Data
 
             /// <inheritdoc/>
             public T Value => _value;
-
-            IDependencyValueProvider IEffectiveValue.Provider => LocalDependencyValueProvider.Current;
 
             public LocalEffectiveValue(T value)
             {
