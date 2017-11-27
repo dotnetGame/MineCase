@@ -16,11 +16,11 @@ namespace MineCase.Server.Game.BlockEntities
     [Reentrant]
     internal class ChestBlockEntityGrain : BlockEntityGrain, IChestBlockEntity
     {
-        protected override async Task InitializeComponents()
+        protected override void InitializeComponents()
         {
-            await base.InitializeComponents();
-            await SetComponent(new SlotContainerComponent(ChestSlotArea.ChestSlotsCount));
-            await SetComponent(new ChestComponent());
+            base.InitializeComponents();
+            SetComponent(new SlotContainerComponent(ChestSlotArea.ChestSlotsCount));
+            SetComponent(new ChestComponent());
         }
     }
 }

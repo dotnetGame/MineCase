@@ -32,18 +32,18 @@ namespace MineCase.Server.Game.Entities
 
         public float Yaw => GetValue(EntityLookComponent.YawProperty);
 
-        protected override async Task InitializeComponents()
+        protected override void InitializeComponents()
         {
-            await SetComponent(new IsEnabledComponent());
-            await SetComponent(new EntityIdComponent());
-            await SetComponent(new WorldComponent());
-            await SetComponent(new EntityWorldPositionComponent());
-            await SetComponent(new EntityLookComponent());
-            await SetComponent(new AddressByPartitionKeyComponent());
-            await SetComponent(new ChunkEventBroadcastComponent());
-            await SetComponent(new GameTickComponent());
-            await SetComponent(new ChunkAccessorComponent());
-            await SetComponent(new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute));
+            SetComponent(new IsEnabledComponent());
+            SetComponent(new EntityIdComponent());
+            SetComponent(new WorldComponent());
+            SetComponent(new EntityWorldPositionComponent());
+            SetComponent(new EntityLookComponent());
+            SetComponent(new AddressByPartitionKeyComponent());
+            SetComponent(new ChunkEventBroadcastComponent());
+            SetComponent(new GameTickComponent());
+            SetComponent(new ChunkAccessorComponent());
+            SetComponent(new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute));
         }
 
         Task<uint> IEntity.GetEntityId() =>

@@ -18,7 +18,7 @@ namespace MineCase.Server.Components
         {
         }
 
-        public Task SetIsOnGround(bool value) =>
+        public void SetIsOnGround(bool value) =>
             AttachedObject.SetLocalValue(IsOnGroundProperty, value);
     }
 }

@@ -18,11 +18,11 @@ namespace MineCase.Server.Game.BlockEntities
     [Reentrant]
     internal class FurnaceBlockEntity : BlockEntityGrain, IFurnaceBlockEntity
     {
-        protected override async Task InitializeComponents()
+        protected override void InitializeComponents()
         {
-            await base.InitializeComponents();
-            await SetComponent(new SlotContainerComponent(FurnaceSlotArea.FurnaceSlotsCount));
-            await SetComponent(new FurnaceComponent());
+            base.InitializeComponents();
+            SetComponent(new SlotContainerComponent(FurnaceSlotArea.FurnaceSlotsCount));
+            SetComponent(new FurnaceComponent());
         }
     }
 }

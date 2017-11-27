@@ -27,27 +27,14 @@ namespace MineCase.Engine
         /// <summary>
         /// 属性更改事件
         /// </summary>
-        public event
-#if ECS_SERVER
-        AsyncEventHandler<PropertyChangedEventArgs<T>>
-#else
-        EventHandler<PropertyChangedEventArgs<T>>
-#endif
-            PropertyChanged;
+        public event EventHandler<PropertyChangedEventArgs<T>> PropertyChanged;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyMetadata{T}"/> class.
         /// </summary>
         /// <param name="defaultValue">默认值</param>
         /// <param name="propertyChangedHandler">属性更改处理器</param>
-        public PropertyMetadata(
-            T defaultValue,
-#if ECS_SERVER
-            AsyncEventHandler<PropertyChangedEventArgs<T>>
-#else
-            EventHandler<PropertyChangedEventArgs<T>>
-#endif
-            propertyChangedHandler = null)
+        public PropertyMetadata(T defaultValue, EventHandler<PropertyChangedEventArgs<T>> propertyChangedHandler = null)
         {
             _defaultValue = defaultValue;
             _defaultValueSet = true;
@@ -60,14 +47,7 @@ namespace MineCase.Engine
         /// </summary>
         /// <param name="unsetValue">未设置默认值</param>
         /// <param name="propertyChangedHandler">属性更改处理器</param>
-        public PropertyMetadata(
-            DependencyProperty.UnsetValueType unsetValue,
-#if ECS_SERVER
-            AsyncEventHandler<PropertyChangedEventArgs<T>>
-#else
-            EventHandler<PropertyChangedEventArgs<T>>
-#endif
-            propertyChangedHandler = null)
+        public PropertyMetadata(DependencyProperty.UnsetValueType unsetValue, EventHandler<PropertyChangedEventArgs<T>> propertyChangedHandler = null)
         {
             _defaultValueSet = false;
             if (propertyChangedHandler != null)
@@ -107,35 +87,20 @@ namespace MineCase.Engine
             return false;
         }
 
-#if ECS_SERVER
-        internal async Task RaisePropertyChanged(object sender, PropertyChangedEventArgs<T> e)
-        {
-            await OnPropertyChanged(sender, e);
-            await PropertyChanged.InvokeSerial(sender, e);
-        }
-#else
         internal void RaisePropertyChanged(object sender, PropertyChangedEventArgs<T> e)
         {
             OnPropertyChanged(sender, e);
             PropertyChanged.InvokeSerial(sender, e);
         }
-#endif
 
         /// <summary>
         /// 当属性修改时
         /// </summary>
         /// <param name="sender">发送方</param>
         /// <param name="e">参数</param>
-#if ECS_SERVER
-        protected virtual Task OnPropertyChanged(object sender, PropertyChangedEventArgs<T> e)
-        {
-            return Task.CompletedTask;
-        }
-#else
         protected virtual void OnPropertyChanged(object sender, PropertyChangedEventArgs<T> e)
         {
         }
-#endif
 
         /// <summary>
         /// 合并属性元数据
@@ -155,13 +120,7 @@ namespace MineCase.Engine
 
             if (ownerIsDerived)
             {
-                PropertyChanged =
-#if ECS_SERVER
-        (AsyncEventHandler<PropertyChangedEventArgs<T>>
-#else
-            (EventHandler<PropertyChangedEventArgs<T>>
-#endif
-)Delegate.Combine(old.PropertyChanged, PropertyChanged);
+                PropertyChanged = (EventHandler<PropertyChangedEventArgs<T>>)Delegate.Combine(old.PropertyChanged, PropertyChanged);
             }
 
             MergeOverride(old);

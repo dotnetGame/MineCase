@@ -20,13 +20,12 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
-        protected override Task OnAttached()
+        protected override void OnAttached()
         {
             _loaded = false;
             _chunkLoader = GrainFactory.GetGrain<IUserChunkLoader>(AttachedObject.GetPrimaryKey());
             AttachedObject.RegisterPropertyChangedHandler(ViewDistanceComponent.ViewDistanceProperty, OnViewDistanceChanged);
             AttachedObject.GetComponent<GameTickComponent>().Tick += OnGameTick;
-            return base.OnAttached();
         }
 
         private Task OnGameTick(object sender, GameTickArgs e)
@@ -36,9 +35,9 @@ namespace MineCase.Server.Game.Entities.Components
             return Task.CompletedTask;
         }
 
-        private Task OnViewDistanceChanged(object sender, PropertyChangedEventArgs<byte> e)
+        private void OnViewDistanceChanged(object sender, PropertyChangedEventArgs<byte> e)
         {
-            return _chunkLoader.SetViewDistance(e.NewValue);
+            AttachedObject.QueueOperation(() => _chunkLoader.SetViewDistance(e.NewValue));
         }
 
         async Task IHandle<PlayerLoggedIn>.Handle(PlayerLoggedIn message)

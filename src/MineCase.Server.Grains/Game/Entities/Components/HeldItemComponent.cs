@@ -25,11 +25,14 @@ namespace MineCase.Server.Game.Entities.Components
             return (index, await inventory.GetSlot(AttachedObject, index));
         }
 
-        public Task SetHeldItemIndex(int index) =>
+        public void SetHeldItemIndex(int index) =>
             AttachedObject.SetLocalValue(HeldItemIndexProperty, index);
 
-        Task IHandle<SetHeldItemIndex>.Handle(SetHeldItemIndex message) =>
+        Task IHandle<SetHeldItemIndex>.Handle(SetHeldItemIndex message)
+        {
             SetHeldItemIndex(message.Index);
+            return Task.CompletedTask;
+        }
 
         Task<(int index, Slot slot)> IHandle<AskHeldItem, (int index, Slot slot)>.Handle(AskHeldItem message) =>
             GetHeldItem();

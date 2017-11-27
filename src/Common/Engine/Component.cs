@@ -12,19 +12,9 @@ namespace MineCase.Engine
 {
     internal interface IComponentIntern
     {
-#if ECS_SERVER
-        Task
-#else
-        void
-#endif
-            Attach(DependencyObject dependencyObject, ServiceProviderType serviceProvider);
+        void Attach(DependencyObject dependencyObject, ServiceProviderType serviceProvider);
 
-#if ECS_SERVER
-        Task
-#else
-        void
-#endif
-            Detach();
+        void Detach();
 
         int GetMessageOrder(object message);
     }
@@ -58,61 +48,34 @@ namespace MineCase.Engine
             Name = name;
         }
 
-#if ECS_SERVER
-        Task
-#else
-        void
-#endif
-            IComponentIntern.Attach(DependencyObject dependencyObject, ServiceProviderType serviceProvider)
+        void IComponentIntern.Attach(DependencyObject dependencyObject, ServiceProviderType serviceProvider)
         {
             AttachedObject = dependencyObject;
             ServiceProvider = serviceProvider;
             AttatchPartial(dependencyObject, serviceProvider);
-#if ECS_SERVER
-            return
-#endif
             OnAttached();
         }
 
         partial void AttatchPartial(DependencyObject dependencyObject, ServiceProviderType serviceProvider);
 
-#if ECS_SERVER
-        Task
-#else
-        void
-#endif
-            IComponentIntern.Detach()
+        void IComponentIntern.Detach()
         {
-            AttachedObject = null;
-#if ECS_SERVER
-            return
-#endif
             OnDetached();
+            AttachedObject = null;
         }
 
         /// <summary>
         /// 组件被附加到实体时
         /// </summary>
-        protected virtual
-
-#if ECS_SERVER
-        Task
-#else
-        void
-#endif
-            OnAttached()
+        protected virtual void OnAttached()
         {
-#if ECS_SERVER
-            return Task.CompletedTask;
-#endif
         }
 
         /// <summary>
         /// 组件从实体卸载时
         /// </summary>
-        protected virtual Task OnDetached()
+        protected virtual void OnDetached()
         {
-            return Task.CompletedTask;
         }
 
         /// <summary>

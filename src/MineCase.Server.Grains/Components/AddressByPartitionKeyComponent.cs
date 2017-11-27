@@ -14,37 +14,33 @@ namespace MineCase.Server.Components
         public static readonly DependencyProperty<string> AddressByPartitionKeyProperty =
             DependencyProperty.Register("AddressByPartitionKey", typeof(AddressByPartitionKeyComponent), new PropertyMetadata<string>(string.Empty, OnAddressByPartitionKeyChanged));
 
-        public event AsyncEventHandler<(string oldKey, string newKey)> KeyChanged;
+        public event EventHandler<(string oldKey, string newKey)> KeyChanged;
 
         public AddressByPartitionKeyComponent(string name = "addressByPartitionKey")
             : base(name)
         {
         }
 
-        protected override Task OnAttached()
+        protected override void OnAttached()
         {
             AttachedObject.RegisterPropertyChangedHandler(WorldComponent.WorldProperty, OnWorldChanged);
             AttachedObject.RegisterPropertyChangedHandler(EntityWorldPositionComponent.EntityWorldPositionProperty, OnEntityWorldPositionChanged);
             AttachedObject.RegisterPropertyChangedHandler(BlockWorldPositionComponent.BlockWorldPositionProperty, OnBlockWorldPositionChanged);
-            return Task.CompletedTask;
         }
 
-        private Task OnBlockWorldPositionChanged(object sender, PropertyChangedEventArgs<BlockWorldPos> e)
+        private void OnBlockWorldPositionChanged(object sender, PropertyChangedEventArgs<BlockWorldPos> e)
         {
             UpdateKey();
-            return Task.CompletedTask;
         }
 
-        private Task OnWorldChanged(object sender, PropertyChangedEventArgs<IWorld> e)
+        private void OnWorldChanged(object sender, PropertyChangedEventArgs<IWorld> e)
         {
             UpdateKey();
-            return Task.CompletedTask;
         }
 
-        private Task OnEntityWorldPositionChanged(object sender, PropertyChangedEventArgs<EntityWorldPos> e)
+        private void OnEntityWorldPositionChanged(object sender, PropertyChangedEventArgs<EntityWorldPos> e)
         {
             UpdateKey();
-            return Task.CompletedTask;
         }
 
         private void UpdateKey()
@@ -65,11 +61,11 @@ namespace MineCase.Server.Components
             }
         }
 
-        private static async Task OnAddressByPartitionKeyChanged(object sender, PropertyChangedEventArgs<string> e)
+        private static void OnAddressByPartitionKeyChanged(object sender, PropertyChangedEventArgs<string> e)
         {
             var component = ((DependencyObject)sender).GetComponent<AddressByPartitionKeyComponent>();
             if (component != null)
-                await component.KeyChanged.InvokeSerial(sender, (e.OldValue, e.NewValue));
+                component.KeyChanged?.Invoke(sender, (e.OldValue, e.NewValue));
         }
     }
 

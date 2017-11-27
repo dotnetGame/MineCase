@@ -18,12 +18,13 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
-        public Task SetDraggedSlot(Slot value) =>
+        public void SetDraggedSlot(Slot value) =>
             AttachedObject.SetLocalValue(DraggedSlotProperty, value);
 
         Task IHandle<SetDraggedSlot>.Handle(SetDraggedSlot message)
         {
-            return SetDraggedSlot(message.Slot);
+            SetDraggedSlot(message.Slot);
+            return Task.CompletedTask;
         }
 
         Task<Slot> IHandle<AskDraggedSlot, Slot>.Handle(AskDraggedSlot message)

@@ -25,16 +25,6 @@ namespace MineCase.Engine.Data
         /// <param name="property">依赖属性</param>
         /// <param name="storage">值存储</param>
         /// <param name="value">值</param>
-#if ECS_SERVER
-        public Task SetValue<T>(DependencyProperty<T> property, IDependencyValueStorage storage, T value)
-        {
-            return storage.AddOrUpdate(this, property, o => new LocalEffectiveValue<T>(value), async (k, o) =>
-            {
-                await ((LocalEffectiveValue<T>)o).SetValue(value);
-                return o;
-            });
-        }
-#else
         public void SetValue<T>(DependencyProperty<T> property, IDependencyValueStorage storage, T value)
         {
             storage.AddOrUpdate(this, property, o => new LocalEffectiveValue<T>(value), (k, o) =>
@@ -43,7 +33,6 @@ namespace MineCase.Engine.Data
                 return o;
             });
         }
-#endif
 
         /// <summary>
         /// 尝试获取值
@@ -72,18 +61,9 @@ namespace MineCase.Engine.Data
         /// <typeparam name="T">值类型</typeparam>
         /// <param name="property">依赖属性</param>
         /// <param name="storage">值存储</param>
-        public
-#if ECS_SERVER
-        Task
-#else
-        void
-#endif
-            ClearValue<T>(DependencyProperty<T> property, IDependencyValueStorage storage)
+        public void ClearValue<T>(DependencyProperty<T> property, IDependencyValueStorage storage)
         {
             IEffectiveValue<T> eValue;
-#if ECS_SERVER
-            return
-#endif
             storage.TryRemove(this, property, out eValue);
         }
 
@@ -95,13 +75,7 @@ namespace MineCase.Engine.Data
         internal class LocalEffectiveValue<T> : IEffectiveValue<T>
         {
             /// <inheritdoc/>
-            public
-#if ECS_SERVER
-        AsyncEventHandler<IEffectiveValueChangedEventArgs>
-#else
-        EventHandler<IEffectiveValueChangedEventArgs>
-#endif
-                ValueChanged { get; set; }
+            public EventHandler<IEffectiveValueChangedEventArgs> ValueChanged { get; set; }
 
             /// <inheritdoc/>
             public bool CanSetValue => true;
@@ -119,19 +93,12 @@ namespace MineCase.Engine.Data
             }
 
             /// <inheritdoc/>
-#if ECS_SERVER
-            public async Task SetValue(T value)
-#else
             public void SetValue(T value)
-#endif
             {
                 if (!EqualityComparer<T>.Default.Equals(_value, value))
                 {
                     var oldValue = _value;
                     _value = value;
-#if ECS_SERVER
-                    await
-#endif
                     ValueChanged.InvokeSerial(this, new EffectiveValueChangedEventArgs<T>(oldValue, value));
                 }
             }

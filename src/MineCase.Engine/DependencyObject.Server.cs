@@ -18,9 +18,9 @@ namespace MineCase.Engine
         public override async Task OnActivateAsync()
         {
             Logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
-            await InitializePreLoadComponent();
+            InitializePreLoadComponent();
             await ReadStateAsync();
-            await InitializeComponents();
+            InitializeComponents();
         }
 
         public override async Task OnDeactivateAsync()
@@ -35,14 +35,12 @@ namespace MineCase.Engine
             DeactivateOnIdle();
         }
 
-        protected virtual Task InitializeComponents()
+        protected virtual void InitializeComponents()
         {
-            return Task.CompletedTask;
         }
 
-        protected virtual Task InitializePreLoadComponent()
+        protected virtual void InitializePreLoadComponent()
         {
-            return Task.CompletedTask;
         }
 
         public async Task ReadStateAsync()

@@ -15,9 +15,9 @@ namespace MineCase.Server.User
     {
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
-        protected override async Task InitializePreLoadComponent()
+        protected override void InitializePreLoadComponent()
         {
-            await SetComponent(new StateComponent<StateHolder>());
+            SetComponent(new StateComponent<StateHolder>());
         }
 
         public Task<Guid> GetUUID() => Task.FromResult(State.UUID);

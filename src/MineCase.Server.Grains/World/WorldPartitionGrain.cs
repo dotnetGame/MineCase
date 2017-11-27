@@ -27,9 +27,9 @@ namespace MineCase.Server.World
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
-        protected override async Task InitializePreLoadComponent()
+        protected override void InitializePreLoadComponent()
         {
-            await SetComponent(new StateComponent<StateHolder>());
+            SetComponent(new StateComponent<StateHolder>());
 
             _tickEmitter = GrainFactory.GetPartitionGrain<ITickEmitter>(this);
             _collectableFinder = GrainFactory.GetPartitionGrain<ICollectableFinder>(this);
@@ -37,10 +37,10 @@ namespace MineCase.Server.World
             _chunkColumn = GrainFactory.GetPartitionGrain<IChunkColumn>(this);
         }
 
-        protected override async Task InitializeComponents()
+        protected override void InitializeComponents()
         {
             _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
-            await SetComponent(_autoSave);
+            SetComponent(_autoSave);
         }
 
         public async Task Enter(IPlayer player)

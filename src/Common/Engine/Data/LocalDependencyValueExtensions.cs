@@ -31,17 +31,8 @@ namespace MineCase.Engine
         /// <param name="d">依赖对象</param>
         /// <param name="property">依赖属性</param>
         /// <param name="value">值</param>
-        public static
-#if ECS_SERVER
-        Task
-#else
-        void
-#endif
-            SetLocalValue<T>(this DependencyObject d, DependencyProperty<T> property, T value)
+        public static void SetLocalValue<T>(this DependencyObject d, DependencyProperty<T> property, T value)
         {
-#if ECS_SERVER
-            return
-#endif
             LocalDependencyValueProvider.Current.SetValue(property, d.ValueStorage, value);
         }
 
@@ -51,17 +42,8 @@ namespace MineCase.Engine
         /// <typeparam name="T">值类型</typeparam>
         /// <param name="d">依赖对象</param>
         /// <param name="property">依赖属性</param>
-        public static
-#if ECS_SERVER
-        Task
-#else
-        void
-#endif
-            ClearLocalValue<T>(this DependencyObject d, DependencyProperty<T> property)
+        public static void ClearLocalValue<T>(this DependencyObject d, DependencyProperty<T> property)
         {
-#if ECS_SERVER
-            return
-#endif
             LocalDependencyValueProvider.Current.ClearValue(property, d.ValueStorage);
         }
     }

@@ -25,46 +25,46 @@ namespace MineCase.Server.Game.Entities
     [Reentrant]
     internal class PlayerGrain : EntityGrain, IPlayer
     {
-        protected override async Task InitializeComponents()
+        protected override void InitializeComponents()
         {
-            await base.InitializeComponents();
-            await SetComponent(new EntityLifeTimeComponent());
-            await SetComponent(new ActiveWorldPartitionComponent());
-            await SetComponent(new BlockPlacementComponent());
-            await SetComponent(new ClientboundPacketComponent());
-            await SetComponent(new ChunkLoaderComponent());
-            await SetComponent(new DiggingComponent());
-            await SetComponent(new DiscoveryRegisterComponent());
-            await SetComponent(new DraggedSlotComponent());
-            await SetComponent(new ExperienceComponent());
-            await SetComponent(new EntityOnGroundComponent());
-            await SetComponent(new FoodComponent());
-            await SetComponent(new HealthComponent());
-            await SetComponent(new HeldItemComponent());
-            await SetComponent(new InventoryComponent());
-            await SetComponent(new KeepAliveComponent());
-            await SetComponent(new NameComponent());
-            await SetComponent(new PlayerListComponent());
-            await SetComponent(new PlayerDiscoveryComponent());
-            await SetComponent(new ServerboundPacketComponent());
-            await SetComponent(new SlotContainerComponent(SlotArea.UserSlotsCount));
-            await SetComponent(new SyncPlayerStateComponent());
-            await SetComponent(new TeleportComponent());
-            await SetComponent(new TossPickupComponent());
-            await SetComponent(new ViewDistanceComponent());
-            await SetComponent(new WindowManagerComponent());
-            await SetComponent(new CollectorComponent());
-            await SetComponent(new ColliderComponent());
-            await SetComponent(new MobSpawnerComponent());
+            base.InitializeComponents();
+            SetComponent(new EntityLifeTimeComponent());
+            SetComponent(new ActiveWorldPartitionComponent());
+            SetComponent(new BlockPlacementComponent());
+            SetComponent(new ClientboundPacketComponent());
+            SetComponent(new ChunkLoaderComponent());
+            SetComponent(new DiggingComponent());
+            SetComponent(new DiscoveryRegisterComponent());
+            SetComponent(new DraggedSlotComponent());
+            SetComponent(new ExperienceComponent());
+            SetComponent(new EntityOnGroundComponent());
+            SetComponent(new FoodComponent());
+            SetComponent(new HealthComponent());
+            SetComponent(new HeldItemComponent());
+            SetComponent(new InventoryComponent());
+            SetComponent(new KeepAliveComponent());
+            SetComponent(new NameComponent());
+            SetComponent(new PlayerListComponent());
+            SetComponent(new PlayerDiscoveryComponent());
+            SetComponent(new ServerboundPacketComponent());
+            SetComponent(new SlotContainerComponent(SlotArea.UserSlotsCount));
+            SetComponent(new SyncPlayerStateComponent());
+            SetComponent(new TeleportComponent());
+            SetComponent(new TossPickupComponent());
+            SetComponent(new ViewDistanceComponent());
+            SetComponent(new WindowManagerComponent());
+            SetComponent(new CollectorComponent());
+            SetComponent(new ColliderComponent());
+            SetComponent(new MobSpawnerComponent());
         }
 
         public override async Task OnActivateAsync()
         {
             await base.OnActivateAsync();
-            await this.SetLocalValue(HealthComponent.MaxHealthProperty, 20u);
-            await this.SetLocalValue(FoodComponent.MaxFoodProperty, 20u);
-            await this.SetLocalValue(HealthComponent.HealthProperty, GetValue(HealthComponent.MaxHealthProperty));
-            await this.SetLocalValue(FoodComponent.FoodProperty, GetValue(FoodComponent.MaxFoodProperty));
+            this.SetLocalValue(HealthComponent.MaxHealthProperty, 20u);
+            this.SetLocalValue(FoodComponent.MaxFoodProperty, 20u);
+            this.SetLocalValue(HealthComponent.HealthProperty, GetValue(HealthComponent.MaxHealthProperty));
+            this.SetLocalValue(FoodComponent.FoodProperty, GetValue(FoodComponent.MaxFoodProperty));
         }
 
         public Task<SwingHandState> OnSwingHand(SwingHandState handState)

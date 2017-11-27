@@ -36,23 +36,26 @@ namespace MineCase.Server.User
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
-        protected override async Task InitializePreLoadComponent()
+        protected override void InitializePreLoadComponent()
         {
             var stateComponent = new StateComponent<StateHolder>();
-            await SetComponent(stateComponent);
+            SetComponent(stateComponent);
             stateComponent.AfterReadState += StateComponent_AfterReadState;
 
             _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
-            await SetComponent(_autoSave);
+            SetComponent(_autoSave);
         }
 
-        private async Task StateComponent_AfterReadState(object sender, EventArgs e)
+        private void StateComponent_AfterReadState(object sender, EventArgs e)
         {
             if (State.World == null)
             {
-                var world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetDefaultWorld();
-                State.World = world;
-                MarkDirty();
+                QueueOperation(async () =>
+                {
+                    var world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetDefaultWorld();
+                    State.World = world;
+                    MarkDirty();
+                });
             }
         }
 

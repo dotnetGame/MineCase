@@ -31,13 +31,15 @@ namespace MineCase.Server.Game.Entities.Components
                 .DestroyEntities(new[] { AttachedObject.EntityId });
         }
 
-        async Task IHandle<SpawnEntity>.Handle(SpawnEntity message)
+        Task IHandle<SpawnEntity>.Handle(SpawnEntity message)
         {
             var pos = message.Position;
             var bb = BoundingBox.Item();
             var box = new Cuboid(new Point3d(pos.X, pos.Z, pos.Y), new Size(bb.X, bb.Y, bb.Z));
-            await AttachedObject.SetLocalValue(ColliderComponent.ColliderShapeProperty, box);
+            AttachedObject.SetLocalValue(ColliderComponent.ColliderShapeProperty, box);
             CompleteSpawn();
+
+            return Task.CompletedTask;
         }
     }
 }

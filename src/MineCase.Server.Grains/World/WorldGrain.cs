@@ -25,20 +25,25 @@ namespace MineCase.Server.World
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
-        protected override async Task InitializePreLoadComponent()
+        protected override void InitializePreLoadComponent()
         {
-            await SetComponent(new StateComponent<StateHolder>());
+            SetComponent(new StateComponent<StateHolder>());
+        }
+
+        protected override void InitializeComponents()
+        {
+            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
+            SetComponent(_autoSave);
+        }
+
+        public override async Task OnActivateAsync()
+        {
+            await base.OnActivateAsync();
 
             var serverSettings = GrainFactory.GetGrain<IServerSettings>(0);
             _genSettings = new GeneratorSettings();
             await InitGeneratorSettings(_genSettings);
             _seed = (await serverSettings.GetSettings()).LevelSeed;
-        }
-
-        protected override async Task InitializeComponents()
-        {
-            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
-            await SetComponent(_autoSave);
         }
 
         public Task<WorldTime> GetTime()

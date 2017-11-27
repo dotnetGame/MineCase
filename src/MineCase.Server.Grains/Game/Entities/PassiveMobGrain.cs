@@ -32,29 +32,29 @@ namespace MineCase.Server.Game.Entities
         private Queue<CreatureTask> _tasks;
         */
 
-        protected override async Task InitializeComponents()
+        protected override void InitializeComponents()
         {
-            await base.InitializeComponents();
+            base.InitializeComponents();
 
             // await SetComponent(new BlockPlacementComponent());  // 末影人
 
             // await SetComponent(new DiggingComponent()); // 末影人
-            await SetComponent(new EntityLifeTimeComponent());
-            await SetComponent(new EntityOnGroundComponent());
-            await SetComponent(new HealthComponent());
-            await SetComponent(new StandaloneHeldItemComponent());
-            await SetComponent(new NameComponent());
-            await SetComponent(new DiscoveryRegisterComponent());
-            await SetComponent(new EntityAiComponent());
+            SetComponent(new EntityLifeTimeComponent());
+            SetComponent(new EntityOnGroundComponent());
+            SetComponent(new HealthComponent());
+            SetComponent(new StandaloneHeldItemComponent());
+            SetComponent(new NameComponent());
+            SetComponent(new DiscoveryRegisterComponent());
+            SetComponent(new EntityAiComponent());
         }
 
         public async override Task OnActivateAsync()
         {
             await base.OnActivateAsync();
-            await this.SetLocalValue(HealthComponent.MaxHealthProperty, 20u);
-            await this.SetLocalValue(FoodComponent.MaxFoodProperty, 20u);
-            await this.SetLocalValue(HealthComponent.HealthProperty, GetValue(HealthComponent.MaxHealthProperty));
-            await this.SetLocalValue(FoodComponent.FoodProperty, GetValue(FoodComponent.MaxFoodProperty));
+            this.SetLocalValue(HealthComponent.MaxHealthProperty, 20u);
+            this.SetLocalValue(FoodComponent.MaxFoodProperty, 20u);
+            this.SetLocalValue(HealthComponent.HealthProperty, GetValue(HealthComponent.MaxHealthProperty));
+            this.SetLocalValue(FoodComponent.FoodProperty, GetValue(FoodComponent.MaxFoodProperty));
         }
 
         /*

@@ -18,7 +18,7 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
-        public Task SetMobType(MobType value) =>
+        public void SetMobType(MobType value) =>
             AttachedObject.SetLocalValue(MobTypeProperty, value);
     }
 }

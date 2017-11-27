@@ -32,16 +32,14 @@ namespace MineCase.Server.Game.Entities.Components
             random = new Random();
         }
 
-        protected override Task OnAttached()
+        protected override void OnAttached()
         {
             Register();
-            return base.OnAttached();
         }
 
-        protected override Task OnDetached()
+        protected override void OnDetached()
         {
             Unregister();
-            return base.OnDetached();
         }
 
         private void Register()

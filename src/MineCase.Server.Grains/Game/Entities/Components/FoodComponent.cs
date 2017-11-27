@@ -28,13 +28,13 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
-        public Task SetFood(uint value) =>
+        public void SetFood(uint value) =>
             AttachedObject.SetLocalValue(FoodProperty, value);
 
-        public Task SetMaxFood(uint value) =>
+        public void SetMaxFood(uint value) =>
             AttachedObject.SetLocalValue(MaxFoodProperty, value);
 
-        public Task SetFoodSaturation(float value) =>
+        public void SetFoodSaturation(float value) =>
             AttachedObject.SetLocalValue(FoodSaturationProperty, value);
     }
 }

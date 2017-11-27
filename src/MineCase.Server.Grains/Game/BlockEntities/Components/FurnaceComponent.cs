@@ -46,7 +46,7 @@ namespace MineCase.Server.Game.BlockEntities.Components
         {
         }
 
-        protected override Task OnAttached()
+        protected override void OnAttached()
         {
             if (State == null)
             {
@@ -57,7 +57,6 @@ namespace MineCase.Server.Game.BlockEntities.Components
             }
 
             Register();
-            return base.OnAttached();
         }
 
         private bool CanCook()
@@ -114,7 +113,7 @@ namespace MineCase.Server.Game.BlockEntities.Components
         private Slot GetSlot(int index) =>
             AttachedObject.GetComponent<SlotContainerComponent>().GetSlot(index);
 
-        private Task SetSlot(int index, Slot slot) =>
+        private void SetSlot(int index, Slot slot) =>
             AttachedObject.GetComponent<SlotContainerComponent>().SetSlot(index, slot);
 
         private async Task UpdateFuel()
@@ -143,9 +142,9 @@ namespace MineCase.Server.Game.BlockEntities.Components
         {
             var state = State;
             if (GetSlot(2).IsEmpty)
-                await SetSlot(2, state.CurrentRecipe.Output);
+                SetSlot(2, state.CurrentRecipe.Output);
             else
-                await SetSlot(2, GetSlot(2).AddItemCount(state.CurrentRecipe.Output.ItemCount));
+                SetSlot(2, GetSlot(2).AddItemCount(state.CurrentRecipe.Output.ItemCount));
             state.CookProgress = 0;
             MarkDirty();
             if (FurnaceWindow != null)
@@ -160,7 +159,7 @@ namespace MineCase.Server.Game.BlockEntities.Components
             var state = State;
             var slot = GetSlot(1).AddItemCount(-state.CurrentFuel.Slot.ItemCount);
             slot.MakeEmptyIfZero();
-            await SetSlot(1, slot);
+            SetSlot(1, slot);
             state.MaxFuelTime = state.FuelLeft = state.CurrentFuel.Time;
             MarkDirty();
             if (FurnaceWindow != null)
@@ -181,7 +180,7 @@ namespace MineCase.Server.Game.BlockEntities.Components
             {
                 var slot = GetSlot(0).AddItemCount(-state.CurrentRecipe.Input.ItemCount);
                 slot.MakeEmptyIfZero();
-                await SetSlot(0, slot);
+                SetSlot(0, slot);
                 state.CookProgress = 0;
                 state.MaxProgress = state.CurrentRecipe.Time;
                 MarkDirty();
@@ -242,7 +241,7 @@ namespace MineCase.Server.Game.BlockEntities.Components
         {
             if (FurnaceWindow == null)
             {
-                await AttachedObject.SetLocalValue(FurnaceWindowProperty, GrainFactory.GetGrain<IFurnaceWindow>(Guid.NewGuid()));
+                AttachedObject.SetLocalValue(FurnaceWindowProperty, GrainFactory.GetGrain<IFurnaceWindow>(Guid.NewGuid()));
                 await FurnaceWindow.SetEntity(AttachedObject);
             }
 

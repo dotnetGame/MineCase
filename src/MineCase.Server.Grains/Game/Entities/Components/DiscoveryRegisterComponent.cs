@@ -15,35 +15,37 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
-        protected override Task OnAttached()
+        protected override void OnAttached()
         {
             AttachedObject.GetComponent<AddressByPartitionKeyComponent>()
                 .KeyChanged += AddressByPartitionKeyChanged;
             AttachedObject.RegisterPropertyChangedHandler(IsEnabledComponent.IsEnabledProperty, OnIsEnabledChanged);
             AttachedObject.QueueOperation(TrySubscribe);
-            return base.OnAttached();
         }
 
-        protected override async Task OnDetached()
+        protected override void OnDetached()
         {
             AttachedObject.GetComponent<AddressByPartitionKeyComponent>()
                 .KeyChanged -= AddressByPartitionKeyChanged;
-            await TryUnsubscribe();
+            AttachedObject.QueueOperation(TryUnsubscribe);
         }
 
-        private async Task AddressByPartitionKeyChanged(object sender, (string oldKey, string newKey) e)
+        private void AddressByPartitionKeyChanged(object sender, (string oldKey, string newKey) e)
         {
-            if (!string.IsNullOrEmpty(e.oldKey))
-                await GrainFactory.GetGrain<IWorldPartition>(e.oldKey).UnsubscribeDiscovery(AttachedObject);
-            await TrySubscribe();
+            AttachedObject.QueueOperation(async () =>
+            {
+                if (!string.IsNullOrEmpty(e.oldKey))
+                    await GrainFactory.GetGrain<IWorldPartition>(e.oldKey).UnsubscribeDiscovery(AttachedObject);
+                await TrySubscribe();
+            });
         }
 
-        private Task OnIsEnabledChanged(object sender, PropertyChangedEventArgs<bool> e)
+        private void OnIsEnabledChanged(object sender, PropertyChangedEventArgs<bool> e)
         {
             if (e.NewValue)
-                return TrySubscribe();
+                AttachedObject.QueueOperation(TrySubscribe);
             else
-                return TryUnsubscribe();
+                AttachedObject.QueueOperation(TryUnsubscribe);
         }
 
         private async Task TrySubscribe()

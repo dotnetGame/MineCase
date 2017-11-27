@@ -26,6 +26,7 @@ namespace MineCase.Gateway
             Configuration = LoadConfiguration();
             Startup();
             _exitEvent.WaitOne();
+            _clusterClient?.Dispose();
         }
 
         private static void ConfigureApplicationParts(IClientBuilder builder)
@@ -44,6 +45,7 @@ namespace MineCase.Gateway
                     (ex, timeSpan) => logger?.LogError($"Cluster connection failed. Next retry: {timeSpan.TotalSeconds} secs later."));
             await retryPolicy.ExecuteAsync(async () =>
             {
+                _clusterClient?.Dispose();
                 var builder = new ClientBuilder()
                     .LoadConfiguration("OrleansConfiguration.dev.xml")
                     .ConfigureServices(ConfigureServices)

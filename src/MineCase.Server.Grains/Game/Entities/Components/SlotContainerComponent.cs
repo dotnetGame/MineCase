@@ -14,7 +14,7 @@ namespace MineCase.Server.Game.Entities.Components
 
         private readonly int _slotsCount;
 
-        public event AsyncEventHandler<(int index, Slot slot)> SlotChanged;
+        public event EventHandler<(int index, Slot slot)> SlotChanged;
 
         public SlotContainerComponent(int slotsCount, string name = "slotContainer")
             : base(name)
@@ -22,42 +22,42 @@ namespace MineCase.Server.Game.Entities.Components
             _slotsCount = slotsCount;
         }
 
-        protected override async Task OnAttached()
+        protected override void OnAttached()
         {
             var slots = AttachedObject.GetValue(SlotsProperty);
             if (slots == null || slots.Length != _slotsCount)
-                await AttachedObject.SetLocalValue(SlotsProperty, Enumerable.Repeat(Slot.Empty, _slotsCount).ToArray());
-            await base.OnAttached();
+                AttachedObject.SetLocalValue(SlotsProperty, Enumerable.Repeat(Slot.Empty, _slotsCount).ToArray());
         }
 
         public Slot GetSlot(int index) =>
             AttachedObject.GetValue(SlotsProperty)[index];
 
-        public Task SetSlot(int index, Slot slot)
+        public void SetSlot(int index, Slot slot)
         {
             ref var old = ref AttachedObject.GetValue(SlotsProperty)[index];
             if (old != slot)
             {
                 old = slot;
                 MarkDirty();
-                return SlotChanged.InvokeSerial(this, (index, slot));
+                SlotChanged?.Invoke(this, (index, slot));
             }
-
-            return Task.CompletedTask;
         }
 
-        public async Task SetSlots(Slot[] slots)
+        public void SetSlots(Slot[] slots)
         {
             if (slots.Length != _slotsCount)
                 throw new ArgumentException(nameof(slots));
 
-            await AttachedObject.SetLocalValue(SlotsProperty, slots);
+            AttachedObject.SetLocalValue(SlotsProperty, slots);
             for (int i = 0; i < _slotsCount; i++)
-                await SlotChanged.InvokeSerial(this, (i, slots[i]));
+                SlotChanged?.Invoke(this, (i, slots[i]));
         }
 
         Task IHandle<SetSlot>.Handle(SetSlot message)
-            => SetSlot(message.Index, message.Slot);
+        {
+            SetSlot(message.Index, message.Slot);
+            return Task.CompletedTask;
+        }
 
         Task<Slot> IHandle<AskSlot, Slot>.Handle(AskSlot message) =>
             Task.FromResult(GetSlot(message.Index));

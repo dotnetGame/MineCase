@@ -18,13 +18,7 @@ namespace MineCase.Engine.Data
         /// <summary>
         /// 当前值变更事件
         /// </summary>
-        event
-#if ECS_SERVER
-        AsyncEventHandler<CurrentValueChangedEventArgs>
-#else
-        EventHandler<CurrentValueChangedEventArgs>
-#endif
-            CurrentValueChanged;
+        event EventHandler<CurrentValueChangedEventArgs> CurrentValueChanged;
 
         /// <summary>
         /// 添加或更新
@@ -35,11 +29,7 @@ namespace MineCase.Engine.Data
         /// <param name="addValueFactory">添加工厂</param>
         /// <param name="updateValueFactory">更新工厂</param>
         /// <returns>新的值</returns>
-#if ECS_SERVER
-        Task<IEffectiveValue> AddOrUpdate<T>(IDependencyValueProvider provider, DependencyProperty<T> key, Func<DependencyProperty, IEffectiveValue<T>> addValueFactory, Func<DependencyProperty, IEffectiveValue<T>, Task<IEffectiveValue<T>>> updateValueFactory);
-#else
         IEffectiveValue AddOrUpdate<T>(IDependencyValueProvider provider, DependencyProperty<T> key, Func<DependencyProperty, IEffectiveValue<T>> addValueFactory, Func<DependencyProperty, IEffectiveValue<T>, IEffectiveValue<T>> updateValueFactory);
-#endif
 
         /// <summary>
         /// 尝试获取值
@@ -59,12 +49,7 @@ namespace MineCase.Engine.Data
         /// <param name="key">依赖属性</param>
         /// <param name="value">值</param>
         /// <returns>是否成功删除</returns>
-#if ECS_SERVER
-        Task<bool>
-#else
-        bool
-#endif
-            TryRemove<T>(IDependencyValueProvider provider, DependencyProperty<T> key, out IEffectiveValue<T> value);
+        bool TryRemove<T>(IDependencyValueProvider provider, DependencyProperty<T> key, out IEffectiveValue<T> value);
 
         /// <summary>
         /// 尝试获取当前值

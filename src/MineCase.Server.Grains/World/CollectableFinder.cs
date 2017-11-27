@@ -44,16 +44,16 @@ namespace MineCase.Server.World
             }
         }
 
-        protected override async Task InitializePreLoadComponent()
+        protected override void InitializePreLoadComponent()
         {
             var state = new StateComponent<StateHolder>();
-            await SetComponent(state);
+            SetComponent(state);
         }
 
-        protected override async Task InitializeComponents()
+        protected override void InitializeComponents()
         {
             _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
-            await SetComponent(_autoSave);
+            SetComponent(_autoSave);
         }
 
         public Task RegisterCollider(IDependencyObject entity, Shape colliderShape)

@@ -18,12 +18,7 @@ namespace MineCase.Engine.Data
         /// <summary>
         /// 获取值改变处理器
         /// </summary>
-#if ECS_SERVER
-        AsyncEventHandler<IEffectiveValueChangedEventArgs>
-#else
-        EventHandler<IEffectiveValueChangedEventArgs>
-#endif
-            ValueChanged { set; }
+        EventHandler<IEffectiveValueChangedEventArgs> ValueChanged { set; }
     }
 
     /// <summary>
@@ -46,12 +41,7 @@ namespace MineCase.Engine.Data
         /// 设置值
         /// </summary>
         /// <param name="value">值</param>
-#if ECS_SERVER
-        Task
-#else
-        void
-#endif
-            SetValue(T value);
+        void SetValue(T value);
     }
 
     /// <summary>
