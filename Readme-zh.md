@@ -33,7 +33,7 @@ docker-compose up
 #### 前置要求
 
 * 你需要先安装 **`.NET Core` sdk 2.0**，可以在 [这里](https://www.microsoft.com/net/download) 找到你需要的版本。
-* **MongoDB**, 你可以从 [这里](https://www.mongodb.com/download-center?jmp=nav#atlas) 下载。
+* **MongoDB**, 你可以从 [这里](https://www.mongodb.com/download-center?jmp=nav#community) 下载。
 
 #### 获取源码
 
