@@ -16,6 +16,13 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
+        protected override Task OnAttached()
+        {
+            if (AttachedObject.GetValue(IsEnabledComponent.IsEnabledProperty))
+                InstallPropertyChangedHandlers();
+            return base.OnAttached();
+        }
+
         Task IHandle<SpawnMob>.Handle(SpawnMob message)
         {
             InstallPropertyChangedHandlers();

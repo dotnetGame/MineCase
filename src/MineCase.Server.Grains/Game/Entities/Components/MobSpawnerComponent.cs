@@ -56,9 +56,9 @@ namespace MineCase.Server.Game.Entities.Components
                 .Tick -= OnGameTick;
         }
 
-        private async Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
+        private async Task OnGameTick(object sender, GameTickArgs e)
         {
-            if (e.worldAge % 512 == 0 && e.worldAge > 9000 && e.worldAge < 18000)
+            if (e.WorldAge % 512 == 0 && e.TimeOfDay > 9000 && e.TimeOfDay < 18000)
             {
                 EntityWorldPos playerPosition = AttachedObject.GetValue(EntityWorldPositionComponent.EntityWorldPositionProperty);
                 int x = random.Next(9) - 4 + (int)playerPosition.X;

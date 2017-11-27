@@ -7,7 +7,7 @@ using Orleans;
 
 namespace MineCase.Server.World
 {
-    internal abstract class AddressByPartitionGrain : Grain, IAddressByPartition
+    internal abstract class AddressByPartitionGrain : Persistence.PersistableDependencyObject, IAddressByPartition
     {
         protected IWorld World { get; private set; }
 

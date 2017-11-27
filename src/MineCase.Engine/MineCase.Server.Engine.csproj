@@ -19,6 +19,7 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" PrivateAssets="All" />
     <PackageReference Include="System.Collections.Generic.MultiValueDictionary" Version="0.1.0-e170912-3" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
+    <PackageReference Include="MongoDB.Bson" Version="2.4.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,6 +30,7 @@
     <Compile Include="..\Common\Engine\AsyncEventHandler.cs" Link="AsyncEventHandler.cs" />
     <Compile Include="..\Common\Engine\Component.cs" Link="Component.cs" />
     <Compile Include="..\Common\Engine\Data\DependencyValueStorage.cs" Link="Data\DependencyValueStorage.cs" />
+    <Compile Include="..\Common\Engine\Data\DependencyValueStorage.Serialize.cs" Link="Data\DependencyValueStorage.Serialize.cs" />
     <Compile Include="..\Common\Engine\Data\IDependencyValueProvider.cs" Link="Data\IDependencyValueProvider.cs" />
     <Compile Include="..\Common\Engine\Data\IDependencyValueStorage.cs" Link="Data\IDependencyValueStorage.cs" />
     <Compile Include="..\Common\Engine\Data\IEffectiveValue.cs" Link="Data\IEffectiveValue.cs" />
@@ -36,6 +38,7 @@
     <Compile Include="..\Common\Engine\Data\LocalDependencyValueProvider.cs" Link="Data\LocalDependencyValueProvider.cs" />
     <Compile Include="..\Common\Engine\DependencyObject.cs" Link="DependencyObject.cs" />
     <Compile Include="..\Common\Engine\DependencyProperty.cs" Link="DependencyProperty.cs" />
+    <Compile Include="..\Common\Engine\DependencyPropertyHelper.cs" Link="DependencyPropertyHelper.cs" />
     <Compile Include="..\Common\Engine\EngineAssemblyExtensions.cs" Link="EngineAssemblyExtensions.cs" />
     <Compile Include="..\Common\Engine\IDependencyObject.cs" Link="IDependencyObject.cs" />
     <Compile Include="..\Common\Engine\IEntityMessage.cs" Link="IEntityMessage.cs" />

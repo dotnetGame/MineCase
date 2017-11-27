@@ -5,12 +5,15 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Protocol;
+using MineCase.Server.Components;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Game.Windows.SlotAreas;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
+using MineCase.Server.Persistence;
+using MineCase.Server.Persistence.Components;
 using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
@@ -18,37 +21,39 @@ using Orleans.Concurrency;
 
 namespace MineCase.Server.User
 {
+    [PersistTableName("user")]
     [Reentrant]
-    internal class UserGrain : Grain, IUser
+    internal class UserGrain : PersistableDependencyObject, IUser
     {
-        private string _name;
         private uint _protocolVersion;
-        private string _worldId;
-        private IWorld _world;
         private IClientboundPacketSink _sink;
         private IPacketRouter _packetRouter;
         private ClientPlayPacketGenerator _generator;
-        private UserState _state;
-
         private IPlayer _player;
+        private UserState _userState;
 
-        private Slot[] _slots;
+        private AutoSaveStateComponent _autoSave;
 
-        public override async Task OnActivateAsync()
+        private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
+
+        protected override async Task InitializePreLoadComponent()
         {
-            if (string.IsNullOrEmpty(_worldId))
+            var stateComponent = new StateComponent<StateHolder>();
+            await SetComponent(stateComponent);
+            stateComponent.AfterReadState += StateComponent_AfterReadState;
+
+            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
+            await SetComponent(_autoSave);
+        }
+
+        private async Task StateComponent_AfterReadState(object sender, EventArgs e)
+        {
+            if (State.World == null)
             {
                 var world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetDefaultWorld();
-                _worldId = world.GetPrimaryKeyString();
-                _world = world;
+                State.World = world;
+                MarkDirty();
             }
-
-            _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(_worldId);
-            _slots = new[]
-            {
-                new Slot { BlockId = (short)BlockId.Furnace, ItemCount = 1 },
-                new Slot { BlockId = (short)BlockId.Wood, ItemCount = 8 }
-            }.Concat(Enumerable.Repeat(Slot.Empty, SlotArea.UserSlotsCount - 2)).ToArray();
         }
 
         public Task<IClientboundPacketSink> GetClientPacketSink()
@@ -62,7 +67,7 @@ namespace MineCase.Server.User
             return GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());
         }
 
-        public Task<IWorld> GetWorld() => Task.FromResult(_world);
+        public Task<IWorld> GetWorld() => Task.FromResult(State.World);
 
         public Task SetClientPacketSink(IClientboundPacketSink sink)
         {
@@ -74,20 +79,23 @@ namespace MineCase.Server.User
         public async Task JoinGame()
         {
             _player = GrainFactory.GetGrain<IPlayer>(this.GetPrimaryKey());
+            await _player.Tell(Disable.Default);
+            await _player.Tell(BeginLogin.Default);
             await _player.Tell(new BindToUser { User = this.AsReference<IUser>() });
 
-            _state = UserState.JoinedGame;
+            _userState = UserState.JoinedGame;
 
             // 设置出生点
+            var world = State.World;
             await _player.Tell(new SpawnEntity
             {
-                World = _world,
-                EntityId = await _world.NewEntityId(),
+                World = world,
+                EntityId = await world.NewEntityId(),
                 Position = new EntityWorldPos(0, 200, 0)
             });
         }
 
-        private async Task KickPlayer()
+        public async Task Kick()
         {
             var game = await GetGameSession();
             await game.LeaveGame(this);
@@ -100,7 +108,7 @@ namespace MineCase.Server.User
         public async Task NotifyLoggedIn()
         {
             await _player.Tell(PlayerLoggedIn.Default);
-            _state = UserState.DownloadingWorld;
+            _userState = UserState.DownloadingWorld;
         }
 
         public Task SendChatMessage(Chat jsonData, byte position)
@@ -111,12 +119,13 @@ namespace MineCase.Server.User
 
         public Task<String> GetName()
         {
-            return Task.FromResult(_name);
+            return Task.FromResult(State.Name);
         }
 
         public Task SetName(string name)
         {
-            _name = name;
+            State.Name = name;
+            MarkDirty();
             return Task.CompletedTask;
         }
 
@@ -131,18 +140,19 @@ namespace MineCase.Server.User
             return Task.CompletedTask;
         }
 
-        public Task OnGameTick(TimeSpan deltaTime, long worldAge)
+        public async Task OnGameTick(GameTickArgs e)
         {
-            if (_state == UserState.DownloadingWorld)
+            if (_userState == UserState.DownloadingWorld)
             {
                 // await _player.SendPositionAndLook();
-                _state = UserState.Playing;
+                _userState = UserState.Playing;
             }
 
             /*
             if (_state >= UserState.JoinedGame && _state < UserState.Destroying)
                 await _chunkLoader.OnGameTick(worldAge);*/
-            return Task.CompletedTask;
+            await _generator.TimeUpdate(e.WorldAge, e.TimeOfDay);
+            await _autoSave.OnGameTick(this, e);
         }
 
         public Task SetPacketRouter(IPacketRouter packetRouter)
@@ -151,7 +161,7 @@ namespace MineCase.Server.User
             return Task.CompletedTask;
         }
 
-        public Task<Slot[]> GetInventorySlots() => Task.FromResult(_slots);
+        public Task<Slot[]> GetInventorySlots() => Task.FromResult(State.Slots);
 
         public Task ForwardPacket(UncompressedPacket packet)
         {
@@ -161,6 +171,13 @@ namespace MineCase.Server.User
             });
         }
 
+        public Task SetInventorySlot(int index, Slot slot)
+        {
+            State.Slots[index] = slot;
+            MarkDirty();
+            return Task.CompletedTask;
+        }
+
         private enum UserState : uint
         {
             None,
@@ -168,6 +185,33 @@ namespace MineCase.Server.User
             DownloadingWorld,
             Playing,
             Destroying
+        }
+
+        private void MarkDirty()
+        {
+            ValueStorage.IsDirty = true;
+        }
+
+        internal class StateHolder
+        {
+            public string Name { get; set; }
+
+            public IWorld World { get; set; }
+
+            public Slot[] Slots { get; set; }
+
+            public StateHolder()
+            {
+            }
+
+            public StateHolder(InitializeStateMark mark)
+            {
+                Slots = new[]
+                {
+                    new Slot { BlockId = (short)BlockId.Furnace, ItemCount = 1 },
+                    new Slot { BlockId = (short)BlockId.Wood, ItemCount = 8 }
+                }.Concat(Enumerable.Repeat(Slot.Empty, SlotArea.UserSlotsCount - 2)).ToArray();
+            }
         }
     }
 }

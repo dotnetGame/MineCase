@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using MineCase.Algorithm;
 using MineCase.Algorithm.Game.Entity.Ai.MobAi;
 using MineCase.Engine;
@@ -19,19 +20,17 @@ using Orleans;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class EntityAiComponent : Component<MobGrain>, IHandle<SpawnMob>
+    internal class EntityAiComponent : Component<MobGrain>
     {
-        public static readonly DependencyProperty<CreatureAi> AiTypeProperty =
-            DependencyProperty.Register<CreatureAi>(nameof(AiType), typeof(EntityAiComponent));
-
         public static readonly DependencyProperty<CreatureState> CreatureStateProperty =
             DependencyProperty.Register<CreatureState>(nameof(CreatureState), typeof(EntityAiComponent));
 
-        public CreatureAi AiType => AttachedObject.GetValue(AiTypeProperty);
+        public MobType MobType => AttachedObject.GetValue(MobTypeComponent.MobTypeProperty);
 
         public CreatureState CreatureState => AttachedObject.GetValue(CreatureStateProperty);
 
         private Random random;
+        private CreatureAi _ai;
 
         public EntityAiComponent(string name = "entityAi")
             : base(name)
@@ -43,6 +42,14 @@ namespace MineCase.Server.Game.Entities.Components
         {
             Register();
             await AttachedObject.SetLocalValue(EntityAiComponent.CreatureStateProperty, CreatureState.Stop);
+            CreateAi(MobType);
+            AttachedObject.RegisterPropertyChangedHandler(MobTypeComponent.MobTypeProperty, OnMobTypeChanged);
+        }
+
+        private Task OnMobTypeChanged(object sender, PropertyChangedEventArgs<MobType> e)
+        {
+            CreateAi(e.NewValue);
+            return Task.CompletedTask;
         }
 
         protected override Task OnDetached()
@@ -63,45 +70,47 @@ namespace MineCase.Server.Game.Entities.Components
                 .Tick -= OnGameTick;
         }
 
-        async Task IHandle<SpawnMob>.Handle(SpawnMob message)
+        private void CreateAi(MobType mobType)
         {
             Func<CreatureState> getter = () => AttachedObject.GetValue(CreatureStateProperty);
             Action<CreatureState> setter = v => AttachedObject.SetLocalValue(CreatureStateProperty, v).Wait();
             CreatureAi ai;
 
-            switch (message.MobType)
+            switch (mobType)
             {
-                case MobType.Chicken:
+                case Entities.MobType.Chicken:
                     ai = new AiChicken(getter, setter);
                     break;
-                case MobType.Cow:
+                case Entities.MobType.Cow:
                     ai = new AiCow(getter, setter);
                     break;
-                case MobType.Creeper:
+                case Entities.MobType.Creeper:
                     ai = new AiCreeper(getter, setter);
                     break;
-                case MobType.Pig:
+                case Entities.MobType.Pig:
                     ai = new AiPig(getter, setter);
                     break;
-                case MobType.Sheep:
+                case Entities.MobType.Sheep:
                     ai = new AiSheep(getter, setter);
                     break;
-                case MobType.Skeleton:
+                case Entities.MobType.Skeleton:
                     ai = new AiSkeleton(getter, setter);
                     break;
-                case MobType.Squid:
+                case Entities.MobType.Squid:
                     // TODO new ai for squid
                     ai = new AiChicken(getter, setter);
                     break;
-                case MobType.Zombie:
+                case Entities.MobType.Zombie:
                     ai = new AiZombie(getter, setter);
                     break;
                 default:
                     // TODO add more ai
-                    throw new NotImplementedException("AI of this mob has not been implemented.");
+                    Logger.LogWarning("AI of this mob has not been implemented: {0}.", mobType);
+                    ai = null;
+                    break;
             }
 
-            await AttachedObject.SetLocalValue(AiTypeProperty, ai);
+            _ai = ai;
         }
 
         private Task ActionStop()
@@ -230,7 +239,7 @@ namespace MineCase.Server.Game.Entities.Components
         private async Task GenerateEvent()
         {
             // get state
-            var state = AiType.State;
+            var state = _ai.State;
             var nextEvent = CreatureEvent.Nothing;
 
             // player approaching event
@@ -260,11 +269,12 @@ namespace MineCase.Server.Game.Entities.Components
                 nextEvent = CreatureEvent.Stop;
             }
 
-            await AiType.FireAsync(nextEvent);
+            await _ai.FireAsync(nextEvent);
         }
 
-        private async Task OnGameTick(object sender, (TimeSpan deltaTime, long worldAge) e)
+        private async Task OnGameTick(object sender, GameTickArgs e)
         {
+            if (_ai == null) return;
             /*
             if (e.worldAge % 16 == 0)
             {
@@ -290,7 +300,7 @@ namespace MineCase.Server.Game.Entities.Components
             await GenerateEvent();
 
             // get state
-            var newState = AiType.State;
+            var newState = _ai.State;
             switch (newState)
             {
                 case CreatureState.Attacking:

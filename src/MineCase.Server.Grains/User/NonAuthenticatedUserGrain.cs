@@ -2,30 +2,46 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.Persistence;
+using MineCase.Server.Persistence.Components;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.User
 {
-    internal class NonAuthenticatedUserGrain : Grain, INonAuthenticatedUser
+    [PersistTableName("nonAuthenticatedUser")]
+    [Reentrant]
+    internal class NonAuthenticatedUserGrain : PersistableDependencyObject, INonAuthenticatedUser
     {
-        private Guid _uuid;
+        private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
-        public override Task OnActivateAsync()
+        protected override async Task InitializePreLoadComponent()
         {
-            _uuid = Guid.NewGuid();
-            return base.OnActivateAsync();
+            await SetComponent(new StateComponent<StateHolder>());
         }
 
-        public Task<Guid> GetUUID()
-        {
-            return Task.FromResult(_uuid);
-        }
+        public Task<Guid> GetUUID() => Task.FromResult(State.UUID);
 
         public async Task<IUser> GetUser()
         {
-            var user = GrainFactory.GetGrain<IUser>(_uuid);
+            var user = GrainFactory.GetGrain<IUser>(State.UUID);
             await user.SetName(this.GetPrimaryKeyString());
+            await WriteStateAsync();
             return user;
+        }
+
+        internal class StateHolder
+        {
+            public Guid UUID { get; set; }
+
+            public StateHolder()
+            {
+            }
+
+            public StateHolder(InitializeStateMark mark)
+            {
+                UUID = Guid.NewGuid();
+            }
         }
     }
 }
