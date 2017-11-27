@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using MineCase.Serialization.Serializers;
+using Orleans;
 
 namespace MineCase.Server
 {
@@ -52,7 +53,6 @@ namespace MineCase.Server
         {
             var cluster = new ClusterConfiguration();
             cluster.LoadFromFile("OrleansConfiguration.dev.xml");
-            cluster.AddMemoryStorageProvider();
             return cluster;
         }
 

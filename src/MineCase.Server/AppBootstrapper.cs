@@ -39,6 +39,8 @@ namespace MineCase.Server
         private static void SelectAssemblies()
         {
             var assemblies = new List<Assembly>();
+            assemblies.Add(typeof(Orleans.Providers.MemoryStreamProvider).Assembly);
+            assemblies.Add(typeof(Orleans.Providers.MongoDB.StorageProviders.MongoStorageProvider).Assembly);
             assemblies
                 .AddEngine()
                 .AddInterfaces()

@@ -11,6 +11,7 @@ using MineCase.Server.Persistence.Components;
 using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
+using Orleans.Streams;
 
 namespace MineCase.Server.World
 {
@@ -19,6 +20,7 @@ namespace MineCase.Server.World
     internal class TickEmitterGrain : PersistableDependencyObject, ITickEmitter
     {
         private AutoSaveStateComponent _autoSave;
+        private IAsyncStream<GameTickArgs> _tickStream;
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
@@ -33,25 +35,16 @@ namespace MineCase.Server.World
             SetComponent(_autoSave);
         }
 
+        public override async Task OnActivateAsync()
+        {
+            await base.OnActivateAsync();
+            _tickStream = GetStreamProvider(StreamProviders.TransientProvider).GetStream<GameTickArgs>(State.SubscriptionStreamId, StreamProviders.Namespaces.TickEmitter);
+        }
+
         public async Task OnGameTick(GameTickArgs e)
         {
-            var message = new GameTick { Args = e };
-            await Task.WhenAll(from en in State.Subscription select en.Tell(message));
+            await _tickStream.OnNextAsync(e);
             await _autoSave.OnGameTick(this, e);
-        }
-
-        public Task Subscribe(IDependencyObject observer)
-        {
-            if (State.Subscription.Add(observer))
-                MarkDirty();
-            return Task.CompletedTask;
-        }
-
-        public Task Unsubscribe(IDependencyObject observer)
-        {
-            if (State.Subscription.Remove(observer))
-                MarkDirty();
-            return Task.CompletedTask;
         }
 
         private void MarkDirty()
@@ -59,9 +52,11 @@ namespace MineCase.Server.World
             ValueStorage.IsDirty = true;
         }
 
+        public Task<Guid> GetSubscriptionStreamId() => Task.FromResult(State.SubscriptionStreamId);
+
         internal class StateHolder
         {
-            public HashSet<IDependencyObject> Subscription { get; set; }
+            public Guid SubscriptionStreamId { get; set; }
 
             public StateHolder()
             {
@@ -69,7 +64,7 @@ namespace MineCase.Server.World
 
             public StateHolder(InitializeStateMark mark)
             {
-                Subscription = new HashSet<IDependencyObject>();
+                SubscriptionStreamId = Guid.NewGuid();
             }
         }
     }
