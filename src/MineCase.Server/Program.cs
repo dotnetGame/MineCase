@@ -53,6 +53,11 @@ namespace MineCase.Server
         {
             var cluster = new ClusterConfiguration();
             cluster.LoadFromFile("OrleansConfiguration.dev.xml");
+            cluster.AddMongoDBStorageProvider("PubSubStore", c =>
+            {
+                c.ConnectionString = Configuration.GetSection("persistenceOptions")["connectionString"];
+                c.UseJsonFormat = true;
+            });
             return cluster;
         }
 

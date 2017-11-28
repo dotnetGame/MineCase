@@ -59,10 +59,5 @@ namespace MineCase.Server.World
         {
             return Task.FromResult(_trackingPlayers.Keys.ToList());
         }
-
-        public Task OnGameTick(GameTickArgs e)
-        {
-            return Task.CompletedTask;
-        }
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MineCase.Engine.Serialization;
+using Orleans.Streams;
 
 namespace MineCase.Engine
 {
@@ -112,6 +113,16 @@ namespace MineCase.Engine
             {
                 await _operationQueue.Dequeue()();
             }
+        }
+
+        public IAsyncStream<T> GetStream<T>(string providerName, Guid streamId, string streamNamespace)
+        {
+            return GetStreamProvider(providerName).GetStream<T>(streamId, streamNamespace);
+        }
+
+        public new IDisposable RegisterTimer(Func<object, Task> callback, object state, TimeSpan dueTime, TimeSpan period)
+        {
+            return base.RegisterTimer(callback, state, dueTime, period);
         }
     }
 }

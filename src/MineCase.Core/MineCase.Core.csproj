@@ -38,6 +38,10 @@
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' != 'net46'">
+    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="2.0.0-beta1" />
+  </ItemGroup>
+
   <ItemGroup>
     <AdditionalFiles Include="..\..\build\stylecop.json" />
   </ItemGroup>

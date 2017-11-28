@@ -12,8 +12,10 @@ namespace MineCase.Server.World
 {
     public interface ITickEmitter : IAddressByPartition
     {
-        Task<Guid> GetSubscriptionStreamId();
-
         Task OnGameTick(GameTickArgs e);
+
+        Task Subscribe(IDependencyObject observer);
+
+        Task Unsubscribe(IDependencyObject observer);
     }
 }

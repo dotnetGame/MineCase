@@ -22,7 +22,5 @@ namespace MineCase.Server.World
         Task<IReadOnlyCollection<IDependencyObject>> CollisionInChunk(Shape colliderShape);
 
         Task SpawnPickup(Vector3 position, Immutable<Slot[]> slots);
-
-        Task OnGameTick(GameTickArgs e);
     }
 }

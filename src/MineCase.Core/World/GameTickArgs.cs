@@ -4,6 +4,9 @@ using System.Text;
 
 namespace MineCase.World
 {
+#if !NET46
+    [Orleans.Concurrency.Immutable]
+#endif
     public sealed class GameTickArgs
     {
         public TimeSpan DeltaTime { get; set; }

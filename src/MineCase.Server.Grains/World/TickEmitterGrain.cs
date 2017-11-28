@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,57 +16,27 @@ using Orleans.Streams;
 
 namespace MineCase.Server.World
 {
-    [PersistTableName("tickEmitter")]
     [Reentrant]
-    internal class TickEmitterGrain : PersistableDependencyObject, ITickEmitter
+    internal class TickEmitterGrain : Grain, ITickEmitter
     {
-        private AutoSaveStateComponent _autoSave;
-        private IAsyncStream<GameTickArgs> _tickStream;
+        private ImmutableHashSet<IDependencyObject> _tickables = ImmutableHashSet<IDependencyObject>.Empty;
 
-        private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
-
-        protected override void InitializePreLoadComponent()
+        public Task OnGameTick(GameTickArgs e)
         {
-            SetComponent(new StateComponent<StateHolder>());
+            var msg = new GameTick { Args = e };
+            return Task.WhenAll(from t in _tickables select t.Tell(msg));
         }
 
-        protected override void InitializeComponents()
+        public Task Subscribe(IDependencyObject observer)
         {
-            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
-            SetComponent(_autoSave);
+            _tickables = _tickables.Add(observer);
+            return Task.CompletedTask;
         }
 
-        public override async Task OnActivateAsync()
+        public Task Unsubscribe(IDependencyObject observer)
         {
-            await base.OnActivateAsync();
-            _tickStream = GetStreamProvider(StreamProviders.TransientProvider).GetStream<GameTickArgs>(State.SubscriptionStreamId, StreamProviders.Namespaces.TickEmitter);
-        }
-
-        public async Task OnGameTick(GameTickArgs e)
-        {
-            await _tickStream.OnNextAsync(e);
-            await _autoSave.OnGameTick(this, e);
-        }
-
-        private void MarkDirty()
-        {
-            ValueStorage.IsDirty = true;
-        }
-
-        public Task<Guid> GetSubscriptionStreamId() => Task.FromResult(State.SubscriptionStreamId);
-
-        internal class StateHolder
-        {
-            public Guid SubscriptionStreamId { get; set; }
-
-            public StateHolder()
-            {
-            }
-
-            public StateHolder(InitializeStateMark mark)
-            {
-                SubscriptionStreamId = Guid.NewGuid();
-            }
+            _tickables = _tickables.Remove(observer);
+            return Task.CompletedTask;
         }
     }
 }

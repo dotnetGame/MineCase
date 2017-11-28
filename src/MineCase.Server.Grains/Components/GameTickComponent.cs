@@ -38,9 +38,8 @@ namespace MineCase.Server.Components
         {
             AttachedObject.QueueOperation(async () =>
             {
-                /*
                 if (!string.IsNullOrEmpty(e.oldKey))
-                    await GrainFactory.GetGrain<ITickEmitter>(e.oldKey).Unsubscribe(AttachedObject);*/
+                    await GrainFactory.GetGrain<ITickEmitter>(e.oldKey).Unsubscribe(AttachedObject);
                 await TrySubscribe();
             });
         }
@@ -69,7 +68,7 @@ namespace MineCase.Server.Components
             {
                 var key = AttachedObject.GetAddressByPartitionKey();
                 if (!string.IsNullOrEmpty(key))
-                    await Task.CompletedTask; // GrainFactory.GetGrain<ITickEmitter>(key).Subscribe(AttachedObject);
+                    await GrainFactory.GetGrain<ITickEmitter>(key).Subscribe(AttachedObject);
             }
         }
 
@@ -77,7 +76,7 @@ namespace MineCase.Server.Components
         {
             var key = AttachedObject.GetAddressByPartitionKey();
             if (!string.IsNullOrEmpty(key))
-                await Task.CompletedTask; // await GrainFactory.GetGrain<ITickEmitter>(key).Unsubscribe(AttachedObject);
+                await GrainFactory.GetGrain<ITickEmitter>(key).Unsubscribe(AttachedObject);
         }
     }
 }

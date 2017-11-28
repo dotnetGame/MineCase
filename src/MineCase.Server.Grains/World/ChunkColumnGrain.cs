@@ -24,8 +24,6 @@ namespace MineCase.Server.World
     [Reentrant]
     internal class ChunkColumnGrain : AddressByPartitionGrain, IChunkColumn
     {
-        private AutoSaveStateComponent _autoSave;
-
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
         protected override void InitializePreLoadComponent()
@@ -35,8 +33,7 @@ namespace MineCase.Server.World
 
         protected override void InitializeComponents()
         {
-            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute * 5);
-            SetComponent(_autoSave);
+            SetComponent(new PeriodicSaveStateComponent(TimeSpan.FromMinutes(1)));
         }
 
         public async Task<BlockState> GetBlockState(int x, int y, int z)
@@ -185,11 +182,6 @@ namespace MineCase.Server.World
             }
 
             return Task.CompletedTask;
-        }
-
-        public Task OnGameTick(GameTickArgs e)
-        {
-            return _autoSave.OnGameTick(this, e);
         }
 
         private void MarkDirty()

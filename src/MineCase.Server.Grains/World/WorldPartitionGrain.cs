@@ -19,10 +19,6 @@ namespace MineCase.Server.World
     internal class WorldPartitionGrain : AddressByPartitionGrain, IWorldPartition
     {
         private ITickEmitter _tickEmitter;
-        private ICollectableFinder _collectableFinder;
-        private IChunkTrackingHub _chunkTrackingHub;
-        private IChunkColumn _chunkColumn;
-        private AutoSaveStateComponent _autoSave;
         private HashSet<IPlayer> _players = new HashSet<IPlayer>();
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
@@ -32,15 +28,11 @@ namespace MineCase.Server.World
             SetComponent(new StateComponent<StateHolder>());
 
             _tickEmitter = GrainFactory.GetPartitionGrain<ITickEmitter>(this);
-            _collectableFinder = GrainFactory.GetPartitionGrain<ICollectableFinder>(this);
-            _chunkTrackingHub = GrainFactory.GetPartitionGrain<IChunkTrackingHub>(this);
-            _chunkColumn = GrainFactory.GetPartitionGrain<IChunkColumn>(this);
         }
 
         protected override void InitializeComponents()
         {
-            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
-            SetComponent(_autoSave);
+            SetComponent(new PeriodicSaveStateComponent(TimeSpan.FromMinutes(1)));
         }
 
         public async Task Enter(IPlayer player)
@@ -69,16 +61,6 @@ namespace MineCase.Server.World
             }
         }
 
-        public async Task OnGameTick(GameTickArgs e)
-        {
-            await Task.WhenAll(
-                _tickEmitter.OnGameTick(e),
-                _collectableFinder.OnGameTick(e),
-                _chunkTrackingHub.OnGameTick(e),
-                _chunkColumn.OnGameTick(e));
-            await _autoSave.OnGameTick(this, e);
-        }
-
         async Task IWorldPartition.SubscribeDiscovery(IEntity entity)
         {
             if (State.DiscoveryEntities.Add(entity))
@@ -98,6 +80,11 @@ namespace MineCase.Server.World
         private void MarkDirty()
         {
             ValueStorage.IsDirty = true;
+        }
+
+        public Task OnGameTick(GameTickArgs e)
+        {
+            return _tickEmitter.OnGameTick(e);
         }
 
         internal class StateHolder

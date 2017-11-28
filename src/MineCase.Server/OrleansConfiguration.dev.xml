@@ -3,11 +3,9 @@
     <SeedNode Address="localhost" Port="11111" />
     <Liveness LivenessType ="MembershipTableGrain" />
     <ReminderService ReminderServiceType="ReminderTableGrain"/>
-    <StorageProviders>
-      <Provider Type="Orleans.Providers.MongoDB.StorageProviders.MongoDBStorage" Name="PubSubStore" ConnectionString="mongodb://localhost:27017/minecase"/>
-    </StorageProviders>
     <StreamProviders>
       <Provider Type="Orleans.Providers.Streams.SimpleMessageStream.SimpleMessageStreamProvider" Name="JobsProvider"/>
+      <Provider Type="Orleans.Providers.Streams.SimpleMessageStream.SimpleMessageStreamProvider" Name="TransientProvider"/>
     </StreamProviders>
   </Globals>
   <Defaults>
