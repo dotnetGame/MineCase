@@ -20,7 +20,6 @@ namespace MineCase.Server.World
     {
         private GeneratorSettings _genSettings; // 生成设置
         private string _seed; // 世界种子
-        private AutoSaveStateComponent _autoSave;
         private readonly HashSet<IWorldPartition> _activedPartitions = new HashSet<IWorldPartition>();
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
@@ -32,8 +31,7 @@ namespace MineCase.Server.World
 
         protected override void InitializeComponents()
         {
-            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
-            SetComponent(_autoSave);
+            SetComponent(new PeriodicSaveStateComponent(TimeSpan.FromMinutes(1)));
         }
 
         public override async Task OnActivateAsync()
@@ -58,12 +56,11 @@ namespace MineCase.Server.World
             return Task.FromResult(id);
         }
 
-        public async Task OnGameTick(GameTickArgs e)
+        public Task OnGameTick(GameTickArgs e)
         {
             State.WorldAge++;
             MarkDirty();
-            await Task.WhenAll(from p in _activedPartitions select p.OnGameTick(e));
-            await _autoSave.OnGameTick(this, e);
+            return Task.CompletedTask;
         }
 
         public Task<long> GetAge() => Task.FromResult(State.WorldAge);
