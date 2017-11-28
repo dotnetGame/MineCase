@@ -58,7 +58,7 @@ namespace MineCase.Server.Game.Entities.Components
 
         private async Task OnGameTick(object sender, GameTickArgs e)
         {
-            if (e.WorldAge % 512 == 0 && e.TimeOfDay > 9000 && e.TimeOfDay < 18000)
+            if (e.WorldAge % 512 == 0 && e.TimeOfDay > 12000 && e.TimeOfDay < 24000)
             {
                 EntityWorldPos playerPosition = AttachedObject.GetValue(EntityWorldPositionComponent.EntityWorldPositionProperty);
                 int x = random.Next(9) - 4 + (int)playerPosition.X;
@@ -73,7 +73,7 @@ namespace MineCase.Server.Game.Entities.Components
                 IChunkColumn chunk = await chunkAccessor.GetChunk(monsterChunkPos);
 
                 // TODO
-                // biome.SpawnMonster(world, GrainFactory, await chunk.GetState(), random, monsterBlockPos);
+                biome.SpawnMonster(world, GrainFactory, await chunk.GetState(), random, monsterBlockPos);
             }
         }
     }
