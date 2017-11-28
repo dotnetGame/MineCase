@@ -32,7 +32,7 @@ namespace MineCase.UnitTest
             }
 
             var recipes = loader.Recipes;
-            Assert.Equal(13, recipes.Count);
+            Assert.Equal(13 + 26, recipes.Count);
         }
 
         [Fact]
@@ -53,6 +53,27 @@ namespace MineCase.UnitTest
             });
             Assert.NotNull(recipe);
             Assert.Equal((short)BlockStates.WoodPlanks().Id, recipe.Result.BlockId);
+            Assert.True(recipe.AfterTake.Cast<Slot>().All(o => o.IsEmpty));
+        }
+
+        [Fact]
+        public async Task TestTools()
+        {
+            var loader = new CraftingRecipeLoader();
+            using (var sr = new StreamReader(File.OpenRead(Path.Combine(RootDir, "crafting.txt"))))
+            {
+                await loader.LoadRecipes(sr);
+            }
+
+            var matcher = new CraftingRecipeMatcher(loader.Recipes);
+            var recipe = matcher.FindRecipe(new Slot[,]
+            {
+                { new Slot { BlockId = (short)BlockStates.WoodPlanks().Id, ItemCount = 1 }, Slot.Empty, Slot.Empty },
+                { new Slot { BlockId = (short)BlockStates.WoodPlanks().Id, ItemCount = 1 }, new Slot { BlockId = (short)ItemId.Stick, ItemCount = 1 }, new Slot { BlockId = (short)ItemId.Stick, ItemCount = 1 }},
+                { new Slot { BlockId = (short)BlockStates.WoodPlanks().Id, ItemCount = 1 }, Slot.Empty, Slot.Empty }
+            });
+            Assert.NotNull(recipe);
+            Assert.Equal((short)ItemId.WoodenPickaxe, recipe.Result.BlockId);
             Assert.True(recipe.AfterTake.Cast<Slot>().All(o => o.IsEmpty));
         }
     }
