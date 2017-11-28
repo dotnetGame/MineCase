@@ -177,39 +177,39 @@ CraftingTable		  = WoodPlanks^-1, 1:1, 1:2, 2:1, 2:2
 ##
 #
 ## Axes:
-#DiamondAxe = Stick, 2:2, 2:3 | Diamond,     2:1, 1:1, 1:2
-#DiamondAxe = Stick, 2:2, 2:3 | Diamond,     2:1, 3:1, 3:2
-#GoldenAxe  = Stick, 2:2, 2:3 | GoldIngot,   2:1, 1:1, 1:2
-#GoldenAxe  = Stick, 2:2, 2:3 | GoldIngot,   2:1, 3:1, 3:2
-#IronAxe    = Stick, 2:2, 2:3 | IronIngot,   2:1, 1:1, 1:2
-#IronAxe    = Stick, 2:2, 2:3 | IronIngot,   2:1, 3:1, 3:2
-#StoneAxe   = Stick, 2:2, 2:3 | Cobblestone, 2:1, 1:1, 1:2
-#StoneAxe   = Stick, 2:2, 2:3 | Cobblestone, 2:1, 3:1, 3:2
-#WoodenAxe  = Stick, 2:2, 2:3 | Planks^-1,   2:1, 1:1, 1:2
-#WoodenAxe  = Stick, 2:2, 2:3 | Planks^-1,   2:1, 3:1, 3:2
+DiamondAxe = Stick, 2:2, 2:3 | Diamond,     2:1, 1:1, 1:2
+DiamondAxe = Stick, 2:2, 2:3 | Diamond,     2:1, 3:1, 3:2
+GoldenAxe  = Stick, 2:2, 2:3 | GoldIngot,   2:1, 1:1, 1:2
+GoldenAxe  = Stick, 2:2, 2:3 | GoldIngot,   2:1, 3:1, 3:2
+IronAxe    = Stick, 2:2, 2:3 | IronIngot,   2:1, 1:1, 1:2
+IronAxe    = Stick, 2:2, 2:3 | IronIngot,   2:1, 3:1, 3:2
+StoneAxe   = Stick, 2:2, 2:3 | Cobblestone, 2:1, 1:1, 1:2
+StoneAxe   = Stick, 2:2, 2:3 | Cobblestone, 2:1, 3:1, 3:2
+WoodenAxe  = Stick, 2:2, 2:3 | WoodPlanks^-1,   2:1, 1:1, 1:2
+WoodenAxe  = Stick, 2:2, 2:3 | WoodPlanks^-1,   2:1, 3:1, 3:2
 #
 ## Pickaxes:
-#DiamondPickaxe = Stick, 2:2, 2:3 | Diamond,     1:1, 2:1, 3:1
-#GoldenPickaxe  = Stick, 2:2, 2:3 | GoldIngot,   1:1, 2:1, 3:1
-#IronPickaxe    = Stick, 2:2, 2:3 | IronIngot,   1:1, 2:1, 3:1
-#StonePickaxe   = Stick, 2:2, 2:3 | Cobblestone, 1:1, 2:1, 3:1
-#WoodenPickaxe  = Stick, 2:2, 2:3 | Planks^-1,   1:1, 2:1, 3:1
+DiamondPickaxe = Stick, 2:2, 2:3 | Diamond,     1:1, 2:1, 3:1
+GoldenPickaxe  = Stick, 2:2, 2:3 | GoldIngot,   1:1, 2:1, 3:1
+IronPickaxe    = Stick, 2:2, 2:3 | IronIngot,   1:1, 2:1, 3:1
+StonePickaxe   = Stick, 2:2, 2:3 | Cobblestone, 1:1, 2:1, 3:1
+WoodenPickaxe  = Stick, 2:2, 2:3 | WoodPlanks^-1,   1:1, 2:1, 3:1
 #
 ## Shovels:
-#DiamondShovel = Stick, 2:2, 2:3 | Diamond,     2:1
-#GoldenShovel  = Stick, 2:2, 2:3 | GoldIngot,   2:1
-#IronShovel    = Stick, 2:2, 2:3 | IronIngot,   2:1
-#StoneShovel   = Stick, 2:2, 2:3 | Cobblestone, 2:1
-#WoodenShovel  = Stick, 2:2, 2:3 | Planks^-1,   2:1
+DiamondShovel = Stick, 2:2, 2:3 | Diamond,     2:1
+GoldenShovel  = Stick, 2:2, 2:3 | GoldIngot,   2:1
+IronShovel    = Stick, 2:2, 2:3 | IronIngot,   2:1
+StoneShovel   = Stick, 2:2, 2:3 | Cobblestone, 2:1
+WoodenShovel  = Stick, 2:2, 2:3 | WoodPlanks^-1,   2:1
 #
 ## Hoes:
-#DiamondHoe = Stick, 2:2, 2:3 | Diamond,     2:1, *:1
-#GoldenHoe  = Stick, 2:2, 2:3 | GoldIngot,   2:1, *:1
-#IronHoe    = Stick, 2:2, 2:3 | IronIngot,   2:1, *:1
-#StoneHoe   = Stick, 2:2, 2:3 | Cobblestone, 2:1, *:1
-#WoodenHoe  = Stick, 2:2, 2:3 | Planks^-1,   2:1, *:1
+DiamondHoe = Stick, 2:2, 2:3 | Diamond,     2:1, *:1
+GoldenHoe  = Stick, 2:2, 2:3 | GoldIngot,   2:1, *:1
+IronHoe    = Stick, 2:2, 2:3 | IronIngot,   2:1, *:1
+StoneHoe   = Stick, 2:2, 2:3 | Cobblestone, 2:1, *:1
+WoodenHoe  = Stick, 2:2, 2:3 | WoodPlanks^-1,   2:1, *:1
 #
-#Bucket         = IronIngot, 1:1, 2:2, 3:1
+Bucket         = IronIngot, 1:1, 2:2, 3:1
 #Compass        = IronIngot, 2:1, 1:2, 3:2, 2:3 | RedstoneDust, 2:2
 #EmptyMap       = Paper,     1:1, 1:2, 1:3, 2:1, 2:3, 3:1, 3:2, 3:3 | Compass, 2:2
 #FireCharge, 3  = BlazePowder, *   | Coal, *    | Gunpowder, *

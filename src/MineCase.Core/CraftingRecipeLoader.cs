@@ -72,6 +72,7 @@ namespace MineCase
                     restSpan = restSpan.Slice(ingredientSplitter + 1);
             }
 
+            NormalizeIngredients(recipe);
             Recipes.Add(recipe);
         }
 
@@ -130,8 +131,16 @@ namespace MineCase
                     distributionSpan = distributionSpan.Slice(positionSplitter + 1);
             }
             while (true);
+
+            if (recipe.Inputs != null)
+            {
+                foreach (CraftingRecipeSlot each in recipe.Inputs)
+                {
+                    recipeSlots.Add(each);
+                }
+            }
+
             recipe.Inputs = recipeSlots.ToArray();
-            NormalizeIngredients(recipe);
         }
 
         private void NormalizeIngredients(CraftingRecipe recipe)
