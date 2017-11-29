@@ -27,23 +27,34 @@ namespace MineCase.Server.Persistence
     {
         protected override async Task SerializeStateAsync(DependencyObjectState state)
         {
-            var coll = GetStateCollection();
-            var key = GrainReference.ToKeyString();
-            await coll.ReplaceOneAsync(o => o.GrainKeyString == key, state, new UpdateOptions { IsUpsert = true });
+            if (CanPersist())
+            {
+                var coll = GetStateCollection();
+                var key = GrainReference.ToKeyString();
+                await coll.ReplaceOneAsync(o => o.GrainKeyString == key, state, new UpdateOptions { IsUpsert = true });
+            }
         }
 
         protected override async Task<DependencyObjectState> DeserializeStateAsync()
         {
-            var coll = GetStateCollection();
-            var key = GrainReference.ToKeyString();
-            return await coll.Find(o => o.GrainKeyString == key).FirstOrDefaultAsync();
+            if (CanPersist())
+            {
+                var coll = GetStateCollection();
+                var key = GrainReference.ToKeyString();
+                return await coll.Find(o => o.GrainKeyString == key).FirstOrDefaultAsync();
+            }
+
+            return null;
         }
 
         protected override async Task ClearStateAsync()
         {
-            var coll = GetStateCollection();
-            var key = GrainReference.ToKeyString();
-            await coll.DeleteOneAsync(o => o.GrainKeyString == key);
+            if (CanPersist())
+            {
+                var coll = GetStateCollection();
+                var key = GrainReference.ToKeyString();
+                await coll.DeleteOneAsync(o => o.GrainKeyString == key);
+            }
         }
 
         private IMongoCollection<DependencyObjectState> GetStateCollection()
@@ -55,6 +66,11 @@ namespace MineCase.Server.Persistence
         private string GetTablePrefix()
         {
             return GetType().GetCustomAttribute<PersistTableName>().TableName;
+        }
+
+        private bool CanPersist()
+        {
+            return GetType().IsDefined(typeof(PersistTableName), true);
         }
     }
 }

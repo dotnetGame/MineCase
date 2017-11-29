@@ -29,13 +29,13 @@ namespace MineCase.Server.Components
         {
         }
 
-        public Task SetPitch(float value) =>
+        public void SetPitch(float value) =>
             AttachedObject.SetLocalValue(PitchProperty, value);
 
-        public Task SetYaw(float value) =>
+        public void SetYaw(float value) =>
             AttachedObject.SetLocalValue(YawProperty, value);
 
-        public Task SetHeadYaw(float value) =>
+        public void SetHeadYaw(float value) =>
             AttachedObject.SetLocalValue(HeadYawProperty, value);
     }
 }

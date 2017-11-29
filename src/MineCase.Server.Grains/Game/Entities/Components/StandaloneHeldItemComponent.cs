@@ -18,7 +18,7 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
-        public Task SetHeldItem(Slot value) =>
+        public void SetHeldItem(Slot value) =>
             AttachedObject.SetLocalValue(HeldItemProperty, value);
 
         Task IHandle<SetHeldItemIndex>.Handle(SetHeldItemIndex message)
@@ -33,7 +33,8 @@ namespace MineCase.Server.Game.Entities.Components
 
         Task IHandle<SetHeldItem>.Handle(SetHeldItem message)
         {
-            return SetHeldItem(message.Slot);
+            SetHeldItem(message.Slot);
+            return Task.CompletedTask;
         }
     }
 }

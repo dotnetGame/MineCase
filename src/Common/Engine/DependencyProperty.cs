@@ -334,17 +334,8 @@ namespace MineCase.Engine
             return GetMetadata(type).TryGetDefaultValue(d, this, out value);
         }
 
-        internal
-#if ECS_SERVER
-        Task
-#else
-        void
-#endif
-            RaisePropertyChanged(Type type, object sender, PropertyChangedEventArgs<T> e)
+        internal void RaisePropertyChanged(Type type, object sender, PropertyChangedEventArgs<T> e)
         {
-#if ECS_SERVER
-            return
-#endif
             GetMetadata(type).RaisePropertyChanged(sender, e);
         }
 

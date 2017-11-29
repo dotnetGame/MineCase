@@ -20,11 +20,6 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
-        protected override Task OnAttached()
-        {
-            return base.OnAttached();
-        }
-
         private ClientPlayPacketGenerator GetPlayerPacketGenerator(IPlayer player) =>
             new ClientPlayPacketGenerator(new ForwardToPlayerPacketSink(player, ServiceProvider.GetRequiredService<IPacketPackager>()));
 

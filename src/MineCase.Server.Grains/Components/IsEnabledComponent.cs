@@ -20,12 +20,14 @@ namespace MineCase.Server.Components
 
         Task IHandle<Enable>.Handle(Enable message)
         {
-            return AttachedObject.SetLocalValue(IsEnabledProperty, true);
+            AttachedObject.SetLocalValue(IsEnabledProperty, true);
+            return Task.CompletedTask;
         }
 
         Task IHandle<Disable>.Handle(Disable message)
         {
-            return AttachedObject.SetLocalValue(IsEnabledProperty, false);
+            AttachedObject.SetLocalValue(IsEnabledProperty, false);
+            return Task.CompletedTask;
         }
     }
 }

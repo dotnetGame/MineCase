@@ -19,16 +19,16 @@ namespace MineCase.UnitTest
         public DependencyProperty<Slot> SlotProperty = DependencyProperty.Register<Slot>("Slot", typeof(SerializationTest), new PropertyMetadata<Slot>(Slot.Empty));
         public DependencyProperty<Shape> ShapeProperty = DependencyProperty.Register<Shape>("Shape", typeof(SerializationTest));
         public DependencyProperty<Cuboid> CuboidProperty = DependencyProperty.Register<Cuboid>("Cuboid", typeof(SerializationTest));
-        internal DependencyProperty<StateHolder> StateProperty = DependencyProperty.Register<StateHolder>("State", typeof(SerializationTest));
+        public DependencyProperty<StateHolder> StateProperty = DependencyProperty.Register<StateHolder>("State", typeof(SerializationTest));
 
-        internal class Pair
+        public class Pair
         {
             public int Int { get; set; }
 
             public Shape Collider { get; set; }
         }
 
-        internal class StateHolder
+        public class StateHolder
         {
             public List<Pair> Shape { get; set; }
         }
@@ -47,10 +47,10 @@ namespace MineCase.UnitTest
 
             var entity = new TestEntity();
             await entity.ReadStateAsync();
-            await entity.SetCurrentValue(SlotProperty, slot);
-            await entity.SetCurrentValue(ShapeProperty, shape);
-            await entity.SetCurrentValue(CuboidProperty, shape);
-            await entity.SetCurrentValue(StateProperty, state);
+            entity.SetCurrentValue(SlotProperty, slot);
+            entity.SetCurrentValue(ShapeProperty, shape);
+            entity.SetCurrentValue(CuboidProperty, shape);
+            entity.SetCurrentValue(StateProperty, state);
 
             var doc = Serialize(entity);
 

@@ -30,18 +30,16 @@ namespace MineCase.Server.Network.Play
             _receivePacket = new ActionBlock<UncompressedPacket>((Action<UncompressedPacket>)OnReceivePacket);
         }
 
-        protected override Task OnAttached()
+        protected override void OnAttached()
         {
             AttachedObject.GetComponent<GameTickComponent>()
                 .Tick += OnGameTick;
-            return base.OnAttached();
         }
 
-        protected override Task OnDetached()
+        protected override void OnDetached()
         {
             AttachedObject.GetComponent<GameTickComponent>()
                 .Tick -= OnGameTick;
-            return base.OnDetached();
         }
 
         private async Task OnGameTick(object sender, GameTickArgs e)
@@ -182,9 +180,10 @@ namespace MineCase.Server.Network.Play
             return Task.CompletedTask;
         }
 
-        private async Task DispatchPacket(ClientSettings packet)
+        private Task DispatchPacket(ClientSettings packet)
         {
-            await AttachedObject.SetLocalValue(ViewDistanceComponent.ViewDistanceProperty, packet.ViewDistance);
+            AttachedObject.SetLocalValue(ViewDistanceComponent.ViewDistanceProperty, packet.ViewDistance);
+            return Task.CompletedTask;
         }
 
         private Task DispatchPacket(ServerboundPluginMessage packet)
@@ -197,38 +196,42 @@ namespace MineCase.Server.Network.Play
             return AttachedObject.GetComponent<KeepAliveComponent>().ReceiveResponse(packet.KeepAliveId);
         }
 
-        private async Task DispatchPacket(ServerboundPositionAndLook packet)
+        private Task DispatchPacket(ServerboundPositionAndLook packet)
         {
-            await AttachedObject.GetComponent<EntityWorldPositionComponent>()
+            AttachedObject.GetComponent<EntityWorldPositionComponent>()
                 .SetPosition(new EntityWorldPos((float)packet.X, (float)packet.FeetY, (float)packet.Z));
             var lookComponent = AttachedObject.GetComponent<EntityLookComponent>();
-            await lookComponent.SetPitch(packet.Pitch);
-            await lookComponent.SetYaw(packet.Yaw);
-            await AttachedObject.GetComponent<EntityOnGroundComponent>()
+            lookComponent.SetPitch(packet.Pitch);
+            lookComponent.SetYaw(packet.Yaw);
+            AttachedObject.GetComponent<EntityOnGroundComponent>()
                 .SetIsOnGround(packet.OnGround);
+            return Task.CompletedTask;
         }
 
-        private async Task DispatchPacket(PlayerOnGround packet)
+        private Task DispatchPacket(PlayerOnGround packet)
         {
-            await AttachedObject.GetComponent<EntityOnGroundComponent>()
+            AttachedObject.GetComponent<EntityOnGroundComponent>()
                 .SetIsOnGround(packet.OnGround);
+            return Task.CompletedTask;
         }
 
-        private async Task DispatchPacket(PlayerPosition packet)
+        private Task DispatchPacket(PlayerPosition packet)
         {
-            await AttachedObject.GetComponent<EntityWorldPositionComponent>()
+            AttachedObject.GetComponent<EntityWorldPositionComponent>()
                 .SetPosition(new EntityWorldPos((float)packet.X, (float)packet.FeetY, (float)packet.Z));
-            await AttachedObject.GetComponent<EntityOnGroundComponent>()
+            AttachedObject.GetComponent<EntityOnGroundComponent>()
                 .SetIsOnGround(packet.OnGround);
+            return Task.CompletedTask;
         }
 
-        private async Task DispatchPacket(PlayerLook packet)
+        private Task DispatchPacket(PlayerLook packet)
         {
             var lookComponent = AttachedObject.GetComponent<EntityLookComponent>();
-            await lookComponent.SetPitch(packet.Pitch);
-            await lookComponent.SetYaw(packet.Yaw);
-            await AttachedObject.GetComponent<EntityOnGroundComponent>()
+            lookComponent.SetPitch(packet.Pitch);
+            lookComponent.SetYaw(packet.Yaw);
+            AttachedObject.GetComponent<EntityOnGroundComponent>()
                 .SetIsOnGround(packet.OnGround);
+            return Task.CompletedTask;
         }
 
         private Task DispatchPacket(UseEntity packet)
@@ -242,7 +245,8 @@ namespace MineCase.Server.Network.Play
 
         private Task DispatchPacket(ServerboundHeldItemChange packet)
         {
-            return AttachedObject.GetComponent<HeldItemComponent>().SetHeldItemIndex(packet.Slot);
+            AttachedObject.GetComponent<HeldItemComponent>().SetHeldItemIndex(packet.Slot);
+            return Task.CompletedTask;
         }
 
         private async Task DispatchPacket(PlayerDigging packet)

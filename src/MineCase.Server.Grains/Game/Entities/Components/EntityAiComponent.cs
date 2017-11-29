@@ -38,24 +38,22 @@ namespace MineCase.Server.Game.Entities.Components
             random = new Random();
         }
 
-        protected override async Task OnAttached()
+        protected override void OnAttached()
         {
             Register();
-            await AttachedObject.SetLocalValue(EntityAiComponent.CreatureStateProperty, CreatureState.Stop);
+            AttachedObject.SetLocalValue(EntityAiComponent.CreatureStateProperty, CreatureState.Stop);
             CreateAi(MobType);
             AttachedObject.RegisterPropertyChangedHandler(MobTypeComponent.MobTypeProperty, OnMobTypeChanged);
         }
 
-        private Task OnMobTypeChanged(object sender, PropertyChangedEventArgs<MobType> e)
+        private void OnMobTypeChanged(object sender, PropertyChangedEventArgs<MobType> e)
         {
             CreateAi(e.NewValue);
-            return Task.CompletedTask;
         }
 
-        protected override Task OnDetached()
+        protected override void OnDetached()
         {
             Unregister();
-            return base.OnDetached();
         }
 
         private void Register()
@@ -73,7 +71,7 @@ namespace MineCase.Server.Game.Entities.Components
         private void CreateAi(MobType mobType)
         {
             Func<CreatureState> getter = () => AttachedObject.GetValue(CreatureStateProperty);
-            Action<CreatureState> setter = v => AttachedObject.SetLocalValue(CreatureStateProperty, v).Wait();
+            Action<CreatureState> setter = v => AttachedObject.SetLocalValue(CreatureStateProperty, v);
             CreatureAi ai;
 
             switch (mobType)
@@ -150,8 +148,8 @@ namespace MineCase.Server.Game.Entities.Components
                 head = (float)(yaw / 180.0f * Math.PI);
             }
 
-            await AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, (float)(head / Math.PI * 180.0f));
-            await AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, (float)(head / Math.PI * 180.0f));
+            AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, (float)(head / Math.PI * 180.0f));
+            AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, (float)(head / Math.PI * 180.0f));
 
             // 新的位置
             EntityWorldPos entityPos = new EntityWorldPos(pos.X - step * (float)Math.Sin(head), pos.Y, pos.Z + step * (float)Math.Cos(head));
@@ -195,7 +193,7 @@ namespace MineCase.Server.Game.Entities.Components
 
             if (!isCollided && canWalk)
             {
-                await AttachedObject.SetLocalValue(
+                AttachedObject.SetLocalValue(
                     EntityWorldPositionComponent.EntityWorldPositionProperty,
                     EntityWorldPos.Add(entityPos, 0, yJumpHeight, 0));
             }
@@ -219,9 +217,9 @@ namespace MineCase.Server.Game.Entities.Components
                 {
                     (var yaw, var pitch) = VectorToYawAndPitch(entityPos, playerPosition);
 
-                    await AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, yaw);
-                    await AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, yaw);
-                    await AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, pitch);
+                    AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, yaw);
+                    AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, yaw);
+                    AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, pitch);
                     break;
                 }
             }
@@ -272,7 +270,7 @@ namespace MineCase.Server.Game.Entities.Components
                 nextEvent = CreatureEvent.Stop;
             }
 
-            await _ai.FireAsync(nextEvent);
+            _ai.Fire(nextEvent);
         }
 
         private async Task OnGameTick(object sender, GameTickArgs e)

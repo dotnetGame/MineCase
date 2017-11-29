@@ -19,13 +19,12 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
-        protected override Task OnAttached()
+        protected override void OnAttached()
         {
             _windows = new Dictionary<byte, WindowContext>
             {
                 { 0, new WindowContext { Window = AttachedObject.GetComponent<InventoryComponent>().GetInventoryWindow() } }
             };
-            return base.OnAttached();
         }
 
         public async Task ClickWindow(byte windowId, short slot, ClickAction clickAction, short actionNumber, Slot clickedItem)

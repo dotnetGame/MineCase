@@ -22,16 +22,16 @@ namespace MineCase.Server.Game.BlockEntities
 
         public BlockWorldPos Position => GetValue(BlockWorldPositionComponent.BlockWorldPositionProperty);
 
-        protected override async Task InitializeComponents()
+        protected override void InitializeComponents()
         {
-            await SetComponent(new IsEnabledComponent());
-            await SetComponent(new WorldComponent());
-            await SetComponent(new BlockWorldPositionComponent());
-            await SetComponent(new AddressByPartitionKeyComponent());
-            await SetComponent(new ChunkEventBroadcastComponent());
-            await SetComponent(new GameTickComponent());
-            await SetComponent(new BlockEntityLiftTimeComponent());
-            await SetComponent(new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute));
+            SetComponent(new IsEnabledComponent());
+            SetComponent(new WorldComponent());
+            SetComponent(new BlockWorldPositionComponent());
+            SetComponent(new AddressByPartitionKeyComponent());
+            SetComponent(new ChunkEventBroadcastComponent());
+            SetComponent(new GameTickComponent());
+            SetComponent(new BlockEntityLiftTimeComponent());
+            SetComponent(new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute));
         }
 
         Task<IWorld> IBlockEntity.GetWorld() =>

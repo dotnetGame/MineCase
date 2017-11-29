@@ -19,27 +19,29 @@ namespace MineCase.Server.Persistence.Components
 
         public T State => AttachedObject.GetValue(StateProperty);
 
-        public event AsyncEventHandler<EventArgs> BeforeWriteState;
+        public event EventHandler<EventArgs> BeforeWriteState;
 
-        public event AsyncEventHandler<EventArgs> AfterReadState;
+        public event EventHandler<EventArgs> AfterReadState;
 
         public StateComponent(string name = "state")
             : base(name)
         {
         }
 
-        async Task IHandle<AfterReadState>.Handle(AfterReadState message)
+        Task IHandle<AfterReadState>.Handle(AfterReadState message)
         {
             // 如果为 null 需要初始化状态
             if (State == null)
-                await AttachedObject.SetLocalValue(StateProperty, (T)Activator.CreateInstance(typeof(T), InitializeStateMark.Default));
+                AttachedObject.SetLocalValue(StateProperty, (T)Activator.CreateInstance(typeof(T), InitializeStateMark.Default));
 
-            await AfterReadState.InvokeSerial(this, EventArgs.Empty);
+            AfterReadState?.Invoke(this, EventArgs.Empty);
+            return Task.CompletedTask;
         }
 
         Task IHandle<BeforeWriteState>.Handle(BeforeWriteState message)
         {
-            return BeforeWriteState.InvokeSerial(this, EventArgs.Empty);
+            BeforeWriteState?.Invoke(this, EventArgs.Empty);
+            return Task.CompletedTask;
         }
     }
 }

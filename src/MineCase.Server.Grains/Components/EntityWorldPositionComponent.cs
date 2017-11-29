@@ -18,7 +18,7 @@ namespace MineCase.Server.Components
         {
         }
 
-        public Task SetPosition(EntityWorldPos entityWorldPos)
+        public void SetPosition(EntityWorldPos entityWorldPos)
             => AttachedObject.SetLocalValue(EntityWorldPositionProperty, entityWorldPos);
     }
 

@@ -29,23 +29,32 @@ namespace MineCase.Server.Game.BlockEntities.Components
         {
         }
 
-        Task IHandle<NeighborEntityChanged>.Handle(NeighborEntityChanged message) =>
+        Task IHandle<NeighborEntityChanged>.Handle(NeighborEntityChanged message)
+        {
             AttachedObject.SetLocalValue(NeighborEntityProperty, message.Entity);
+            return Task.CompletedTask;
+        }
 
-        private static async Task OnNeighborEntityChanged(object sender, PropertyChangedEventArgs<IBlockEntity> e)
+        private static void OnNeighborEntityChanged(object sender, PropertyChangedEventArgs<IBlockEntity> e)
         {
             var component = ((DependencyObject)sender).GetComponent<ChestComponent>();
             var window = component?.ChestWindow;
             if (window == null) return;
             if (e.NewValue == null)
             {
-                await window.Destroy();
-                await window.SetEntities(new[] { component.AttachedObject.AsReference<IDependencyObject>() }.AsImmutable());
+                component.AttachedObject.QueueOperation(async () =>
+                {
+                    await window.Destroy();
+                    await window.SetEntities(new[] { component.AttachedObject.AsReference<IDependencyObject>() }.AsImmutable());
+                });
             }
             else
             {
-                await window.Destroy();
-                await window.SetEntities(new[] { component.AttachedObject.AsReference<IDependencyObject>(), e.NewValue.AsReference<IDependencyObject>() }.AsImmutable());
+                component.AttachedObject.QueueOperation(async () =>
+                {
+                    await window.Destroy();
+                    await window.SetEntities(new[] { component.AttachedObject.AsReference<IDependencyObject>(), e.NewValue.AsReference<IDependencyObject>() }.AsImmutable());
+                });
             }
         }
 
@@ -62,7 +71,7 @@ namespace MineCase.Server.Game.BlockEntities.Components
             {
                 if (ChestWindow == null)
                 {
-                    await AttachedObject.SetLocalValue(ChestWindowProperty, GrainFactory.GetGrain<IChestWindow>(Guid.NewGuid()));
+                    AttachedObject.SetLocalValue(ChestWindowProperty, GrainFactory.GetGrain<IChestWindow>(Guid.NewGuid()));
                     await ChestWindow.SetEntities((NeighborEntity == null ?
                         new[] { AttachedObject.AsReference<IDependencyObject>() } :
                         new[] { AttachedObject.AsReference<IDependencyObject>(), NeighborEntity }).AsImmutable());

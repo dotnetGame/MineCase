@@ -52,17 +52,17 @@ namespace MineCase.Server.Game.Entities.Components
             AttachedObject.RegisterPropertyChangedHandler(EntityWorldPositionComponent.EntityWorldPositionProperty, OnEntityWorldPositionChanged);
         }
 
-        private Task OnEntityWorldPositionChanged(object sender, PropertyChangedEventArgs<EntityWorldPos> e)
+        private void OnEntityWorldPositionChanged(object sender, PropertyChangedEventArgs<EntityWorldPos> e)
         {
             var pos = e.NewValue;
             var box = new Cuboid(new Point3d(pos.X, pos.Z, pos.Y), new Size(0.6f, 0.6f, 1.75f));
-            return AttachedObject.SetLocalValue(ColliderComponent.ColliderShapeProperty, box);
+            AttachedObject.SetLocalValue(ColliderComponent.ColliderShapeProperty, box);
         }
 
-        private Task OnDraggedSlotChanged(object sender, PropertyChangedEventArgs<Slot> e)
+        private void OnDraggedSlotChanged(object sender, PropertyChangedEventArgs<Slot> e)
         {
-            return AttachedObject.GetComponent<ClientboundPacketComponent>().GetGenerator()
-                .SetSlot(0xFF, 0, e.NewValue);
+            AttachedObject.QueueOperation(() => AttachedObject.GetComponent<ClientboundPacketComponent>().GetGenerator()
+                .SetSlot(0xFF, 0, e.NewValue));
         }
 
         async Task IHandle<BindToUser>.Handle(BindToUser message)
@@ -70,15 +70,15 @@ namespace MineCase.Server.Game.Entities.Components
             AttachedObject.GetComponent<SlotContainerComponent>().SlotChanged -= InventorySlotChanged;
 
             _user = message.User;
-            await AttachedObject.GetComponent<NameComponent>().SetName(await message.User.GetName());
-            await AttachedObject.GetComponent<SlotContainerComponent>().SetSlots(await message.User.GetInventorySlots());
+            AttachedObject.GetComponent<NameComponent>().SetName(await message.User.GetName());
+            AttachedObject.GetComponent<SlotContainerComponent>().SetSlots(await message.User.GetInventorySlots());
 
             AttachedObject.GetComponent<SlotContainerComponent>().SlotChanged += InventorySlotChanged;
         }
 
-        private Task InventorySlotChanged(object sender, (int index, Slot slot) e)
+        private void InventorySlotChanged(object sender, (int index, Slot slot) e)
         {
-            return _user.SetInventorySlot(e.index, e.slot);
+            AttachedObject.QueueOperation(() => _user.SetInventorySlot(e.index, e.slot));
         }
     }
 }

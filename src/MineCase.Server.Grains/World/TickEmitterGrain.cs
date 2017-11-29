@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,66 +12,52 @@ using MineCase.Server.Persistence.Components;
 using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
+using Orleans.Streams;
 
 namespace MineCase.Server.World
 {
-    [PersistTableName("tickEmitter")]
     [Reentrant]
-    internal class TickEmitterGrain : PersistableDependencyObject, ITickEmitter
+    internal class TickEmitterGrain : AddressByPartitionGrain, ITickEmitter
     {
-        private AutoSaveStateComponent _autoSave;
+        private ImmutableHashSet<IDependencyObject> _tickables = ImmutableHashSet<IDependencyObject>.Empty;
 
-        private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
+        private FixedUpdateComponent _fixedUpdate;
 
-        protected override async Task InitializePreLoadComponent()
+        protected override void InitializeComponents()
         {
-            await SetComponent(new StateComponent<StateHolder>());
+            SetComponent(new PeriodicSaveStateComponent(TimeSpan.FromMinutes(1)));
+
+            _fixedUpdate = new FixedUpdateComponent();
+            _fixedUpdate.Tick += OnFixedUpdate;
+            SetComponent(_fixedUpdate);
         }
 
-        protected override async Task InitializeComponents()
+        private Task OnFixedUpdate(object sender, GameTickArgs e)
         {
-            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
-            await SetComponent(_autoSave);
+            var msg = new GameTick { Args = e };
+            return Task.WhenAll(from t in _tickables select t.Tell(msg));
         }
 
-        public async Task OnGameTick(GameTickArgs e)
+        public async Task Subscribe(IDependencyObject observer)
         {
-            var message = new GameTick { Args = e };
-            await Task.WhenAll(from en in State.Subscription select en.Tell(message));
-            await _autoSave.OnGameTick(this, e);
-        }
+            bool active = _tickables.IsEmpty;
+            _tickables = _tickables.Add(observer);
 
-        public Task Subscribe(IDependencyObject observer)
-        {
-            if (State.Subscription.Add(observer))
-                MarkDirty();
-            return Task.CompletedTask;
+            if (active)
+            {
+                await _fixedUpdate.Start(World);
+            }
         }
 
         public Task Unsubscribe(IDependencyObject observer)
         {
-            if (State.Subscription.Remove(observer))
-                MarkDirty();
+            _tickables = _tickables.Remove(observer);
+            if (_tickables.IsEmpty)
+            {
+                _fixedUpdate.Stop();
+            }
+
             return Task.CompletedTask;
-        }
-
-        private void MarkDirty()
-        {
-            ValueStorage.IsDirty = true;
-        }
-
-        internal class StateHolder
-        {
-            public HashSet<IDependencyObject> Subscription { get; set; }
-
-            public StateHolder()
-            {
-            }
-
-            public StateHolder(InitializeStateMark mark)
-            {
-                Subscription = new HashSet<IDependencyObject>();
-            }
         }
     }
 }

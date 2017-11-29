@@ -21,10 +21,9 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
-        protected override async Task OnAttached()
+        protected override void OnAttached()
         {
-            await base.OnAttached();
-            await AttachedObject.SetLocalValue(PickupMetadataProperty, new Pickup());
+            AttachedObject.SetLocalValue(PickupMetadataProperty, new Pickup());
         }
 
         async Task IHandle<SetSlot>.Handle(SetSlot message)

@@ -19,14 +19,15 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
-        async Task IHandle<SpawnMob>.Handle(SpawnMob message)
+        Task IHandle<SpawnMob>.Handle(SpawnMob message)
         {
-            await AttachedObject.Tell<SpawnEntity>(message);
-            await AttachedObject.SetLocalValue(MobTypeComponent.MobTypeProperty, message.MobType);
+            AttachedObject.Tell<SpawnEntity>(message);
+            AttachedObject.SetLocalValue(MobTypeComponent.MobTypeProperty, message.MobType);
             CompleteSpawn();
 
             // Logger.LogInformation($"Mob spawn, key: {AttachedObject.GetAddressByPartitionKey()}");
             // Logger.LogInformation($"Mob spawn, type: {message.MobType}");
+            return Task.CompletedTask;
         }
 
         protected override Task SendSpawnPacket(ClientPlayPacketGenerator generator)

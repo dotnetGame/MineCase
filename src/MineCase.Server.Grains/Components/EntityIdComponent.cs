@@ -21,7 +21,8 @@ namespace MineCase.Server.Components
 
         Task IHandle<SpawnEntity>.Handle(SpawnEntity message)
         {
-            return AttachedObject.SetLocalValue(EntityIdProperty, message.EntityId);
+            AttachedObject.SetLocalValue(EntityIdProperty, message.EntityId);
+            return Task.CompletedTask;
         }
     }
 }

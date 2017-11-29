@@ -19,7 +19,7 @@ namespace MineCase.Server.Components
         {
         }
 
-        public Task SetBlockWorldPosition(BlockWorldPos value) =>
+        public void SetBlockWorldPosition(BlockWorldPos value) =>
             AttachedObject.SetLocalValue(BlockWorldPositionProperty, value);
     }
 }

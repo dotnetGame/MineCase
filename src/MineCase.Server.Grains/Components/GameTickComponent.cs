@@ -19,35 +19,37 @@ namespace MineCase.Server.Components
         {
         }
 
-        protected override Task OnAttached()
+        protected override void OnAttached()
         {
             AttachedObject.GetComponent<AddressByPartitionKeyComponent>()
                 .KeyChanged += OnAddressByPartitionKeyChanged;
             AttachedObject.RegisterPropertyChangedHandler(IsEnabledComponent.IsEnabledProperty, OnIsEnabledChanged);
             AttachedObject.QueueOperation(TrySubscribe);
-            return base.OnAttached();
         }
 
-        protected override async Task OnDetached()
+        protected override void OnDetached()
         {
             AttachedObject.GetComponent<AddressByPartitionKeyComponent>()
                 .KeyChanged -= OnAddressByPartitionKeyChanged;
-            await TryUnsubscribe();
+            AttachedObject.QueueOperation(TryUnsubscribe);
         }
 
-        private async Task OnAddressByPartitionKeyChanged(object sender, (string oldKey, string newKey) e)
+        private void OnAddressByPartitionKeyChanged(object sender, (string oldKey, string newKey) e)
         {
-            if (!string.IsNullOrEmpty(e.oldKey))
-                await GrainFactory.GetGrain<ITickEmitter>(e.oldKey).Unsubscribe(AttachedObject);
-            await TrySubscribe();
+            AttachedObject.QueueOperation(async () =>
+            {
+                if (!string.IsNullOrEmpty(e.oldKey))
+                    await GrainFactory.GetGrain<ITickEmitter>(e.oldKey).Unsubscribe(AttachedObject);
+                await TrySubscribe();
+            });
         }
 
-        private Task OnIsEnabledChanged(object sender, PropertyChangedEventArgs<bool> e)
+        private void OnIsEnabledChanged(object sender, PropertyChangedEventArgs<bool> e)
         {
             if (e.NewValue)
-                return TrySubscribe();
+                AttachedObject.QueueOperation(TrySubscribe);
             else
-                return TryUnsubscribe();
+                AttachedObject.QueueOperation(TryUnsubscribe);
         }
 
         public Task OnGameTick(GameTickArgs e)

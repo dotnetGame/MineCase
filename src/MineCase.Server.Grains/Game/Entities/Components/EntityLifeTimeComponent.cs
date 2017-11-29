@@ -15,13 +15,14 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
-        async Task IHandle<SpawnEntity>.Handle(SpawnEntity message)
+        Task IHandle<SpawnEntity>.Handle(SpawnEntity message)
         {
-            await AttachedObject.GetComponent<WorldComponent>().SetWorld(message.World);
-            await AttachedObject.GetComponent<EntityWorldPositionComponent>().SetPosition(message.Position);
+            AttachedObject.GetComponent<WorldComponent>().SetWorld(message.World);
+            AttachedObject.GetComponent<EntityWorldPositionComponent>().SetPosition(message.Position);
             var lookComponent = AttachedObject.GetComponent<EntityLookComponent>();
-            await lookComponent.SetPitch(message.Pitch);
-            await lookComponent.SetYaw(message.Yaw);
+            lookComponent.SetPitch(message.Pitch);
+            lookComponent.SetYaw(message.Yaw);
+            return Task.CompletedTask;
         }
 
         async Task IHandle<DestroyEntity>.Handle(DestroyEntity message)

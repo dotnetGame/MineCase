@@ -22,8 +22,8 @@ namespace MineCase.Algorithm.Game.Entity.Ai.MobAi
             _stateMachine = stateMachine;
         }
 
-        public Task FireAsync(CreatureEvent @event) =>
-            _stateMachine.FireAsync(@event);
+        public void Fire(CreatureEvent @event) =>
+            _stateMachine.Fire(@event);
 
         protected abstract void Configure(StateMachine<CreatureState, CreatureEvent> stateMachine);
     }

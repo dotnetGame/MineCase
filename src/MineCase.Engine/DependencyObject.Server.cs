@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MineCase.Engine.Serialization;
+using Orleans.Streams;
 
 namespace MineCase.Engine
 {
@@ -18,9 +19,9 @@ namespace MineCase.Engine
         public override async Task OnActivateAsync()
         {
             Logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
-            await InitializePreLoadComponent();
+            InitializePreLoadComponent();
             await ReadStateAsync();
-            await InitializeComponents();
+            InitializeComponents();
         }
 
         public override async Task OnDeactivateAsync()
@@ -35,14 +36,12 @@ namespace MineCase.Engine
             DeactivateOnIdle();
         }
 
-        protected virtual Task InitializeComponents()
+        protected virtual void InitializeComponents()
         {
-            return Task.CompletedTask;
         }
 
-        protected virtual Task InitializePreLoadComponent()
+        protected virtual void InitializePreLoadComponent()
         {
-            return Task.CompletedTask;
         }
 
         public async Task ReadStateAsync()
@@ -114,6 +113,16 @@ namespace MineCase.Engine
             {
                 await _operationQueue.Dequeue()();
             }
+        }
+
+        public IAsyncStream<T> GetStream<T>(string providerName, Guid streamId, string streamNamespace)
+        {
+            return GetStreamProvider(providerName).GetStream<T>(streamId, streamNamespace);
+        }
+
+        public new IDisposable RegisterTimer(Func<object, Task> callback, object state, TimeSpan dueTime, TimeSpan period)
+        {
+            return base.RegisterTimer(callback, state, dueTime, period);
         }
     }
 }

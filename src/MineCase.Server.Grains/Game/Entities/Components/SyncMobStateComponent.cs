@@ -16,11 +16,10 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
-        protected override Task OnAttached()
+        protected override void OnAttached()
         {
             if (AttachedObject.GetValue(IsEnabledComponent.IsEnabledProperty))
                 InstallPropertyChangedHandlers();
-            return base.OnAttached();
         }
 
         Task IHandle<SpawnMob>.Handle(SpawnMob message)
@@ -37,14 +36,14 @@ namespace MineCase.Server.Game.Entities.Components
             AttachedObject.RegisterPropertyChangedHandler(EntityWorldPositionComponent.EntityWorldPositionProperty, OnPositionChanged);
         }
 
-        private Task OnHeadYawChanged(object sender, PropertyChangedEventArgs<float> e)
+        private void OnHeadYawChanged(object sender, PropertyChangedEventArgs<float> e)
         {
             uint eid = AttachedObject.GetValue(EntityIdComponent.EntityIdProperty);
             byte headyaw = (byte)(AttachedObject.GetValue(EntityLookComponent.HeadYawProperty) / 360 * 255);
-            return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator().EntityHeadLook(eid, headyaw);
+            AttachedObject.QueueOperation(() => AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator().EntityHeadLook(eid, headyaw));
         }
 
-        private Task OnYawChanged(object sender, PropertyChangedEventArgs<float> e)
+        private void OnYawChanged(object sender, PropertyChangedEventArgs<float> e)
         {
             /*
             uint eid = AttachedObject.GetValue(EntityIdComponent.EntityIdProperty);
@@ -55,10 +54,9 @@ namespace MineCase.Server.Game.Entities.Components
             // return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator().EntityLook(eid, yaw, pitch, onGround);
             return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator().EntityLookAndRelativeMove(eid, 0, 0, 0, yaw, pitch, onGround);
             */
-            return Task.CompletedTask;
         }
 
-        private Task OnPitchChanged(object sender, PropertyChangedEventArgs<float> e)
+        private void OnPitchChanged(object sender, PropertyChangedEventArgs<float> e)
         {
             uint eid = AttachedObject.GetValue(EntityIdComponent.EntityIdProperty);
             byte yaw = (byte)(AttachedObject.GetValue(EntityLookComponent.YawProperty) / 360 * 255);
@@ -66,10 +64,10 @@ namespace MineCase.Server.Game.Entities.Components
             bool onGround = AttachedObject.GetValue(EntityOnGroundComponent.IsOnGroundProperty);
 
             // return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator().EntityLook(eid, yaw, pitch, onGround);
-            return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator().EntityLookAndRelativeMove(eid, 0, 0, 0, yaw, pitch, onGround);
+            AttachedObject.QueueOperation(() => AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator().EntityLookAndRelativeMove(eid, 0, 0, 0, yaw, pitch, onGround));
         }
 
-        private Task OnPositionChanged(object sender, PropertyChangedEventArgs<EntityWorldPos> e)
+        private void OnPositionChanged(object sender, PropertyChangedEventArgs<EntityWorldPos> e)
         {
             uint eid = AttachedObject.GetValue(EntityIdComponent.EntityIdProperty);
             short x = (short)((e.NewValue.X - e.OldValue.X) * 32 * 128);
@@ -79,7 +77,7 @@ namespace MineCase.Server.Game.Entities.Components
             byte pitch = (byte)(AttachedObject.GetValue(EntityLookComponent.PitchProperty) / 360 * 255);
             bool isOnGround = AttachedObject.GetValue(EntityOnGroundComponent.IsOnGroundProperty);
 
-            return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator().EntityLookAndRelativeMove(eid, x, y, z, yaw, pitch, isOnGround);
+            AttachedObject.QueueOperation(() => AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator().EntityLookAndRelativeMove(eid, x, y, z, yaw, pitch, isOnGround));
         }
     }
 }

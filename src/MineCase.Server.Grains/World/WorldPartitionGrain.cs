@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.Components;
 using MineCase.Server.Game.BlockEntities;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.Components;
@@ -18,42 +20,27 @@ namespace MineCase.Server.World
     [Reentrant]
     internal class WorldPartitionGrain : AddressByPartitionGrain, IWorldPartition
     {
-        private ITickEmitter _tickEmitter;
-        private ICollectableFinder _collectableFinder;
-        private IChunkTrackingHub _chunkTrackingHub;
-        private IChunkColumn _chunkColumn;
-        private AutoSaveStateComponent _autoSave;
         private HashSet<IPlayer> _players = new HashSet<IPlayer>();
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
-        protected override async Task InitializePreLoadComponent()
+        protected override void InitializePreLoadComponent()
         {
-            await SetComponent(new StateComponent<StateHolder>());
-
-            _tickEmitter = GrainFactory.GetPartitionGrain<ITickEmitter>(this);
-            _collectableFinder = GrainFactory.GetPartitionGrain<ICollectableFinder>(this);
-            _chunkTrackingHub = GrainFactory.GetPartitionGrain<IChunkTrackingHub>(this);
-            _chunkColumn = GrainFactory.GetPartitionGrain<IChunkColumn>(this);
+            SetComponent(new StateComponent<StateHolder>());
         }
 
-        protected override async Task InitializeComponents()
+        protected override void InitializeComponents()
         {
-            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
-            await SetComponent(_autoSave);
+            SetComponent(new PeriodicSaveStateComponent(TimeSpan.FromMinutes(1)));
         }
 
         public async Task Enter(IPlayer player)
         {
-            bool active = _players.Count == 0;
             if (_players.Add(player))
             {
                 var message = new DiscoveredByPlayer { Player = player };
                 await Task.WhenAll(from e in State.DiscoveryEntities
                                    select e.Tell(message));
-
-                if (active)
-                    await World.ActivePartition(this);
             }
         }
 
@@ -67,16 +54,6 @@ namespace MineCase.Server.World
                     DeactivateOnIdle();
                 }
             }
-        }
-
-        public async Task OnGameTick(GameTickArgs e)
-        {
-            await Task.WhenAll(
-                _tickEmitter.OnGameTick(e),
-                _collectableFinder.OnGameTick(e),
-                _chunkTrackingHub.OnGameTick(e),
-                _chunkColumn.OnGameTick(e));
-            await _autoSave.OnGameTick(this, e);
         }
 
         async Task IWorldPartition.SubscribeDiscovery(IEntity entity)

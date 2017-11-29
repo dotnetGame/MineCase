@@ -14,15 +14,15 @@ namespace MineCase.Server.Game.Entities
     [Reentrant]
     internal class PickupGrain : EntityGrain, IPickup
     {
-        protected override async Task InitializeComponents()
+        protected override void InitializeComponents()
         {
-            await base.InitializeComponents();
-            await SetComponent(new EntityLifeTimeComponent());
-            await SetComponent(new PickupMetadataComponent());
-            await SetComponent(new DiscoveryRegisterComponent());
-            await SetComponent(new PickupDiscoveryComponent());
-            await SetComponent(new CollectorComponent());
-            await SetComponent(new ColliderComponent());
+            base.InitializeComponents();
+            SetComponent(new EntityLifeTimeComponent());
+            SetComponent(new PickupMetadataComponent());
+            SetComponent(new DiscoveryRegisterComponent());
+            SetComponent(new PickupDiscoveryComponent());
+            SetComponent(new CollectorComponent());
+            SetComponent(new ColliderComponent());
         }
 
         /*

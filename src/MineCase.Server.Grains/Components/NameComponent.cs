@@ -18,7 +18,7 @@ namespace MineCase.Server.Components
         {
         }
 
-        public Task SetName(string value) =>
+        public void SetName(string value) =>
             AttachedObject.SetLocalValue(NameProperty, value);
     }
 }

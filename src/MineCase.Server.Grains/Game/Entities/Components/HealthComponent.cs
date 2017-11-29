@@ -23,10 +23,10 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
-        public Task SetHealth(uint value) =>
+        public void SetHealth(uint value) =>
             AttachedObject.SetLocalValue(HealthProperty, value);
 
-        public Task SetMaxHealth(uint value) =>
+        public void SetMaxHealth(uint value) =>
             AttachedObject.SetLocalValue(MaxHealthProperty, value);
     }
 }

@@ -17,7 +17,7 @@ namespace MineCase.Server.Components
         {
         }
 
-        public Task SetWorld(IWorld value) =>
+        public void SetWorld(IWorld value) =>
             AttachedObject.SetLocalValue(WorldProperty, value);
     }
 

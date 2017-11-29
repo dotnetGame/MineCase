@@ -20,12 +20,11 @@ namespace MineCase.Server.Persistence.Components
             _periodTime = periodTime;
         }
 
-        protected override Task OnAttached()
+        protected override void OnAttached()
         {
             var tickComponent = AttachedObject.GetComponent<GameTickComponent>();
             if (tickComponent != null)
                 tickComponent.Tick += OnGameTick;
-            return base.OnAttached();
         }
 
         public Task OnGameTick(object sender, GameTickArgs e)

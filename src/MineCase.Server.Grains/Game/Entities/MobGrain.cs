@@ -13,21 +13,21 @@ namespace MineCase.Server.Game.Entities
     [Reentrant]
     internal class MobGrain : EntityGrain, IMob
     {
-        protected override async Task InitializeComponents()
+        protected override void InitializeComponents()
         {
-            await base.InitializeComponents();
+            base.InitializeComponents();
 
             // await SetComponent(new ActiveWorldPartitionComponent());
-            await SetComponent(new EntityLifeTimeComponent());
-            await SetComponent(new EntityOnGroundComponent());
-            await SetComponent(new HealthComponent());
-            await SetComponent(new StandaloneHeldItemComponent());
-            await SetComponent(new NameComponent());
-            await SetComponent(new EntityAiComponent());
-            await SetComponent(new DiscoveryRegisterComponent());
-            await SetComponent(new MobDiscoveryComponent());
-            await SetComponent(new MobTypeComponent());
-            await SetComponent(new SyncMobStateComponent());
+            SetComponent(new EntityLifeTimeComponent());
+            SetComponent(new EntityOnGroundComponent());
+            SetComponent(new HealthComponent());
+            SetComponent(new StandaloneHeldItemComponent());
+            SetComponent(new NameComponent());
+            SetComponent(new EntityAiComponent());
+            SetComponent(new DiscoveryRegisterComponent());
+            SetComponent(new MobDiscoveryComponent());
+            SetComponent(new MobTypeComponent());
+            SetComponent(new SyncMobStateComponent());
             /*
             if (MobType == MobType.Enderman)
             {
@@ -40,9 +40,9 @@ namespace MineCase.Server.Game.Entities
         public async override Task OnActivateAsync()
         {
             await base.OnActivateAsync();
-            await this.SetLocalValue(HealthComponent.MaxHealthProperty, 20u);
-            await this.SetLocalValue(HealthComponent.HealthProperty, GetValue(HealthComponent.MaxHealthProperty));
-            await this.SetLocalValue(EntityOnGroundComponent.IsOnGroundProperty, true);
+            this.SetLocalValue(HealthComponent.MaxHealthProperty, 20u);
+            this.SetLocalValue(HealthComponent.HealthProperty, GetValue(HealthComponent.MaxHealthProperty));
+            this.SetLocalValue(EntityOnGroundComponent.IsOnGroundProperty, true);
         }
     }
 }

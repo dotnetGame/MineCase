@@ -27,7 +27,6 @@ namespace MineCase.Server.World
             (0, 0), (-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1)
         };
 
-        private AutoSaveStateComponent _autoSave;
         private List<(Cuboid box, ICollectableFinder finder)> _neighborFinders;
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
@@ -44,16 +43,15 @@ namespace MineCase.Server.World
             }
         }
 
-        protected override async Task InitializePreLoadComponent()
+        protected override void InitializePreLoadComponent()
         {
             var state = new StateComponent<StateHolder>();
-            await SetComponent(state);
+            SetComponent(state);
         }
 
-        protected override async Task InitializeComponents()
+        protected override void InitializeComponents()
         {
-            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
-            await SetComponent(_autoSave);
+            SetComponent(new PeriodicSaveStateComponent(TimeSpan.FromMinutes(1)));
         }
 
         public Task RegisterCollider(IDependencyObject entity, Shape colliderShape)
@@ -115,11 +113,6 @@ namespace MineCase.Server.World
         private void MarkDirty()
         {
             ValueStorage.IsDirty = true;
-        }
-
-        public Task OnGameTick(GameTickArgs e)
-        {
-            return _autoSave.OnGameTick(this, e);
         }
 
         public class StateHolder

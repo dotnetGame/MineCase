@@ -22,6 +22,7 @@
     <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="2.0.0" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.2" />
     <PackageReference Include="Microsoft.Orleans.Core" Version="2.0.0-beta1" />
+    <PackageReference Include="Microsoft.Orleans.OrleansRuntime" Version="2.0.0-beta1" />
     <PackageReference Include="Microsoft.Orleans.OrleansCodeGenerator.Build" Version="2.0.0-dev20171106" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" PrivateAssets="All" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />

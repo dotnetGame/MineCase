@@ -15,6 +15,8 @@ using MineCase.Server.World.Generation;
 using MineCase.World;
 using MineCase.World.Biomes;
 using MineCase.World.Generation;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Options;
 using Orleans;
 using Orleans.Concurrency;
 
@@ -24,19 +26,16 @@ namespace MineCase.Server.World
     [Reentrant]
     internal class ChunkColumnGrain : AddressByPartitionGrain, IChunkColumn
     {
-        private AutoSaveStateComponent _autoSave;
-
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
-        protected override async Task InitializePreLoadComponent()
+        protected override void InitializePreLoadComponent()
         {
-            await SetComponent(new StateComponent<StateHolder>());
+            SetComponent(new StateComponent<StateHolder>());
         }
 
-        protected override async Task InitializeComponents()
+        protected override void InitializeComponents()
         {
-            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute * 5);
-            await SetComponent(_autoSave);
+            SetComponent(new PeriodicSaveStateComponent(TimeSpan.FromMinutes(1)));
         }
 
         public async Task<BlockState> GetBlockState(int x, int y, int z)
@@ -187,11 +186,6 @@ namespace MineCase.Server.World
             return Task.CompletedTask;
         }
 
-        public Task OnGameTick(GameTickArgs e)
-        {
-            return _autoSave.OnGameTick(this, e);
-        }
-
         private void MarkDirty()
         {
             ValueStorage.IsDirty = true;
@@ -203,6 +197,7 @@ namespace MineCase.Server.World
 
             public ChunkColumnCompactStorage Storage { get; set; }
 
+            [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
             public Dictionary<BlockChunkPos, IBlockEntity> BlockEntities { get; set; }
 
             public StateHolder()
