@@ -248,10 +248,10 @@ Bucket         = IronIngot, 1:1, 2:2, 3:1
 ##
 #
 ## Helmets:
-#DiamondHelmet    = Diamond,   1:1, 2:1, 3:1, 1:2, 3:2
-#GoldenHelmet     = GoldIngot, 1:1, 2:1, 3:1, 1:2, 3:2
-#IronHelmet       = IronIngot, 1:1, 2:1, 3:1, 1:2, 3:2
-#LeatherHelmet    = Leather,   1:1, 2:1, 3:1, 1:2, 3:2
+DiamondHelmet    = Diamond,   1:1, 2:1, 3:1, 1:2, 3:2
+GoldenHelmet     = GoldIngot, 1:1, 2:1, 3:1, 1:2, 3:2
+IronHelmet       = IronIngot, 1:1, 2:1, 3:1, 1:2, 3:2
+LeatherCap    = Leather,   1:1, 2:1, 3:1, 1:2, 3:2
 #
 ## Chestplates:
 #DiamondChestplate   = Diamond,   1:1, 3:1, 1:2, 2:2, 3:2, 1:3, 2:3, 3:3
