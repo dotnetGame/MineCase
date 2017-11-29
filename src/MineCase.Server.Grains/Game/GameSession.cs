@@ -5,8 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MineCase.Engine;
 using MineCase.Protocol.Play;
+using MineCase.Server.Components;
 using MineCase.Server.Network.Play;
+using MineCase.Server.Persistence.Components;
 using MineCase.Server.User;
 using MineCase.Server.World;
 using MineCase.World;
@@ -16,24 +19,38 @@ using Orleans.Concurrency;
 namespace MineCase.Server.Game
 {
     [Reentrant]
-    internal class GameSession : Grain, IGameSession
+    internal class GameSession : DependencyObject, IGameSession
     {
         private IWorld _world;
         private IChunkSender _chunkSender;
+        private FixedUpdateComponent _fixedUpdate;
         private readonly Dictionary<IUser, UserContext> _users = new Dictionary<IUser, UserContext>();
-
-        private IDisposable _gameTick;
-        private DateTime _lastGameTickTime;
 
         private ILogger _logger;
 
         public override async Task OnActivateAsync()
         {
+            await base.OnActivateAsync();
             _logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<GameSession>();
             _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(this.GetPrimaryKeyString());
             _chunkSender = GrainFactory.GetGrain<IChunkSender>(this.GetPrimaryKeyString());
-            _lastGameTickTime = DateTime.UtcNow;
-            _gameTick = RegisterTimer(OnGameTick, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(5));
+            await _fixedUpdate.Start(_world);
+        }
+
+        protected override void InitializeComponents()
+        {
+            SetComponent(new PeriodicSaveStateComponent(TimeSpan.FromMinutes(1)));
+
+            _fixedUpdate = new FixedUpdateComponent();
+            _fixedUpdate.Tick += OnFixedUpdate;
+            SetComponent(_fixedUpdate);
+        }
+
+        private async Task OnFixedUpdate(object sender, GameTickArgs e)
+        {
+            await _world.OnGameTick(e);
+            await Task.WhenAll(from u in _users.Keys
+                         select u.OnGameTick(e));
         }
 
         public async Task JoinGame(IUser user)
@@ -90,33 +107,6 @@ namespace MineCase.Server.Game
                 if (await item.GetName() == receiverName ||
                     await item.GetName() == senderName)
                     await item.SendChatMessage(jsonData, position);
-            }
-        }
-
-        private async Task OnGameTick(object state)
-        {
-            try
-            {
-                var now = DateTime.UtcNow;
-                var deltaTime = now - _lastGameTickTime;
-
-                if (deltaTime.TotalMilliseconds < 30) return;
-
-                _lastGameTickTime = now;
-
-                var worldTime = await _world.GetTime();
-                var timeArgs = new GameTickArgs { DeltaTime = deltaTime, WorldAge = worldTime.WorldAge, TimeOfDay = worldTime.TimeOfDay };
-
-                await _world.OnGameTick(timeArgs);
-                Task.WhenAll(from u in _users.Keys
-                             select u.OnGameTick(timeArgs)).Ignore();
-
-                if (worldTime.WorldAge % 20 == 0)
-                    _logger.LogInformation($"Delta Game Tick: {deltaTime.TotalMilliseconds}ms.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
             }
         }
 

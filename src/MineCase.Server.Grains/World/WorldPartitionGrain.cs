@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.Components;
 using MineCase.Server.Game.BlockEntities;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.Components;
@@ -21,11 +22,7 @@ namespace MineCase.Server.World
     {
         private ITickEmitter _tickEmitter;
         private HashSet<IPlayer> _players = new HashSet<IPlayer>();
-        private IDisposable _tickTimer;
-        private Stopwatch _stopwatch;
-        private long _worldAge;
-        private long _actualAge;
-        private static readonly long _updateTick = TimeSpan.FromMilliseconds(50).Ticks;
+        private FixedUpdateComponent _fixedUpdate;
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
@@ -39,6 +36,15 @@ namespace MineCase.Server.World
         protected override void InitializeComponents()
         {
             SetComponent(new PeriodicSaveStateComponent(TimeSpan.FromMinutes(1)));
+
+            _fixedUpdate = new FixedUpdateComponent();
+            _fixedUpdate.Tick += OnFixedUpdate;
+            SetComponent(_fixedUpdate);
+        }
+
+        private Task OnFixedUpdate(object sender, GameTickArgs e)
+        {
+            return _tickEmitter.OnGameTick(e);
         }
 
         public async Task Enter(IPlayer player)
@@ -53,27 +59,8 @@ namespace MineCase.Server.World
                 if (active)
                 {
                     await World.ActivePartition(this);
-                    _worldAge = await World.GetAge();
-                    _actualAge = 0;
-                    _stopwatch = new Stopwatch();
-                    _stopwatch.Start();
-                    _tickTimer = RegisterTimer(OnTick, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(5));
+                    await _fixedUpdate.Start(World);
                 }
-            }
-        }
-
-        private async Task OnTick(object arg)
-        {
-            var expectedAge = _stopwatch.ElapsedTicks / _updateTick;
-            var e = new GameTickArgs { DeltaTime = TimeSpan.FromMilliseconds(50) };
-            var updateTimes = expectedAge - _actualAge;
-            for (int i = 0; i < updateTimes; i++)
-            {
-                e.WorldAge = _worldAge;
-                e.TimeOfDay = _worldAge % 24000;
-                await _tickEmitter.OnGameTick(e);
-                _worldAge++;
-                _actualAge++;
             }
         }
 
@@ -84,6 +71,7 @@ namespace MineCase.Server.World
                 if (_players.Count == 0)
                 {
                     await World.DeactivePartition(this);
+                    _fixedUpdate.Stop();
                     DeactivateOnIdle();
                 }
             }
