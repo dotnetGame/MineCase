@@ -17,25 +17,46 @@ using Orleans.Streams;
 namespace MineCase.Server.World
 {
     [Reentrant]
-    internal class TickEmitterGrain : Grain, ITickEmitter
+    internal class TickEmitterGrain : AddressByPartitionGrain, ITickEmitter
     {
         private ImmutableHashSet<IDependencyObject> _tickables = ImmutableHashSet<IDependencyObject>.Empty;
 
-        public Task OnGameTick(GameTickArgs e)
+        private FixedUpdateComponent _fixedUpdate;
+
+        protected override void InitializeComponents()
+        {
+            SetComponent(new PeriodicSaveStateComponent(TimeSpan.FromMinutes(1)));
+
+            _fixedUpdate = new FixedUpdateComponent();
+            _fixedUpdate.Tick += OnFixedUpdate;
+            SetComponent(_fixedUpdate);
+        }
+
+        private Task OnFixedUpdate(object sender, GameTickArgs e)
         {
             var msg = new GameTick { Args = e };
             return Task.WhenAll(from t in _tickables select t.Tell(msg));
         }
 
-        public Task Subscribe(IDependencyObject observer)
+        public async Task Subscribe(IDependencyObject observer)
         {
+            bool active = _tickables.IsEmpty;
             _tickables = _tickables.Add(observer);
-            return Task.CompletedTask;
+
+            if (active)
+            {
+                await _fixedUpdate.Start(World);
+            }
         }
 
         public Task Unsubscribe(IDependencyObject observer)
         {
             _tickables = _tickables.Remove(observer);
+            if (_tickables.IsEmpty)
+            {
+                _fixedUpdate.Stop();
+            }
+
             return Task.CompletedTask;
         }
     }

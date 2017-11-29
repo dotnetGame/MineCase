@@ -28,6 +28,7 @@ namespace MineCase.Server.Components
 
         public async Task Start(IWorld world)
         {
+            _tickTimer?.Dispose();
             _worldAge = await world.GetAge();
             _actualAge = 0;
             _stopwatch = new Stopwatch();
