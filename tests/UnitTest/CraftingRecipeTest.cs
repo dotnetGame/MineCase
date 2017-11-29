@@ -32,7 +32,7 @@ namespace MineCase.UnitTest
             }
 
             var recipes = loader.Recipes;
-            Assert.Equal(13 + 26, recipes.Count);
+            Assert.Equal(13 + 26 + 4, recipes.Count);
         }
 
         [Fact]
