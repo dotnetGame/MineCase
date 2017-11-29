@@ -15,6 +15,8 @@ using MineCase.Server.World.Generation;
 using MineCase.World;
 using MineCase.World.Biomes;
 using MineCase.World.Generation;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Options;
 using Orleans;
 using Orleans.Concurrency;
 
@@ -195,6 +197,7 @@ namespace MineCase.Server.World
 
             public ChunkColumnCompactStorage Storage { get; set; }
 
+            [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfDocuments)]
             public Dictionary<BlockChunkPos, IBlockEntity> BlockEntities { get; set; }
 
             public StateHolder()
