@@ -69,7 +69,7 @@ namespace MineCase.UnitTest
             var recipe = matcher.FindRecipe(new Slot[,]
             {
                 { new Slot { BlockId = (short)BlockStates.WoodPlanks().Id, ItemCount = 1 }, Slot.Empty, Slot.Empty },
-                { new Slot { BlockId = (short)BlockStates.WoodPlanks().Id, ItemCount = 1 }, new Slot { BlockId = (short)ItemId.Stick, ItemCount = 1 }, new Slot { BlockId = (short)ItemId.Stick, ItemCount = 1 }},
+                { new Slot { BlockId = (short)BlockStates.WoodPlanks().Id, ItemCount = 1 }, new Slot { BlockId = (short)ItemId.Stick, ItemCount = 1 }, new Slot { BlockId = (short)ItemId.Stick, ItemCount = 1 } },
                 { new Slot { BlockId = (short)BlockStates.WoodPlanks().Id, ItemCount = 1 }, Slot.Empty, Slot.Empty }
             });
             Assert.NotNull(recipe);
