@@ -1,0 +1,16 @@
+#********************#
+# Drop Block Mapping #
+#********************#
+#
+#
+#******************************************************#
+#                Basic Notation Help
+#
+#
+#******************************************************#
+
+
+#Block DroppedBlock Hardness Tool Hand Wooden Stone Iron Diamand Golden Shears Sword 
+Barrier =           -, INF,             -, INF,    -,   -,   -,   -,   -, -, -
+Stone   = Cobblestone, 1.5, WoodenPickaxe, 7.5, 1.15, 0.6, 0.4, 0.3, 0.2, -, -
+
