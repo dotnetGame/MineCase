@@ -19,7 +19,12 @@ namespace MineCase.Server.Game.Entities.Components
 
         protected override Task SendSpawnPacket(ClientPlayPacketGenerator generator)
         {
-            return Task.CompletedTask;
+            var metadata = new EntityMetadata.Player
+            {
+                Health = AttachedObject.GetValue(HealthComponent.HealthProperty)
+            };
+
+            return generator.SpawnPlayer(AttachedObject.EntityId, AttachedObject.UUID, AttachedObject.Position, AttachedObject.Pitch, AttachedObject.Yaw, metadata);
         }
 
         Task IHandle<PlayerLoggedIn>.Handle(PlayerLoggedIn message)

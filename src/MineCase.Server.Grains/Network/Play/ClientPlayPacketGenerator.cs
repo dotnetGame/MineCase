@@ -51,6 +51,27 @@ namespace MineCase.Server.Network.Play
                  }));
         }
 
+        public Task SpawnPlayer(uint entityId, Guid uuid, Vector3 position, float pitch, float yaw, Game.Entities.EntityMetadata.Player metadata)
+        {
+            var metaPacket = CreateEntityMetadata(entityId, metadata, bw =>
+            {
+                WriteEntityMetadata(bw, (Game.Entities.EntityMetadata.Entity)metadata);
+                WriteEntityMetadata(bw, (Game.Entities.EntityMetadata.Living)metadata);
+                WriteEntityMetadata(bw, metadata);
+            });
+            return Sink.SendPacket(new SpawnPlayer
+            {
+                EntityId = entityId,
+                PlayerUUID = uuid,
+                X = position.X,
+                Y = position.Y,
+                Z = position.Z,
+                Pitch = pitch,
+                Yaw = yaw,
+                Metadata = metaPacket.Metadata
+            });
+        }
+
         public Task SetSlot(byte windowId, short slot, Slot slotData)
         {
             return Sink.SendPacket(new SetSlot
@@ -128,6 +149,67 @@ namespace MineCase.Server.Network.Play
         {
             // Item
             bw.WriteAsEntityMetadata(6, EntityMetadataType.Slot).WriteAsSlot(metadata.Item);
+        }
+
+        private static void WriteEntityMetadata(BinaryWriter bw, Game.Entities.EntityMetadata.Living metadata)
+        {
+            byte handStates = 0;
+            {
+                if (metadata.IsHandActive)
+                    handStates |= 0x01;
+                if (metadata.ActiveHand == SwingHandState.OffHand)
+                    handStates |= 0x02;
+            }
+
+            // Hnad States
+            bw.WriteAsEntityMetadata(6, EntityMetadataType.Byte).WriteAsByte(handStates);
+
+            // Health
+            bw.WriteAsEntityMetadata(7, EntityMetadataType.Float).WriteAsFloat(metadata.Health);
+
+            // Potion effect color
+            bw.WriteAsEntityMetadata(8, EntityMetadataType.VarInt).WriteAsVarInt(metadata.PotionEffectColor, out _);
+
+            // Is potion effect ambient
+            bw.WriteAsEntityMetadata(9, EntityMetadataType.Boolean).WriteAsBoolean(metadata.IsPotionEffectAmbient);
+
+            // Number of arrows in entity
+            bw.WriteAsEntityMetadata(10, EntityMetadataType.VarInt).WriteAsVarInt(metadata.NumberOfArrows, out _);
+        }
+
+        private static void WriteEntityMetadata(BinaryWriter bw, Game.Entities.EntityMetadata.Player metadata)
+        {
+            byte skinParts = 0;
+            {
+                if (metadata.CapeEnabled)
+                    skinParts |= 0x01;
+                if (metadata.JacketEnabled)
+                    skinParts |= 0x02;
+                if (metadata.LeftSleeveEnabled)
+                    skinParts |= 0x04;
+                if (metadata.RightSleeveEnabled)
+                    skinParts |= 0x08;
+                if (metadata.LeftPantsLegEnabled)
+                    skinParts |= 0x10;
+                if (metadata.RightPantsLegEnabled)
+                    skinParts |= 0x20;
+                if (metadata.HatEnabled)
+                    skinParts |= 0x40;
+            }
+
+            // Additional Hearts
+            bw.WriteAsEntityMetadata(11, EntityMetadataType.Float).WriteAsFloat(metadata.AdditionalHearts);
+
+            // Score
+            bw.WriteAsEntityMetadata(12, EntityMetadataType.VarInt).WriteAsVarInt(metadata.Score, out _);
+
+            // The Displayed Skin Parts
+            bw.WriteAsEntityMetadata(13, EntityMetadataType.Byte).WriteAsByte(skinParts);
+
+            // Main hand
+            bw.WriteAsEntityMetadata(14, EntityMetadataType.Byte).WriteAsByte(metadata.MainHand);
+
+            // TODO: And NBT fields
         }
 
         private static EntityMetadata CreateEntityMetadata<T>(uint entityId, T metadata, Action<BinaryWriter> action)

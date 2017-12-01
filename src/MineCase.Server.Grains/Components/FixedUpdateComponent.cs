@@ -51,8 +51,11 @@ namespace MineCase.Server.Components
                 _actualAge++;
             }
 
-            var deltaTime = now - _lastUpdate;
-            _lastUpdate = now;
+            if (updateTimes > 0)
+            {
+                var deltaTime = now - _lastUpdate;
+                _lastUpdate = now;
+            }
         }
 
         public void Stop()
