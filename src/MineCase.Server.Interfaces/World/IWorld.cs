@@ -22,11 +22,5 @@ namespace MineCase.Server.World
         Task<int> GetSeed();
 
         Task<GeneratorSettings> GetGeneratorSettings();
-
-        Task ActivePartition(IWorldPartition worldPartition);
-
-        Task DeactivePartition(IWorldPartition worldPartition);
-
-        Task<EntityWorldPos> GetSpawnPosition();
     }
 }

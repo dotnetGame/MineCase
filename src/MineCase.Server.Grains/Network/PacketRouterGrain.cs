@@ -18,30 +18,25 @@ namespace MineCase.Server.Network
         private uint _protocolVersion;
         private IUser _user;
 
-        public async Task SendPacket(UncompressedPacket packet)
+        public Task SendPacket(UncompressedPacket packet)
         {
-            dynamic innerPacket = new object();
             switch (_state)
             {
                 case SessionState.Handshaking:
-                    innerPacket = DeserializeHandshakingPacket(packet);
-                    break;
+                    return DispatchHandshakingPackets(packet);
                 case SessionState.Status:
-                    innerPacket = DeserializeStatusPacket(packet);
-                    break;
+                    return DispatchStatusPackets(packet);
                 case SessionState.Login:
-                    innerPacket = DeserializeLoginPacket(packet);
-                    break;
+                    return DispatchLoginPackets(packet);
                 case SessionState.Play:
-                    await _user.ForwardPacket(packet);
-                    return;
+                    return _user.ForwardPacket(packet);
                 case SessionState.Closed:
                     break;
                 default:
                     break;
             }
 
-            await DispatchPacket(innerPacket);
+            return Task.CompletedTask;
         }
 
         public async Task Close()
@@ -49,11 +44,6 @@ namespace MineCase.Server.Network
             _state = SessionState.Closed;
             await GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey()).Close();
             DeactivateOnIdle();
-        }
-
-        private Task DispatchPacket(object packet)
-        {
-            throw new NotImplementedException();
         }
 
         public Task Play()

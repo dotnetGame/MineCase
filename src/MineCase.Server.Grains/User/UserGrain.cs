@@ -33,8 +33,6 @@ namespace MineCase.Server.User
         private IPlayer _player;
         private UserState _userState;
 
-        private AutoSaveStateComponent _autoSave;
-
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
         protected override void InitializePreLoadComponent()
@@ -45,8 +43,7 @@ namespace MineCase.Server.User
             stateComponent.AfterReadState += StateComponent_AfterReadState;
             stateComponent.SetDefaultState += StateComponent_SetDefaultState;
 
-            _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
-            SetComponent(_autoSave);
+            SetComponent(new PeriodicSaveStateComponent(TimeSpan.FromMinutes(1)));
         }
 
         private async Task StateComponent_SetDefaultState(object sender, EventArgs e)
@@ -166,15 +163,11 @@ namespace MineCase.Server.User
         {
             if (_userState == UserState.DownloadingWorld)
             {
-                // await _player.SendPositionAndLook();
                 _userState = UserState.Playing;
             }
 
-            /*
-            if (_state >= UserState.JoinedGame && _state < UserState.Destroying)
-                await _chunkLoader.OnGameTick(worldAge);*/
-            await _generator.TimeUpdate(e.WorldAge, e.TimeOfDay);
-            await _autoSave.OnGameTick(this, e);
+            if (e.WorldAge % 20 == 0)
+                await _generator.TimeUpdate(e.WorldAge, e.TimeOfDay);
         }
 
         public Task SetPacketRouter(IPacketRouter packetRouter)
@@ -187,10 +180,11 @@ namespace MineCase.Server.User
 
         public Task ForwardPacket(UncompressedPacket packet)
         {
-            return _player.Tell(new ServerboundPacketMessage
+            _player.InvokeOneWay(p => p.Tell(new ServerboundPacketMessage
             {
                 Packet = packet
-            });
+            }));
+            return Task.CompletedTask;
         }
 
         public Task SetInventorySlot(int index, Slot slot)

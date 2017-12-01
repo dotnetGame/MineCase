@@ -29,6 +29,7 @@ namespace MineCase.Server
             var builder = new SiloHostBuilder()
                 .ConfigureLogging(ConfigureLogging)
                 .UseConfiguration(LoadClusterConfiguration())
+                .UseDashboard()
                 .UseServiceProviderFactory(ConfigureServices);
             SelectAssemblies();
             ConfigureApplicationParts(builder);
@@ -53,6 +54,7 @@ namespace MineCase.Server
         {
             var cluster = new ClusterConfiguration();
             cluster.LoadFromFile("OrleansConfiguration.dev.xml");
+            cluster.RegisterDashboard();
             cluster.AddMongoDBStorageProvider("PubSubStore", c =>
             {
                 c.ConnectionString = Configuration.GetSection("persistenceOptions")["connectionString"];
