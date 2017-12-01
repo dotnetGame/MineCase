@@ -20,6 +20,8 @@ namespace MineCase.Server.World
     {
         private GeneratorSettings _genSettings; // 生成设置
         private string _seed; // 世界种子
+
+        // private EntityWorldPos _spawnPos; // 出生点
         private readonly HashSet<IWorldPartition> _activedPartitions = new HashSet<IWorldPartition>();
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
@@ -99,6 +101,32 @@ namespace MineCase.Server.World
         {
             _activedPartitions.Remove(worldPartition);
             return Task.CompletedTask;
+        }
+
+        public async Task<EntityWorldPos> GetSpawnPosition()
+        {
+            EntityWorldPos retval = new EntityWorldPos(5, 256, 5);
+            var chunkColumn = GrainFactory.GetGrain<IChunkColumn>(this.MakeAddressByPartitionKey(new ChunkWorldPos(0, 0)));
+            for (int i = 255; i >= 0; --i)
+            {
+                if (!(await chunkColumn.GetBlockState(5, i, 5)).IsAir())
+                {
+                    retval = new EntityWorldPos(5, i + 1, 5);
+                    break;
+                }
+            }
+
+            // generate chunks in a range
+            for (int x = 0; x < 10; ++x)
+            {
+                for (int z = 0; z < 10; ++z)
+                {
+                    var chunk = GrainFactory.GetGrain<IChunkColumn>(this.MakeAddressByPartitionKey(new ChunkWorldPos(x, z)));
+                    await chunk.GetBlockState(0, 0, 0);
+                }
+            }
+
+            return retval;
         }
 
         private void MarkDirty()

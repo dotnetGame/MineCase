@@ -158,7 +158,7 @@ namespace MineCase.Server.World
 
                 State.Generated = true;
 
-                // await WriteStateAsync();
+                await WriteStateAsync();
             }
         }
 

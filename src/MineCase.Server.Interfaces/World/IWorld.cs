@@ -26,5 +26,7 @@ namespace MineCase.Server.World
         Task ActivePartition(IWorldPartition worldPartition);
 
         Task DeactivePartition(IWorldPartition worldPartition);
+
+        Task<EntityWorldPos> GetSpawnPosition();
     }
 }
