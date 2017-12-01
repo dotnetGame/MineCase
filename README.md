@@ -1,7 +1,7 @@
 MineCase 
 =========================================
-#### [English](https://github.com/dotnetGame/MineCase/blob/master/Readme.md) | [中文文档](https://github.com/dotnetGame/MineCase/blob/master/Readme-zh.md) 
-#### [![Build Status](https://travis-ci.org/dotnetGame/MineCase.svg?branch=master)](https://travis-ci.org/dotnetGame/MineCase) [![Build status](https://ci.appveyor.com/api/projects/status/w9h243k1lqee2ke5/branch/master?svg=true)](https://ci.appveyor.com/project/sunnycase/minecase/branch/master)
+#### [English](https://github.com/dotnetGame/MineCase/blob/master/README.md) | [中文文档](https://github.com/dotnetGame/MineCase/blob/master/README-zh.md) 
+#### [![Build Status](https://travis-ci.org/dotnetGame/MineCase.svg?branch=master)](https://travis-ci.org/dotnetGame/MineCase)   [![Build status](https://ci.appveyor.com/api/projects/status/w9h243k1lqee2ke5/branch/master?svg=true)](https://ci.appveyor.com/project/sunnycase/minecase/branch/master)
  
 `MineCase` is a cross-platform application with distributed server of `Minecraft`. 
 the project is designed to create a high-performance, distributed system by using isolating different components through actor mode. 
