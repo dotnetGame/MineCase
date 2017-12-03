@@ -10,6 +10,7 @@ using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
+using MineCase.Server.Settings;
 
 namespace MineCase.Server.User
 {
@@ -143,10 +144,14 @@ namespace MineCase.Server.User
             _sentChunks = new HashSet<ChunkWorldPos>();
         }
 
-        public Task SetViewDistance(int viewDistance)
+        public async Task SetViewDistance(int viewDistance)
         {
-            _viewDistance = viewDistance;
-            return Task.CompletedTask;
+            var settings = GrainFactory.GetGrain<IServerSettings>(0);
+            var maxViewDistance = (await settings.GetSettings()).ViewDistance;
+            if (viewDistance >= 2 && viewDistance <= maxViewDistance)
+                _viewDistance = viewDistance;
+            else
+                _viewDistance = (int)maxViewDistance;
         }
     }
 }

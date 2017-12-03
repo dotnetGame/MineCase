@@ -46,7 +46,8 @@ namespace MineCase.Server.Game.Entities.Components
 
         public async Task FinishDigging(BlockWorldPos location, PlayerDiggingFace face)
         {
-            if (_diggingBlock != null)
+            var gameMode = AttachedObject.GetValue(GameModeComponent.GameModeProperty);
+            if (gameMode.ModeClass != GameMode.Class.Creative && _diggingBlock != null)
             {
                 var heldItem = await AttachedObject.Ask(new AskHeldItem());
                 var itemHandler = ItemHandler.Create((uint)heldItem.slot.BlockId);
