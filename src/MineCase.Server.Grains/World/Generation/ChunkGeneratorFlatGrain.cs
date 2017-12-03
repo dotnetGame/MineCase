@@ -37,7 +37,7 @@ namespace MineCase.Server.World.Generation
                     for (int j = 0; j < 16; ++j)
                     {
                         for (int k = 0; k < 16; ++k)
-                            section.Data[j, y % 16, k] = new BlockState { Id = state.Value.Id, MetaValue = state.Value.MetaValue };
+                            section.Data[j, y % 16, k] = state.Value;
                     }
                 }
 

@@ -35,6 +35,7 @@ namespace MineCase.Serialization.Serializers
             BsonSerializer.RegisterSerializer(new SizeSerializer());
             BsonSerializer.RegisterSerializer(new ChunkColumnCompactStorageSerializer());
             BsonSerializer.RegisterSerializer(new ChunkSectionCompactStorageSerializer());
+            BsonSerializer.RegisterSerializer(new GameModeSerializer());
         }
     }
 }

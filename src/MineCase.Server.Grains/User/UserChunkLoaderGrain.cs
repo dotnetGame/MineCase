@@ -6,11 +6,11 @@ using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
+using MineCase.Server.Settings;
 using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
-using MineCase.Server.Settings;
 
 namespace MineCase.Server.User
 {

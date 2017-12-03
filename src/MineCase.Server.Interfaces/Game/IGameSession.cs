@@ -18,5 +18,7 @@ namespace MineCase.Server.Game
         Task SendChatMessage(IUser sender, String message);
 
         Task SendChatMessage(IUser sender, IUser receiver, String messages);
+
+        Task<int> UserNumber();
     }
 }

@@ -131,6 +131,11 @@ namespace MineCase.Server.Game
             return Task.FromResult(jsonData);
         }
 
+        public Task<int> UserNumber()
+        {
+            return Task.FromResult(_users.Count);
+        }
+
         private class UserContext
         {
             public ClientPlayPacketGenerator Generator { get; set; }

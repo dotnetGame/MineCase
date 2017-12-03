@@ -151,7 +151,7 @@ namespace MineCase.World.Generation
         public int LapisSpread { get; set; } = 16;
 
         public BlockState?[] FlatBlockId { get; set; } =
-            new BlockState?[] { BlockStates.Bedrock(), BlockStates.Stone(), BlockStates.Dirt(), BlockStates.Grass() };
+            new BlockState?[] { BlockStates.Bedrock(), BlockStates.Stone(), BlockStates.Dirt(), BlockStates.GrassBlock() };
 
         // public FlatGeneratorInfo FlatGeneratorInfo { get; set; }
 

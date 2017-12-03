@@ -27,7 +27,7 @@
     "generator-settings": "",
     "max-build-height": 256,
     "level-seed": "minecase",
-    "level-type": "DEFAULT",
+    "level-type": "FLAT",
     "enable-command-block": false,
     "hardcore": false,
 

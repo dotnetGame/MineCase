@@ -121,7 +121,7 @@ namespace MineCase.Server.Game.Items
             }
         }
 
-        public async Task<bool> FinishedDigging(IEntity entity, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, BlockState blockState, long usedTick)
+        public async Task<bool> FinishedDigging(IEntity entity, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, BlockState blockState, long usedTick, GameMode gameMode)
         {
             if (!blockState.IsSameId(BlockStates.Bedrock()))
             {
@@ -129,12 +129,16 @@ namespace MineCase.Server.Game.Items
                 await world.SetBlockState(grainFactory, position, newState);
 
                 // 产生 Pickup
-                var chunk = position.ToChunkWorldPos();
-                var finder = grainFactory.GetGrain<ICollectableFinder>(world.MakeAddressByPartitionKey(chunk));
-                var blockHandler = BlockHandler.Create((BlockId)blockState.Id);
-                var droppedSlot = blockHandler.DropBlock(ItemId, blockState);
-                if (!droppedSlot.IsEmpty)
-                    await finder.SpawnPickup(position + new Vector3(0.5f, 0.5f, 0.5f), new[] { droppedSlot }.AsImmutable());
+                if (gameMode.ModeClass != GameMode.Class.Creative)
+                {
+                    var chunk = position.ToChunkWorldPos();
+                    var finder = grainFactory.GetGrain<ICollectableFinder>(world.MakeAddressByPartitionKey(chunk));
+                    var blockHandler = BlockHandler.Create((BlockId)blockState.Id);
+                    var droppedSlot = blockHandler.DropBlock(ItemId, blockState);
+                    if (!droppedSlot.IsEmpty)
+                        await finder.SpawnPickup(position + new Vector3(0.5f, 0.5f, 0.5f), new[] { droppedSlot }.AsImmutable());
+                }
+
                 return true;
             }
 

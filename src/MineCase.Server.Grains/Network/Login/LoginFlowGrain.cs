@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Protocol.Login;
 using MineCase.Server.Game;
+using MineCase.Server.Settings;
 using MineCase.Server.User;
 using Orleans;
 using Orleans.Concurrency;
@@ -24,6 +25,10 @@ namespace MineCase.Server.Network.Login
             else
             {
                 var user = await GrainFactory.GetGrain<INonAuthenticatedUser>(packet.Name).GetUser();
+                var world = await user.GetWorld();
+                var gameSession = GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());
+                var settings = await GrainFactory.GetGrain<IServerSettings>(0).GetSettings();
+
                 if (await user.GetProtocolVersion() > MineCase.Protocol.Protocol.Version)
                 {
                     await SendLoginDisconnect("{\"text\":\"Outdated server!I'm still on 1.12\"}");
@@ -31,6 +36,10 @@ namespace MineCase.Server.Network.Login
                 else if (await user.GetProtocolVersion() < MineCase.Protocol.Protocol.Version)
                 {
                     await SendLoginDisconnect("{\"text\":\"Outdated client!Please use 1.12\"}");
+                }
+                else if (await gameSession.UserNumber() >= settings.MaxPlayers)
+                {
+                    await SendLoginDisconnect("{\"text\":\"The server is full!\"}");
                 }
                 else
                 {
@@ -42,7 +51,6 @@ namespace MineCase.Server.Network.Login
                     await user.SetPacketRouter(packetRouter);
                     await packetRouter.BindToUser(user);
 
-                    var world = await user.GetWorld();
                     var game = GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());
                     await game.JoinGame(user);
                 }
