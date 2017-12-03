@@ -2,8 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-	<CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
-	<Configurations>Debug;Release;Appveyor;TravisCI</Configurations>
+    <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
+    <Configurations>Debug;Release;Appveyor;TravisCI</Configurations>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +21,7 @@
   <ItemGroup>
     <AdditionalFiles Include="..\..\build\stylecop.json" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\MineCase.Algorithm\MineCase.Algorithm.csproj" />
     <ProjectReference Include="..\..\src\MineCase.Engine\MineCase.Server.Engine.csproj" />

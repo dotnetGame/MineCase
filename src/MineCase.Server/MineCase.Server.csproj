@@ -6,6 +6,8 @@
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
     <Configurations>Debug;Release;Appveyor;TravisCI</Configurations>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -36,7 +38,7 @@
     <PackageReference Include="Microsoft.Orleans.Server" Version="2.0.0-beta1" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.4.0" />
-    <PackageReference Include="Orleans.Providers.MongoDB" Version="2.0.0-preview2"/>
+    <PackageReference Include="Orleans.Providers.MongoDB" Version="2.0.0-preview2" />
   </ItemGroup>
 
   <ItemGroup>
