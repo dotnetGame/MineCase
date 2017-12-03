@@ -8,6 +8,8 @@
     <RootNamespace>MineCase.Engine</RootNamespace>
     <Configurations>Debug;Release;Appveyor;TravisCI</Configurations>
     <DefineConstants>$(DefineConstants);ECS_SERVER</DefineConstants>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
