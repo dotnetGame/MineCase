@@ -33,5 +33,21 @@ namespace MineCase.Server.Network
             return Task.WhenAll(from sink in _sinks
                                 select sink.SendPacket(packetId, data));
         }
+
+        public async Task SendPacket(ISerializablePacket packet, IPacketSink except)
+        {
+            if (_sinks.Any())
+            {
+                var preparedPacket = await _packetPackager.PreparePacket(packet);
+                await SendPacket(preparedPacket.packetId, preparedPacket.data.AsImmutable(), except);
+            }
+        }
+
+        public Task SendPacket(uint packetId, Immutable<byte[]> data, IPacketSink except)
+        {
+            return Task.WhenAll(from sink in _sinks
+                                where !sink.Equals(except)
+                                select sink.SendPacket(packetId, data));
+        }
     }
 }

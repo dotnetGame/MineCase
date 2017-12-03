@@ -52,11 +52,26 @@ namespace MineCase.Server.Game.Entities.Components
             AttachedObject.RegisterPropertyChangedHandler(EntityWorldPositionComponent.EntityWorldPositionProperty, OnEntityWorldPositionChanged);
         }
 
+        private ChunkEventBroadcastComponent _broadcastComponent;
+
         private void OnEntityWorldPositionChanged(object sender, PropertyChangedEventArgs<EntityWorldPos> e)
         {
             var pos = e.NewValue;
             var box = new Cuboid(new Point3d(pos.X, pos.Z, pos.Y), new Size(0.6f, 0.6f, 1.75f));
             AttachedObject.SetLocalValue(ColliderComponent.ColliderShapeProperty, box);
+            _broadcastComponent = _broadcastComponent ?? AttachedObject.GetComponent<ChunkEventBroadcastComponent>();
+            _broadcastComponent.GetGenerator(AttachedObject)
+                .EntityRelativeMove(
+                AttachedObject.EntityId,
+                GetDelta(e.OldValue.X, e.NewValue.X),
+                GetDelta(e.OldValue.Y, e.NewValue.Y),
+                GetDelta(e.OldValue.Z, e.NewValue.Z),
+                AttachedObject.GetValue(EntityOnGroundComponent.IsOnGroundProperty));
+        }
+
+        private static short GetDelta(float before, float after)
+        {
+            return (short)((after * 32 - before * 32) * 128);
         }
 
         private void OnDraggedSlotChanged(object sender, PropertyChangedEventArgs<Slot> e)

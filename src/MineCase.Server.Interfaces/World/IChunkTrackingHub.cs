@@ -11,7 +11,7 @@ using Orleans;
 
 namespace MineCase.Server.World
 {
-    public interface IChunkTrackingHub : IAddressByPartition, IPacketSink
+    public interface IChunkTrackingHub : IAddressByPartition, IBroadcastPacketSink
     {
         Task Subscribe(IPlayer player);
 

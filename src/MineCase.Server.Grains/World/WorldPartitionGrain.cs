@@ -62,13 +62,15 @@ namespace MineCase.Server.World
             return Task.CompletedTask;
         }
 
-        async Task IWorldPartition.SubscribeDiscovery(IEntity entity)
+        Task IWorldPartition.SubscribeDiscovery(IEntity entity)
         {
             if (State.DiscoveryEntities.Add(entity))
             {
                 MarkDirty();
-                await entity.Tell(BroadcastDiscovered.Default);
+                entity.InvokeOneWay(e => e.Tell(BroadcastDiscovered.Default));
             }
+
+            return Task.CompletedTask;
         }
 
         Task IWorldPartition.UnsubscribeDiscovery(IEntity entity)

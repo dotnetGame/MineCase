@@ -29,14 +29,20 @@ namespace MineCase.Server.World
             _broadcastPacketSink = new BroadcastPacketSink(_trackingPlayers.Values, packetPackager);
         }
 
-        public Task SendPacket(ISerializablePacket packet)
+        public Task SendPacket(ISerializablePacket packet, IPlayer except)
         {
-            return _broadcastPacketSink.SendPacket(packet);
+            IPacketSink exceptSink = null;
+            if (except != null)
+                _trackingPlayers.TryGetValue(except, out exceptSink);
+            return _broadcastPacketSink.SendPacket(packet, exceptSink);
         }
 
-        public Task SendPacket(uint packetId, Immutable<byte[]> data)
+        public Task SendPacket(uint packetId, Immutable<byte[]> data, IPlayer except)
         {
-            return _broadcastPacketSink.SendPacket(packetId, data);
+            IPacketSink exceptSink = null;
+            if (except != null)
+                _trackingPlayers.TryGetValue(except, out exceptSink);
+            return _broadcastPacketSink.SendPacket(packetId, data, exceptSink);
         }
 
         public Task Subscribe(IPlayer player)

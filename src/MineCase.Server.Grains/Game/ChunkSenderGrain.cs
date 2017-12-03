@@ -25,14 +25,13 @@ namespace MineCase.Server.Game
         public Task PostChunk(ChunkWorldPos chunkPos, IReadOnlyCollection<IClientboundPacketSink> clients, IReadOnlyCollection<IUserChunkLoader> loaders)
         {
             var stream = GetStreamProvider(StreamProviders.JobsProvider).GetStream<SendChunkJob>(_jobWorkerId, StreamProviders.Namespaces.ChunkSender);
-            stream.OnNextAsync(new SendChunkJob
+            return stream.OnNextAsync(new SendChunkJob
             {
                 World = GrainFactory.GetGrain<IWorld>(this.GetPrimaryKeyString()),
                 ChunkPosition = chunkPos,
                 Clients = clients,
                 Loaders = loaders
-            }).Ignore();
-            return Task.CompletedTask;
+            });
         }
     }
 }

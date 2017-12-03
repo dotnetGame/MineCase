@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Game.Windows;
+using MineCase.Protocol;
 using MineCase.Protocol.Play;
 using MineCase.Serialization;
 using MineCase.Server.Game;
@@ -22,14 +23,27 @@ namespace MineCase.Server.Network.Play
     {
         public IPacketSink Sink { get; }
 
+        public IBroadcastPacketSink BroadcastSink { get; }
+
+        private IPlayer _except;
+
         public ClientPlayPacketGenerator(IPacketSink sink)
         {
             Sink = sink;
+            BroadcastSink = null;
+            _except = null;
+        }
+
+        public ClientPlayPacketGenerator(IBroadcastPacketSink sink, IPlayer except)
+        {
+            Sink = null;
+            BroadcastSink = sink;
+            _except = except;
         }
 
         public Task SpawnObject(uint entityId, Guid uuid, byte objectType, Vector3 position, float pitch, float yaw, int data)
         {
-            return Sink.SendPacket(new SpawnObject
+            return SendPacket(new SpawnObject
             {
                 EID = entityId,
                 ObjectUUID = uuid,
@@ -45,7 +59,7 @@ namespace MineCase.Server.Network.Play
 
         public Task SpawnMob(uint entityId, Guid uuid, byte entityType, Vector3 position, float pitch, float yaw, Game.Entities.EntityMetadata.Entity metadata)
         {
-            return Sink.SendPacket(CreateSpawnMob(entityId, uuid, entityType, position, pitch, yaw, metadata, bw =>
+            return SendPacket(CreateSpawnMob(entityId, uuid, entityType, position, pitch, yaw, metadata, bw =>
                  {
                      WriteEntityMetadata(bw, metadata);
                  }));
@@ -59,7 +73,7 @@ namespace MineCase.Server.Network.Play
                 WriteEntityMetadata(bw, (Game.Entities.EntityMetadata.Living)metadata);
                 WriteEntityMetadata(bw, metadata);
             });
-            return Sink.SendPacket(new SpawnPlayer
+            return SendPacket(new SpawnPlayer
             {
                 EntityId = entityId,
                 PlayerUUID = uuid,
@@ -74,7 +88,7 @@ namespace MineCase.Server.Network.Play
 
         public Task SetSlot(byte windowId, short slot, Slot slotData)
         {
-            return Sink.SendPacket(new SetSlot
+            return SendPacket(new SetSlot
             {
                 WindowId = windowId,
                 Slot = slot,
@@ -84,7 +98,7 @@ namespace MineCase.Server.Network.Play
 
         public Task DestroyEntities(uint[] entityIds)
         {
-            return Sink.SendPacket(new DestroyEntities
+            return SendPacket(new DestroyEntities
             {
                 Count = (uint)entityIds.Length,
                 EntityIds = entityIds
@@ -93,7 +107,7 @@ namespace MineCase.Server.Network.Play
 
         public Task EntityMetadata(uint entityId, Game.Entities.EntityMetadata.Entity metadata)
         {
-            return Sink.SendPacket(CreateEntityMetadata(entityId, metadata, bw =>
+            return SendPacket(CreateEntityMetadata(entityId, metadata, bw =>
             {
                 WriteEntityMetadata(bw, metadata);
             }));
@@ -101,7 +115,7 @@ namespace MineCase.Server.Network.Play
 
         public Task EntityMetadata(uint entityId, Pickup metadata)
         {
-            return Sink.SendPacket(CreateEntityMetadata(entityId, metadata, bw =>
+            return SendPacket(CreateEntityMetadata(entityId, metadata, bw =>
             {
                 WriteEntityMetadata(bw, (Game.Entities.EntityMetadata.Entity)metadata);
                 WriteEntityMetadata(bw, metadata);
@@ -253,7 +267,7 @@ namespace MineCase.Server.Network.Play
 
         public Task JoinGame(uint eid, GameMode gameMode, Dimension dimension, Difficulty difficulty, byte maxPlayers, string levelType, bool reducedDebugInfo)
         {
-            return Sink.SendPacket(new JoinGame
+            return SendPacket(new JoinGame
             {
                 EID = (int)eid,
                 GameMode = ToByte(gameMode),
@@ -267,7 +281,7 @@ namespace MineCase.Server.Network.Play
 
         public Task EntityRelativeMove(uint eid, short deltaX, short deltaY, short deltaZ, bool onGround)
         {
-            return Sink.SendPacket(new EntityRelativeMove
+            return SendPacket(new EntityRelativeMove
             {
                 EID = eid,
                 DeltaX = deltaX,
@@ -279,7 +293,7 @@ namespace MineCase.Server.Network.Play
 
         public Task EntityLookAndRelativeMove(uint eid, short deltaX, short deltaY, short deltaZ, byte yaw, byte pitch, bool onGround)
         {
-            return Sink.SendPacket(new EntityLookAndRelativeMove
+            return SendPacket(new EntityLookAndRelativeMove
             {
                 EID = eid,
                 DeltaX = deltaX,
@@ -293,7 +307,7 @@ namespace MineCase.Server.Network.Play
 
         public Task EntityLook(uint eid, byte yaw, byte pitch, bool onGround)
         {
-            return Sink.SendPacket(new EntityLook
+            return SendPacket(new EntityLook
             {
                 EID = eid,
                 Yaw = yaw,
@@ -304,7 +318,7 @@ namespace MineCase.Server.Network.Play
 
         public Task EntityHeadLook(uint eid, byte yaw)
         {
-            return Sink.SendPacket(new EntityHeadLook
+            return SendPacket(new EntityHeadLook
             {
                 EID = eid,
                 Yaw = yaw
@@ -313,7 +327,7 @@ namespace MineCase.Server.Network.Play
 
         public Task KeepAlive(uint id)
         {
-            return Sink.SendPacket(new ClientboundKeepAlive
+            return SendPacket(new ClientboundKeepAlive
             {
                 KeepAliveId = id
             });
@@ -321,7 +335,7 @@ namespace MineCase.Server.Network.Play
 
         public Task UpdateHealth(uint health, uint maxHealth, uint food, uint maxFood, float foodSaturation)
         {
-            return Sink.SendPacket(new UpdateHealth
+            return SendPacket(new UpdateHealth
             {
                 Health = (float)health / maxHealth * 20,
                 Food = (uint)((float)food / maxFood * 20),
@@ -331,7 +345,7 @@ namespace MineCase.Server.Network.Play
 
         public Task SetExperience(float experienceBar, uint level, uint totalExp)
         {
-            return Sink.SendPacket(new SetExperience
+            return SendPacket(new SetExperience
             {
                 ExperienceBar = experienceBar,
                 Level = level,
@@ -341,7 +355,7 @@ namespace MineCase.Server.Network.Play
 
         public Task TimeUpdate(long age, long timeOfDay)
         {
-            return Sink.SendPacket(new TimeUpdate
+            return SendPacket(new TimeUpdate
             {
                 WorldAge = age,
                 TimeOfDay = timeOfDay
@@ -350,7 +364,7 @@ namespace MineCase.Server.Network.Play
 
         public Task PlayerListItemAddPlayer(IReadOnlyList<PlayerDescription> desc)
         {
-            return Sink.SendPacket(new PlayerListItem<PlayerListItemAddPlayerAction>
+            return SendPacket(new PlayerListItem<PlayerListItemAddPlayerAction>
             {
                 Action = 0,
                 NumberOfPlayers = (uint)desc.Count,
@@ -369,7 +383,7 @@ namespace MineCase.Server.Network.Play
 
         public Task WindowItems(byte windowId, IReadOnlyList<Slot> slots)
         {
-            return Sink.SendPacket(new WindowItems
+            return SendPacket(new WindowItems
             {
                 WindowId = windowId,
                 Count = (short)slots.Count,
@@ -379,7 +393,7 @@ namespace MineCase.Server.Network.Play
 
         public Task PositionAndLook(double x, double y, double z, float yaw, float pitch, RelativeFlags relative, uint teleportId)
         {
-            return Sink.SendPacket(new ClientboundPositionAndLook
+            return SendPacket(new ClientboundPositionAndLook
             {
                 X = x,
                 Y = y,
@@ -393,7 +407,7 @@ namespace MineCase.Server.Network.Play
 
         public Task SendChatMessage(Chat jsonData, Byte position)
         {
-            return Sink.SendPacket(new ClientboundChatMessage
+            return SendPacket(new ClientboundChatMessage
             {
                 JSONData = jsonData,
                 Position = position
@@ -402,7 +416,7 @@ namespace MineCase.Server.Network.Play
 
         public Task CollectItem(uint collectedEntityId, uint entityId, uint itemCount)
         {
-            return Sink.SendPacket(new CollectItem
+            return SendPacket(new CollectItem
             {
                 CollectedEntityId = collectedEntityId,
                 CollectorEntityId = entityId,
@@ -412,7 +426,7 @@ namespace MineCase.Server.Network.Play
 
         public Task ChunkData(Dimension dimension, int chunkX, int chunkZ, ChunkColumnCompactStorage chunkColumn)
         {
-            return Sink.SendPacket(new ChunkData
+            return SendPacket(new ChunkData
             {
                 ChunkX = chunkX,
                 ChunkZ = chunkZ,
@@ -433,11 +447,6 @@ namespace MineCase.Server.Network.Play
             });
         }
 
-        public Task SendPacket(uint packetId, byte[] data)
-        {
-            return Sink.SendPacket(packetId, data.AsImmutable());
-        }
-
         public static byte ToByte(GameMode gameMode)
         {
             return (byte)(((uint)gameMode.ModeClass) | (gameMode.IsHardcore ? 0b100u : 0u));
@@ -445,7 +454,7 @@ namespace MineCase.Server.Network.Play
 
         public Task UnloadChunk(int chunkX, int chunkZ)
         {
-            return Sink.SendPacket(new UnloadChunk
+            return SendPacket(new UnloadChunk
             {
                 ChunkX = chunkX,
                 ChunkZ = chunkZ
@@ -454,7 +463,7 @@ namespace MineCase.Server.Network.Play
 
         public Task SendClientAnimation(uint entityID, ClientboundAnimationId animationID)
         {
-            return Sink.SendPacket(new ClientboundAnimation
+            return SendPacket(new ClientboundAnimation
             {
                 EntityID = entityID,
                 AnimationID = animationID
@@ -463,7 +472,7 @@ namespace MineCase.Server.Network.Play
 
         public Task BlockChange(Position location, BlockState blockState)
         {
-            return Sink.SendPacket(new BlockChange
+            return SendPacket(new BlockChange
             {
                 Location = location,
                 BlockId = blockState.ToUInt32()
@@ -472,7 +481,7 @@ namespace MineCase.Server.Network.Play
 
         public Task ConfirmTransaction(byte windowId, short actionNumber, bool accepted)
         {
-            return Sink.SendPacket(new ClientboundConfirmTransaction
+            return SendPacket(new ClientboundConfirmTransaction
             {
                 WindowId = windowId,
                 ActionNumber = actionNumber,
@@ -482,7 +491,7 @@ namespace MineCase.Server.Network.Play
 
         public Task OpenWindow(byte windowId, string windowType, Chat windowTitle, byte numberOfSlots, byte? entityId)
         {
-            return Sink.SendPacket(new OpenWindow
+            return SendPacket(new OpenWindow
             {
                 WindowId = windowId,
                 WindowType = windowType,
@@ -494,7 +503,7 @@ namespace MineCase.Server.Network.Play
 
         public Task CloseWindow(byte windowId)
         {
-            return Sink.SendPacket(new ClientboundCloseWindow
+            return SendPacket(new ClientboundCloseWindow
             {
                 WindowId = windowId
             });
@@ -510,12 +519,28 @@ namespace MineCase.Server.Network.Play
                 throw new NotSupportedException();
             }
 
-            return Sink.SendPacket(new WindowProperty
+            return SendPacket(new WindowProperty
             {
                 WindowId = windowId,
                 Property = PropertyToShort(),
                 Value = value
             });
+        }
+
+        public Task SendPacket(uint packetId, byte[] data)
+        {
+            if (Sink != null)
+                return Sink.SendPacket(packetId, data.AsImmutable());
+            else
+                return BroadcastSink.SendPacket(packetId, data.AsImmutable(), _except);
+        }
+
+        public Task SendPacket(ISerializablePacket packet)
+        {
+            if (Sink != null)
+                return Sink.SendPacket(packet);
+            else
+                return BroadcastSink.SendPacket(packet, _except);
         }
     }
 

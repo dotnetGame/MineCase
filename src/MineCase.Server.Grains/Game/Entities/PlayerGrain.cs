@@ -81,15 +81,5 @@ namespace MineCase.Server.Game.Entities
             // await _generator.SendClientAnimation(entityID, animationID);
             throw new NotImplementedException();
         }
-
-        /*
-        public async Task TossPickup(Slot slot)
-        {
-            var chunk = GetChunkPosition();
-
-            // 产生 Pickup
-            var finder = GrainFactory.GetGrain<ICollectableFinder>(World.MakeCollectableFinderKey(chunk.x, chunk.z));
-            await finder.SpawnPickup(Position, new[] { slot }.AsImmutable());
-        }*/
     }
 }
