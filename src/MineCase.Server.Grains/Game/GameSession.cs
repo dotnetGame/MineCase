@@ -10,12 +10,12 @@ using MineCase.Protocol.Play;
 using MineCase.Server.Components;
 using MineCase.Server.Network.Play;
 using MineCase.Server.Persistence.Components;
+using MineCase.Server.Settings;
 using MineCase.Server.User;
 using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
-using MineCase.Server.Settings;
 
 namespace MineCase.Server.Game
 {

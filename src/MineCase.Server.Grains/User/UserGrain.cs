@@ -14,11 +14,11 @@ using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
 using MineCase.Server.Persistence;
 using MineCase.Server.Persistence.Components;
+using MineCase.Server.Settings;
 using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
-using MineCase.Server.Settings;
 
 namespace MineCase.Server.User
 {

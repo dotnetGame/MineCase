@@ -39,7 +39,7 @@
     "player-idle-timeout": 0,
     "difficulty": 1,
     "force-gamemode": false,
-    "gamemode": 0,
+    "gamemode": 1,
     "pvp": true,
     "announce-player-achievements": true,
 
