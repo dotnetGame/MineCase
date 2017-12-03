@@ -15,6 +15,7 @@ using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
+using MineCase.Server.Settings;
 
 namespace MineCase.Server.Game
 {
@@ -57,6 +58,7 @@ namespace MineCase.Server.Game
         {
             var sink = await user.GetClientPacketSink();
             var generator = new ClientPlayPacketGenerator(sink);
+            var settings = await GrainFactory.GetGrain<IServerSettings>(0).GetSettings();
 
             _users[user] = new UserContext
             {
@@ -66,10 +68,10 @@ namespace MineCase.Server.Game
             await user.JoinGame();
             await generator.JoinGame(
                 await (await user.GetPlayer()).GetEntityId(),
-                new GameMode { ModeClass = GameMode.Class.Creative },
+                await user.GetGameMode(),
                 Dimension.Overworld,
                 Difficulty.Easy,
-                10,
+                (byte)settings.MaxPlayers,
                 LevelTypes.Default,
                 false);
             await user.NotifyLoggedIn();

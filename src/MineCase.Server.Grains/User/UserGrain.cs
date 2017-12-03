@@ -18,6 +18,7 @@ using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
 using Orleans.Concurrency;
+using MineCase.Server.Settings;
 
 namespace MineCase.Server.User
 {
@@ -40,10 +41,21 @@ namespace MineCase.Server.User
         {
             var stateComponent = new StateComponent<StateHolder>();
             SetComponent(stateComponent);
+            stateComponent.BeforeWriteState += StateComponent_BeforeWriteState;
             stateComponent.AfterReadState += StateComponent_AfterReadState;
 
             _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
             SetComponent(_autoSave);
+        }
+
+        private void StateComponent_BeforeWriteState(object sender, EventArgs e)
+        {
+            QueueOperation(async () =>
+            {
+                var settings = await GrainFactory.GetGrain<IServerSettings>(0).GetSettings();
+                State.GameMode = new GameMode { ModeClass = (GameMode.Class)settings.Gamemode };
+                MarkDirty();
+            });
         }
 
         private void StateComponent_AfterReadState(object sender, EventArgs e)
@@ -71,6 +83,8 @@ namespace MineCase.Server.User
         }
 
         public Task<IWorld> GetWorld() => Task.FromResult(State.World);
+
+        public Task<GameMode> GetGameMode() => Task.FromResult(State.GameMode);
 
         public Task SetClientPacketSink(IClientboundPacketSink sink)
         {
@@ -144,6 +158,13 @@ namespace MineCase.Server.User
             return Task.CompletedTask;
         }
 
+        public Task SetGameMode(GameMode gameMode)
+        {
+            State.GameMode = gameMode;
+            MarkDirty();
+            return Task.CompletedTask;
+        }
+
         public async Task OnGameTick(GameTickArgs e)
         {
             if (_userState == UserState.DownloadingWorld)
@@ -203,6 +224,8 @@ namespace MineCase.Server.User
             public IWorld World { get; set; }
 
             public Slot[] Slots { get; set; }
+
+            public GameMode GameMode { get; set; }
 
             public StateHolder()
             {

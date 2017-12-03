@@ -105,28 +105,9 @@ namespace MineCase.Server.World
 
         public async Task<EntityWorldPos> GetSpawnPosition()
         {
-            EntityWorldPos retval = new EntityWorldPos(5, 256, 5);
-            var chunkColumn = GrainFactory.GetGrain<IChunkColumn>(this.MakeAddressByPartitionKey(new ChunkWorldPos(0, 0)));
-            for (int i = 255; i >= 0; --i)
-            {
-                if (!(await chunkColumn.GetBlockState(5, i, 5)).IsAir())
-                {
-                    retval = new EntityWorldPos(5, i + 1, 5);
-                    break;
-                }
-            }
-
-            // generate chunks in a range
-            for (int x = 0; x < 10; ++x)
-            {
-                for (int z = 0; z < 10; ++z)
-                {
-                    var chunk = GrainFactory.GetGrain<IChunkColumn>(this.MakeAddressByPartitionKey(new ChunkWorldPos(x, z)));
-                    await chunk.GetBlockState(0, 0, 0);
-                }
-            }
-
-            return retval;
+            EntityWorldPos retval = new EntityWorldPos(8, 256, 8);
+            int height = await this.GetHeight(GrainFactory, new BlockWorldPos(8, 0, 8));
+            return new EntityWorldPos(8, height, 8);
         }
 
         private void MarkDirty()

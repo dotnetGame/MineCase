@@ -52,5 +52,9 @@ namespace MineCase.Server.User
         Task ForwardPacket(UncompressedPacket packet);
 
         Task SetInventorySlot(int index, Slot slot);
+
+        Task<GameMode> GetGameMode();
+
+        Task SetGameMode(GameMode gameMode);
     }
 }
