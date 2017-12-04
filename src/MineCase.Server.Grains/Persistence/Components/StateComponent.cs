@@ -23,6 +23,8 @@ namespace MineCase.Server.Persistence.Components
 
         public event EventHandler<EventArgs> AfterReadState;
 
+        public event EventHandler<EventArgs> SetDefaultState;
+
         public StateComponent(string name = "state")
             : base(name)
         {
@@ -32,7 +34,10 @@ namespace MineCase.Server.Persistence.Components
         {
             // 如果为 null 需要初始化状态
             if (State == null)
+            {
                 AttachedObject.SetLocalValue(StateProperty, (T)Activator.CreateInstance(typeof(T), InitializeStateMark.Default));
+                SetDefaultState?.Invoke(this, EventArgs.Empty);
+            }
 
             AfterReadState?.Invoke(this, EventArgs.Empty);
             return Task.CompletedTask;

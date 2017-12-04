@@ -41,20 +41,20 @@ namespace MineCase.Server.User
         {
             var stateComponent = new StateComponent<StateHolder>();
             SetComponent(stateComponent);
-            stateComponent.BeforeWriteState += StateComponent_BeforeWriteState;
+
             stateComponent.AfterReadState += StateComponent_AfterReadState;
+            stateComponent.SetDefaultState += StateComponent_SetDefaultState;
 
             _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
             SetComponent(_autoSave);
         }
 
-        private void StateComponent_BeforeWriteState(object sender, EventArgs e)
+        private void StateComponent_SetDefaultState(object sender, EventArgs e)
         {
             QueueOperation(async () =>
             {
                 var settings = await GrainFactory.GetGrain<IServerSettings>(0).GetSettings();
                 State.GameMode = new GameMode { ModeClass = (GameMode.Class)settings.Gamemode };
-                MarkDirty();
             });
         }
 
