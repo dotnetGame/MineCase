@@ -34,14 +34,14 @@ namespace MineCase.Server.Game.Entities.Components
                 - new Vector3(playerPos.X, playerPos.Y + 1.5f, playerPos.Z)).Length();
             if (distance <= MaxDiggingRadius)
             {
+                if (gameMode.ModeClass == GameMode.Class.Creative)
+                {
+                    var newState = BlockStates.Air();
+                    await world.SetBlockState(GrainFactory, location, newState);
+                }
+
                 _diggingStartTick = await world.GetAge();
                 _diggingBlock = (location, await world.GetBlockState(GrainFactory, location));
-            }
-
-            if (gameMode.ModeClass == GameMode.Class.Creative)
-            {
-                var newState = BlockStates.Air();
-                await world.SetBlockState(GrainFactory, location, newState);
             }
         }
 

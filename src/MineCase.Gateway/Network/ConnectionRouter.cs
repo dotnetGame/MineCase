@@ -16,7 +16,6 @@ namespace MineCase.Gateway.Network
 {
     class ConnectionRouter
     {
-        private readonly TcpListener _listener;
         private readonly IGrainFactory _grainFactory;
         private readonly ILogger _logger;
         private readonly IBufferPool<byte> _bufferPool;
@@ -28,18 +27,30 @@ namespace MineCase.Gateway.Network
             _logger = loggerFactory.CreateLogger<ConnectionRouter>();
             _bufferPool = bufferPool;
             _uncompressedPacketObjectPool = uncompressedPacketObjectPool;
-            _listener = new TcpListener(new IPEndPoint(IPAddress.Any, 25565));
         }
 
         public async Task Startup(CancellationToken cancellationToken)
         {
-            _listener.Start();
-            _logger.LogInformation("ConnectionRouter started.");
-            while (!cancellationToken.IsCancellationRequested)
+            try
             {
-                DispatchIncomingClient(await _listener.AcceptTcpClientAsync(), cancellationToken);
+                var settings = await _grainFactory.GetGrain<IServerSettings>(0).GetSettings();
+                IPAddress ip = IPAddress.Parse(settings.ServerIp);
+                int port = (int)settings.ServerPort;
+
+                TcpListener _listener;
+                _listener = new TcpListener(new IPEndPoint(ip, port));
+                _listener.Start();
+                _logger.LogInformation("ConnectionRouter started.");
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    DispatchIncomingClient(await _listener.AcceptTcpClientAsync(), cancellationToken);
+                }
+                _listener.Stop();
             }
-            _listener.Stop();
+            catch (FormatException)
+            {
+                _logger.LogError($"The configuration of gateway have an incorrect format.");
+            }
         }
 
         private async void DispatchIncomingClient(TcpClient tcpClient, CancellationToken cancellationToken)
