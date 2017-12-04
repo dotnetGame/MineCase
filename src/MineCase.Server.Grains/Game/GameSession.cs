@@ -10,6 +10,7 @@ using MineCase.Protocol.Play;
 using MineCase.Server.Components;
 using MineCase.Server.Network.Play;
 using MineCase.Server.Persistence.Components;
+using MineCase.Server.Settings;
 using MineCase.Server.User;
 using MineCase.Server.World;
 using MineCase.World;
@@ -57,6 +58,7 @@ namespace MineCase.Server.Game
         {
             var sink = await user.GetClientPacketSink();
             var generator = new ClientPlayPacketGenerator(sink);
+            var settings = await GrainFactory.GetGrain<IServerSettings>(0).GetSettings();
 
             _users[user] = new UserContext
             {
@@ -66,10 +68,10 @@ namespace MineCase.Server.Game
             await user.JoinGame();
             await generator.JoinGame(
                 await (await user.GetPlayer()).GetEntityId(),
-                new GameMode { ModeClass = GameMode.Class.Survival },
+                await user.GetGameMode(),
                 Dimension.Overworld,
                 Difficulty.Easy,
-                10,
+                (byte)settings.MaxPlayers,
                 LevelTypes.Default,
                 false);
             await user.NotifyLoggedIn();
@@ -127,6 +129,11 @@ namespace MineCase.Server.Game
 
             Chat jsonData = new Chat(new TranslationComponent("chat.type.text", list));
             return Task.FromResult(jsonData);
+        }
+
+        public Task<int> UserNumber()
+        {
+            return Task.FromResult(_users.Count);
         }
 
         private class UserContext

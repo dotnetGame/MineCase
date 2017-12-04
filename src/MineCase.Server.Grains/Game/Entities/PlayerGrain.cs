@@ -44,6 +44,7 @@ namespace MineCase.Server.Game.Entities
             SetComponent(new InventoryComponent());
             SetComponent(new KeepAliveComponent());
             SetComponent(new NameComponent());
+            SetComponent(new GameModeComponent());
             SetComponent(new PlayerListComponent());
             SetComponent(new PlayerDiscoveryComponent());
             SetComponent(new ServerboundPacketComponent());

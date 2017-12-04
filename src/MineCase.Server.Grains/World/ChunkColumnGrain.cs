@@ -142,7 +142,7 @@ namespace MineCase.Server.World
                             BlockStates.Stone(),
                             BlockStates.Dirt(),
                             BlockStates.Dirt(),
-                            BlockStates.Grass()
+                            BlockStates.GrassBlock()
                         }
                     };
                     State.Storage = await generator.Generate(World, ChunkWorldPos.X, ChunkWorldPos.Z, settings);
@@ -157,6 +157,7 @@ namespace MineCase.Server.World
                 }
 
                 State.Generated = true;
+
                 await WriteStateAsync();
             }
         }

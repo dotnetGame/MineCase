@@ -28,13 +28,6 @@ namespace MineCase.Server.Game.Entities
             SetComponent(new MobDiscoveryComponent());
             SetComponent(new MobTypeComponent());
             SetComponent(new SyncMobStateComponent());
-            /*
-            if (MobType == MobType.Enderman)
-            {
-                await SetComponent(new BlockPlacementComponent());
-                await SetComponent(new DiggingComponent());
-            }
-            */
         }
 
         public async override Task OnActivateAsync()

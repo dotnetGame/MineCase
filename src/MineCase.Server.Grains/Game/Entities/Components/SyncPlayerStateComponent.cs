@@ -71,6 +71,7 @@ namespace MineCase.Server.Game.Entities.Components
 
             _user = message.User;
             AttachedObject.GetComponent<NameComponent>().SetName(await message.User.GetName());
+            AttachedObject.GetComponent<GameModeComponent>().SetGameMode(await message.User.GetGameMode());
             AttachedObject.GetComponent<SlotContainerComponent>().SetSlots(await message.User.GetInventorySlots());
 
             AttachedObject.GetComponent<SlotContainerComponent>().SlotChanged += InventorySlotChanged;

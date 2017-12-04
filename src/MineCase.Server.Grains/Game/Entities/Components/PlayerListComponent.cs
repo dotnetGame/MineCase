@@ -28,7 +28,7 @@ namespace MineCase.Server.Game.Entities.Components
             {
                 UUID = AttachedObject.GetPrimaryKey(),
                 Name = AttachedObject.GetComponent<NameComponent>().Name,
-                GameMode = new GameMode { ModeClass = GameMode.Class.Survival },
+                GameMode = new GameMode { ModeClass = GameMode.Class.Creative },
                 Ping = AttachedObject.GetComponent<KeepAliveComponent>().Ping
             });
         }

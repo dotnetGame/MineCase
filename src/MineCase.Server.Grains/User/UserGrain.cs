@@ -14,6 +14,7 @@ using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
 using MineCase.Server.Persistence;
 using MineCase.Server.Persistence.Components;
+using MineCase.Server.Settings;
 using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
@@ -40,10 +41,18 @@ namespace MineCase.Server.User
         {
             var stateComponent = new StateComponent<StateHolder>();
             SetComponent(stateComponent);
+
             stateComponent.AfterReadState += StateComponent_AfterReadState;
+            stateComponent.SetDefaultState += StateComponent_SetDefaultState;
 
             _autoSave = new AutoSaveStateComponent(AutoSaveStateComponent.PerMinute);
             SetComponent(_autoSave);
+        }
+
+        private async Task StateComponent_SetDefaultState(object sender, EventArgs e)
+        {
+            var settings = await GrainFactory.GetGrain<IServerSettings>(0).GetSettings();
+            State.GameMode = new GameMode { ModeClass = (GameMode.Class)settings.Gamemode };
         }
 
         private void StateComponent_AfterReadState(object sender, EventArgs e)
@@ -72,6 +81,8 @@ namespace MineCase.Server.User
 
         public Task<IWorld> GetWorld() => Task.FromResult(State.World);
 
+        public Task<GameMode> GetGameMode() => Task.FromResult(State.GameMode);
+
         public Task SetClientPacketSink(IClientboundPacketSink sink)
         {
             _sink = sink;
@@ -90,11 +101,12 @@ namespace MineCase.Server.User
 
             // 设置出生点
             var world = State.World;
+            var spawnPosition = await world.GetSpawnPosition();
             await _player.Tell(new SpawnEntity
             {
                 World = world,
                 EntityId = await world.NewEntityId(),
-                Position = new EntityWorldPos(0, 200, 0)
+                Position = spawnPosition
             });
         }
 
@@ -140,6 +152,13 @@ namespace MineCase.Server.User
         public Task SetProtocolVersion(uint version)
         {
             _protocolVersion = version;
+            return Task.CompletedTask;
+        }
+
+        public Task SetGameMode(GameMode gameMode)
+        {
+            State.GameMode = gameMode;
+            MarkDirty();
             return Task.CompletedTask;
         }
 
@@ -202,6 +221,8 @@ namespace MineCase.Server.User
             public IWorld World { get; set; }
 
             public Slot[] Slots { get; set; }
+
+            public GameMode GameMode { get; set; }
 
             public StateHolder()
             {

@@ -20,6 +20,8 @@ namespace MineCase.Server.World
     {
         private GeneratorSettings _genSettings; // 生成设置
         private string _seed; // 世界种子
+
+        // private EntityWorldPos _spawnPos; // 出生点
         private readonly HashSet<IWorldPartition> _activedPartitions = new HashSet<IWorldPartition>();
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
@@ -99,6 +101,13 @@ namespace MineCase.Server.World
         {
             _activedPartitions.Remove(worldPartition);
             return Task.CompletedTask;
+        }
+
+        public async Task<EntityWorldPos> GetSpawnPosition()
+        {
+            EntityWorldPos retval = new EntityWorldPos(8, 256, 8);
+            int height = await this.GetHeight(GrainFactory, new BlockWorldPos(8, 0, 8));
+            return new EntityWorldPos(8, height, 8);
         }
 
         private void MarkDirty()
