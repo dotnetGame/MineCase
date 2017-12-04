@@ -49,13 +49,10 @@ namespace MineCase.Server.User
             SetComponent(_autoSave);
         }
 
-        private void StateComponent_SetDefaultState(object sender, EventArgs e)
+        private async Task StateComponent_SetDefaultState(object sender, EventArgs e)
         {
-            QueueOperation(async () =>
-            {
-                var settings = await GrainFactory.GetGrain<IServerSettings>(0).GetSettings();
-                State.GameMode = new GameMode { ModeClass = (GameMode.Class)settings.Gamemode };
-            });
+            var settings = await GrainFactory.GetGrain<IServerSettings>(0).GetSettings();
+            State.GameMode = new GameMode { ModeClass = (GameMode.Class)settings.Gamemode };
         }
 
         private void StateComponent_AfterReadState(object sender, EventArgs e)

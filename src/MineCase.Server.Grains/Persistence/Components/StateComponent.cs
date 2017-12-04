@@ -23,24 +23,24 @@ namespace MineCase.Server.Persistence.Components
 
         public event EventHandler<EventArgs> AfterReadState;
 
-        public event EventHandler<EventArgs> SetDefaultState;
+        public event AsyncEventHandler<EventArgs> SetDefaultState;
 
         public StateComponent(string name = "state")
             : base(name)
         {
         }
 
-        Task IHandle<AfterReadState>.Handle(AfterReadState message)
+        async Task IHandle<AfterReadState>.Handle(AfterReadState message)
         {
             // 如果为 null 需要初始化状态
             if (State == null)
             {
                 AttachedObject.SetLocalValue(StateProperty, (T)Activator.CreateInstance(typeof(T), InitializeStateMark.Default));
-                SetDefaultState?.Invoke(this, EventArgs.Empty);
+                if (SetDefaultState != null)
+                    await SetDefaultState.InvokeSerial(this, EventArgs.Empty);
             }
 
             AfterReadState?.Invoke(this, EventArgs.Empty);
-            return Task.CompletedTask;
         }
 
         Task IHandle<BeforeWriteState>.Handle(BeforeWriteState message)
