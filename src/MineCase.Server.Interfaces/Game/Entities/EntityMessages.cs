@@ -17,6 +17,12 @@ namespace MineCase.Server.Game.Entities.Components
     }
 
     [Immutable]
+    public sealed class PlayerListUpdate : IEntityMessage
+    {
+        public IReadOnlyList<IPlayer> Players { get; set; }
+    }
+
+    [Immutable]
     public sealed class KickPlayer : IEntityMessage
     {
         public Chat Reason { get; set; }

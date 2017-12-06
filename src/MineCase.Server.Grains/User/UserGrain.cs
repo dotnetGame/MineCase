@@ -123,6 +123,11 @@ namespace MineCase.Server.User
             _userState = UserState.DownloadingWorld;
         }
 
+        public Task UpdatePlayerList(IReadOnlyList<IPlayer> players)
+        {
+            return _player.Tell(new PlayerListUpdate { Players = players });
+        }
+
         public Task SendChatMessage(Chat jsonData, byte position)
         {
             _generator.SendChatMessage(jsonData, position);

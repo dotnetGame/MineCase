@@ -10,7 +10,7 @@ using Orleans;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class PlayerListComponent : Component<PlayerGrain>, IHandle<PlayerLoggedIn>, IHandle<AskPlayerDescription, PlayerDescription>
+    internal class PlayerListComponent : Component<PlayerGrain>, IHandle<PlayerLoggedIn>, IHandle<PlayerListUpdate>, IHandle<AskPlayerDescription, PlayerDescription>
     {
         public PlayerListComponent(string name = "playerList")
             : base(name)
@@ -20,6 +20,11 @@ namespace MineCase.Server.Game.Entities.Components
         async Task IHandle<PlayerLoggedIn>.Handle(PlayerLoggedIn message)
         {
             await SendPlayerListAddPlayer(new[] { AttachedObject });
+        }
+
+        async Task IHandle<PlayerListUpdate>.Handle(PlayerListUpdate message)
+        {
+            await SendPlayerListAddPlayer(message.Players);
         }
 
         Task<PlayerDescription> IHandle<AskPlayerDescription, PlayerDescription>.Handle(AskPlayerDescription message)
