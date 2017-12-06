@@ -24,7 +24,7 @@ namespace MineCase.Server.Game.Entities.Components
                 Health = AttachedObject.GetValue(HealthComponent.HealthProperty)
             };
 
-            return generator.SpawnPlayer(AttachedObject.EntityId, AttachedObject.UUID, AttachedObject.Position, AttachedObject.Pitch, AttachedObject.Yaw, metadata);
+            return generator.SpawnPlayer(AttachedObject.EntityId, AttachedObject.UUID, AttachedObject.Position, AttachedObject.Pitch, AttachedObject.HeadYaw, metadata);
         }
 
         Task IHandle<PlayerLoggedIn>.Handle(PlayerLoggedIn message)

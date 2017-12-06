@@ -50,9 +50,47 @@ namespace MineCase.Server.Game.Entities.Components
         {
             AttachedObject.RegisterPropertyChangedHandler(DraggedSlotComponent.DraggedSlotProperty, OnDraggedSlotChanged);
             AttachedObject.RegisterPropertyChangedHandler(EntityWorldPositionComponent.EntityWorldPositionProperty, OnEntityWorldPositionChanged);
+            AttachedObject.RegisterPropertyChangedHandler(EntityLookComponent.HeadYawProperty, OnEntityHeadYawChanged);
+            AttachedObject.RegisterPropertyChangedHandler(EntityLookComponent.PitchProperty, OnEntityPitchChanged);
+            AttachedObject.RegisterPropertyChangedHandler(EntityLookComponent.YawProperty, OnEntityYawChanged);
         }
 
         private ChunkEventBroadcastComponent _broadcastComponent;
+
+        private void OnEntityHeadYawChanged(object sender, PropertyChangedEventArgs<float> e)
+        {
+            _broadcastComponent = _broadcastComponent ?? AttachedObject.GetComponent<ChunkEventBroadcastComponent>();
+            _broadcastComponent.GetGenerator(AttachedObject)
+                .EntityHeadLook(
+                AttachedObject.EntityId,
+                GetAngle(e.NewValue));
+        }
+
+        private void OnEntityYawChanged(object sender, PropertyChangedEventArgs<float> e)
+        {
+            var yaw = AttachedObject.GetValue(EntityLookComponent.YawProperty);
+            var pitch = AttachedObject.GetValue(EntityLookComponent.PitchProperty);
+            _broadcastComponent = _broadcastComponent ?? AttachedObject.GetComponent<ChunkEventBroadcastComponent>();
+            _broadcastComponent.GetGenerator(AttachedObject)
+                .EntityLook(
+                AttachedObject.EntityId,
+                GetAngle(yaw),
+                GetAngle(pitch),
+                AttachedObject.GetValue(EntityOnGroundComponent.IsOnGroundProperty));
+        }
+
+        private void OnEntityPitchChanged(object sender, PropertyChangedEventArgs<float> e)
+        {
+            var yaw = AttachedObject.GetValue(EntityLookComponent.YawProperty);
+            var pitch = AttachedObject.GetValue(EntityLookComponent.PitchProperty);
+            _broadcastComponent = _broadcastComponent ?? AttachedObject.GetComponent<ChunkEventBroadcastComponent>();
+            _broadcastComponent.GetGenerator(AttachedObject)
+                .EntityLook(
+                AttachedObject.EntityId,
+                GetAngle(yaw),
+                GetAngle(pitch),
+                AttachedObject.GetValue(EntityOnGroundComponent.IsOnGroundProperty));
+        }
 
         private void OnEntityWorldPositionChanged(object sender, PropertyChangedEventArgs<EntityWorldPos> e)
         {
@@ -72,6 +110,11 @@ namespace MineCase.Server.Game.Entities.Components
         private static short GetDelta(float before, float after)
         {
             return (short)((after * 32 - before * 32) * 128);
+        }
+
+        private static byte GetAngle(float degree)
+        {
+            return (byte)(degree * 256 / 360);
         }
 
         private void OnDraggedSlotChanged(object sender, PropertyChangedEventArgs<Slot> e)

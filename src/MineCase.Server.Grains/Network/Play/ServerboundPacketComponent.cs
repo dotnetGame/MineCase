@@ -211,6 +211,7 @@ namespace MineCase.Server.Network.Play
         {
             AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, packet.Pitch);
             AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, packet.Yaw);
+            AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, packet.Yaw);
             AttachedObject.SetLocalValue(EntityOnGroundComponent.IsOnGroundProperty, packet.OnGround);
             return Task.CompletedTask;
         }
