@@ -109,6 +109,7 @@ namespace MineCase.Server.User
 
         public async Task Kick()
         {
+            await _player.Tell(DestroyEntity.Default);
             var game = await GetGameSession();
             await game.LeaveGame(this);
             await _sink.Close();

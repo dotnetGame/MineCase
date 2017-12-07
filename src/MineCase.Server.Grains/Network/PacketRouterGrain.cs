@@ -41,6 +41,8 @@ namespace MineCase.Server.Network
 
         public async Task Close()
         {
+            if (_user != null)
+                await _user.Kick();
             _state = SessionState.Closed;
             await GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey()).Close();
             DeactivateOnIdle();

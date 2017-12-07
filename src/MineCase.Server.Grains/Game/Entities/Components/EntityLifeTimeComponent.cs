@@ -21,6 +21,7 @@ namespace MineCase.Server.Game.Entities.Components
             AttachedObject.GetComponent<EntityWorldPositionComponent>().SetPosition(message.Position);
             var lookComponent = AttachedObject.GetComponent<EntityLookComponent>();
             lookComponent.SetPitch(message.Pitch);
+            lookComponent.SetHeadYaw(message.Yaw);
             lookComponent.SetYaw(message.Yaw);
             return Task.CompletedTask;
         }

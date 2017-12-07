@@ -10,7 +10,7 @@ using MineCase.Server.World;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class PlayerDiscoveryComponent : EntityDiscoveryComponentBase<PlayerGrain>, IHandle<PlayerLoggedIn>
+    internal class PlayerDiscoveryComponent : EntityDiscoveryComponentBase<PlayerGrain>, IHandle<PlayerLoggedIn>, IHandle<DestroyEntity>
     {
         public PlayerDiscoveryComponent(string name = "playerDiscovery")
             : base(name)
@@ -35,6 +35,12 @@ namespace MineCase.Server.Game.Entities.Components
                 return GrainFactory.GetGrain<IWorldPartition>(AttachedObject.GetAddressByPartitionKey()).Enter(AttachedObject);
             });
             return Task.CompletedTask;
+        }
+
+        Task IHandle<DestroyEntity>.Handle(DestroyEntity message)
+        {
+            return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator()
+                .DestroyEntities(new[] { AttachedObject.EntityId });
         }
     }
 }
