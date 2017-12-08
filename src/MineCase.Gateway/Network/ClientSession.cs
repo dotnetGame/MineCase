@@ -54,6 +54,9 @@ namespace MineCase.Gateway.Network
                 }
                 catch (EndOfStreamException)
                 {
+                    var router = _grainFactory.GetGrain<IPacketRouter>(_sessionId);
+                    await router.Close();
+
                     await _outcomingPacketDispatcher.Completion;
                 }
             }
