@@ -22,5 +22,7 @@ namespace MineCase.Server.World
         Task<int> GetSeed();
 
         Task<GeneratorSettings> GetGeneratorSettings();
+
+        Task<EntityWorldPos> GetSpawnPosition();
     }
 }

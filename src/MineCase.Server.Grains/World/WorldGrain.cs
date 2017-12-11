@@ -88,6 +88,13 @@ namespace MineCase.Server.World
             return Task.CompletedTask;
         }
 
+        public async Task<EntityWorldPos> GetSpawnPosition()
+        {
+            EntityWorldPos retval = new EntityWorldPos(8, 256, 8);
+            int height = await this.GetHeight(GrainFactory, new BlockWorldPos(8, 0, 8));
+            return new EntityWorldPos(8, height, 8);
+        }
+
         private void MarkDirty()
         {
             ValueStorage.IsDirty = true;
