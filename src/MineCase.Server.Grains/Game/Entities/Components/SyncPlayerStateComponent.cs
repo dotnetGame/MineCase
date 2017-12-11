@@ -16,9 +16,12 @@ namespace MineCase.Server.Game.Entities.Components
     {
         private IUser _user;
 
+        private bool _isHandlersInstalled;
+
         public SyncPlayerStateComponent(string name = "syncPlayerState")
             : base(name)
         {
+            _isHandlersInstalled = false;
         }
 
         async Task IHandle<PlayerLoggedIn>.Handle(PlayerLoggedIn message)
@@ -43,7 +46,11 @@ namespace MineCase.Server.Game.Entities.Components
             var slots = await AttachedObject.GetComponent<InventoryComponent>().GetInventoryWindow().GetSlots(AttachedObject);
             await generator.WindowItems(0, slots);
 
-            InstallPropertyChangedHandlers();
+            if (!_isHandlersInstalled)
+            {
+                InstallPropertyChangedHandlers();
+                _isHandlersInstalled = true;
+            }
         }
 
         private void InstallPropertyChangedHandlers()

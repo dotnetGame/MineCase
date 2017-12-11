@@ -97,6 +97,11 @@ namespace MineCase.Server.Game.Entities.Components
     }
 
     [Immutable]
+    public class SpawnPlayer : SpawnEntity
+    {
+    }
+
+    [Immutable]
     public class EntityLook : IEntityMessage
     {
         public float Yaw { get; set; }

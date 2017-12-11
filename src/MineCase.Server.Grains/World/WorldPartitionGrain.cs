@@ -41,7 +41,7 @@ namespace MineCase.Server.World
                 var message = new DiscoveredByPlayer { Player = player };
                 foreach (var entity in State.DiscoveryEntities)
                 {
-                    if (entity == player) continue;
+                    if (entity.Equals(player)) continue;
                     entity.InvokeOneWay(g => g.Tell(message));
                 }
             }
