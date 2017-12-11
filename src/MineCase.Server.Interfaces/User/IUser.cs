@@ -40,6 +40,7 @@ namespace MineCase.Server.User
 
         Task NotifyLoggedIn();
 
+        [OneWay]
         Task UpdatePlayerList(IReadOnlyList<IPlayer> players);
 
         Task SendChatMessage(Chat jsonData, Byte position);

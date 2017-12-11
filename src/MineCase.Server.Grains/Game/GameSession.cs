@@ -86,10 +86,10 @@ namespace MineCase.Server.Game
 
         public async Task UpdatePlayerList()
         {
+            var list = await Task.WhenAll(from p in _users.Keys
+                                          select p.GetPlayer());
             foreach (var eachUser in _users)
             {
-                var list = await Task.WhenAll(from p in _users.Keys
-                             select p.GetPlayer());
                 await eachUser.Key.UpdatePlayerList(list);
             }
         }
