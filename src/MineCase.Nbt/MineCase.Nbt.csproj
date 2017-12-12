@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
-    <PackageReference Include="Microsoft.TargetingPack.NETFramework.v4.6" Version="1.0.1" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.TargetingPack.NETFramework.v4.6" Version="1.0.1" ExcludeAssets="All" PrivateAssets="All" />
     
     <Reference Include="System" />
     <Reference Include="System.Runtime" />
