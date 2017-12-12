@@ -11,6 +11,17 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net46'">
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+    <FrameworkPathOverride>$(NuGetPackageRoot)microsoft.targetingpack.netframework.v4.6\1.0.1\lib\net46\</FrameworkPathOverride>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
+    <PackageReference Include="Microsoft.TargetingPack.NETFramework.v4.6" Version="1.0.1" ExcludeAssets="All" PrivateAssets="All" />
+
+    <Reference Include="System.Runtime" />
+  </ItemGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\net46\MineCase.Client.Engine.xml</DocumentationFile>
   </PropertyGroup>
@@ -76,7 +87,7 @@
     <Folder Include="Data\" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT'">
     <Exec Command="cd /d $(TargetDir)&#xD;&#xA;$(SolutionDir)..\build\pdb2mdb $(TargetFileName)&#xD;&#xA;copy /y $(TargetDir)*.dll $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\&#xD;&#xA;copy /y $(TargetDir)*.pdb $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\&#xD;&#xA;copy /y $(TargetDir)*.mdb $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\" />
   </Target>
 
