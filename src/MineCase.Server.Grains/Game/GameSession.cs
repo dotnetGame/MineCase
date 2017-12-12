@@ -89,7 +89,7 @@ namespace MineCase.Server.Game
             var list = await Task.WhenAll(from p in _users.Keys
                                           select p.GetPlayer());
 
-            await Task.WhenAll(from p in _users.Keys select UpdatePlayerList());
+            await Task.WhenAll(from p in _users.Keys select p.UpdatePlayerList(list));
         }
 
         public async Task SendChatMessage(IUser sender, string message)
