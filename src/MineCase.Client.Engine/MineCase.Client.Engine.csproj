@@ -87,7 +87,7 @@
     <Folder Include="Data\" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT'">
     <Exec Command="cd /d $(TargetDir)&#xD;&#xA;$(SolutionDir)..\build\pdb2mdb $(TargetFileName)&#xD;&#xA;copy /y $(TargetDir)*.dll $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\&#xD;&#xA;copy /y $(TargetDir)*.pdb $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\&#xD;&#xA;copy /y $(TargetDir)*.mdb $(ProjectDir)..\MineCase.Client\Assets\Plugins\Framework\" />
   </Target>
 
