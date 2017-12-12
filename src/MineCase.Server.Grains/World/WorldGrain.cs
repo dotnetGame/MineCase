@@ -21,9 +21,6 @@ namespace MineCase.Server.World
         private GeneratorSettings _genSettings; // 生成设置
         private string _seed; // 世界种子
 
-        // private EntityWorldPos _spawnPos; // 出生点
-        private readonly HashSet<IWorldPartition> _activedPartitions = new HashSet<IWorldPartition>();
-
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
         protected override void InitializePreLoadComponent()
@@ -88,18 +85,6 @@ namespace MineCase.Server.World
             IServerSettings serverSettings = GrainFactory.GetGrain<IServerSettings>(0);
 
             // TODO move server settings to generator settings
-            return Task.CompletedTask;
-        }
-
-        public Task ActivePartition(IWorldPartition worldPartition)
-        {
-            _activedPartitions.Add(worldPartition);
-            return Task.CompletedTask;
-        }
-
-        public Task DeactivePartition(IWorldPartition worldPartition)
-        {
-            _activedPartitions.Remove(worldPartition);
             return Task.CompletedTask;
         }
 

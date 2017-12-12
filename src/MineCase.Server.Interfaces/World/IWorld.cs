@@ -23,10 +23,6 @@ namespace MineCase.Server.World
 
         Task<GeneratorSettings> GetGeneratorSettings();
 
-        Task ActivePartition(IWorldPartition worldPartition);
-
-        Task DeactivePartition(IWorldPartition worldPartition);
-
         Task<EntityWorldPos> GetSpawnPosition();
     }
 }

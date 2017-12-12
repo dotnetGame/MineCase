@@ -39,6 +39,7 @@ namespace MineCase.Server.Components
         private async Task OnTick(object arg)
         {
             var expectedAge = _stopwatch.ElapsedTicks / _updateTick;
+            if (_stopwatch.ElapsedTicks % _updateTick > 0) expectedAge++;
             var e = new GameTickArgs { DeltaTime = TimeSpan.FromMilliseconds(50) };
             var updateTimes = expectedAge - _actualAge;
             var now = _stopwatch.Elapsed;
@@ -51,8 +52,11 @@ namespace MineCase.Server.Components
                 _actualAge++;
             }
 
-            var deltaTime = now - _lastUpdate;
-            _lastUpdate = now;
+            if (updateTimes > 0)
+            {
+                var deltaTime = now - _lastUpdate;
+                _lastUpdate = now;
+            }
         }
 
         public void Stop()

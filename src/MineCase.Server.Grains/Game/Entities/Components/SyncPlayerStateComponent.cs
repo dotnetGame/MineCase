@@ -16,9 +16,12 @@ namespace MineCase.Server.Game.Entities.Components
     {
         private IUser _user;
 
+        private bool _isHandlersInstalled;
+
         public SyncPlayerStateComponent(string name = "syncPlayerState")
             : base(name)
         {
+            _isHandlersInstalled = false;
         }
 
         async Task IHandle<PlayerLoggedIn>.Handle(PlayerLoggedIn message)
@@ -43,13 +46,57 @@ namespace MineCase.Server.Game.Entities.Components
             var slots = await AttachedObject.GetComponent<InventoryComponent>().GetInventoryWindow().GetSlots(AttachedObject);
             await generator.WindowItems(0, slots);
 
-            InstallPropertyChangedHandlers();
+            if (!_isHandlersInstalled)
+            {
+                InstallPropertyChangedHandlers();
+                _isHandlersInstalled = true;
+            }
         }
 
         private void InstallPropertyChangedHandlers()
         {
             AttachedObject.RegisterPropertyChangedHandler(DraggedSlotComponent.DraggedSlotProperty, OnDraggedSlotChanged);
             AttachedObject.RegisterPropertyChangedHandler(EntityWorldPositionComponent.EntityWorldPositionProperty, OnEntityWorldPositionChanged);
+            AttachedObject.RegisterPropertyChangedHandler(EntityLookComponent.HeadYawProperty, OnEntityHeadYawChanged);
+            AttachedObject.RegisterPropertyChangedHandler(EntityLookComponent.PitchProperty, OnEntityPitchChanged);
+            AttachedObject.RegisterPropertyChangedHandler(EntityLookComponent.YawProperty, OnEntityYawChanged);
+        }
+
+        private ChunkEventBroadcastComponent _broadcastComponent;
+
+        private void OnEntityHeadYawChanged(object sender, PropertyChangedEventArgs<float> e)
+        {
+            _broadcastComponent = _broadcastComponent ?? AttachedObject.GetComponent<ChunkEventBroadcastComponent>();
+            _broadcastComponent.GetGenerator(AttachedObject)
+                .EntityHeadLook(
+                AttachedObject.EntityId,
+                GetAngle(e.NewValue));
+        }
+
+        private void OnEntityYawChanged(object sender, PropertyChangedEventArgs<float> e)
+        {
+            var yaw = AttachedObject.GetValue(EntityLookComponent.YawProperty);
+            var pitch = AttachedObject.GetValue(EntityLookComponent.PitchProperty);
+            _broadcastComponent = _broadcastComponent ?? AttachedObject.GetComponent<ChunkEventBroadcastComponent>();
+            _broadcastComponent.GetGenerator(AttachedObject)
+                .EntityLook(
+                AttachedObject.EntityId,
+                GetAngle(yaw),
+                GetAngle(pitch),
+                AttachedObject.GetValue(EntityOnGroundComponent.IsOnGroundProperty));
+        }
+
+        private void OnEntityPitchChanged(object sender, PropertyChangedEventArgs<float> e)
+        {
+            var yaw = AttachedObject.GetValue(EntityLookComponent.YawProperty);
+            var pitch = AttachedObject.GetValue(EntityLookComponent.PitchProperty);
+            _broadcastComponent = _broadcastComponent ?? AttachedObject.GetComponent<ChunkEventBroadcastComponent>();
+            _broadcastComponent.GetGenerator(AttachedObject)
+                .EntityLook(
+                AttachedObject.EntityId,
+                GetAngle(yaw),
+                GetAngle(pitch),
+                AttachedObject.GetValue(EntityOnGroundComponent.IsOnGroundProperty));
         }
 
         private void OnEntityWorldPositionChanged(object sender, PropertyChangedEventArgs<EntityWorldPos> e)
@@ -57,6 +104,24 @@ namespace MineCase.Server.Game.Entities.Components
             var pos = e.NewValue;
             var box = new Cuboid(new Point3d(pos.X, pos.Z, pos.Y), new Size(0.6f, 0.6f, 1.75f));
             AttachedObject.SetLocalValue(ColliderComponent.ColliderShapeProperty, box);
+            _broadcastComponent = _broadcastComponent ?? AttachedObject.GetComponent<ChunkEventBroadcastComponent>();
+            _broadcastComponent.GetGenerator(AttachedObject)
+                .EntityRelativeMove(
+                AttachedObject.EntityId,
+                GetDelta(e.OldValue.X, e.NewValue.X),
+                GetDelta(e.OldValue.Y, e.NewValue.Y),
+                GetDelta(e.OldValue.Z, e.NewValue.Z),
+                AttachedObject.GetValue(EntityOnGroundComponent.IsOnGroundProperty));
+        }
+
+        private static short GetDelta(float before, float after)
+        {
+            return (short)((after * 32 - before * 32) * 128);
+        }
+
+        private static byte GetAngle(float degree)
+        {
+            return (byte)(degree * 256 / 360);
         }
 
         private void OnDraggedSlotChanged(object sender, PropertyChangedEventArgs<Slot> e)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using MineCase.Engine;
+using MineCase.Server.Game.Entities;
 using MineCase.Server.Network.Play;
 using MineCase.Server.World;
 
@@ -14,9 +15,9 @@ namespace MineCase.Server.Components
         {
         }
 
-        public ClientPlayPacketGenerator GetGenerator()
+        public ClientPlayPacketGenerator GetGenerator(IPlayer except = null)
         {
-            return new ClientPlayPacketGenerator(GrainFactory.GetGrain<IChunkTrackingHub>(AttachedObject.GetAddressByPartitionKey()));
+            return new ClientPlayPacketGenerator(GrainFactory.GetGrain<IChunkTrackingHub>(AttachedObject.GetAddressByPartitionKey()), except);
         }
     }
 

@@ -14,15 +14,15 @@ namespace MineCase.Server.Network
 {
     internal partial class PacketRouterGrain
     {
-        private object DeserializeLoginPacket(UncompressedPacket packet)
+        private Task DispatchLoginPackets(UncompressedPacket packet)
         {
             var br = new SpanReader(packet.Data);
-            object innerPacket;
+            Task task;
             switch (packet.PacketId)
             {
                 // Login Start
                 case 0x00:
-                    innerPacket = LoginStart.Deserialize(ref br);
+                    task = DispatchPacket(LoginStart.Deserialize(ref br));
                     break;
                 default:
                     throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X2}.");
@@ -30,7 +30,7 @@ namespace MineCase.Server.Network
 
             if (!br.IsCosumed)
                 throw new InvalidDataException($"Packet data is not fully consumed.");
-            return innerPacket;
+            return task;
         }
 
         private async Task DispatchPacket(LoginStart packet)

@@ -75,12 +75,21 @@ namespace MineCase.Server.Game
                 LevelTypes.Default,
                 false);
             await user.NotifyLoggedIn();
+            await UpdatePlayerList();
         }
 
         public Task LeaveGame(IUser player)
         {
             _users.Remove(player);
-            return Task.CompletedTask;
+            return UpdatePlayerList();
+        }
+
+        public async Task UpdatePlayerList()
+        {
+            var list = await Task.WhenAll(from p in _users.Keys
+                                          select p.GetPlayer());
+
+            await Task.WhenAll(from p in _users.Keys select p.UpdatePlayerList(list));
         }
 
         public async Task SendChatMessage(IUser sender, string message)

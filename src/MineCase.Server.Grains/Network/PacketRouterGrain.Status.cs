@@ -13,18 +13,18 @@ namespace MineCase.Server.Network
 {
     internal partial class PacketRouterGrain
     {
-        private object DeserializeStatusPacket(UncompressedPacket packet)
+        private Task DispatchStatusPackets(UncompressedPacket packet)
         {
             var br = new SpanReader(packet.Data);
             switch (packet.PacketId)
             {
                 // Request
                 case 0x00:
-                    return Request.Deserialize(ref br);
+                    return DispatchPacket(Request.Deserialize(ref br));
 
                 // Ping
                 case 0x01:
-                    return Ping.Deserialize(ref br);
+                    return DispatchPacket(Ping.Deserialize(ref br));
                 default:
                     throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X2}.");
             }

@@ -34,35 +34,43 @@ namespace MineCase.Server.World
             SetComponent(new PeriodicSaveStateComponent(TimeSpan.FromMinutes(1)));
         }
 
-        public async Task Enter(IPlayer player)
+        public Task Enter(IPlayer player)
         {
             if (_players.Add(player))
             {
                 var message = new DiscoveredByPlayer { Player = player };
-                await Task.WhenAll(from e in State.DiscoveryEntities
-                                   select e.Tell(message));
+                foreach (var entity in State.DiscoveryEntities)
+                {
+                    if (entity.Equals(player)) continue;
+                    entity.InvokeOneWay(g => g.Tell(message));
+                }
             }
+
+            return Task.CompletedTask;
         }
 
-        public async Task Leave(IPlayer player)
+        public Task Leave(IPlayer player)
         {
             if (_players.Remove(player))
             {
                 if (_players.Count == 0)
                 {
-                    await World.DeactivePartition(this);
                     DeactivateOnIdle();
                 }
             }
+
+            return Task.CompletedTask;
         }
 
-        async Task IWorldPartition.SubscribeDiscovery(IEntity entity)
+        Task IWorldPartition.SubscribeDiscovery(IEntity entity)
         {
             if (State.DiscoveryEntities.Add(entity))
             {
                 MarkDirty();
-                await entity.Tell(BroadcastDiscovered.Default);
+                entity.InvokeOneWay(e => e.Tell(BroadcastDiscovered.Default));
             }
+
+            return Task.CompletedTask;
         }
 
         Task IWorldPartition.UnsubscribeDiscovery(IEntity entity)

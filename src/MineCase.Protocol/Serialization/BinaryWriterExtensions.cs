@@ -92,6 +92,11 @@ namespace MineCase.Serialization
             bw.Write(value.ToByteArray());
         }
 
+        public static void WriteAsAngle(this BinaryWriter bw, Angle value)
+        {
+            bw.Write(value.Value);
+        }
+
         public static void WriteAsArray<T>(this BinaryWriter bw, IReadOnlyList<T> array)
             where T : ISerializablePacket
         {

@@ -40,6 +40,9 @@ namespace MineCase.Server.User
 
         Task NotifyLoggedIn();
 
+        [OneWay]
+        Task UpdatePlayerList(IReadOnlyList<IPlayer> players);
+
         Task SendChatMessage(Chat jsonData, Byte position);
 
         [OneWay]
@@ -49,6 +52,7 @@ namespace MineCase.Server.User
 
         Task<Slot[]> GetInventorySlots();
 
+        [OneWay]
         Task ForwardPacket(UncompressedPacket packet);
 
         Task SetInventorySlot(int index, Slot slot);

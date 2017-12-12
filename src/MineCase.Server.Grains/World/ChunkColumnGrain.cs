@@ -164,7 +164,7 @@ namespace MineCase.Server.World
 
         protected ClientPlayPacketGenerator GetBroadcastGenerator()
         {
-            return new ClientPlayPacketGenerator(GrainFactory.GetPartitionGrain<IChunkTrackingHub>(World, ChunkWorldPos));
+            return new ClientPlayPacketGenerator(GrainFactory.GetPartitionGrain<IChunkTrackingHub>(World, ChunkWorldPos), null);
         }
 
         public Task<IBlockEntity> GetBlockEntity(int x, int y, int z)

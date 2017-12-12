@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.ObjectPool;
 using MineCase.Buffers;
 using MineCase.Protocol;
+using MineCase.Server.Game;
 using MineCase.Server.Network;
 using Orleans;
 using System;
@@ -53,6 +54,9 @@ namespace MineCase.Gateway.Network
                 }
                 catch (EndOfStreamException)
                 {
+                    var router = _grainFactory.GetGrain<IPacketRouter>(_sessionId);
+                    await router.Close();
+
                     await _outcomingPacketDispatcher.Completion;
                 }
             }

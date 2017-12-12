@@ -21,13 +21,11 @@ namespace MineCase.Server.Network.Play
 {
     internal class ServerboundPacketComponent : Component<PlayerGrain>, IHandle<ServerboundPacketMessage>
     {
-        private readonly ConcurrentQueue<object> _deferredPacket = new ConcurrentQueue<object>();
-        private readonly ActionBlock<UncompressedPacket> _receivePacket;
+        private readonly Queue<UncompressedPacket> _deferredPacket = new Queue<UncompressedPacket>();
 
         public ServerboundPacketComponent(string name = "serverboundPacket")
             : base(name)
         {
-            _receivePacket = new ActionBlock<UncompressedPacket>((Action<UncompressedPacket>)OnReceivePacket);
         }
 
         protected override void OnAttached()
@@ -44,126 +42,114 @@ namespace MineCase.Server.Network.Play
 
         private async Task OnGameTick(object sender, GameTickArgs e)
         {
-            while (_deferredPacket.TryDequeue(out var packet))
-                await DispatchPacket((dynamic)packet);
+            while (_deferredPacket.Count != 0)
+                await DispatchPacket(_deferredPacket.Dequeue());
         }
 
         Task IHandle<ServerboundPacketMessage>.Handle(ServerboundPacketMessage message)
         {
-            _receivePacket.Post(message.Packet);
+            _deferredPacket.Enqueue(message.Packet);
             return Task.CompletedTask;
         }
 
-        private void OnReceivePacket(UncompressedPacket rawPacket)
-        {
-            var packet = DeserializePlayPacket(rawPacket);
-            if (packet != null)
-                _deferredPacket.Enqueue(packet);
-        }
-
-        private Task DispatchPacket(object packet)
-        {
-            throw new NotImplementedException();
-        }
-
-        private object DeserializePlayPacket(UncompressedPacket packet)
+        private Task DispatchPacket(UncompressedPacket packet)
         {
             var br = new SpanReader(packet.Data);
-            object innerPacket;
+            Task task;
             switch (packet.PacketId)
             {
                 // Teleport Confirm
                 case 0x00:
-                    innerPacket = TeleportConfirm.Deserialize(ref br);
+                    task = DispatchPacket(TeleportConfirm.Deserialize(ref br));
                     break;
 
                 // Chat Message
                 case 0x03:
-                    innerPacket = ServerboundChatMessage.Deserialize(ref br);
+                    task = DispatchPacket(ServerboundChatMessage.Deserialize(ref br));
                     break;
 
                 // Client Settings
                 case 0x05:
-                    innerPacket = ClientSettings.Deserialize(ref br);
+                    task = DispatchPacket(ClientSettings.Deserialize(ref br));
                     break;
 
                 // Plugin Message
                 case 0x0A:
-                    innerPacket = ServerboundPluginMessage.Deserialize(ref br);
+                    task = DispatchPacket(ServerboundPluginMessage.Deserialize(ref br));
                     break;
 
                 // Keep Alive
                 case 0x0C:
-                    innerPacket = ServerboundKeepAlive.Deserialize(ref br);
+                    task = DispatchPacket(ServerboundKeepAlive.Deserialize(ref br));
                     break;
 
                 // Player On Ground
                 case 0x0D:
-                    innerPacket = PlayerOnGround.Deserialize(ref br);
+                    task = DispatchPacket(PlayerOnGround.Deserialize(ref br));
                     break;
 
                 // Player Position
                 case 0x0E:
-                    innerPacket = PlayerPosition.Deserialize(ref br);
+                    task = DispatchPacket(PlayerPosition.Deserialize(ref br));
                     break;
 
                 // Position And Look
                 case 0x0F:
-                    innerPacket = ServerboundPositionAndLook.Deserialize(ref br);
+                    task = DispatchPacket(ServerboundPositionAndLook.Deserialize(ref br));
                     break;
 
                 // Player Look
                 case 0x10:
-                    innerPacket = PlayerLook.Deserialize(ref br);
+                    task = DispatchPacket(PlayerLook.Deserialize(ref br));
                     break;
 
                 // Player Digging
                 case 0x14:
-                    innerPacket = PlayerDigging.Deserialize(ref br);
+                    task = DispatchPacket(PlayerDigging.Deserialize(ref br));
                     break;
 
                 // Entity Action
                 case 0x15:
-                    innerPacket = EntityAction.Deserialize(ref br);
+                    task = DispatchPacket(EntityAction.Deserialize(ref br));
                     break;
 
                 // Held Item Change
                 case 0x1A:
-                    innerPacket = ServerboundHeldItemChange.Deserialize(ref br);
+                    task = DispatchPacket(ServerboundHeldItemChange.Deserialize(ref br));
                     break;
 
                 // Animation
                 case 0x1D:
-                    innerPacket = ServerboundAnimation.Deserialize(ref br);
+                    task = DispatchPacket(ServerboundAnimation.Deserialize(ref br));
                     break;
 
                 // Player Block Placement
                 case 0x1F:
-                    innerPacket = PlayerBlockPlacement.Deserialize(ref br);
+                    task = DispatchPacket(PlayerBlockPlacement.Deserialize(ref br));
                     break;
 
                 // Use Item
                 case 0x20:
-                    innerPacket = UseItem.Deserialize(ref br);
+                    task = DispatchPacket(UseItem.Deserialize(ref br));
                     break;
 
                 // Click Window
                 case 0x08:
-                    innerPacket = ClickWindow.Deserialize(ref br);
+                    task = DispatchPacket(ClickWindow.Deserialize(ref br));
                     break;
 
                 // Close Window
                 case 0x09:
-                    innerPacket = ServerboundCloseWindow.Deserialize(ref br);
+                    task = DispatchPacket(ServerboundCloseWindow.Deserialize(ref br));
                     break;
                 default:
                     Logger.LogWarning($"Unrecognizable packet id: 0x{packet.PacketId:X2}.");
-                    return null;
+                    return Task.CompletedTask;
             }
 
             if (!br.IsCosumed)
                 throw new InvalidDataException($"Packet data is not fully consumed.");
-            return innerPacket;
+            return task;
         }
 
         private Task DispatchPacket(TeleportConfirm packet)
@@ -191,46 +177,42 @@ namespace MineCase.Server.Network.Play
             return Task.CompletedTask;
         }
 
+        private KeepAliveComponent _keepAliveComponent;
+
         private Task DispatchPacket(ServerboundKeepAlive packet)
         {
-            return AttachedObject.GetComponent<KeepAliveComponent>().ReceiveResponse(packet.KeepAliveId);
+            _keepAliveComponent = _keepAliveComponent ?? AttachedObject.GetComponent<KeepAliveComponent>();
+            return _keepAliveComponent.ReceiveResponse(packet.KeepAliveId);
         }
 
         private Task DispatchPacket(ServerboundPositionAndLook packet)
         {
-            AttachedObject.GetComponent<EntityWorldPositionComponent>()
-                .SetPosition(new EntityWorldPos((float)packet.X, (float)packet.FeetY, (float)packet.Z));
-            var lookComponent = AttachedObject.GetComponent<EntityLookComponent>();
-            lookComponent.SetPitch(packet.Pitch);
-            lookComponent.SetYaw(packet.Yaw);
-            AttachedObject.GetComponent<EntityOnGroundComponent>()
-                .SetIsOnGround(packet.OnGround);
+            AttachedObject.SetLocalValue(EntityWorldPositionComponent.EntityWorldPositionProperty, new EntityWorldPos((float)packet.X, (float)packet.FeetY, (float)packet.Z));
+            AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, packet.Pitch);
+            AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, packet.Yaw);
+            AttachedObject.SetLocalValue(EntityOnGroundComponent.IsOnGroundProperty, packet.OnGround);
             return Task.CompletedTask;
         }
 
         private Task DispatchPacket(PlayerOnGround packet)
         {
-            AttachedObject.GetComponent<EntityOnGroundComponent>()
-                .SetIsOnGround(packet.OnGround);
+            AttachedObject.SetLocalValue(EntityOnGroundComponent.IsOnGroundProperty, packet.OnGround);
             return Task.CompletedTask;
         }
 
         private Task DispatchPacket(PlayerPosition packet)
         {
-            AttachedObject.GetComponent<EntityWorldPositionComponent>()
-                .SetPosition(new EntityWorldPos((float)packet.X, (float)packet.FeetY, (float)packet.Z));
-            AttachedObject.GetComponent<EntityOnGroundComponent>()
-                .SetIsOnGround(packet.OnGround);
+            AttachedObject.SetLocalValue(EntityWorldPositionComponent.EntityWorldPositionProperty, new EntityWorldPos((float)packet.X, (float)packet.FeetY, (float)packet.Z));
+            AttachedObject.SetLocalValue(EntityOnGroundComponent.IsOnGroundProperty, packet.OnGround);
             return Task.CompletedTask;
         }
 
         private Task DispatchPacket(PlayerLook packet)
         {
-            var lookComponent = AttachedObject.GetComponent<EntityLookComponent>();
-            lookComponent.SetPitch(packet.Pitch);
-            lookComponent.SetYaw(packet.Yaw);
-            AttachedObject.GetComponent<EntityOnGroundComponent>()
-                .SetIsOnGround(packet.OnGround);
+            AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, packet.Pitch);
+            AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, packet.Yaw);
+            AttachedObject.SetLocalValue(EntityLookComponent.HeadYawProperty, packet.Yaw);
+            AttachedObject.SetLocalValue(EntityOnGroundComponent.IsOnGroundProperty, packet.OnGround);
             return Task.CompletedTask;
         }
 

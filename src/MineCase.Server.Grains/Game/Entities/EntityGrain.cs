@@ -30,6 +30,8 @@ namespace MineCase.Server.Game.Entities
 
         public float Pitch => GetValue(EntityLookComponent.PitchProperty);
 
+        public float HeadYaw => GetValue(EntityLookComponent.HeadYawProperty);
+
         public float Yaw => GetValue(EntityLookComponent.YawProperty);
 
         protected override void InitializeComponents()

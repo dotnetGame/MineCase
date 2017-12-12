@@ -39,8 +39,7 @@ namespace MineCase.Server.User
         {
             for (int i = 0; i < 4; i++)
             {
-                if (!await StreamNextChunk())
-                    break;
+                if (await StreamNextChunk()) break;
             }
 
             // unload per 5 seconds
