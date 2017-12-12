@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net46</TargetFrameworks>
     <RootNamespace>MineCase</RootNamespace>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -11,12 +12,9 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'TravisCI'">
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)' != 'TravisCI'">
-    <TargetFrameworks>netstandard2.0;net46</TargetFrameworks>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net46'">
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+    <FrameworkPathOverride>$(NuGetPackageRoot)microsoft.targetingpack.netframework.v4.6\1.0.1\lib\net46\</FrameworkPathOverride>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +24,12 @@
     <PackageReference Include="System.Numerics.Vectors" Version="4.4.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.4.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
+    <PackageReference Include="Microsoft.TargetingPack.NETFramework.v4.6" Version="1.0.1" ExcludeAssets="All" PrivateAssets="All" />
+
+    <Reference Include="System.Runtime" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(TargetFramework)' != 'net46'">
