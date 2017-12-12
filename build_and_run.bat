@@ -1,4 +1,17 @@
 @echo off
+where mongo
+IF %ERRORLEVEL% NEQ 0 (
+    echo "mongo command is not available, please make sure mongodb is installed and added to the system path."
+    exit /b 1
+)
+
+mongo --eval "db.stats()"
+IF %ERRORLEVEL% NEQ 0 (
+    echo "mongodb not running"
+    exit /b 1
+) else (
+    echo "mongodb is online..."
+)
 
 echo building MineCase...
 pushd src
