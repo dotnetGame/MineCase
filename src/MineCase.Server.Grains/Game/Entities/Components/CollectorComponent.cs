@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.Components;
+using Orleans;
 
 namespace MineCase.Server.Game.Entities.Components
 {
@@ -17,8 +18,9 @@ namespace MineCase.Server.Game.Entities.Components
 
         Task IHandle<CollisionWith>.Handle(CollisionWith message)
         {
-            return Task.WhenAll(from e in message.Entities
-                                select e.Tell(new CollectBy { Entity = AttachedObject }));
+            foreach (var e in message.Entities)
+                e.InvokeOneWay(g => g.Tell(new CollectBy { Entity = AttachedObject }));
+            return Task.CompletedTask;
         }
     }
 }
