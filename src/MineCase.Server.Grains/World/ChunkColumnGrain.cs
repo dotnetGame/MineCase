@@ -83,7 +83,7 @@ namespace MineCase.Server.World
                     // 删除旧的 BlockEntity
                     if (state.BlockEntities.TryGetValue(chunkPos, out var entity))
                     {
-                        if (newEntity != null && entity.GetPrimaryKeyString() == newEntity.GetPrimaryKeyString())
+                        if (object.Equals(entity, newEntity))
                             replaceOld = false;
 
                         if (replaceOld)

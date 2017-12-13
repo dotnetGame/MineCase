@@ -70,13 +70,13 @@ namespace MineCase.Server.World
 
         private async Task Collision(IDependencyObject entity, Shape colliderShape)
         {
-            var result = (await Task.WhenAll(from finder in _neighborFinders
-                                             where colliderShape.CollideWith(finder.box)
-                                             select finder.finder.CollisionInChunk(colliderShape)))
-                                             .SelectMany(o => o).ToList();
+            var result = new HashSet<IDependencyObject>((await Task.WhenAll(from finder in _neighborFinders
+                                                                            where colliderShape.CollideWith(finder.box)
+                                                                            select finder.finder.CollisionInChunk(colliderShape)))
+                                                                            .SelectMany(o => o));
             result.Remove(entity);
-            if (result.Any())
-                await entity.Tell(new CollisionWith { Entities = result });
+            if (result.Count != 0)
+                entity.InvokeOneWay(e => e.Tell(new CollisionWith { Entities = result }));
         }
 
         public async Task SpawnPickup(Vector3 position, Immutable<Slot[]> slots)

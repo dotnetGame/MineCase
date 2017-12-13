@@ -35,21 +35,20 @@ namespace MineCase.Server.User
             return Task.CompletedTask;
         }
 
-        public async Task OnGameTick(long worldAge)
+        public async Task OnGameTick(GameTickArgs e, EntityWorldPos playerPosition)
         {
             for (int i = 0; i < 4; i++)
             {
-                if (await StreamNextChunk()) break;
+                if (await StreamNextChunk(playerPosition.ToChunkWorldPos())) break;
             }
 
             // unload per 5 seconds
-            if (worldAge % 100 == 0)
+            if (e.WorldAge % 100 == 0)
                 await UnloadOutOfRangeChunks();
         }
 
-        private async Task<bool> StreamNextChunk()
+        private async Task<bool> StreamNextChunk(ChunkWorldPos currentChunk)
         {
-            var currentChunk = (await _player.GetPosition()).ToChunkWorldPos();
             if (_lastStreamedChunk.HasValue && _lastStreamedChunk.Value == currentChunk) return true;
 
             for (int d = 0; d <= _viewDistance; d++)

@@ -28,7 +28,7 @@ namespace MineCase.Server.Network.Play
         public async Task Kick()
         {
             await AttachedObject.Tell(Disable.Default);
-            if (_user.GetPlayer() == AttachedObject.AsReference<IPlayer>())
+            if (object.Equals(_user.GetPlayer(), AttachedObject.AsReference<IPlayer>()))
                 await _user.Kick();
         }
 

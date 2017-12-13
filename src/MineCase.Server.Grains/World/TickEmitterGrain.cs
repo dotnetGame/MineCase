@@ -53,10 +53,7 @@ namespace MineCase.Server.World
         {
             _tickables = _tickables.Remove(observer);
             if (_tickables.IsEmpty)
-            {
                 _fixedUpdate.Stop();
-            }
-
             return Task.CompletedTask;
         }
     }
