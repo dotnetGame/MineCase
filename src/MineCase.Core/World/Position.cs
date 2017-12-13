@@ -49,8 +49,8 @@ namespace MineCase.World
         {
             int chunkPosX = X / ChunkConstants.BlockEdgeWidthInSection;
             int chunkPosZ = Z / ChunkConstants.BlockEdgeWidthInSection;
-            if (X < 0) chunkPosX -= 1;
-            if (Z < 0) chunkPosZ -= 1;
+            if (X < 0) chunkPosX--;
+            if (Z < 0) chunkPosZ--;
             return new ChunkWorldPos(chunkPosX, chunkPosZ);
         }
 
@@ -206,7 +206,11 @@ namespace MineCase.World
 
         public BlockWorldPos ToBlockWorldPos()
         {
-            return new BlockWorldPos(X * 16, 0, Z * 16);
+            var x = X * 16;
+            if (x < 0) x++;
+            var z = Z * 16;
+            if (z < 0) z++;
+            return new BlockWorldPos(x, 0, z);
         }
 
         public override bool Equals(object obj)
@@ -337,7 +341,7 @@ namespace MineCase.World
 
         public EntityWorldPos ToEntityWorldPos(ChunkWorldPos pos)
         {
-            return new EntityWorldPos(X + pos.X, Y, Z + pos.Z);
+            return new EntityWorldPos(pos.X * 16 + X, Y, pos.Z * 16 + Z);
         }
 
         public static EntityChunkPos Add(EntityChunkPos pos, float x, float y, float z)

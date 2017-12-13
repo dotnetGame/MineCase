@@ -31,4 +31,8 @@
     <ProjectReference Include="..\..\src\MineCase.Server.Interfaces\MineCase.Server.Interfaces.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\..\src\MineCase.Protocol\Serialization\BinaryWriterExtensions.cs" Link="BinaryWriterExtensions.cs" />
+  </ItemGroup>
+
 </Project>
