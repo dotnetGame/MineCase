@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using MineCase.Protocol.Play;
 using MineCase.Server.User;
+using MineCase.Server.World;
 using Orleans;
 
 namespace MineCase.Server.Game
@@ -20,5 +21,9 @@ namespace MineCase.Server.Game
         Task SendChatMessage(IUser sender, IUser receiver, String messages);
 
         Task<int> UserNumber();
+
+        Task Subscribe(ITickEmitter tickEmitter);
+
+        Task Unsubscribe(ITickEmitter tickEmitter);
     }
 }

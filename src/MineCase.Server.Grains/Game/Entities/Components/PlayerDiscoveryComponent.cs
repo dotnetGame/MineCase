@@ -39,8 +39,13 @@ namespace MineCase.Server.Game.Entities.Components
 
         Task IHandle<DestroyEntity>.Handle(DestroyEntity message)
         {
-            return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator()
-                .DestroyEntities(new[] { AttachedObject.EntityId });
+            if (AttachedObject.EntityId != 0)
+            {
+                return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator()
+                    .DestroyEntities(new[] { AttachedObject.EntityId });
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

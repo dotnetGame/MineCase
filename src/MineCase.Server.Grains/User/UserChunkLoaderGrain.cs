@@ -37,7 +37,7 @@ namespace MineCase.Server.User
 
         public async Task OnGameTick(GameTickArgs e, EntityWorldPos playerPosition)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 4 && _sendingChunks.Count <= 4; i++)
             {
                 if (await StreamNextChunk(playerPosition.ToChunkWorldPos())) break;
             }

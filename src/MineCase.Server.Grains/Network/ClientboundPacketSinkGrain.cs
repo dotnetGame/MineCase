@@ -11,7 +11,6 @@ using Orleans.Concurrency;
 
 namespace MineCase.Server.Network
 {
-    [Reentrant]
     internal class ClientboundPacketSinkGrain : Grain, IClientboundPacketSink
     {
         private ObserverSubscriptionManager<IClientboundPacketObserver> _subsManager;
@@ -55,13 +54,17 @@ namespace MineCase.Server.Network
                 PacketId = packetId,
                 Data = new ArraySegment<byte>(data.Value)
             };
-            _subsManager.Notify(n => n.ReceivePacket(packet));
+            if (_subsManager.Count == 0)
+                DeactivateOnIdle();
+            else
+                _subsManager.Notify(n => n.ReceivePacket(packet));
             return Task.CompletedTask;
         }
 
         public Task Close()
         {
             _subsManager.Notify(n => n.OnClosed());
+            _subsManager.Clear();
             DeactivateOnIdle();
             return Task.CompletedTask;
         }

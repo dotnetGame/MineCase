@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Protocol;
 using MineCase.Server.Game.Entities;
+using Orleans;
 using Orleans.Concurrency;
 
 namespace MineCase.Server.Network.Play
@@ -27,11 +28,12 @@ namespace MineCase.Server.Network.Play
 
         public Task SendPacket(uint packetId, Immutable<byte[]> data)
         {
-            return _player.Tell(new PacketForwardToPlayer
+            _player.InvokeOneWay(e => e.Tell(new PacketForwardToPlayer
             {
                 PacketId = packetId,
                 Data = data.Value
-            });
+            }));
+            return Task.CompletedTask;
         }
     }
 }

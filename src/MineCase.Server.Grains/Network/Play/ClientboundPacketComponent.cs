@@ -45,7 +45,9 @@ namespace MineCase.Server.Network.Play
 
         Task IHandle<PacketForwardToPlayer>.Handle(PacketForwardToPlayer message)
         {
-            return _sink.SendPacket(message.PacketId, message.Data.AsImmutable());
+            if (_sink != null)
+                return _sink.SendPacket(message.PacketId, message.Data.AsImmutable());
+            return Task.CompletedTask;
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.Components;
+using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Persistence;
 using MineCase.Server.Persistence.Components;
@@ -21,21 +22,9 @@ namespace MineCase.Server.World
     {
         private ImmutableHashSet<IDependencyObject> _tickables = ImmutableHashSet<IDependencyObject>.Empty;
 
-        private FixedUpdateComponent _fixedUpdate;
-
         protected override void InitializeComponents()
         {
             SetComponent(new PeriodicSaveStateComponent(TimeSpan.FromMinutes(1)));
-
-            _fixedUpdate = new FixedUpdateComponent();
-            _fixedUpdate.Tick += OnFixedUpdate;
-            SetComponent(_fixedUpdate);
-        }
-
-        private Task OnFixedUpdate(object sender, GameTickArgs e)
-        {
-            var msg = new GameTick { Args = e };
-            return Task.WhenAll(from t in _tickables select t.Tell(msg));
         }
 
         public async Task Subscribe(IDependencyObject observer)
@@ -45,16 +34,21 @@ namespace MineCase.Server.World
 
             if (active)
             {
-                await _fixedUpdate.Start(World);
+                await GrainFactory.GetGrain<IGameSession>(World.GetPrimaryKeyString()).Subscribe(this);
             }
         }
 
-        public Task Unsubscribe(IDependencyObject observer)
+        public async Task Unsubscribe(IDependencyObject observer)
         {
             _tickables = _tickables.Remove(observer);
             if (_tickables.IsEmpty)
-                _fixedUpdate.Stop();
-            return Task.CompletedTask;
+                await GrainFactory.GetGrain<IGameSession>(World.GetPrimaryKeyString()).Unsubscribe(this);
+        }
+
+        public Task OnGameTick(GameTickArgs e)
+        {
+            var msg = new GameTick { Args = e };
+            return Task.WhenAll(from t in _tickables select t.Tell(msg));
         }
     }
 }

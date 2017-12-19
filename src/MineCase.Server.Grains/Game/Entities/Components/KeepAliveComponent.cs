@@ -48,12 +48,12 @@ namespace MineCase.Server.Game.Entities.Components
 
         private async Task OnGameTick(object sender, GameTickArgs e)
         {
-            if (_isOnline && _keepAliveWaiters.Count >= ClientKeepInterval)
+            /*if (_isOnline && _keepAliveWaiters.Count >= ClientKeepInterval)
             {
                 _isOnline = false;
                 await AttachedObject.Tell(new KickPlayer());
             }
-            else if (e.WorldAge % 20 == 0)
+            else */if (_isOnline && e.WorldAge % 20 == 0)
             {
                 var id = _keepAliveId++;
                 _keepAliveWaiters.Add(id);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,9 +24,9 @@ namespace MineCase.Server.Game
     internal class GameSession : DependencyObject, IGameSession
     {
         private IWorld _world;
-        private IChunkSender _chunkSender;
         private FixedUpdateComponent _fixedUpdate;
         private readonly Dictionary<IUser, UserContext> _users = new Dictionary<IUser, UserContext>();
+        private ImmutableHashSet<ITickEmitter> _tickEmitters = ImmutableHashSet<ITickEmitter>.Empty;
 
         private ILogger _logger;
 
@@ -34,7 +35,6 @@ namespace MineCase.Server.Game
             await base.OnActivateAsync();
             _logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<GameSession>();
             _world = await GrainFactory.GetGrain<IWorldAccessor>(0).GetWorld(this.GetPrimaryKeyString());
-            _chunkSender = GrainFactory.GetGrain<IChunkSender>(this.GetPrimaryKeyString());
             await _fixedUpdate.Start(_world);
         }
 
@@ -52,6 +52,8 @@ namespace MineCase.Server.Game
             await _world.OnGameTick(e);
             await Task.WhenAll(from u in _users.Keys
                          select u.OnGameTick(e));
+            await Task.WhenAll(from t in _tickEmitters
+                               select t.OnGameTick(e));
         }
 
         public async Task JoinGame(IUser user)
@@ -143,6 +145,18 @@ namespace MineCase.Server.Game
         public Task<int> UserNumber()
         {
             return Task.FromResult(_users.Count);
+        }
+
+        public Task Subscribe(ITickEmitter tickEmitter)
+        {
+            _tickEmitters = _tickEmitters.Add(tickEmitter);
+            return Task.CompletedTask;
+        }
+
+        public Task Unsubscribe(ITickEmitter tickEmitter)
+        {
+            _tickEmitters = _tickEmitters.Remove(tickEmitter);
+            return Task.CompletedTask;
         }
 
         private class UserContext

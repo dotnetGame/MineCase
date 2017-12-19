@@ -23,6 +23,7 @@ namespace MineCase.Gateway.Network
         private bool _useCompression = false;
         private readonly Guid _sessionId;
         private readonly OutcomingPacketObserver _outcomingPacketObserver;
+        private IClientboundPacketObserver _clientboundPacketObserverRef;
         private readonly ActionBlock<UncompressedPacket> _outcomingPacketDispatcher;
         private readonly ObjectPool<UncompressedPacket> _uncompressedPacketObjectPool;
         private readonly IBufferPool<byte> _bufferPool;
@@ -42,8 +43,8 @@ namespace MineCase.Gateway.Network
         {
             using (_remoteStream = _tcpClient.GetStream())
             {
-                var observerRef = await _grainFactory.CreateObjectReference<IClientboundPacketObserver>(_outcomingPacketObserver);
-                await _grainFactory.GetGrain<IClientboundPacketSink>(_sessionId).Subscribe(observerRef);
+                _clientboundPacketObserverRef = await _grainFactory.CreateObjectReference<IClientboundPacketObserver>(_outcomingPacketObserver);
+                await _grainFactory.GetGrain<IClientboundPacketSink>(_sessionId).Subscribe(_clientboundPacketObserverRef);
                 try
                 {
                     while (!cancellationToken.IsCancellationRequested &&
