@@ -240,11 +240,9 @@ namespace MineCase.Server.Game.BlockEntities.Components
         async Task IHandle<UseBy>.Handle(UseBy message)
         {
             if (FurnaceWindow == null)
-            {
                 AttachedObject.SetLocalValue(FurnaceWindowProperty, GrainFactory.GetGrain<IFurnaceWindow>(Guid.NewGuid()));
-                await FurnaceWindow.SetEntity(AttachedObject);
-            }
 
+            await FurnaceWindow.SetEntity(AttachedObject);
             await message.Entity.Tell(new OpenWindow { Window = FurnaceWindow });
         }
 
