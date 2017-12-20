@@ -37,9 +37,12 @@ namespace MineCase.Server.User
 
         public async Task OnGameTick(GameTickArgs e, EntityWorldPos playerPosition)
         {
-            for (int i = 0; i < 4 && _sendingChunks.Count <= 4; i++)
+            if (e.WorldAge % 10 == 0)
             {
-                if (await StreamNextChunk(playerPosition.ToChunkWorldPos())) break;
+                for (int i = 0; i < 4 && _sendingChunks.Count <= 4; i++)
+                {
+                    if (await StreamNextChunk(playerPosition.ToChunkWorldPos())) break;
+                }
             }
 
             // unload per 5 seconds

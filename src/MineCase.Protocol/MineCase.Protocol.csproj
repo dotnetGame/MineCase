@@ -24,6 +24,7 @@
     <PackageReference Include="System.Numerics.Vectors" Version="4.4.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.4.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" PrivateAssets="All" />
+    <PackageReference Include="sharpcompress" Version="0.19.2"/>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
