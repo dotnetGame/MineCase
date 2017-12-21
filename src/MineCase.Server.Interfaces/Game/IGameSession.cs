@@ -21,9 +21,5 @@ namespace MineCase.Server.Game
         Task SendChatMessage(IUser sender, IUser receiver, String messages);
 
         Task<int> UserNumber();
-
-        Task Subscribe(ITickEmitter tickEmitter);
-
-        Task Unsubscribe(ITickEmitter tickEmitter);
     }
 }

@@ -17,7 +17,7 @@ namespace MineCase.Server.Components
         private long _worldAge;
         private long _actualAge;
         private TimeSpan _lastUpdate;
-        private static readonly long _updateTick = TimeSpan.FromMilliseconds(50).Ticks;
+        private static readonly long _updateMs = 50;
 
         public event AsyncEventHandler<GameTickArgs> Tick;
 
@@ -38,7 +38,7 @@ namespace MineCase.Server.Components
 
         private async Task OnTick(object arg)
         {
-            var expectedAge = (_stopwatch.ElapsedTicks + _updateTick - 1) / _updateTick;
+            var expectedAge = (_stopwatch.ElapsedMilliseconds + _updateMs - 1) / _updateMs;
             var updateTimes = expectedAge - _actualAge;
 
             if (updateTimes > 0)
@@ -56,9 +56,6 @@ namespace MineCase.Server.Components
                 var now = _stopwatch.Elapsed;
                 var deltaTime = now - _lastUpdate;
                 _lastUpdate = now;
-
-                if (deltaTime.TotalMilliseconds > 50)
-                    Logger.LogWarning($"Game Tick: {deltaTime.TotalMilliseconds} ms.");
             }
         }
 

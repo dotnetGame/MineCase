@@ -18,37 +18,72 @@ using Orleans.Streams;
 namespace MineCase.Server.World
 {
     [Reentrant]
+    [PersistTableName("tickEmitter")]
     internal class TickEmitterGrain : AddressByPartitionGrain, ITickEmitter
     {
-        private ImmutableHashSet<IDependencyObject> _tickables = ImmutableHashSet<IDependencyObject>.Empty;
+        private IWorldPartition _worldPartition;
+
+        private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
+
+        protected override void InitializePreLoadComponent()
+        {
+            SetComponent(new StateComponent<StateHolder>());
+            _worldPartition = GrainFactory.GetPartitionGrain<IWorldPartition>(this);
+        }
 
         protected override void InitializeComponents()
         {
             SetComponent(new PeriodicSaveStateComponent(TimeSpan.FromMinutes(1)));
         }
 
-        public async Task Subscribe(IDependencyObject observer)
+        public Task Subscribe(IDependencyObject observer)
         {
-            bool active = _tickables.IsEmpty;
-            _tickables = _tickables.Add(observer);
-
-            if (active)
+            bool active = State.Subscription.Count == 0;
+            if (State.Subscription.Add(observer))
             {
-                await GrainFactory.GetGrain<IGameSession>(World.GetPrimaryKeyString()).Subscribe(this);
+                MarkDirty();
+                if (active)
+                    return _worldPartition.SubscribeTickEmitter(this);
             }
+
+            return Task.CompletedTask;
         }
 
-        public async Task Unsubscribe(IDependencyObject observer)
+        public Task Unsubscribe(IDependencyObject observer)
         {
-            _tickables = _tickables.Remove(observer);
-            if (_tickables.IsEmpty)
-                await GrainFactory.GetGrain<IGameSession>(World.GetPrimaryKeyString()).Unsubscribe(this);
+            if (State.Subscription.Remove(observer))
+            {
+                MarkDirty();
+                if (State.Subscription.Count == 0)
+                    return _worldPartition.UnsubscribeTickEmitter(this);
+            }
+
+            return Task.CompletedTask;
         }
 
         public Task OnGameTick(GameTickArgs e)
         {
             var msg = new GameTick { Args = e };
-            return Task.WhenAll(from t in _tickables select t.Tell(msg));
+            return Task.WhenAll(from t in State.Subscription select t.Tell(msg));
+        }
+
+        private void MarkDirty()
+        {
+            ValueStorage.IsDirty = true;
+        }
+
+        internal class StateHolder
+        {
+            public HashSet<IDependencyObject> Subscription { get; set; }
+
+            public StateHolder()
+            {
+            }
+
+            public StateHolder(InitializeStateMark mark)
+            {
+                Subscription = new HashSet<IDependencyObject>();
+            }
         }
     }
 }

@@ -26,7 +26,6 @@ namespace MineCase.Server.Game
         private IWorld _world;
         private FixedUpdateComponent _fixedUpdate;
         private readonly Dictionary<IUser, UserContext> _users = new Dictionary<IUser, UserContext>();
-        private ImmutableHashSet<ITickEmitter> _tickEmitters = ImmutableHashSet<ITickEmitter>.Empty;
 
         private ILogger _logger;
 
@@ -52,8 +51,6 @@ namespace MineCase.Server.Game
             await _world.OnGameTick(e);
             await Task.WhenAll(from u in _users.Keys
                          select u.OnGameTick(e));
-            await Task.WhenAll(from t in _tickEmitters
-                               select t.OnGameTick(e));
         }
 
         public async Task JoinGame(IUser user)
@@ -145,18 +142,6 @@ namespace MineCase.Server.Game
         public Task<int> UserNumber()
         {
             return Task.FromResult(_users.Count);
-        }
-
-        public Task Subscribe(ITickEmitter tickEmitter)
-        {
-            _tickEmitters = _tickEmitters.Add(tickEmitter);
-            return Task.CompletedTask;
-        }
-
-        public Task Unsubscribe(ITickEmitter tickEmitter)
-        {
-            _tickEmitters = _tickEmitters.Remove(tickEmitter);
-            return Task.CompletedTask;
         }
 
         private class UserContext
