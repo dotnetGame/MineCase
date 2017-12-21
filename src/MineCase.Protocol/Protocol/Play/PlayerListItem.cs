@@ -75,4 +75,8 @@ namespace MineCase.Protocol.Play
                 throw new NotImplementedException();
         }
     }
+
+    public sealed class PlayerListItemRemovePlayerAction : PlayerListItemAction
+    {
+    }
 }

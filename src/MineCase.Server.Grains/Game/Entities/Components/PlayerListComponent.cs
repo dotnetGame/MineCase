@@ -10,7 +10,7 @@ using Orleans;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class PlayerListComponent : Component<PlayerGrain>, IHandle<PlayerLoggedIn>, IHandle<PlayerListUpdate>, IHandle<AskPlayerDescription, PlayerDescription>
+    internal class PlayerListComponent : Component<PlayerGrain>, IHandle<PlayerLoggedIn>, IHandle<PlayerListAdd>, IHandle<AskPlayerDescription, PlayerDescription>, IHandle<PlayerListRemove>
     {
         public PlayerListComponent(string name = "playerList")
             : base(name)
@@ -22,7 +22,7 @@ namespace MineCase.Server.Game.Entities.Components
             await SendPlayerListAddPlayer(new[] { AttachedObject });
         }
 
-        async Task IHandle<PlayerListUpdate>.Handle(PlayerListUpdate message)
+        async Task IHandle<PlayerListAdd>.Handle(PlayerListAdd message)
         {
             await SendPlayerListAddPlayer(message.Players);
         }
@@ -36,6 +36,13 @@ namespace MineCase.Server.Game.Entities.Components
                 GameMode = new GameMode { ModeClass = GameMode.Class.Creative },
                 Ping = AttachedObject.GetComponent<KeepAliveComponent>().Ping
             });
+        }
+
+        Task IHandle<PlayerListRemove>.Handle(PlayerListRemove message)
+        {
+            return AttachedObject.GetComponent<ChunkEventBroadcastComponent>().GetGenerator()
+                .PlayerListItemRemovePlayer((from p in message.Players
+                                             select p.GetPrimaryKey()).ToList());
         }
 
         private async Task SendPlayerListAddPlayer(IReadOnlyList<IPlayer> players)

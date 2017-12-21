@@ -136,7 +136,7 @@ namespace MineCase.Server.User
 
         public Task UpdatePlayerList(IReadOnlyList<IPlayer> players)
         {
-            return _player.Tell(new PlayerListUpdate { Players = players });
+            return _player.Tell(new PlayerListAdd { Players = players });
         }
 
         public Task SendChatMessage(Chat jsonData, byte position)
@@ -225,6 +225,11 @@ namespace MineCase.Server.User
         private void MarkDirty()
         {
             ValueStorage.IsDirty = true;
+        }
+
+        public Task RemovePlayerList(List<IPlayer> players)
+        {
+            return _player.Tell(new PlayerListRemove { Players = players });
         }
 
         internal class StateHolder

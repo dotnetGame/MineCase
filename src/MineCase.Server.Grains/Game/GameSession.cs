@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using MineCase.Engine;
 using MineCase.Protocol.Play;
 using MineCase.Server.Components;
+using MineCase.Server.Game.Entities;
 using MineCase.Server.Network.Play;
 using MineCase.Server.Persistence.Components;
 using MineCase.Server.Settings;
@@ -50,7 +51,7 @@ namespace MineCase.Server.Game
         {
             await _world.OnGameTick(e);
             await Task.WhenAll(from u in _users.Keys
-                         select u.OnGameTick(e));
+                               select u.OnGameTick(e));
         }
 
         public async Task JoinGame(IUser user)
@@ -74,21 +75,27 @@ namespace MineCase.Server.Game
                 LevelTypes.Default,
                 false);
             await user.NotifyLoggedIn();
-            await UpdatePlayerList();
+            await SendWholePlayersList(user);
         }
 
-        public Task LeaveGame(IUser player)
+        public Task LeaveGame(IUser user)
         {
-            _users.Remove(player);
-            return UpdatePlayerList();
+            _users.Remove(user);
+            return BroadcastRemovePlayerFromList(user);
         }
 
-        public async Task UpdatePlayerList()
+        private async Task BroadcastRemovePlayerFromList(IUser user)
+        {
+            var players = new List<IPlayer> { await user.GetPlayer() };
+            await Task.WhenAll(from u in _users.Keys select u.RemovePlayerList(players));
+        }
+
+        public async Task SendWholePlayersList(IUser user)
         {
             var list = await Task.WhenAll(from p in _users.Keys
                                           select p.GetPlayer());
 
-            await Task.WhenAll(from p in _users.Keys select p.UpdatePlayerList(list));
+            await user.UpdatePlayerList(list);
         }
 
         public async Task SendChatMessage(IUser sender, string message)
