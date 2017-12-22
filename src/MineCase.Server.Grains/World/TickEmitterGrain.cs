@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.Components;
+using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Persistence;
 using MineCase.Server.Persistence.Components;
@@ -17,47 +18,72 @@ using Orleans.Streams;
 namespace MineCase.Server.World
 {
     [Reentrant]
+    [PersistTableName("tickEmitter")]
     internal class TickEmitterGrain : AddressByPartitionGrain, ITickEmitter
     {
-        private ImmutableHashSet<IDependencyObject> _tickables = ImmutableHashSet<IDependencyObject>.Empty;
+        private IWorldPartition _worldPartition;
 
-        private FixedUpdateComponent _fixedUpdate;
+        private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
+
+        protected override void InitializePreLoadComponent()
+        {
+            SetComponent(new StateComponent<StateHolder>());
+            _worldPartition = GrainFactory.GetPartitionGrain<IWorldPartition>(this);
+        }
 
         protected override void InitializeComponents()
         {
             SetComponent(new PeriodicSaveStateComponent(TimeSpan.FromMinutes(1)));
-
-            _fixedUpdate = new FixedUpdateComponent();
-            _fixedUpdate.Tick += OnFixedUpdate;
-            SetComponent(_fixedUpdate);
         }
 
-        private Task OnFixedUpdate(object sender, GameTickArgs e)
+        public Task Subscribe(IDependencyObject observer)
         {
-            var msg = new GameTick { Args = e };
-            return Task.WhenAll(from t in _tickables select t.Tell(msg));
-        }
-
-        public async Task Subscribe(IDependencyObject observer)
-        {
-            bool active = _tickables.IsEmpty;
-            _tickables = _tickables.Add(observer);
-
-            if (active)
+            bool active = State.Subscription.Count == 0;
+            if (State.Subscription.Add(observer))
             {
-                await _fixedUpdate.Start(World);
+                MarkDirty();
+                if (active)
+                    return _worldPartition.SubscribeTickEmitter(this);
             }
+
+            return Task.CompletedTask;
         }
 
         public Task Unsubscribe(IDependencyObject observer)
         {
-            _tickables = _tickables.Remove(observer);
-            if (_tickables.IsEmpty)
+            if (State.Subscription.Remove(observer))
             {
-                _fixedUpdate.Stop();
+                MarkDirty();
+                if (State.Subscription.Count == 0)
+                    return _worldPartition.UnsubscribeTickEmitter(this);
             }
 
             return Task.CompletedTask;
+        }
+
+        public Task OnGameTick(GameTickArgs e)
+        {
+            var msg = new GameTick { Args = e };
+            return Task.WhenAll(from t in State.Subscription select t.Tell(msg));
+        }
+
+        private void MarkDirty()
+        {
+            ValueStorage.IsDirty = true;
+        }
+
+        internal class StateHolder
+        {
+            public HashSet<IDependencyObject> Subscription { get; set; }
+
+            public StateHolder()
+            {
+            }
+
+            public StateHolder(InitializeStateMark mark)
+            {
+                Subscription = new HashSet<IDependencyObject>();
+            }
         }
     }
 }

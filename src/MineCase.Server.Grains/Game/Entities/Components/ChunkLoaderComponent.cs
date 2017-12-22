@@ -10,10 +10,11 @@ using Orleans;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class ChunkLoaderComponent : Component<PlayerGrain>, IHandle<BeginLogin>, IHandle<PlayerLoggedIn>, IHandle<BindToUser>
+    internal class ChunkLoaderComponent : Component<UserGrain>, IHandle<BeginLogin>, IHandle<PlayerLoggedIn>, IHandle<BindToUser>, IHandle<GameTick>
     {
         private IUserChunkLoader _chunkLoader;
         private bool _loaded;
+        private IPlayer _player;
 
         public ChunkLoaderComponent(string name = "chunkLoader")
             : base(name)
@@ -24,31 +25,18 @@ namespace MineCase.Server.Game.Entities.Components
         {
             _loaded = false;
             _chunkLoader = GrainFactory.GetGrain<IUserChunkLoader>(AttachedObject.GetPrimaryKey());
-            AttachedObject.RegisterPropertyChangedHandler(ViewDistanceComponent.ViewDistanceProperty, OnViewDistanceChanged);
-            AttachedObject.GetComponent<GameTickComponent>().Tick += OnGameTick;
-        }
-
-        private Task OnGameTick(object sender, GameTickArgs e)
-        {
-            if (_loaded)
-                return _chunkLoader.OnGameTick(e.WorldAge);
-            return Task.CompletedTask;
-        }
-
-        private void OnViewDistanceChanged(object sender, PropertyChangedEventArgs<byte> e)
-        {
-            AttachedObject.QueueOperation(() => _chunkLoader.SetViewDistance(e.NewValue));
         }
 
         async Task IHandle<PlayerLoggedIn>.Handle(PlayerLoggedIn message)
         {
             _loaded = false;
-            await _chunkLoader.JoinGame(AttachedObject.GetWorld(), AttachedObject);
+            await _chunkLoader.JoinGame(await AttachedObject.GetWorld(), _player);
             _loaded = true;
         }
 
         async Task IHandle<BindToUser>.Handle(BindToUser message)
         {
+            _player = GrainFactory.GetGrain<IPlayer>(message.User.GetPrimaryKey());
             await _chunkLoader.SetClientPacketSink(await message.User.GetClientPacketSink());
         }
 
@@ -56,6 +44,12 @@ namespace MineCase.Server.Game.Entities.Components
         {
             _loaded = false;
             return Task.CompletedTask;
+        }
+
+        async Task IHandle<GameTick>.Handle(GameTick message)
+        {
+            if (_loaded)
+                await _chunkLoader.OnGameTick(message.Args, await _player.GetPosition());
         }
     }
 }

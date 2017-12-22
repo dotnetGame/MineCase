@@ -44,6 +44,7 @@ namespace MineCase.Protocol
             using (var br = new BinaryReader(stream, Encoding.UTF8, true))
             {
                 packet.Length = br.ReadAsVarInt(out _);
+                Protocol.ValidatePacketLength(packet.Length);
                 packet.PacketId = br.ReadAsVarInt(out packetIdLen);
             }
 
@@ -88,6 +89,7 @@ namespace MineCase.Protocol
             using (var br = new BinaryReader(stream, Encoding.UTF8, true))
             {
                 packet.PacketLength = br.ReadAsVarInt(out _);
+                Protocol.ValidatePacketLength(packet.PacketLength);
                 packet.DataLength = br.ReadAsVarInt(out dataLengthLen);
             }
 

@@ -20,12 +20,16 @@ namespace MineCase.Gateway.Network
         private readonly TcpClient _tcpClient;
         private Stream _remoteStream;
         private readonly IGrainFactory _grainFactory;
-        private bool _useCompression = false;
+        private volatile bool _useCompression = false;
         private readonly Guid _sessionId;
         private readonly OutcomingPacketObserver _outcomingPacketObserver;
-        private readonly ActionBlock<UncompressedPacket> _outcomingPacketDispatcher;
+        private IClientboundPacketObserver _clientboundPacketObserverRef;
+        private readonly ActionBlock<object> _outcomingPacketDispatcher;
         private readonly ObjectPool<UncompressedPacket> _uncompressedPacketObjectPool;
         private readonly IBufferPool<byte> _bufferPool;
+
+        private readonly object _useCompressionPacket = new object();
+        private uint _compressThreshold;
 
         public ClientSession(TcpClient tcpClient, IGrainFactory grainFactory, IBufferPool<byte> bufferPool, ObjectPool<UncompressedPacket> uncompressedPacketObjectPool)
         {
@@ -35,15 +39,15 @@ namespace MineCase.Gateway.Network
             _bufferPool = bufferPool;
             _uncompressedPacketObjectPool = uncompressedPacketObjectPool;
             _outcomingPacketObserver = new OutcomingPacketObserver(this);
-            _outcomingPacketDispatcher = new ActionBlock<UncompressedPacket>(SendOutcomingPacket);
+            _outcomingPacketDispatcher = new ActionBlock<object>(SendOutcomingPacket);
         }
 
         public async Task Startup(CancellationToken cancellationToken)
         {
             using (_remoteStream = _tcpClient.GetStream())
             {
-                var observerRef = await _grainFactory.CreateObjectReference<IClientboundPacketObserver>(_outcomingPacketObserver);
-                await _grainFactory.GetGrain<IClientboundPacketSink>(_sessionId).Subscribe(observerRef);
+                _clientboundPacketObserverRef = await _grainFactory.CreateObjectReference<IClientboundPacketObserver>(_outcomingPacketObserver);
+                await _grainFactory.GetGrain<IClientboundPacketSink>(_sessionId).Subscribe(_clientboundPacketObserverRef);
                 try
                 {
                     while (!cancellationToken.IsCancellationRequested &&
@@ -77,7 +81,7 @@ namespace MineCase.Gateway.Network
                     if (_useCompression)
                     {
                         var compressedPacket = await CompressedPacket.DeserializeAsync(_remoteStream, null);
-                        packet = PacketCompress.Decompress(ref compressedPacket);
+                        packet = PacketCompress.Decompress(compressedPacket, bufferScope, _compressThreshold, packet);
                     }
                     else
                     {
@@ -92,22 +96,31 @@ namespace MineCase.Gateway.Network
             }
         }
 
-        private async Task SendOutcomingPacket(UncompressedPacket packet)
+        private async Task SendOutcomingPacket(object packetOrCommand)
         {
-            // Close
-            if(packet == null)
+            if (packetOrCommand == null)
             {
                 _tcpClient.Client.Shutdown(SocketShutdown.Send);
                 _outcomingPacketDispatcher.Complete();
             }
-            else if (_useCompression)
+            else if (packetOrCommand == _useCompressionPacket)
             {
-                var newPacket = PacketCompress.Compress(ref packet);
-                await newPacket.SerializeAsync(_remoteStream);
+                _useCompression = true;
             }
-            else
+            else if (packetOrCommand is UncompressedPacket packet)
             {
-                await packet.SerializeAsync(_remoteStream);
+                using (var bufferScope = _bufferPool.CreateScope())
+                {
+                    if (_useCompression)
+                    {
+                        var newPacket = PacketCompress.Compress(packet, bufferScope, _compressThreshold);
+                        await newPacket.SerializeAsync(_remoteStream);
+                    }
+                    else
+                    {
+                        await packet.SerializeAsync(_remoteStream);
+                    }
+                }
             }
         }
 
@@ -117,7 +130,7 @@ namespace MineCase.Gateway.Network
             await router.SendPacket(packet);
         }
 
-        private async void DispatchOutcomingPacket(UncompressedPacket packet)
+        private async void DispatchOutcomingPacket(object packet)
         {
             try
             {
@@ -147,6 +160,12 @@ namespace MineCase.Gateway.Network
             public void ReceivePacket(UncompressedPacket packet)
             {
                 _session.DispatchOutcomingPacket(packet);
+            }
+
+            public void UseCompression(uint threshold)
+            {
+                _session._compressThreshold = threshold;
+                _session.DispatchOutcomingPacket(_session._useCompressionPacket);
             }
         }
 

@@ -9,6 +9,7 @@ using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Game.Windows.SlotAreas;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
+using MineCase.Server.Persistence;
 using MineCase.Server.World;
 using Orleans;
 using Orleans.Concurrency;
@@ -201,6 +202,7 @@ namespace MineCase.Server.Game.Windows
 
             await Task.WhenAll(from p in _players select SendCloseWindow(p));
             await Task.WhenAll(from p in _players select Close(p));
+            DeactivateOnIdle();
         }
 
         public Task BroadcastSlotChanged(int slotIndex, Slot item)

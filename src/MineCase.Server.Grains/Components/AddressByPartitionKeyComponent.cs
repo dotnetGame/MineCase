@@ -43,6 +43,8 @@ namespace MineCase.Server.Components
             UpdateKey();
         }
 
+        private ChunkWorldPos? _oldChunkWorldPos;
+
         private void UpdateKey()
         {
             if (AttachedObject.TryGetWorld(out var world))
@@ -53,8 +55,9 @@ namespace MineCase.Server.Components
                 else if (AttachedObject.TryGetLocalValue(BlockWorldPositionComponent.BlockWorldPositionProperty, out var blockPos))
                     chunkWorldPos = blockPos.ToChunkWorldPos();
 
-                if (chunkWorldPos.HasValue)
+                if (chunkWorldPos.HasValue && _oldChunkWorldPos != chunkWorldPos)
                 {
+                    _oldChunkWorldPos = chunkWorldPos;
                     var key = world.MakeAddressByPartitionKey(chunkWorldPos.Value);
                     AttachedObject.SetLocalValue(AddressByPartitionKeyProperty, key);
                 }

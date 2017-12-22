@@ -45,7 +45,7 @@ namespace MineCase.Server.Game.Entities.Components
         public async Task OpenWindow(IWindow window)
         {
             var id = (from w in _windows
-                      where w.Value.Window.GetPrimaryKey() == window.GetPrimaryKey()
+                      where object.Equals(w.Value.Window, window)
                       select (byte?)w.Key).FirstOrDefault();
             if (id == null)
             {
@@ -73,7 +73,7 @@ namespace MineCase.Server.Game.Entities.Components
             OpenWindow(message.Window);
 
         Task<byte> IHandle<AskWindowId, byte>.Handle(AskWindowId message) =>
-            Task.FromResult(_windows.First(o => o.Value.Window.GetPrimaryKey() == message.Window.GetPrimaryKey()).Key);
+            Task.FromResult(_windows.First(o => object.Equals(o.Value.Window, message.Window)).Key);
 
         private class WindowContext
         {

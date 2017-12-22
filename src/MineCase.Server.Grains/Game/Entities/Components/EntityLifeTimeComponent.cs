@@ -29,6 +29,11 @@ namespace MineCase.Server.Game.Entities.Components
         async Task IHandle<DestroyEntity>.Handle(DestroyEntity message)
         {
             await AttachedObject.Tell(Disable.Default);
+            AttachedObject.QueueOperation(() =>
+            {
+                AttachedObject.Destroy();
+                return Task.CompletedTask;
+            });
         }
     }
 }

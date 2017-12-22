@@ -20,7 +20,7 @@ namespace MineCase.Server.World
     internal class ChunkTrackingHub : Grain, IChunkTrackingHub
     {
         private readonly IPacketPackager _packetPackager;
-        private Dictionary<IPlayer, IPacketSink> _trackingPlayers = new Dictionary<IPlayer, IPacketSink>();
+        private readonly Dictionary<IPlayer, IPacketSink> _trackingPlayers = new Dictionary<IPlayer, IPacketSink>();
         private BroadcastPacketSink _broadcastPacketSink;
 
         public ChunkTrackingHub(IPacketPackager packetPackager)

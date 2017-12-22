@@ -16,6 +16,8 @@ namespace MineCase.Server.Network.Login
     {
         private bool _useAuthentication = false;
 
+        private const uint CompressPacketThreshold = 256;
+
         public async Task DispatchPacket(LoginStart packet)
         {
             if (_useAuthentication)
@@ -43,6 +45,8 @@ namespace MineCase.Server.Network.Login
                 }
                 else
                 {
+                    await SendSetCompression();
+
                     var uuid = user.GetPrimaryKey();
                     await SendLoginSuccess(packet.Name, uuid);
 
@@ -55,6 +59,13 @@ namespace MineCase.Server.Network.Login
                     await game.JoinGame(user);
                 }
             }
+        }
+
+        private async Task SendSetCompression()
+        {
+            var sink = GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey());
+            await sink.SendPacket(new SetCompression { Threshold = CompressPacketThreshold });
+            await sink.NotifyUseCompression(CompressPacketThreshold);
         }
 
         private async Task SendLoginSuccess(string userName, Guid uuid)

@@ -1,46 +1,57 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Text;
+using MineCase.Buffers;
 using MineCase.Serialization;
+using SharpCompress.Compressors;
+using SharpCompress.Compressors.Deflate;
 
 namespace MineCase.Protocol
 {
     public static class PacketCompress
     {
-        public static UncompressedPacket Decompress(ref CompressedPacket packet)
+        public static UncompressedPacket Decompress(CompressedPacket packet, IBufferPoolScope<byte> bufferPool, uint threshold, UncompressedPacket targetPacket = null)
         {
-            throw new NotImplementedException();
-            /*
-            var targetPacket = default(UncompressedPacket);
-            using (var br = new BinaryReader(new DeflateStream(new MemoryStream(packet.CompressedData), CompressionMode.Decompress)))
+            if (packet.DataLength != 0 && packet.DataLength < threshold)
+                throw new InvalidDataException("Uncompressed data length is lower than threshold.");
+            bool useCompression = packet.DataLength != 0;
+            var dataLength = useCompression ? packet.DataLength : (uint)packet.CompressedData.Length;
+
+            targetPacket = targetPacket ?? new UncompressedPacket();
+            using (var stream = new MemoryStream(packet.CompressedData))
+            using (var br = new BinaryReader(useCompression ? (Stream)new ZlibStream(stream, CompressionMode.Decompress, true) : stream))
             {
                 targetPacket.PacketId = br.ReadAsVarInt(out var packetIdLen);
-                targetPacket.Data = br.ReadBytes((int)packet.DataLength - packetIdLen);
+
+                targetPacket.Data = bufferPool.Rent((int)(dataLength - packetIdLen));
+                br.Read(targetPacket.Data.Array, targetPacket.Data.Offset, targetPacket.Data.Count);
             }
 
             targetPacket.Length = packet.DataLength;
-            return targetPacket;*/
+            return targetPacket;
         }
 
-        public static CompressedPacket Compress(ref UncompressedPacket packet)
+        public static CompressedPacket Compress(UncompressedPacket packet, IBufferPoolScope<byte> bufferPool, uint threshold)
         {
-            throw new NotImplementedException();
-            /*
-            var targetPacket = default(CompressedPacket);
+            var targetPacket = new CompressedPacket();
             using (var stream = new MemoryStream())
-            using (var bw = new BinaryWriter(new DeflateStream(stream, CompressionMode.Compress)))
             {
-                bw.WriteAsVarInt(packet.PacketId, out var packetIdLen);
-                bw.Write(packet.Data);
-                bw.Flush();
+                var dataLength = packet.PacketId.SizeOfVarInt() + (uint)packet.Data.Count;
+                bool useCompression = dataLength >= threshold;
+                targetPacket.DataLength = useCompression ? dataLength : 0;
 
-                targetPacket.DataLength = packetIdLen + (uint)packet.Data.Length;
+                using (var bw = new BinaryWriter(useCompression ? (Stream)new ZlibStream(stream, CompressionMode.Compress, true) : stream))
+                {
+                    bw.WriteAsVarInt(packet.PacketId, out _);
+                    bw.Write(packet.Data.Array, packet.Data.Offset, packet.Data.Count);
+                    bw.Flush();
+                }
+
                 targetPacket.CompressedData = stream.ToArray();
             }
 
-            return targetPacket;*/
+            return targetPacket;
         }
     }
 }

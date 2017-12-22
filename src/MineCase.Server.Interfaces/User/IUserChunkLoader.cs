@@ -17,7 +17,7 @@ namespace MineCase.Server.User
 
         Task JoinGame(IWorld world, IPlayer player);
 
-        Task OnGameTick(long worldAge);
+        Task OnGameTick(GameTickArgs e, EntityWorldPos playerPosition);
 
         [OneWay]
         Task OnChunkSent(ChunkWorldPos chunkPos);

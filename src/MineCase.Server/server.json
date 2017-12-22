@@ -3,7 +3,7 @@
 {
     //server
     "motd": "A Minecase Server",
-    "server-ip": "127.0.0.1",
+    "server-ip": "0.0.0.0",
     "server-port": 25565,
     "max-tick-time": 60000,
     "online-mode": false,

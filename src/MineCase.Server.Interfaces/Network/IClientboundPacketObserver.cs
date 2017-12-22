@@ -10,6 +10,8 @@ namespace MineCase.Server.Network
     {
         void ReceivePacket(UncompressedPacket packet);
 
+        void UseCompression(uint threshold);
+
         void OnClosed();
     }
 }

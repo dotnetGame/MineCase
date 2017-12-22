@@ -14,6 +14,8 @@ namespace MineCase.Server.Network
 
         Task UnSubscribe(IClientboundPacketObserver observer);
 
+        Task NotifyUseCompression(uint threshold);
+
         Task Close();
     }
 }

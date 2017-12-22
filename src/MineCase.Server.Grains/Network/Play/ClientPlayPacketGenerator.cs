@@ -381,6 +381,20 @@ namespace MineCase.Server.Network.Play
             });
         }
 
+        public Task PlayerListItemRemovePlayer(IReadOnlyList<Guid> desc)
+        {
+            return SendPacket(new PlayerListItem<PlayerListItemRemovePlayerAction>
+            {
+                Action = 4,
+                NumberOfPlayers = (uint)desc.Count,
+                Players = (from d in desc
+                           select new PlayerListItemRemovePlayerAction
+                           {
+                               UUID = d
+                           }).ToArray()
+            });
+        }
+
         public Task WindowItems(byte windowId, IReadOnlyList<Slot> slots)
         {
             return SendPacket(new WindowItems

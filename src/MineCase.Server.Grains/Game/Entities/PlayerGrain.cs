@@ -32,7 +32,6 @@ namespace MineCase.Server.Game.Entities
             SetComponent(new ActiveWorldPartitionComponent());
             SetComponent(new BlockPlacementComponent());
             SetComponent(new ClientboundPacketComponent());
-            SetComponent(new ChunkLoaderComponent());
             SetComponent(new DiggingComponent());
             SetComponent(new DiscoveryRegisterComponent());
             SetComponent(new DraggedSlotComponent());

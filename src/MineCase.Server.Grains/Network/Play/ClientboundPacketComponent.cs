@@ -28,7 +28,7 @@ namespace MineCase.Server.Network.Play
         public async Task Kick()
         {
             await AttachedObject.Tell(Disable.Default);
-            if (_user.GetPlayer() == AttachedObject.AsReference<IPlayer>())
+            if (object.Equals(await _user.GetPlayer(), AttachedObject.AsReference<IPlayer>()))
                 await _user.Kick();
         }
 
@@ -45,7 +45,9 @@ namespace MineCase.Server.Network.Play
 
         Task IHandle<PacketForwardToPlayer>.Handle(PacketForwardToPlayer message)
         {
-            return _sink.SendPacket(message.PacketId, message.Data.AsImmutable());
+            if (_sink != null)
+                return _sink.SendPacket(message.PacketId, message.Data.AsImmutable());
+            return Task.CompletedTask;
         }
     }
 }

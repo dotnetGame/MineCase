@@ -40,7 +40,7 @@ namespace MineCase.Server.Game.Entities.Components
 
         protected override void OnAttached()
         {
-            Register();
+            // Register();
             AttachedObject.SetLocalValue(EntityAiComponent.CreatureStateProperty, CreatureState.Stop);
             CreateAi(MobType);
             AttachedObject.RegisterPropertyChangedHandler(MobTypeComponent.MobTypeProperty, OnMobTypeChanged);

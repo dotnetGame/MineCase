@@ -65,6 +65,11 @@ namespace MineCase.Server.User
             }
         }
 
+        protected override void InitializeComponents()
+        {
+            SetComponent(new ChunkLoaderComponent());
+        }
+
         public Task<IClientboundPacketSink> GetClientPacketSink()
         {
             return Task.FromResult(_sink);
@@ -90,29 +95,33 @@ namespace MineCase.Server.User
         public async Task JoinGame()
         {
             _player = GrainFactory.GetGrain<IPlayer>(this.GetPrimaryKey());
-            await _player.Tell(Disable.Default);
+            await _player.Tell(DestroyEntity.Default);
+            await Tell(BeginLogin.Default);
             await _player.Tell(BeginLogin.Default);
+            await Tell(new BindToUser { User = this.AsReference<IUser>() });
             await _player.Tell(new BindToUser { User = this.AsReference<IUser>() });
 
             _userState = UserState.JoinedGame;
 
             // 设置出生点
             var world = State.World;
-            var spawnPosition = await world.GetSpawnPosition();
             await _player.Tell(new SpawnEntity
             {
                 World = world,
                 EntityId = await world.NewEntityId(),
-                Position = spawnPosition
+                Position = State.SpawnPosition ?? await world.GetSpawnPosition()
             });
         }
 
         public async Task Kick()
         {
+            State.SpawnPosition = await _player.GetPosition();
+            MarkDirty();
             await _player.Tell(DestroyEntity.Default);
             var game = await GetGameSession();
             await game.LeaveGame(this);
             await _sink.Close();
+            _sink = null;
             DeactivateOnIdle();
         }
 
@@ -120,13 +129,14 @@ namespace MineCase.Server.User
 
         public async Task NotifyLoggedIn()
         {
+            await Tell(PlayerLoggedIn.Default);
             await _player.Tell(PlayerLoggedIn.Default);
             _userState = UserState.DownloadingWorld;
         }
 
         public Task UpdatePlayerList(IReadOnlyList<IPlayer> players)
         {
-            return _player.Tell(new PlayerListUpdate { Players = players });
+            return _player.Tell(new PlayerListAdd { Players = players });
         }
 
         public Task SendChatMessage(Chat jsonData, byte position)
@@ -170,10 +180,13 @@ namespace MineCase.Server.User
             if (_userState == UserState.DownloadingWorld)
             {
                 _userState = UserState.Playing;
+                await _generator.TimeUpdate(e.WorldAge, e.TimeOfDay);
             }
 
             if (e.WorldAge % 20 == 0)
                 await _generator.TimeUpdate(e.WorldAge, e.TimeOfDay);
+
+            await Tell(new GameTick { Args = e });
         }
 
         public Task SetPacketRouter(IPacketRouter packetRouter)
@@ -214,6 +227,11 @@ namespace MineCase.Server.User
             ValueStorage.IsDirty = true;
         }
 
+        public Task RemovePlayerList(List<IPlayer> players)
+        {
+            return _player.Tell(new PlayerListRemove { Players = players });
+        }
+
         internal class StateHolder
         {
             public string Name { get; set; }
@@ -223,6 +241,8 @@ namespace MineCase.Server.User
             public Slot[] Slots { get; set; }
 
             public GameMode GameMode { get; set; }
+
+            public EntityWorldPos? SpawnPosition { get; set; }
 
             public StateHolder()
             {

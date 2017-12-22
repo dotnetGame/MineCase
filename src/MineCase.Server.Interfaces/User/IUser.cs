@@ -43,6 +43,9 @@ namespace MineCase.Server.User
         [OneWay]
         Task UpdatePlayerList(IReadOnlyList<IPlayer> players);
 
+        [OneWay]
+        Task RemovePlayerList(List<IPlayer> players);
+
         Task SendChatMessage(Chat jsonData, Byte position);
 
         [OneWay]

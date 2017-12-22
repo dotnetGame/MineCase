@@ -15,5 +15,7 @@ namespace MineCase.Server.World
         Task Subscribe(IDependencyObject observer);
 
         Task Unsubscribe(IDependencyObject observer);
+
+        Task OnGameTick(GameTickArgs e);
     }
 }

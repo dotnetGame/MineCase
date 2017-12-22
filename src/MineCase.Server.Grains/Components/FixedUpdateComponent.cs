@@ -17,7 +17,7 @@ namespace MineCase.Server.Components
         private long _worldAge;
         private long _actualAge;
         private TimeSpan _lastUpdate;
-        private static readonly long _updateTick = TimeSpan.FromMilliseconds(50).Ticks;
+        private static readonly long _updateMs = 50;
 
         public event AsyncEventHandler<GameTickArgs> Tick;
 
@@ -33,27 +33,27 @@ namespace MineCase.Server.Components
             _actualAge = 0;
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
-            _tickTimer = AttachedObject.RegisterTimer(OnTick, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(5));
+            _tickTimer = AttachedObject.RegisterTimer(OnTick, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(1));
         }
 
         private async Task OnTick(object arg)
         {
-            var expectedAge = _stopwatch.ElapsedTicks / _updateTick;
-            if (_stopwatch.ElapsedTicks % _updateTick > 0) expectedAge++;
-            var e = new GameTickArgs { DeltaTime = TimeSpan.FromMilliseconds(50) };
+            var expectedAge = (_stopwatch.ElapsedMilliseconds + _updateMs - 1) / _updateMs;
             var updateTimes = expectedAge - _actualAge;
-            var now = _stopwatch.Elapsed;
-            for (int i = 0; i < updateTimes; i++)
-            {
-                e.WorldAge = _worldAge;
-                e.TimeOfDay = _worldAge % 24000;
-                await Tick.InvokeSerial(this, e);
-                _worldAge++;
-                _actualAge++;
-            }
 
             if (updateTimes > 0)
             {
+                var e = new GameTickArgs { DeltaTime = TimeSpan.FromMilliseconds(50) };
+                for (int i = 0; i < updateTimes; i++)
+                {
+                    e.WorldAge = _worldAge;
+                    e.TimeOfDay = _worldAge % 24000;
+                    await Tick.InvokeSerial(this, e);
+                    _worldAge++;
+                    _actualAge++;
+                }
+
+                var now = _stopwatch.Elapsed;
                 var deltaTime = now - _lastUpdate;
                 _lastUpdate = now;
             }

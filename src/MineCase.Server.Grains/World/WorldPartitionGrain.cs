@@ -21,21 +21,33 @@ namespace MineCase.Server.World
     internal class WorldPartitionGrain : AddressByPartitionGrain, IWorldPartition
     {
         private HashSet<IPlayer> _players = new HashSet<IPlayer>();
+        private ITickEmitter _tickEmitter;
+        private FixedUpdateComponent _fixedUpdate;
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
         protected override void InitializePreLoadComponent()
         {
             SetComponent(new StateComponent<StateHolder>());
+            _tickEmitter = GrainFactory.GetPartitionGrain<ITickEmitter>(this);
         }
 
         protected override void InitializeComponents()
         {
             SetComponent(new PeriodicSaveStateComponent(TimeSpan.FromMinutes(1)));
+            _fixedUpdate = new FixedUpdateComponent();
+            _fixedUpdate.Tick += OnFixedUpdate;
+            SetComponent(_fixedUpdate);
+        }
+
+        private Task OnFixedUpdate(object sender, GameTickArgs e)
+        {
+            return _tickEmitter.OnGameTick(e);
         }
 
         public Task Enter(IPlayer player)
         {
+            bool active = _players.Count == 0;
             if (_players.Add(player))
             {
                 var message = new DiscoveredByPlayer { Player = player };
@@ -44,6 +56,9 @@ namespace MineCase.Server.World
                     if (entity.Equals(player)) continue;
                     entity.InvokeOneWay(g => g.Tell(message));
                 }
+
+                if (active && State.IsTickEmitterActive)
+                    return _fixedUpdate.Start(World);
             }
 
             return Task.CompletedTask;
@@ -55,6 +70,7 @@ namespace MineCase.Server.World
             {
                 if (_players.Count == 0)
                 {
+                    _fixedUpdate.Stop();
                     DeactivateOnIdle();
                 }
             }
@@ -85,9 +101,36 @@ namespace MineCase.Server.World
             ValueStorage.IsDirty = true;
         }
 
+        public Task SubscribeTickEmitter(ITickEmitter tickEmitter)
+        {
+            if (!State.IsTickEmitterActive)
+            {
+                State.IsTickEmitterActive = true;
+                MarkDirty();
+                if (_players.Count != 0)
+                    return _fixedUpdate.Start(World);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task UnsubscribeTickEmitter(ITickEmitter tickEmitter)
+        {
+            if (State.IsTickEmitterActive)
+            {
+                State.IsTickEmitterActive = false;
+                MarkDirty();
+                _fixedUpdate.Stop();
+            }
+
+            return Task.CompletedTask;
+        }
+
         internal class StateHolder
         {
             public HashSet<IEntity> DiscoveryEntities { get; set; }
+
+            public bool IsTickEmitterActive { get; set; }
 
             public StateHolder()
             {

@@ -17,5 +17,9 @@ namespace MineCase.Server.World
         Task SubscribeDiscovery(IEntity entity);
 
         Task UnsubscribeDiscovery(IEntity entity);
+
+        Task SubscribeTickEmitter(ITickEmitter tickEmitter);
+
+        Task UnsubscribeTickEmitter(ITickEmitter tickEmitter);
     }
 }

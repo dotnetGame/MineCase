@@ -70,20 +70,23 @@ namespace MineCase.Client.Network
 
         private async Task SendOutcomingPacket(UncompressedPacket packet)
         {
-            // Close
-            if (packet == null)
+            using (var bufferScope = _bufferPool.CreateScope())
             {
-                _tcpClient.Client.Shutdown(SocketShutdown.Send);
-                _outcomingPacketDispatcher.Complete();
-            }
-            else if (_useCompression)
-            {
-                var newPacket = PacketCompress.Compress(ref packet);
-                await newPacket.SerializeAsync(_remoteStream);
-            }
-            else
-            {
-                await packet.SerializeAsync(_remoteStream);
+                // Close
+                if (packet == null)
+                {
+                    _tcpClient.Client.Shutdown(SocketShutdown.Send);
+                    _outcomingPacketDispatcher.Complete();
+                }
+                else if (_useCompression)
+                {
+                    var newPacket = PacketCompress.Compress(packet, bufferScope, 0);
+                    await newPacket.SerializeAsync(_remoteStream);
+                }
+                else
+                {
+                    await packet.SerializeAsync(_remoteStream);
+                }
             }
         }
 
@@ -97,7 +100,7 @@ namespace MineCase.Client.Network
                     if (_useCompression)
                     {
                         var compressedPacket = await CompressedPacket.DeserializeAsync(_remoteStream, null);
-                        packet = PacketCompress.Decompress(ref compressedPacket);
+                        packet = PacketCompress.Decompress(compressedPacket, bufferScope, 0, packet);
                     }
                     else
                     {
