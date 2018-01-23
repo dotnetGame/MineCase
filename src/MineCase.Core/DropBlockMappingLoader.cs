@@ -54,9 +54,11 @@ namespace MineCase
             if (splittedItems.Length != 11)
                 throw new ArgumentOutOfRangeException(nameof(splittedItems));
 
-            entry.DroppedBlock = BlockStates.FromString(splittedItems[0]);
+            Enum.TryParse(splittedItems[0], out BlockId droppedBlock);
+            entry.DroppedBlock = new BlockState { Id = (uint)droppedBlock };
             entry.Hardness = float.Parse(splittedItems[1]);
-            entry.Tool = ItemStates.FromString(splittedItems[2]);
+            Enum.TryParse(splittedItems[2], out ItemId tool);
+            entry.Tool = new ItemState { Id = (uint)tool };
             entry.Hand = float.Parse(splittedItems[3]);
             entry.Wooden = float.Parse(splittedItems[4]);
             entry.Stone = float.Parse(splittedItems[5]);
@@ -66,7 +68,112 @@ namespace MineCase
             entry.Shears = float.Parse(splittedItems[9]);
             entry.Sword = float.Parse(splittedItems[10]);
 
-            Mapping.Add(BlockStates.FromString(resultSpan.ToString()), entry);
+            Enum.TryParse(resultSpan.ToString(), out BlockId targetBlock);
+            Mapping.Add(new BlockState { Id = (uint)targetBlock }, entry);
+        }
+
+        public static Tools ItemsToTools(ItemState state)
+        {
+            if ((int)state.Id == -1)
+            {
+                return Tools.Hand;
+            }
+            else if (state.Id == (uint)ItemId.WoodenAxe ||
+                state.Id == (uint)ItemId.StoneAxe ||
+                state.Id == (uint)ItemId.IronAxe ||
+                state.Id == (uint)ItemId.GoldenAxe ||
+                state.Id == (uint)ItemId.DiamondAxe)
+            {
+                return Tools.Axes;
+            }
+            else if (state.Id == (uint)ItemId.WoodenHoe ||
+                state.Id == (uint)ItemId.StoneHoe ||
+                state.Id == (uint)ItemId.IronHoe ||
+                state.Id == (uint)ItemId.GoldenHoe ||
+                state.Id == (uint)ItemId.DiamondHoe)
+            {
+                return Tools.Hoes;
+            }
+            else if (state.Id == (uint)ItemId.WoodenPickaxe ||
+                state.Id == (uint)ItemId.StonePickaxe ||
+                state.Id == (uint)ItemId.IronPickaxe ||
+                state.Id == (uint)ItemId.GoldenPickaxe ||
+                state.Id == (uint)ItemId.DiamondPickaxe)
+            {
+                return Tools.PickAxes;
+            }
+            else if (state.Id == (uint)ItemId.WoodenShovel ||
+                state.Id == (uint)ItemId.StoneShovel ||
+                state.Id == (uint)ItemId.IronShovel ||
+                state.Id == (uint)ItemId.GoldenShovel ||
+                state.Id == (uint)ItemId.DiamondShovel)
+            {
+                return Tools.Shovels;
+            }
+            else if (state.Id == (uint)ItemId.WoodenSword ||
+                state.Id == (uint)ItemId.StoneSword ||
+                state.Id == (uint)ItemId.IronSword ||
+                state.Id == (uint)ItemId.GoldenSword ||
+                state.Id == (uint)ItemId.DiamondSword)
+            {
+                return Tools.Swords;
+            }
+            else
+            {
+                return Tools.Hand;
+            }
+        }
+
+        public static ToolMaterial ItemsToToolMaterial(ItemState state)
+        {
+            if ((int)state.Id == -1)
+            {
+                return ToolMaterial.Hand;
+            }
+            else if (state.Id == (uint)ItemId.WoodenAxe ||
+                state.Id == (uint)ItemId.WoodenHoe ||
+                state.Id == (uint)ItemId.WoodenPickaxe ||
+                state.Id == (uint)ItemId.WoodenShovel ||
+                state.Id == (uint)ItemId.WoodenSword)
+            {
+                return ToolMaterial.Wooden;
+            }
+            else if (state.Id == (uint)ItemId.StoneAxe ||
+                state.Id == (uint)ItemId.StoneHoe ||
+                state.Id == (uint)ItemId.StonePickaxe ||
+                state.Id == (uint)ItemId.StoneShovel ||
+                state.Id == (uint)ItemId.StoneSword)
+            {
+                return ToolMaterial.Stone;
+            }
+            else if (state.Id == (uint)ItemId.IronAxe ||
+                state.Id == (uint)ItemId.IronHoe ||
+                state.Id == (uint)ItemId.IronPickaxe ||
+                state.Id == (uint)ItemId.IronShovel ||
+                state.Id == (uint)ItemId.IronSword)
+            {
+                return ToolMaterial.Iron;
+            }
+            else if (state.Id == (uint)ItemId.GoldenAxe ||
+                state.Id == (uint)ItemId.GoldenHoe ||
+                state.Id == (uint)ItemId.GoldenPickaxe ||
+                state.Id == (uint)ItemId.GoldenShovel ||
+                state.Id == (uint)ItemId.GoldenSword)
+            {
+                return ToolMaterial.Golden;
+            }
+            else if (state.Id == (uint)ItemId.DiamondAxe ||
+                state.Id == (uint)ItemId.DiamondHoe ||
+                state.Id == (uint)ItemId.DiamondPickaxe ||
+                state.Id == (uint)ItemId.DiamondShovel ||
+                state.Id == (uint)ItemId.DiamondSword)
+            {
+                return ToolMaterial.Diamand;
+            }
+            else
+            {
+                return ToolMaterial.Hand;
+            }
         }
 
         private static unsafe string ToString(ReadOnlySpan<char> span)
@@ -81,7 +188,8 @@ namespace MineCase
         Axes,
         PickAxes,
         Shovels,
-        Hoes
+        Hoes,
+        Swords
     }
 
     public enum ToolMaterial
@@ -99,7 +207,7 @@ namespace MineCase
         public BlockState TargetBlock;
         public BlockState DroppedBlock;
         public float Hardness;
-        public Tools Tool;
+        public ItemState Tool;
         public float Hand;
         public float Wooden;
         public float Stone;

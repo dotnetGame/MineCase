@@ -19,12 +19,19 @@ namespace MineCase.Algorithm
             {
                 DropBlockEntry entry = _mapping[block];
 
-                // TODO drop test
-                return block.Id;
+                if (DropBlockMappingLoader.ItemsToTools(entry.Tool) == DropBlockMappingLoader.ItemsToTools(new ItemState { Id = item })
+                    && DropBlockMappingLoader.ItemsToToolMaterial(new ItemState { Id = item }) >= DropBlockMappingLoader.ItemsToToolMaterial(entry.Tool))
+                {
+                    return entry.DroppedBlock.Id;
+                }
+                else
+                {
+                    return uint.MaxValue;
+                }
             }
             else
             {
-                return uint.MaxValue;
+                return block.Id;
             }
         }
     }
