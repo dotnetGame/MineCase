@@ -32,7 +32,7 @@ namespace MineCase.UnitTest
             }
 
             var recipes = loader.Recipes;
-            Assert.Equal(2, recipes.Count);
+            Assert.Equal(2 + 5, recipes.Count);
             var fuels = loader.Fuels;
             Assert.Equal(4, fuels.Count);
         }

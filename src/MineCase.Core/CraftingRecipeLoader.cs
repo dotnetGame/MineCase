@@ -60,29 +60,31 @@ namespace MineCase
                 recipe.Output.ItemCount = byte.Parse(ToString(resultSpan.Slice(resultSplitter + 1)));
             }
 
+            var recipeSlots = new List<CraftingRecipeSlot>();
             var restSpan = ingredientsSpan;
             while (!restSpan.IsEmpty)
             {
                 var ingredientSplitter = restSpan.IndexOf('|');
                 var ingredientSpan = ingredientSplitter == -1 ? restSpan : restSpan.Slice(0, ingredientSplitter);
-                ParseIngredient(ingredientSpan, recipe);
+                ParseIngredient(ingredientSpan, recipeSlots);
                 if (ingredientSplitter == -1)
                     break;
                 else
                     restSpan = restSpan.Slice(ingredientSplitter + 1);
             }
 
+            recipe.Inputs = recipeSlots.ToArray();
+            NormalizeIngredients(recipe);
             Recipes.Add(recipe);
         }
 
-        private void ParseIngredient(Span<char> ingredientSpan, CraftingRecipe recipe)
+        private void ParseIngredient(Span<char> ingredientSpan, ICollection<CraftingRecipeSlot> recipeSlots)
         {
             var slot = new Slot { ItemCount = 1 };
             var splitter = ingredientSpan.IndexOf(',');
             ParseItem(ingredientSpan.Slice(0, splitter), ref slot);
             var distributionSpan = ingredientSpan.Slice(splitter + 1);
 
-            var recipeSlots = new List<CraftingRecipeSlot>();
             do
             {
                 var positionSplitter = distributionSpan.IndexOf(',');
@@ -130,8 +132,6 @@ namespace MineCase
                     distributionSpan = distributionSpan.Slice(positionSplitter + 1);
             }
             while (true);
-            recipe.Inputs = recipeSlots.ToArray();
-            NormalizeIngredients(recipe);
         }
 
         private void NormalizeIngredients(CraftingRecipe recipe)
