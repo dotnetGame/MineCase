@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MineCase.Registry
 {
-    public class RegistrySimple<TK, TV>
+    public class RegistrySimple<TK, TV> : IRegistry<TK, TV>
     {
         /** Objects registered on this registry. */
         protected readonly Dictionary<TK, TV> registryObjects;
