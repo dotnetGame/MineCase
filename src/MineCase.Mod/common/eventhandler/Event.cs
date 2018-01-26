@@ -17,13 +17,13 @@ namespace MineCase.Mod.common.eventhandler
         }
 
         private bool _isCanceled = false;
-        private Result result = Result.DEFAULT;
-        private static ListenerList listeners = new ListenerList();
-        private EventPriority phase = null;
+        private Result _result = Result.DEFAULT;
+        private static ListenerList _listeners = new ListenerList();
+        private EventPriority _phase = null;
 
         public Event()
         {
-            setup();
+            Setup();
         }
 
         /**
@@ -84,7 +84,7 @@ namespace MineCase.Mod.common.eventhandler
          */
         public Result GetResult()
         {
-            return result;
+            return _result;
         }
 
         /**
@@ -95,16 +95,16 @@ namespace MineCase.Mod.common.eventhandler
          *
          * @param value The new result
          */
-        public void setResult(Result value)
+        public void SetResult(Result value)
         {
-            result = value;
+            _result = value;
         }
 
         /**
          * Called by the base constructor, this is used by ASM generated
          * event classes to setup various functionality such as the listener list.
          */
-        protected void setup()
+        protected void Setup()
         {
         }
 
@@ -116,20 +116,26 @@ namespace MineCase.Mod.common.eventhandler
          */
         public ListenerList GetListenerList()
         {
-            return listeners;
+            return _listeners;
         }
 
         public EventPriority GetPhase()
         {
-            return this.phase;
+            return _phase;
         }
 
         public void SetPhase(EventPriority value)
         {
-            Preconditions.checkNotNull(value, "setPhase argument must not be null");
-            int prev = phase == null ? -1 : phase.ordinal();
-            Preconditions.checkArgument(prev < value.ordinal(), "Attempted to set event phase to %s when already %s", value, phase);
-            phase = value;
+            if (value == null)
+                throw new ArgumentNullException();
+            int prev = _phase == null ? -1 : (int)_phase.Values;
+
+            if (prev < (uint)value.Values)
+                throw new ArgumentException(
+                    string.Format("Attempted to set event phase to %s when already %s",
+                    value.ToString(),
+                    System.Enum.GetName(typeof(EventPriority.Priority), _phase.Values)));
+            _phase = value;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace MineCase.Mod.common.eventhandler
          *   Due to using a ArrayList in the ListenerList,
          *   these need to stay in a contiguous index starting at 0. {Default ordinal}
          */
-        public enum Values : uint
+        public enum Priority : uint
         {
             HIGHEST,
             HIGH,
@@ -20,6 +20,8 @@ namespace MineCase.Mod.common.eventhandler
             LOW,
             LOWEST
         }
+
+        public Priority Values { get; set; }
 
         public void Invoke(Event evnt)
         {
