@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MineCase.Mod.common.eventhandler;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -19,7 +20,7 @@ namespace MineCase.Mod
         public static readonly EventBus ORE_GEN_BUS = new EventBus();
         // public static readonly string MC_VERSION = Loader.MC_VERSION;
 
-        public MinecraftMod()
+        static MinecraftMod()
         {
             EVENT_BUS = new EventBus();
             TERRAIN_GEN_BUS = new EventBus();

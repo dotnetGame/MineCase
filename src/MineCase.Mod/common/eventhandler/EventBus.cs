@@ -27,6 +27,22 @@ namespace MineCase.Mod.common.eventhandler
             _exceptionHandler = handler;
         }
 
+        public void Register(Object target)
+        {
+            if (_listeners.ContainsKey(target))
+            {
+                return;
+            }
+
+            ModContainer activeModContainer = Loader.GetInstance().activeModContainer();
+            if (activeModContainer == null)
+            {
+                // FMLLog.log.error("Unable to determine registrant mod for {}. This is a critical error and should be impossible", target, new Throwable());
+                activeModContainer = Loader.GetInstance().GetMinecraftModContainer();
+            }
+            _listenerOwners.Add(target, activeModContainer);
+        }
+
         /*
         public void Register(Object target)
         {
@@ -123,7 +139,7 @@ namespace MineCase.Mod.common.eventhandler
                     FMLLog.log.error("Error registering event handler: {} {} {}", owner, eventType, method, e);
                 }
             }
-    */
+        */
 
         public void Unregister(Object obj)
         {
