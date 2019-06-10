@@ -5,8 +5,8 @@ using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using ImageSharp;
 using MineCase.Algorithm.Noise;
+using SixLabors.ImageSharp;
 using Xunit;
 
 namespace MineCase.UnitTest
@@ -30,7 +30,7 @@ namespace MineCase.UnitTest
             const int yExtent = 100;
 
             using (var file = File.OpenWrite(Path.Combine(RootDir, "PerlinNoise3D.bmp")))
-            using (var image = new Image<ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
+            using (var image = new Image<SixLabors.ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
             {
                 var noise = new PerlinNoise(100);
                 var noiseValue = new float[xExtent, yExtent, 1];
@@ -40,7 +40,7 @@ namespace MineCase.UnitTest
                     for (int y = 0; y < yExtent; y++)
                     {
                         var color = (byte)(noiseValue[x, y, 0] * 255);
-                        image[x, y] = new ImageSharp.PixelFormats.Rgb24(color, color, color);
+                        image[x, y] = new SixLabors.ImageSharp.PixelFormats.Rgb24(color, color, color);
                     }
                 }
 
@@ -55,7 +55,7 @@ namespace MineCase.UnitTest
             const int yExtent = 100;
 
             using (var file = File.OpenWrite(Path.Combine(RootDir, "OctavedPerlinNoise3D.bmp")))
-            using (var image = new Image<ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
+            using (var image = new Image<SixLabors.ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
             {
                 var noise = new OctavedNoise<PerlinNoise>(new PerlinNoise(100), 8, 0.25f);
                 var noiseValue = new float[xExtent, yExtent, 1];
@@ -65,7 +65,7 @@ namespace MineCase.UnitTest
                     for (int y = 0; y < yExtent; y++)
                     {
                         var color = (byte)(noiseValue[x, y, 0] * 255);
-                        image[x, y] = new ImageSharp.PixelFormats.Rgb24(color, color, color);
+                        image[x, y] = new SixLabors.ImageSharp.PixelFormats.Rgb24(color, color, color);
                     }
                 }
 

@@ -10,9 +10,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta004" PrivateAssets="All" />
-    <PackageReference Include="System.Numerics.Vectors" Version="4.4.0" />
-    <PackageReference Include="Stateless" Version="4.0.0" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+    <PackageReference Include="Stateless" Version="4.2.1" />
   </ItemGroup>
 
   <ItemGroup>

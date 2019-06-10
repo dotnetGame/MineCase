@@ -6,10 +6,10 @@
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
-  
+
   <ItemGroup>
-    <PackageReference Include="MongoDB.Bson" Version="2.4.4" />
-    <PackageReference Include="Microsoft.Orleans.Core" Version="2.0.0-beta1" />
+    <PackageReference Include="Microsoft.Orleans.Core" Version="2.3.4" />
+    <PackageReference Include="MongoDB.Bson" Version="2.8.1" />
   </ItemGroup>
 
   <ItemGroup>
