@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
-using ImageSharp;
 using MineCase.Algorithm;
+using SixLabors.ImageSharp;
 using Xunit;
 
 namespace MineCase.UnitTest
@@ -60,7 +60,7 @@ namespace MineCase.UnitTest
             const int yExtent = 200;
 
             using (var file = File.OpenWrite(Path.Combine(RootDir, "rng_frequency.bmp")))
-            using (var image = new Image<ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
+            using (var image = new Image<SixLabors.ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
             {
                 for (int i = 0; i < 10000; ++i)
                 {
@@ -71,7 +71,7 @@ namespace MineCase.UnitTest
                 {
                     for (int j = 0; j < bucket[i]; ++j)
                     {
-                        image[i, yExtent - j] = new ImageSharp.PixelFormats.Rgb24(0xFF, 0x69, 0xB4);
+                        image[i, yExtent - j] = new SixLabors.ImageSharp.PixelFormats.Rgb24(0xFF, 0x69, 0xB4);
                     }
                 }
 
@@ -88,14 +88,14 @@ namespace MineCase.UnitTest
             const int yExtent = 100;
 
             using (var file = File.OpenWrite(Path.Combine(RootDir, "rng_int_noise.bmp")))
-            using (var image = new Image<ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
+            using (var image = new Image<SixLabors.ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
             {
                 for (int i = 0; i < xExtent; ++i)
                 {
                     for (int j = 0; j < yExtent; ++j)
                     {
                         var color = (byte)rng.Uniform(0, 255);
-                        image[i, j] = new ImageSharp.PixelFormats.Rgb24(color, color, color);
+                        image[i, j] = new SixLabors.ImageSharp.PixelFormats.Rgb24(color, color, color);
                     }
                 }
 
@@ -112,14 +112,14 @@ namespace MineCase.UnitTest
             const int yExtent = 100;
 
             using (var file = File.OpenWrite(Path.Combine(RootDir, "rng_float_noise.bmp")))
-            using (var image = new Image<ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
+            using (var image = new Image<SixLabors.ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
             {
                 for (int i = 0; i < xExtent; ++i)
                 {
                     for (int j = 0; j < yExtent; ++j)
                     {
                         var color = (byte)(rng.Uniform(0.0f, 2.55f) * 100);
-                        image[i, j] = new ImageSharp.PixelFormats.Rgb24(color, color, color);
+                        image[i, j] = new SixLabors.ImageSharp.PixelFormats.Rgb24(color, color, color);
                     }
                 }
 
@@ -136,14 +136,14 @@ namespace MineCase.UnitTest
             const int yExtent = 100;
 
             using (var file = File.OpenWrite(Path.Combine(RootDir, "rng_double_noise.bmp")))
-            using (var image = new Image<ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
+            using (var image = new Image<SixLabors.ImageSharp.PixelFormats.Rgb24>(xExtent, yExtent))
             {
                 for (int i = 0; i < xExtent; ++i)
                 {
                     for (int j = 0; j < yExtent; ++j)
                     {
                         var color = (byte)(rng.Uniform(0.0, 2.55) * 100);
-                        image[i, j] = new ImageSharp.PixelFormats.Rgb24(color, color, color);
+                        image[i, j] = new SixLabors.ImageSharp.PixelFormats.Rgb24(color, color, color);
                     }
                 }
 
