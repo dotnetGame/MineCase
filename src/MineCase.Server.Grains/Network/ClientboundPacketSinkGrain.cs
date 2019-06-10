@@ -13,7 +13,7 @@ namespace MineCase.Server.Network
 {
     internal class ClientboundPacketSinkGrain : Grain, IClientboundPacketSink
     {
-        private ObserverSubscriptionManager<IClientboundPacketObserver> _subsManager;
+        private Grains.GrainObserverManager<IClientboundPacketObserver> _subsManager;
         private readonly IPacketPackager _packetPackager;
 
         public ClientboundPacketSinkGrain(IPacketPackager packetPackager)
@@ -23,7 +23,7 @@ namespace MineCase.Server.Network
 
         public override Task OnActivateAsync()
         {
-            _subsManager = new ObserverSubscriptionManager<IClientboundPacketObserver>();
+            _subsManager = new Grains.GrainObserverManager<IClientboundPacketObserver>();
             return base.OnActivateAsync();
         }
 
