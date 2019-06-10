@@ -9,6 +9,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Orleans.Runtime;
 using Polly;
+using Orleans.Configuration;
+using Orleans.ApplicationParts;
 
 namespace MineCase.Gateway
 {
@@ -29,10 +31,10 @@ namespace MineCase.Gateway
             _clusterClient?.Dispose();
         }
 
-        private static void ConfigureApplicationParts(IClientBuilder builder)
+        private static void ConfigureApplicationParts(IApplicationPartManager parts)
         {
             foreach (var assembly in _assemblies)
-                builder.AddApplicationPart(assembly);
+                parts.AddApplicationPart(assembly);
         }
 
         private static async void Startup()
@@ -46,12 +48,22 @@ namespace MineCase.Gateway
             await retryPolicy.ExecuteAsync(async () =>
             {
                 _clusterClient?.Dispose();
-                var builder = new ClientBuilder()
-                    .LoadConfiguration("OrleansConfiguration.dev.xml")
-                    .ConfigureServices(ConfigureServices)
-                    .ConfigureLogging(ConfigureLogging);
                 SelectAssemblies();
-                ConfigureApplicationParts(builder);
+                var builder = new ClientBuilder()
+                    .Configure<ClusterOptions>(options =>
+                    {
+                        options.ClusterId = "dev";
+                        options.ServiceId = "MineCaseService";
+                    })
+                    .ConfigureServices(ConfigureServices)
+                    .ConfigureLogging(ConfigureLogging)
+                    .ConfigureApplicationParts(ConfigureApplicationParts)
+                    .UseMongoDBClustering(options=>
+                    {
+                        options.ConnectionString = Configuration.GetSection("persistenceOptions")["connectionString"];
+                    });
+                
+                // ConfigureApplicationParts(builder);
                 _clusterClient = builder.Build();
 
                 var serviceProvider = _clusterClient.ServiceProvider;

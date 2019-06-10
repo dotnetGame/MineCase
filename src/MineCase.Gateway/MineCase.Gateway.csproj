@@ -11,11 +11,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="config.json" />
     <None Remove="OrleansConfiguration.dev.xml" />
     <None Remove="OrleansConfiguration.docker.xml" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="OrleansConfiguration.dev.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -35,6 +39,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="2.0.0" />
     <PackageReference Include="Microsoft.Orleans.Client" Version="2.3.4" />
+    <PackageReference Include="Orleans.Providers.MongoDB" Version="2.4.0" />
     <PackageReference Include="Polly" Version="5.5.0" />
     <PackageReference Include="sharpcompress" Version="0.19.2" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0006" />

@@ -38,10 +38,10 @@ namespace MineCase.Gateway
 
         private static IConfiguration LoadConfiguration()
         {
-            var builder = new ConfigurationBuilder()
+            var configurationBuilder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("config.json", true, false);
-            return builder.Build();
+                .AddJsonFile("config.json", false, false);
+            return configurationBuilder.Build();
         }
 
         private static void ConfigureLogging(ILoggingBuilder loggingBuilder)

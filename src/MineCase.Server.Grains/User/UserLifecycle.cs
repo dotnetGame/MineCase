@@ -7,11 +7,15 @@ using Orleans.Runtime;
 
 namespace MineCase.Server.User
 {
-    internal class UserLifecycle : LifecycleObservable, IUserLifecycle
+    internal class UserLifecycle : IUserLifecycle
     {
         public UserLifecycle(ILogger logger)
-            : base(logger)
         {
+        }
+
+        public IDisposable Subscribe(string observerName, int stage, ILifecycleObserver observer)
+        {
+            throw new NotImplementedException();
         }
     }
 }
