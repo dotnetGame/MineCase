@@ -11,6 +11,7 @@ using Orleans.Runtime;
 using Polly;
 using Orleans.Configuration;
 using Orleans.ApplicationParts;
+using Orleans.Hosting;
 
 namespace MineCase.Gateway
 {
@@ -54,6 +55,11 @@ namespace MineCase.Gateway
                     {
                         options.ClusterId = "dev";
                         options.ServiceId = "MineCaseService";
+                    })
+                    .Configure<SchedulingOptions>(options =>
+                    {
+                        options.AllowCallChainReentrancy = true;
+                        options.PerformDeadlockDetection = true;
                     })
                     .ConfigureServices(ConfigureServices)
                     .ConfigureLogging(ConfigureLogging)
