@@ -36,6 +36,11 @@ namespace MineCase.Server
                     options.ClusterId = "dev";
                     options.ServiceId = "MineCaseService";
                 })
+                .Configure<SchedulingOptions>(options =>
+                {
+                    options.AllowCallChainReentrancy = true;
+                    options.PerformDeadlockDetection = true;
+                })
                 .ConfigureEndpoints(siloPort: 11111, gatewayPort: 30000)
                 .UseMongoDBReminders(options =>
                 {
