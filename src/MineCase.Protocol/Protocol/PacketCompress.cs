@@ -20,7 +20,7 @@ namespace MineCase.Protocol
 
             targetPacket = targetPacket ?? new UncompressedPacket();
             using (var stream = new MemoryStream(packet.CompressedData))
-            using (var br = new BinaryReader(useCompression ? (Stream)new ZlibStream(stream, CompressionMode.Decompress, true) : stream))
+            using (var br = new BinaryReader(useCompression ? (Stream)new ZlibStream(stream, CompressionMode.Decompress, CompressionLevel.BestSpeed) : stream))
             {
                 targetPacket.PacketId = br.ReadAsVarInt(out var packetIdLen);
 
@@ -41,7 +41,7 @@ namespace MineCase.Protocol
                 bool useCompression = dataLength >= threshold;
                 targetPacket.DataLength = useCompression ? dataLength : 0;
 
-                using (var bw = new BinaryWriter(useCompression ? (Stream)new ZlibStream(stream, CompressionMode.Compress, true) : stream))
+                using (var bw = new BinaryWriter(useCompression ? (Stream)new ZlibStream(stream, CompressionMode.Compress, CompressionLevel.BestSpeed) : stream))
                 {
                     bw.WriteAsVarInt(packet.PacketId, out _);
                     bw.Write(packet.Data.Array, packet.Data.Offset, packet.Data.Count);

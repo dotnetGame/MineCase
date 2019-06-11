@@ -4,13 +4,13 @@
 using System.Buffers;
 using System.Runtime;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using static System.Buffers.Binary.BinaryPrimitives;
 
 #pragma warning disable
 
 namespace System.IO.Pipelines
-{
+{   
     internal static class ReadWriteExtensions
     {
         /// <summary>
@@ -77,7 +77,6 @@ namespace System.IO.Pipelines
         public static T ReadBigEndian<T>(this ReadOnlySpan<byte> buffer) where T : struct
             => BitConverter.IsLittleEndian ? Reverse(ReadMachineEndian<T>(buffer)) : ReadMachineEndian<T>(buffer);
 
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T ReadLittleEndian<T>(this ReadOnlySpan<byte> buffer) where T : struct
             => BitConverter.IsLittleEndian ? ReadMachineEndian<T>(buffer) : Reverse(ReadMachineEndian<T>(buffer));
@@ -97,6 +96,45 @@ namespace System.IO.Pipelines
             if (!BitConverter.IsLittleEndian)
                 value = Reverse(value);
             WriteMachineEndian(buffer, ref value);
+        }
+
+        // BinaryPrimitives
+        public static void WriteMachineEndian<T>(this Span<byte> buffer, ref T value)
+        where T : struct
+        {
+            Unsafe.WriteUnaligned<T>(ref MemoryMarshal.GetReference(buffer), value);
+        }
+
+
+        public static bool TryWriteMachineEndian<T>(this Span<byte> buffer, ref T value)
+            where T : struct
+        {
+            if (Unsafe.SizeOf<T>() > (uint)buffer.Length)
+            {
+                return false;
+            }
+            Unsafe.WriteUnaligned<T>(ref MemoryMarshal.GetReference(buffer), value);
+            return true;
+        }
+
+
+        public static T ReadMachineEndian<T>(this ReadOnlySpan<byte> buffer)
+            where T : struct
+        {
+            return Unsafe.ReadUnaligned<T>(ref MemoryMarshal.GetReference(buffer));
+        }
+
+
+        public static bool TryReadMachineEndian<T>(this ReadOnlySpan<byte> buffer, out T value)
+            where T : struct
+        {
+            if (Unsafe.SizeOf<T>() > (uint)buffer.Length)
+            {
+                value = default;
+                return false;
+            }
+            value = Unsafe.ReadUnaligned<T>(ref MemoryMarshal.GetReference(buffer));
+            return true;
         }
     }
 }

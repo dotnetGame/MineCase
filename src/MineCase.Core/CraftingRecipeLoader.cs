@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -214,7 +215,7 @@ namespace MineCase
 
         private static unsafe string ToString(ReadOnlySpan<char> span)
         {
-            return new string((char*)Unsafe.AsPointer(ref span.DangerousGetPinnableReference()), 0, span.Length);
+            return new string((char*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(span)), 0, span.Length);
         }
     }
 
