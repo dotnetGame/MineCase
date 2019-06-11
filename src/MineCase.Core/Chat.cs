@@ -96,7 +96,12 @@ namespace MineCase
     public class ChatClickEvent
     {
         private static readonly string[] _map = new string[4]
-        { "open_url", "run_command", "suggest_command", "change_page" };
+        {
+            "open_url",
+            "run_command",
+            "suggest_command",
+            "change_page"
+        };
 
         public ClickEventType Action { get; set; }
 
@@ -112,8 +117,8 @@ namespace MineCase
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatClickEvent"/> class with the specified parameters.
         /// </summary>
-        /// <param name="action">Action type</param>
-        /// <param name="value">The value of action</param>
+        /// <param name="action">Action type.</param>
+        /// <param name="value">The value of action.</param>
         public ChatClickEvent(ClickEventType action, JToken value)
         {
             Action = action;
@@ -134,7 +139,11 @@ namespace MineCase
     public class ChatHoverEvent
     {
         private static readonly string[] _map = new string[3]
-        { "show_text", "show_item", "show_entity" };
+        {
+            "show_text",
+            "show_item",
+            "show_entity"
+        };
 
         public HoverEventType Action { get; set; }
 
@@ -150,8 +159,8 @@ namespace MineCase
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatHoverEvent"/> class with the specified parameters.
         /// </summary>
-        /// <param name="action">Action type</param>
-        /// <param name="value">The value of action</param>
+        /// <param name="action">Action type.</param>
+        /// <param name="value">The value of action.</param>
         public ChatHoverEvent(HoverEventType action, JToken value)
         {
             Action = action;
@@ -187,9 +196,9 @@ namespace MineCase
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatScore"/> class with the specified parameters.
         /// </summary>
-        /// <param name="name">The name of the player</param>
-        /// <param name="objective">The scoreboard target to display the score</param>
-        /// <param name="value">The score to be displayed</param>
+        /// <param name="name">The name of the player.</param>
+        /// <param name="objective">The scoreboard target to display the score.</param>
+        /// <param name="value">The score to be displayed.</param>
         public ChatScore(string name, string objective, int? value = null)
         {
             Name = name;
@@ -331,7 +340,7 @@ namespace MineCase
         /// <summary>
         /// Initializes a new instance of the <see cref="StringComponent"/> class with a string.
         /// </summary>
-        /// <param name="text">The text of StringComponent</param>
+        /// <param name="text">The text of StringComponent.</param>
         public StringComponent(string text)
         {
             Text = text;
@@ -347,7 +356,7 @@ namespace MineCase
     }
 
     /// <summary>
-    /// Translation component. Translates text into the current language
+    /// Translation component. Translates text into the current language.
     /// </summary>
     public class TranslationComponent : ChatComponent
     {
@@ -365,8 +374,8 @@ namespace MineCase
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslationComponent"/> class with a string and a List.
         /// </summary>
-        /// <param name="translate">Translates text</param>
-        /// <param name="with">Optional tag</param>
+        /// <param name="translate">Translates text.</param>
+        /// <param name="with">Optional tag.</param>
         public TranslationComponent(string translate = null, List<ChatComponent> with = null)
         {
             Translate = translate;
@@ -423,7 +432,7 @@ namespace MineCase
         /// <summary>
         /// Initializes a new instance of the <see cref="KeybindComponent"/> class with the specified type.
         /// </summary>
-        /// <param name="type">The type of keybind</param>
+        /// <param name="type">The type of keybind.</param>
         public KeybindComponent(KeyBindType type)
         {
             Keybind = type;
@@ -455,7 +464,7 @@ namespace MineCase
         /// <summary>
         /// Initializes a new instance of the <see cref="ScoreComponent"/> class ChatScore class.
         /// </summary>
-        /// <param name="score">A ChatScore class</param>
+        /// <param name="score">A ChatScore class.</param>
         public ScoreComponent(ChatScore score)
         {
             Score = score;
@@ -487,7 +496,7 @@ namespace MineCase
         /// <summary>
         /// Initializes a new instance of the <see cref="SelectorComponent"/> class with a string.
         /// </summary>
-        /// <param name="selector">Selector string</param>
+        /// <param name="selector">Selector string.</param>
         public SelectorComponent(string selector)
         {
             Selector = selector;
@@ -551,7 +560,7 @@ namespace MineCase
         /// Initializes a new instance of the <see cref="Chat"/> class with a string.
         /// It is convenient to initialize a Chat class with a StringComponent.
         /// </summary>
-        /// <param name="text">The text of the StringComponent</param>
+        /// <param name="text">The text of the StringComponent.</param>
         public Chat(string text)
         {
             Component = new StringComponent(text);
@@ -561,10 +570,10 @@ namespace MineCase
         /// Parses Chat from a JSON string.
         /// </summary>
         /// <exception>
-        /// Newtonsoft.Json.JsonException
+        /// Newtonsoft.Json.JsonException.
         /// </exception>
-        /// <param name="json">The JSON string</param>
-        /// <returns>A Chat object</returns>
+        /// <param name="json">The JSON string.</param>
+        /// <returns>A Chat object.</returns>
         public static Chat Parse(string json)
         {
             if (string.IsNullOrEmpty(json))
@@ -590,9 +599,9 @@ namespace MineCase
         /// Serializes this object to a JObject.
         /// </summary>
         /// <exception>
-        /// InvalidOperationException
+        /// InvalidOperationException.
         /// </exception>
-        /// <returns>A JObject</returns>
+        /// <returns>A JObject.</returns>
         public JObject ToJObject()
         {
             if (Component == null)
@@ -607,9 +616,9 @@ namespace MineCase
         /// Serializes this object to a string.
         /// </summary>
         /// <exception>
-        /// InvalidOperationException
+        /// InvalidOperationException.
         /// </exception>
-        /// <returns>A JSON string</returns>
+        /// <returns>A JSON string.</returns>
         public override string ToString()
         {
             return JsonConvert.SerializeObject(Component.ToJObject(), Formatting.None);

@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 using MineCase.Nbt;
 
 namespace MineCase.Serialization
 {
-    public struct SpanReader
+    public ref struct SpanReader
     {
         private ReadOnlySpan<byte> _span;
 
@@ -53,7 +54,7 @@ namespace MineCase.Serialization
         {
             var len = ReadAsVarInt(out _);
             var bytes = ReadBytes((int)len);
-            return Encoding.UTF8.GetString((byte*)Unsafe.AsPointer(ref bytes.DangerousGetPinnableReference()), bytes.Length);
+            return Encoding.UTF8.GetString((byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(bytes)), bytes.Length);
         }
 
         public ushort ReadAsUnsignedShort()
