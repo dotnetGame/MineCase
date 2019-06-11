@@ -36,7 +36,7 @@ namespace MineCase.Gateway
         {
             //foreach (var assembly in _assemblies)
             //    parts.AddApplicationPart(assembly);
-            parts.AddFromApplicationBaseDirectory();
+            parts.AddFromApplicationBaseDirectory().WithReferences();
         }
 
         private static async void Startup()
