@@ -88,7 +88,7 @@ namespace MineCase.Server
         {
             //foreach (var assembly in _assemblies)
             //    parts.AddApplicationPart(assembly);
-            parts.AddFromApplicationBaseDirectory();
+            parts.AddFromApplicationBaseDirectory().WithReferences();
         }
     }
 }
