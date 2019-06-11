@@ -86,8 +86,9 @@ namespace MineCase.Server
 
         private static void ConfigureApplicationParts(IApplicationPartManager parts)
         {
-            foreach (var assembly in _assemblies)
-                parts.AddApplicationPart(assembly);
+            //foreach (var assembly in _assemblies)
+            //    parts.AddApplicationPart(assembly);
+            parts.AddFromApplicationBaseDirectory();
         }
     }
 }

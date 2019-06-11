@@ -34,8 +34,9 @@ namespace MineCase.Gateway
 
         private static void ConfigureApplicationParts(IApplicationPartManager parts)
         {
-            foreach (var assembly in _assemblies)
-                parts.AddApplicationPart(assembly);
+            //foreach (var assembly in _assemblies)
+            //    parts.AddApplicationPart(assembly);
+            parts.AddFromApplicationBaseDirectory();
         }
 
         private static async void Startup()
