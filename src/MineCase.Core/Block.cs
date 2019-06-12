@@ -310,7 +310,7 @@ namespace MineCase
     /// If FallingFlag is set, the lower bits are essentially ignored,
     /// since this block is then at its highest fluid level.
     /// Level1 is the highest fluid level(not necessarily filling the block -
-    /// this depends on the neighboring fluid blocks above each upper corner of the block)
+    /// this depends on the neighboring fluid blocks above each upper corner of the block).
     /// </summary>
     [Flags]
     public enum FluidType : uint
@@ -741,7 +741,7 @@ namespace MineCase
     }
 
     /// <summary>
-    /// For Activator Rails, Detector Rails, and Powered Rails
+    /// For Activator Rails, Detector Rails, and Powered Rails.
     /// </summary>
     public enum RailExType : uint
     {
@@ -754,7 +754,7 @@ namespace MineCase
     }
 
     /// <summary>
-    /// For Ladders, Furnaces, Chests, Trapped Chests
+    /// For Ladders, Furnaces, Chests, Trapped Chests.
     /// </summary>
     public enum FacingDirectionType : uint
     {
@@ -793,7 +793,7 @@ namespace MineCase
     }
 
     /// <summary>
-    /// 0x1 ~ 0x4 bits specifying which direction the dispenser is facing
+    /// 0x1 ~ 0x4 bits specifying which direction the dispenser is facing.
     /// </summary>
     [Flags]
     public enum DispenserType : uint
@@ -810,7 +810,7 @@ namespace MineCase
     }
 
     /// <summary>
-    /// 0x1 ~ 0x4 bits specifying which direction the dropper is facing
+    /// 0x1 ~ 0x4 bits specifying which direction the dropper is facing.
     /// </summary>
     [Flags]
     public enum DropperType : uint

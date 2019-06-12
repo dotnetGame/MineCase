@@ -21,7 +21,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
             _gridSize = gridSize;
         }
 
-        public override async Task Click(IPlayer player, int slotIndex, ClickAction clickAction, Slot clickedItem)
+        public override async Task Click(IPlayer player, List<SlotArea> slotAreas, int globalIndex, int slotIndex, ClickAction clickAction, Slot clickedItem)
         {
             if (slotIndex == 0)
             {
@@ -57,7 +57,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
             }
             else
             {
-                await base.Click(player, slotIndex, clickAction, clickedItem);
+                await base.Click(player, slotAreas, globalIndex, slotIndex, clickAction, clickedItem);
             }
 
             await UpdateRecipe(player);

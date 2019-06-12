@@ -71,6 +71,18 @@ namespace MineCase.Server.Game.Entities.Components
     }
 
     [Immutable]
+    public sealed class SetDraggedPath : IEntityMessage
+    {
+        public List<int> Path { get; set; }
+    }
+
+    [Immutable]
+    public sealed class AskDraggedPath : IEntityMessage<List<int>>
+    {
+        public static readonly AskDraggedPath Default = new AskDraggedPath();
+    }
+
+    [Immutable]
     public sealed class AskPlayerDescription : IEntityMessage<PlayerDescription>
     {
         public static readonly AskPlayerDescription Default = new AskPlayerDescription();

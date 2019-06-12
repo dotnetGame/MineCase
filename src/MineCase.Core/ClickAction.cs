@@ -6,10 +6,21 @@ namespace MineCase
 {
     public enum ClickAction
     {
+        InvalidClick,
         LeftMouseClick,
         RightMouseClick,
         ShiftLeftMouseClick,
         ShiftRightMouseClick,
+        LeftMouseDragBegin,
+        LeftMouseAddSlot,
+        LeftMouseDragEnd,
+        RightMouseDragBegin,
+        RightMouseAddSlot,
+        RightMouseDragEnd,
+        MiddleMouseDragBegin,
+        MiddleMouseAddSlot,
+        MiddleMouseDragEnd,
+        DoubleClick,
         NumberKey1,
         NumberKey2,
         NumberKey3,
