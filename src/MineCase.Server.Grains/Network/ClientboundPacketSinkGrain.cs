@@ -24,6 +24,7 @@ namespace MineCase.Server.Network
         public override Task OnActivateAsync()
         {
             _subsManager = new Grains.GrainObserverManager<IClientboundPacketObserver>();
+            _subsManager.ExpirationDuration = new TimeSpan(0, 0, 20);
             return base.OnActivateAsync();
         }
 
