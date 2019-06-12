@@ -85,7 +85,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
             return Window.BroadcastSlotChanged(this, slotIndex, item);
         }
 
-        public virtual async Task Click(IPlayer player, int slotIndex, ClickAction clickAction, Slot clickedItem)
+        public virtual async Task Click(IPlayer player, List<SlotArea> slotAreas, int globalIndex, int slotIndex, ClickAction clickAction, Slot clickedItem)
         {
             switch (clickAction)
             {
@@ -113,6 +113,29 @@ namespace MineCase.Server.Game.Windows.SlotAreas
                 case ClickAction.NumberKey8:
                 case ClickAction.NumberKey9:
                     await OnNumberKeyClick(player, slotIndex, clickAction - ClickAction.NumberKey1);
+                    break;
+                case ClickAction.LeftMouseDragBegin:
+                    await OnLeftMouseDragBegin(player, slotAreas, globalIndex, slotIndex);
+                    break;
+                case ClickAction.LeftMouseAddSlot:
+                    await OnLeftMouseAddSlot(player, slotAreas, globalIndex, slotIndex);
+                    break;
+                case ClickAction.LeftMouseDragEnd:
+                    await OnLeftMouseDragEnd(player, slotAreas, globalIndex, slotIndex);
+                    break;
+
+                case ClickAction.RightMouseDragBegin:
+                    await OnRightMouseDragBegin(player, slotAreas, globalIndex, slotIndex);
+                    break;
+                case ClickAction.RightMouseAddSlot:
+                    await OnRightMouseAddSlot(player, slotAreas, globalIndex, slotIndex);
+                    break;
+                case ClickAction.RightMouseDragEnd:
+                    await OnRightMouseDragEnd(player, slotAreas, globalIndex, slotIndex);
+                    break;
+
+                case ClickAction.DoubleClick:
+                    await OnDoubleClick(player, slotAreas, globalIndex, slotIndex);
                     break;
                 default:
                     await Window.BroadcastWholeWindow();
@@ -226,6 +249,161 @@ namespace MineCase.Server.Game.Windows.SlotAreas
             }
         }
 
+        protected virtual async Task OnLeftMouseDragBegin(IPlayer player, List<SlotArea> slotAreas, int globalIndex, int slotIndex)
+        {
+            // begin left mouse drag, clear player drag path data
+            await player.Tell(new SetDraggedPath { Path = new List<int>() });
+        }
+
+        protected virtual async Task OnLeftMouseAddSlot(IPlayer player, List<SlotArea> slotAreas, int globalIndex, int slotIndex)
+        {
+            var slot = await GetSlot(player, slotIndex);
+            var draggedSlot = await player.Ask(AskDraggedSlot.Default);
+            var dragSlotPath = await player.Ask(AskDraggedPath.Default);
+
+            if (slot.IsEmpty || slot.BlockId == draggedSlot.BlockId)
+            {
+                dragSlotPath.Add(globalIndex);
+            }
+
+            await player.Tell(new SetDraggedPath { Path = dragSlotPath });
+        }
+
+        protected virtual async Task OnLeftMouseDragEnd(IPlayer player, List<SlotArea> slotAreas, int globalIndex, int slotIndex)
+        {
+            var draggedSlot = await player.Ask(AskDraggedSlot.Default);
+            var dragSlotPath = await player.Ask(AskDraggedPath.Default);
+            var slot = draggedSlot;
+            slot.ItemCount = 0;
+
+            int leftNum = draggedSlot.ItemCount;
+            int averageNum = draggedSlot.ItemCount / dragSlotPath.Count;
+            foreach (var eachSlotIndex in dragSlotPath)
+            {
+                var localSlot = GlobalSlotIndexToLocal(slotAreas, eachSlotIndex);
+                var eachSlot = await localSlot.slotArea.GetSlot(player, localSlot.slotIndex);
+
+                slot.ItemCount = (byte)Math.Min(MaxStackCount, eachSlot.ItemCount + averageNum);
+
+                await localSlot.slotArea.SetSlot(player, localSlot.slotIndex, slot);
+
+                if (eachSlot.IsEmpty)
+                {
+                    leftNum -= Math.Min(MaxStackCount - 0, averageNum);
+                }
+                else
+                {
+                    leftNum -= Math.Min(MaxStackCount - eachSlot.ItemCount, averageNum);
+                }
+            }
+
+            // now set left item for that slot is full
+            slot.ItemCount = (byte)leftNum;
+            slot.MakeEmptyIfZero();
+            await player.Tell(new SetDraggedSlot { Slot = slot });
+
+            // last, clear dragged path
+            await player.Tell(new SetDraggedPath { Path = new List<int>() });
+        }
+
+        protected virtual async Task OnRightMouseDragBegin(IPlayer player, List<SlotArea> slotAreas, int globalIndex, int slotIndex)
+        {
+            await player.Tell(new SetDraggedPath { Path = new List<int>() });
+        }
+
+        protected virtual async Task OnRightMouseAddSlot(IPlayer player, List<SlotArea> slotAreas, int globalIndex, int slotIndex)
+        {
+            var slot = await GetSlot(player, slotIndex);
+            var draggedSlot = await player.Ask(AskDraggedSlot.Default);
+            var dragSlotPath = await player.Ask(AskDraggedPath.Default);
+
+            if (slot.IsEmpty || slot.BlockId == draggedSlot.BlockId)
+            {
+                dragSlotPath.Add(globalIndex);
+            }
+
+            await player.Tell(new SetDraggedPath { Path = dragSlotPath });
+        }
+
+        protected virtual async Task OnRightMouseDragEnd(IPlayer player, List<SlotArea> slotAreas, int globalIndex, int slotIndex)
+        {
+            var draggedSlot = await player.Ask(AskDraggedSlot.Default);
+            var dragSlotPath = await player.Ask(AskDraggedPath.Default);
+            var slot = draggedSlot;
+            slot.ItemCount = 0;
+
+            int leftNum = draggedSlot.ItemCount;
+            int averageNum = 1;
+            foreach (var eachSlotIndex in dragSlotPath)
+            {
+                var localSlot = GlobalSlotIndexToLocal(slotAreas, eachSlotIndex);
+                var eachSlot = await localSlot.slotArea.GetSlot(player, localSlot.slotIndex);
+
+                slot.ItemCount = (byte)Math.Min(MaxStackCount, eachSlot.ItemCount + averageNum);
+
+                await localSlot.slotArea.SetSlot(player, localSlot.slotIndex, slot);
+
+                if (eachSlot.IsEmpty)
+                {
+                    leftNum -= Math.Min(MaxStackCount - 0, averageNum);
+                }
+                else
+                {
+                    leftNum -= Math.Min(MaxStackCount - eachSlot.ItemCount, averageNum);
+                }
+            }
+
+            // now set left item for that slot is full
+            slot.ItemCount = (byte)leftNum;
+            slot.MakeEmptyIfZero();
+            await player.Tell(new SetDraggedSlot { Slot = slot });
+
+            // last, clear dragged path
+            await player.Tell(new SetDraggedPath { Path = new List<int>() });
+        }
+
+        protected virtual async Task OnDoubleClick(IPlayer player, List<SlotArea> slotAreas, int globalIndex, int slotIndex)
+        {
+            var slot = await GetSlot(player, slotIndex);
+            var draggedSlot = await player.Ask(AskDraggedSlot.Default);
+            short blockId = -1;
+
+            if (slot.BlockId != -1) blockId = slot.BlockId;
+            else if (draggedSlot.BlockId != -1) blockId = draggedSlot.BlockId;
+
+            int dragCount = draggedSlot.ItemCount;
+
+            foreach (var eachSlotArea in slotAreas)
+            {
+                for (int eachSlotIndex = 0; eachSlotIndex < eachSlotArea.SlotsCount; ++eachSlotIndex)
+                {
+                    var eachSlot = await eachSlotArea.GetSlot(player, eachSlotIndex);
+                    if (eachSlot.BlockId == blockId && eachSlot.ItemCount != 0)
+                    {
+                        // This count means to move how many block to your hand
+                        int moveCount = Math.Min(MaxStackCount - dragCount, eachSlot.ItemCount);
+                        eachSlot.ItemCount -= (byte)moveCount;
+                        dragCount += moveCount;
+                        await eachSlotArea.SetSlot(player, eachSlotIndex, eachSlot);
+                        if (dragCount >= MaxStackCount)
+                        {
+                            await player.Tell(new SetDraggedSlot
+                            {
+                                Slot = new Slot { ItemCount = (byte)dragCount, BlockId = blockId }
+                            });
+                            return;
+                        }
+                    }
+                }
+            }
+
+            await player.Tell(new SetDraggedSlot
+            {
+                Slot = new Slot { ItemCount = (byte)dragCount, BlockId = blockId }
+            });
+            return;
+        }
+
         protected bool TryStackSlot(ref Slot source, ref Slot target)
         {
             if (target.ItemCount <= MaxStackCount && target.CanStack(source))
@@ -238,6 +416,19 @@ namespace MineCase.Server.Game.Windows.SlotAreas
             }
 
             return false;
+        }
+
+        // TODO merge method in games/windows/WindowGrain.cs
+        protected (SlotArea slotArea, int slotIndex) GlobalSlotIndexToLocal(List<SlotArea> slotAreas, int slotIndex)
+        {
+            for (int i = 0; i < slotAreas.Count; i++)
+            {
+                if (slotIndex < slotAreas[i].SlotsCount)
+                    return (slotAreas[i], slotIndex);
+                slotIndex -= slotAreas[i].SlotsCount;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(slotIndex));
         }
 
         public virtual Task Close(IPlayer player)

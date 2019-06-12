@@ -130,8 +130,18 @@ namespace MineCase.Server.Game.Windows
             {
                 case ClickAction.LeftMouseClick:
                 case ClickAction.RightMouseClick:
+
+                case ClickAction.LeftMouseDragBegin:
+                case ClickAction.LeftMouseAddSlot:
+                case ClickAction.LeftMouseDragEnd:
+
+                case ClickAction.RightMouseDragBegin:
+                case ClickAction.RightMouseAddSlot:
+                case ClickAction.RightMouseDragEnd:
+
+                case ClickAction.DoubleClick:
                     var slot = GlobalSlotIndexToLocal(slotIndex);
-                    await slot.slotArea.Click(player, slot.slotIndex, clickAction, clickedItem);
+                    await slot.slotArea.Click(player, SlotAreas, slotIndex, slot.slotIndex, clickAction, clickedItem);
                     break;
                 default:
                     break;

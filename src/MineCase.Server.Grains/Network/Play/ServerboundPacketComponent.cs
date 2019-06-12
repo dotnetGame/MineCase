@@ -378,6 +378,44 @@ namespace MineCase.Server.Network.Play
                     }
 
                     break;
+
+                case 5:
+                    switch (button)
+                    {
+                        case 0:
+                            return ClickAction.LeftMouseDragBegin;
+                        case 4:
+                            return ClickAction.RightMouseDragBegin;
+                        case 8:
+                            return ClickAction.MiddleMouseDragBegin;
+                        case 1:
+                            return ClickAction.LeftMouseAddSlot;
+                        case 5:
+                            return ClickAction.RightMouseAddSlot;
+                        case 9:
+                            return ClickAction.MiddleMouseAddSlot;
+                        case 2:
+                            return ClickAction.LeftMouseDragEnd;
+                        case 6:
+                            return ClickAction.RightMouseDragEnd;
+                        case 10:
+                            return ClickAction.MiddleMouseDragEnd;
+                        default:
+                            break;
+                    }
+
+                    break;
+
+                case 6:
+                    switch (button)
+                    {
+                        case 0:
+                            return ClickAction.DoubleClick;
+                        default:
+                            break;
+                    }
+
+                    break;
                 default:
                     break;
             }
