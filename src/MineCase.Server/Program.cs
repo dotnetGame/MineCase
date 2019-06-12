@@ -42,6 +42,8 @@ namespace MineCase.Server
                     options.PerformDeadlockDetection = true;
                 })
                 .ConfigureEndpoints(siloPort: 11111, gatewayPort: 30000)
+                .AddSimpleMessageStreamProvider("JobsProvider")
+                .AddSimpleMessageStreamProvider("TransientProvider")
                 .UseMongoDBReminders(options =>
                 {
                     options.ConnectionString = Configuration.GetSection("persistenceOptions")["connectionString"];
@@ -54,7 +56,15 @@ namespace MineCase.Server
                 .ConfigureApplicationParts(ConfigureApplicationParts)
                 .UseDashboard(options => { })
                 .UseServiceProviderFactory(ConfigureServices);
-            
+
+            MongoDBSiloExtensions.AddMongoDBGrainStorageAsDefault(builder, options => {
+                options.ConnectionString = Configuration.GetSection("persistenceOptions")["connectionString"];
+            });
+
+            MongoDBSiloExtensions.AddMongoDBGrainStorage(builder, "PubSubStore", options => {
+                options.ConnectionString = Configuration.GetSection("persistenceOptions")["connectionString"];
+            });
+
             // ConfigureApplicationParts(builder);
             _siloHost = builder.Build();
             await StartAsync();

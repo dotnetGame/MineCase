@@ -47,13 +47,14 @@ namespace MineCase.Gateway.Network
             using (_remoteStream = _tcpClient.GetStream())
             {
                 _clientboundPacketObserverRef = await _grainFactory.CreateObjectReference<IClientboundPacketObserver>(_outcomingPacketObserver);
-                await _grainFactory.GetGrain<IClientboundPacketSink>(_sessionId).Subscribe(_clientboundPacketObserverRef);
                 try
                 {
                     while (!cancellationToken.IsCancellationRequested &&
                         !_outcomingPacketDispatcher.Completion.IsCompleted)
                     {
                         await DispatchIncomingPacket();
+                        // renew subscribe
+                        await _grainFactory.GetGrain<IClientboundPacketSink>(_sessionId).Subscribe(_clientboundPacketObserverRef);
                     }
                 }
                 catch (EndOfStreamException)
