@@ -17,7 +17,7 @@ namespace MineCase.Algorithm.World.Plants
             _grassMaxNum = maxNum;
         }
 
-        public override void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
+        public override void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Biome biome, Random random, BlockWorldPos pos)
         {
             int num = random.Next(_grassMaxNum);
             for (int i = 0; i < num; ++i)
@@ -34,7 +34,7 @@ namespace MineCase.Algorithm.World.Plants
             }
         }
 
-        public bool CanGrassGrow(PlantsType type, ChunkColumnStorage chunk, BlockChunkPos pos)
+        public bool CanGrassGrow(PlantsType type, ChunkColumnCompactStorage chunk, BlockChunkPos pos)
         {
             if (chunk[pos.X, pos.Y - 1, pos.Z] == BlockStates.GrassBlock() ||
                 chunk[pos.X, pos.Y - 1, pos.Z] == BlockStates.Dirt())

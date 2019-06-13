@@ -194,6 +194,8 @@ namespace MineCase.Server.World
 
         internal class StateHolder
         {
+            public bool Populated { get; set; }
+
             public bool Generated { get; set; }
 
             public ChunkColumnCompactStorage Storage { get; set; }

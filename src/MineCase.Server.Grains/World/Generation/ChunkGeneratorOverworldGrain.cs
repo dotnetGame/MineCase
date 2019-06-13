@@ -90,7 +90,8 @@ namespace MineCase.Server.World.Generation
                 Seed = await world.GetSeed()
             };
             GenerateChunk(info, chunkColumn, x, z, settings);
-            PopulateChunk(world, chunkColumn, x, z, settings);
+
+            // PopulateChunk(world, chunkColumn, x, z, settings);
             return chunkColumn.Compact();
         }
 
@@ -146,7 +147,7 @@ namespace MineCase.Server.World.Generation
             GenerateSkylightMap(chunk);
         }
 
-        public void PopulateChunk(IWorld world, ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
+        public void PopulateChunk(IWorld world, ChunkColumnCompactStorage chunk, int x, int z, GeneratorSettings settings)
         {
             int blockX = x * 16;
             int blockZ = z * 16;
