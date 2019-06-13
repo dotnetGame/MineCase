@@ -13,7 +13,7 @@ namespace MineCase.Algorithm.World
     }
 
     /// <summary>
-    /// 该类一般用于实现大型的世界结构
+    /// 该类一般用于实现大型的世界结构.
     /// </summary>
     public abstract class MapGenerator
     {
