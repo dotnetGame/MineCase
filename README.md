@@ -5,15 +5,28 @@ MineCase
  
 `MineCase` is a cross-platform application with distributed server of `Minecraft`. 
 The project is designed to create a high-performance, distributed system by using isolating different components through actor mode. 
-Different chunks are managed by different servers so that all players can play in a world. This brings minecraft servers more scalability.
+Different chunks are managed by different servers so that all players can play in a world. This makes minecraft servers more scalable.
 It written in `C#` with `.NET Core 2.0` env and based on `orleans` framework to work with released [1.12 protocol](https://minecraft.net/en-us/article/minecraft-112-pre-release-6).
 
 ![Screenshots](screenshots/1.jpg)
 
-## Requirements
-* [Docker for linux](https://docs.docker.com/engine/installation/) (Only support Linux)
+## Run Requirements
 * [.Net Core 2.0](https://www.microsoft.com/net/download)
-* Unity 2017.2.0 or later versions.
+* [MongoDB](https://www.mongodb.com/download-center/community)
+
+## Install (Build From Source)
+* 1 . Download and install a `.NET Core sdk 2.0` from this [page](https://www.microsoft.com/net/download).
+* 2 . Download and install a `MongoDB` from this [page](https://www.mongodb.com/download-center?jmp=nav#community).
+* 3 . Download a `MineCase` archive from the [github page](https://github.com/dotnetGame/MineCase/archive/master.zip)  (or **clone:**)
+	```bash
+	git clone git@github.com:dotnetGame/MineCase.git
+	cd MineCase
+	```
+* 4 . Un-zip `Minecase` archive.
+* 5 . Build and run the `build_and_run`
+    * **OSX** : Run the `build_and_run.sh`.
+    * **Linux** : Run the `build_and_run.sh`.
+    * **Win** : Double-click `build_and_run.bat`.
 
 ## Install (Docker)
 * 1 . Download a `Docker for linux` from this [page](https://docs.docker.com/engine/installation/).
@@ -27,19 +40,9 @@ It written in `C#` with `.NET Core 2.0` env and based on `orleans` framework to 
 	##### Tips:
 	* You can stop the server by enter `docker-compose stop`.
 
-## Install (Github)
-* 1 . Download and install a `.NET Core sdk 2.0` from this [page](https://www.microsoft.com/net/download).
-* 2 . Download and install a `MongoDB` from this [page](https://www.mongodb.com/download-center?jmp=nav#community).
-* 3 . Download a `MineCase` archive from the [github page](https://github.com/dotnetGame/MineCase/archive/master.zip)  (or **clone:**)
-	```bash
-	git clone git@github.com:dotnetGame/MineCase.git
-	cd MineCase
-	```
-* 4 . Un-zip `Minecase` archive.
-* 5 . Build and run the `build_and_run`
-    * **OSX** : Run the `build_and_run.sh`.
-    * **Linux** : Run the `build_and_run.sh`.
-    * **Win** : Double-click `build_and_run.bat`.
+## Get Involved
+We need help to make MineCase better. You can help us by fixing bugs, developing new features, improving documents.  
+Some new contributors wonder what to work. The project began with the love for Minecraft, so our answer is always "do what you love". 
 
 ## Contact
 　　This project is still under development. 
