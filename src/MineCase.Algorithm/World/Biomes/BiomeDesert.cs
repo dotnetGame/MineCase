@@ -37,7 +37,7 @@ namespace MineCase.Algorithm.World.Biomes
         }
 
         // 添加其他东西
-        public override void Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
+        public override void Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random rand, BlockWorldPos pos)
         {
             GenCacti(world, grainFactory, chunk, rand, pos);
 
@@ -46,7 +46,7 @@ namespace MineCase.Algorithm.World.Biomes
         }
 
         // 添加生物群系特有的生物
-        public override void SpawnMob(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
+        public override void SpawnMob(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random rand, BlockWorldPos pos)
         {
             ChunkWorldPos chunkPos = pos.ToChunkWorldPos();
             int seed = chunkPos.Z * 16384 + chunkPos.X;
@@ -61,7 +61,7 @@ namespace MineCase.Algorithm.World.Biomes
             }
         }
 
-        private void GenCacti(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        private void GenCacti(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random random, BlockWorldPos pos)
         {
             int cactiMaxNum = random.Next(_cactiPerChunk);
 

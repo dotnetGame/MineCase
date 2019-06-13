@@ -26,7 +26,7 @@ namespace MineCase.Algorithm.World.Plants
         //    }
         //    return BlockState;
         // }
-        public virtual void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
+        public virtual void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Biome biome, Random random, BlockWorldPos pos)
         {
         }
     }

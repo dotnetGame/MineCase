@@ -22,7 +22,7 @@ namespace MineCase.Server.World.EntitySpawner
             _groupMaxNum = groupMaxNum;
         }
 
-        public async void Spawn(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        public async void Spawn(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random random, BlockWorldPos pos)
         {
             int num = random.Next(_groupMaxNum);
             for (int n = 0; n < num; ++n)
@@ -64,7 +64,7 @@ namespace MineCase.Server.World.EntitySpawner
             }
         }
 
-        public bool CanMobStand(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockChunkPos pos)
+        public bool CanMobStand(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random random, BlockChunkPos pos)
         {
             // TODO 以后结合boundbox判断
             if (pos.Y <= 0 || pos.Y >= 255)

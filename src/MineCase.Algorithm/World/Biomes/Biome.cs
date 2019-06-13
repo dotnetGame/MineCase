@@ -226,7 +226,7 @@ namespace MineCase.Algorithm.World.Biomes
             }
         }
 
-        public void GenerateOre(MinableGenerator generator, IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos position, int count, int minHeight, int maxHeight)
+        public void GenerateOre(MinableGenerator generator, IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random random, BlockWorldPos position, int count, int minHeight, int maxHeight)
         {
             if (minHeight > maxHeight)
             {
@@ -254,7 +254,7 @@ namespace MineCase.Algorithm.World.Biomes
         }
 
         // 后期添加一些方块，Biome基类主要生成矿物
-        public virtual void Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
+        public virtual void Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random rand, BlockWorldPos pos)
         {
             GenerateOre(_dirtGen, world, grainFactory, chunk, rand, pos, _genSettings.DirtCount, _genSettings.DirtMaxHeight, _genSettings.DirtMinHeight);
             GenerateOre(_gravelOreGen, world, grainFactory, chunk, rand, pos, _genSettings.GravelCount, _genSettings.GravelMaxHeight, _genSettings.GravelMinHeight);
@@ -271,7 +271,7 @@ namespace MineCase.Algorithm.World.Biomes
         }
 
         // 添加生物群系特有的生物
-        public virtual void SpawnMob(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
+        public virtual void SpawnMob(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random rand, BlockWorldPos pos)
         {
             ChunkWorldPos chunkPos = pos.ToChunkWorldPos();
             int seed = chunkPos.Z * 16384 + chunkPos.X;

@@ -17,7 +17,7 @@ namespace MineCase.Algorithm.World.Mine
             NumberOfBlocks = blockCount;
         }
 
-        public void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos position)
+        public void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random rand, BlockWorldPos position)
         {
             // 在xz平面上的方向
             float angle = (float)rand.NextDouble() * (float)Math.PI;

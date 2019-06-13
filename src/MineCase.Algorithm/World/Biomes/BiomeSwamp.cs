@@ -38,7 +38,7 @@ namespace MineCase.Algorithm.World.Biomes
         }
 
         // 添加其他东西
-        public override void Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
+        public override void Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random rand, BlockWorldPos pos)
         {
             float grassColor = (_grassColorNoise.Noise((pos.X + 8) / 200.0F, 0.0F, (pos.Z + 8) / 200.0F) - 0.5F) * 2;
 
@@ -90,7 +90,7 @@ namespace MineCase.Algorithm.World.Biomes
         }
 
         // 添加生物群系特有的生物
-        public override void SpawnMob(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
+        public override void SpawnMob(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random rand, BlockWorldPos pos)
         {
             ChunkWorldPos chunkPos = pos.ToChunkWorldPos();
             int seed = chunkPos.Z * 16384 + chunkPos.X;
@@ -105,7 +105,7 @@ namespace MineCase.Algorithm.World.Biomes
             }
         }
 
-        private void GenGrass(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        private void GenGrass(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random random, BlockWorldPos pos)
         {
             int grassMaxNum = random.Next(_grassPerChunk);
             GrassGenerator generator = new GrassGenerator();
@@ -124,7 +124,7 @@ namespace MineCase.Algorithm.World.Biomes
             }
         }
 
-        private void GenFlowers(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        private void GenFlowers(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random random, BlockWorldPos pos)
         {
             int flowersMaxNum = random.Next(_flowersPerChunk);
             FlowersGenerator generator = new FlowersGenerator();
@@ -143,7 +143,7 @@ namespace MineCase.Algorithm.World.Biomes
             }
         }
 
-        private void GenDoubleFlowers(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        private void GenDoubleFlowers(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random random, BlockWorldPos pos)
         {
             DoubleFlowersGenerator generator = new DoubleFlowersGenerator(PlantsType.Sunflower);
             for (int flowersNum = 0; flowersNum < 10; ++flowersNum)
@@ -161,7 +161,7 @@ namespace MineCase.Algorithm.World.Biomes
             }
         }
 
-        private void GenDoubleGrass(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        private void GenDoubleGrass(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random random, BlockWorldPos pos)
         {
             DoubleGrassGenerator generator = new DoubleGrassGenerator(PlantsType.DoubleTallgrass);
             for (int grassNum = 0; grassNum < 2; ++grassNum)

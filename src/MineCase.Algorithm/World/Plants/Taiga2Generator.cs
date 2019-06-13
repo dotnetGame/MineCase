@@ -26,7 +26,7 @@ namespace MineCase.Algorithm.World.Plants
             _leaves = BlockStates.Leaves(LeaveType.Spruce);
         }
 
-        public override void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
+        public override void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Biome biome, Random random, BlockWorldPos pos)
         {
             int height = random.Next(4) + 6;
             int j = 1 + random.Next(2);

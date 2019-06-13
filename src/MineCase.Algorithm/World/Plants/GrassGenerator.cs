@@ -12,7 +12,7 @@ namespace MineCase.Algorithm.World.Plants
         {
         }
 
-        public override void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
+        public override void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Biome biome, Random random, BlockWorldPos pos)
         {
             BlockChunkPos chunkPos = pos.ToBlockChunkPos();
             int x = chunkPos.X;

@@ -15,7 +15,7 @@ namespace MineCase.Algorithm.World.Plants
             _minCactiHeight = cactiHeight;
         }
 
-        public bool CanCactiGrow(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos, int height)
+        public bool CanCactiGrow(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Biome biome, Random random, BlockWorldPos pos, int height)
         {
             bool result = true;
 
@@ -61,7 +61,7 @@ namespace MineCase.Algorithm.World.Plants
             }
         }
 
-        public override void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Biome biome, Random random, BlockWorldPos pos)
+        public override void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Biome biome, Random random, BlockWorldPos pos)
         {
             int height = random.Next(3) + _minCactiHeight;
             BlockChunkPos chunkPos = pos.ToBlockChunkPos();

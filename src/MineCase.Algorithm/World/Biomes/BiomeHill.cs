@@ -60,13 +60,13 @@ namespace MineCase.Algorithm.World.Biomes
         }
 
         // 添加其他东西
-        public override void Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
+        public override void Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random rand, BlockWorldPos pos)
         {
             GenTrees(world, grainFactory, chunk, rand, pos);
         }
 
         // 添加生物群系特有的生物
-        public override void SpawnMob(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
+        public override void SpawnMob(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random rand, BlockWorldPos pos)
         {
             ChunkWorldPos chunkPos = pos.ToChunkWorldPos();
             int seed = chunkPos.Z * 16384 + chunkPos.X;
@@ -100,7 +100,7 @@ namespace MineCase.Algorithm.World.Biomes
             base.GenerateBiomeTerrain(seaLevel, rand, chunk, chunk_x, chunk_z, x_in_chunk, z_in_chunk, noiseVal);
         }
 
-        public void GenTrees(IWorld world, IGrainFactory grainFactory, ChunkColumnStorage chunk, Random random, BlockWorldPos pos)
+        public void GenTrees(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random random, BlockWorldPos pos)
         {
             int treesPerChunk = _treesPerChunk;
 
