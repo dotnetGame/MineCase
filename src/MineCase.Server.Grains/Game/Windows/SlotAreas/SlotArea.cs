@@ -368,8 +368,8 @@ namespace MineCase.Server.Game.Windows.SlotAreas
             var draggedSlot = await player.Ask(AskDraggedSlot.Default);
             short blockId = -1;
 
-            if (slot.BlockId != -1) blockId = slot.BlockId;
-            else if (draggedSlot.BlockId != -1) blockId = draggedSlot.BlockId;
+            if (draggedSlot.BlockId != -1) blockId = draggedSlot.BlockId;
+            else if (slot.BlockId != -1) blockId = slot.BlockId;
 
             int dragCount = draggedSlot.ItemCount;
 
