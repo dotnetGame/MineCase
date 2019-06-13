@@ -2,6 +2,7 @@
 using MineCase.Algorithm.World.Biomes;
 using MineCase.Server.World;
 using MineCase.World;
+using MineCase.World.Plants;
 using Orleans;
 
 namespace MineCase.Algorithm.World.Plants

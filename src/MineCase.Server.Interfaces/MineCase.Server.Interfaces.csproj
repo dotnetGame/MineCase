@@ -12,6 +12,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="World\Biomes\**" />
+    <EmbeddedResource Remove="World\Biomes\**" />
+    <None Remove="World\Biomes\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="2.3.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
@@ -32,8 +38,6 @@
     <Folder Include="Play\" />
 
     <AdditionalFiles Include="..\..\build\stylecop.json" />
-
-    <Folder Include="World\Biomes\" />
   </ItemGroup>
 
 </Project>

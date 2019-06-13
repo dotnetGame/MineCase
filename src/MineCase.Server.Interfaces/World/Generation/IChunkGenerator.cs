@@ -8,5 +8,7 @@ namespace MineCase.Server.World.Generation
     public interface IChunkGenerator
     {
         Task<ChunkColumnCompactStorage> Generate(IWorld world, int x, int z, GeneratorSettings settings);
+
+        Task Populate(IWorld world, int x, int z, GeneratorSettings settings);
     }
 }

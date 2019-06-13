@@ -10,20 +10,15 @@ namespace MineCase.Server.World.Decoration.Plants
     [StatelessWorker]
     public class GrassGeneratorGrain : PlantsGeneratorGrain, IGrassGenerator
     {
-        public override async Task GenerateSingle(IWorld world, ChunkColumnCompactStorage chunk, ChunkWorldPos chunkWorldPos, BlockWorldPos pos)
+        public override async Task GenerateSingle(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos)
         {
-            BlockChunkPos chunkPos = pos.ToBlockChunkPos();
-            int x = chunkPos.X;
-            int y = chunkPos.Y;
-            int z = chunkPos.Z;
-
             // TODO use block accessor
-            var curBlock = await GetBlock(world, chunk, chunkWorldPos, pos);
-            var downBlock = await GetBlock(world, chunk, chunkWorldPos, pos);
+            var curBlock = await GetBlock(world, chunkWorldPos, pos);
+            var downBlock = await GetBlock(world, chunkWorldPos, new BlockWorldPos { X = pos.X, Y = pos.Y - 1, Z = pos.Z });
             if (curBlock.IsAir() &&
                 downBlock == BlockStates.GrassBlock())
             {
-                SetBlock(world, chunk, chunkWorldPos, pos, BlockStates.Grass(GrassType.TallGrass));
+                await SetBlock(world, chunkWorldPos, pos, BlockStates.Grass(GrassType.TallGrass));
             }
         }
     }
