@@ -71,7 +71,7 @@ namespace MineCase.UnitTest
                 {
                     for (int j = 0; j < bucket[i]; ++j)
                     {
-                        image[i, yExtent - j] = new SixLabors.ImageSharp.PixelFormats.Rgb24(0xFF, 0x69, 0xB4);
+                        image[i, yExtent - j - 1] = new SixLabors.ImageSharp.PixelFormats.Rgb24(0xFF, 0x69, 0xB4);
                     }
                 }
 
