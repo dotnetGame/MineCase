@@ -1,4 +1,8 @@
-﻿namespace MineCase.Algorithm.World.Plants
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace MineCase.World.Plants
 {
     public enum PlantsType : uint
     {

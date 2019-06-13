@@ -9,8 +9,6 @@ namespace MineCase.Server.World.Decoration.Plants
 {
     public interface IPlantsGenerator : IGrainWithIntegerKey
     {
-        Task GenerateSingle(IWorld world, ChunkColumnCompactStorage chunk, ChunkWorldPos chunkWorldPos, BlockWorldPos pos);
-
-        Task Generate(IWorld world, ChunkColumnCompactStorage chunk, ChunkWorldPos pos, int countPerChunk, int range);
+        Task Generate(IWorld world, ChunkWorldPos pos, int countPerChunk, int range);
     }
 }

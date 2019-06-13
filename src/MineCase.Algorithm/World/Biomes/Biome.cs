@@ -9,6 +9,7 @@ using MineCase.Server.World.EntitySpawner;
 using MineCase.World;
 using MineCase.World.Biomes;
 using MineCase.World.Generation;
+using MineCase.World.Plants;
 using Orleans;
 
 namespace MineCase.Algorithm.World.Biomes

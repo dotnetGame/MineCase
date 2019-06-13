@@ -25,6 +25,13 @@ namespace MineCase.Server.World.Generation
             return Task.FromResult(chunkColumn);
         }
 
+        public async Task Populate(IWorld world, int x, int z, GeneratorSettings settings)
+        {
+            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos { X = x, Z = z });
+            ChunkColumnCompactStorage chunkColumn = await GrainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetState();
+            PopulateChunk(world, chunkColumn, x, z, settings);
+        }
+
         private void GenerateChunk(IWorld world, ChunkColumnCompactStorage chunk, int x, int z, GeneratorSettings settings)
         {
             // 按照flat模式每层的设置给chunk赋值

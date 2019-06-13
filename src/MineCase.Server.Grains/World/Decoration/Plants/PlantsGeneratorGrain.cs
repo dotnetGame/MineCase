@@ -11,44 +11,57 @@ namespace MineCase.Server.World.Decoration.Plants
 {
     public abstract class PlantsGeneratorGrain : Grain, IPlantsGenerator
     {
-        protected virtual void SetBlock(IWorld world, ChunkColumnCompactStorage chunk, ChunkWorldPos chunkWorldPos, BlockWorldPos pos, BlockState state)
+        protected virtual Task SetBlock(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos, BlockState state)
         {
+            var chunkColumnKey = world.MakeAddressByPartitionKey(pos.ToChunkWorldPos());
+            var chunkGrain = GrainFactory.GetGrain<IChunkColumn>(chunkColumnKey);
             if (pos.ToChunkWorldPos() == chunkWorldPos)
             {
                 BlockChunkPos blockChunkPos = pos.ToBlockChunkPos();
-                chunk[blockChunkPos.X, blockChunkPos.Y, blockChunkPos.Z] = state;
+                return chunkGrain.SetBlockStateUnsafe(blockChunkPos.X, blockChunkPos.Y, blockChunkPos.Z, state);
             }
+
+            return Task.CompletedTask;
         }
 
-        protected virtual Task<BlockState> GetBlock(IWorld world, ChunkColumnCompactStorage chunk, ChunkWorldPos chunkWorldPos, BlockWorldPos pos)
+        protected virtual Task<BlockState> GetBlock(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos)
         {
-            if (pos.ToChunkWorldPos() == chunkWorldPos)
-            {
-                BlockChunkPos blockChunkPos = pos.ToBlockChunkPos();
-                return Task.FromResult(chunk[blockChunkPos.X, blockChunkPos.Y, blockChunkPos.Z]);
-            }
-            else
-            {
-                var chunkColumnKey = world.MakeAddressByPartitionKey(pos.ToChunkWorldPos());
-                return GrainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockState(pos.X, pos.Y, pos.Z);
-            }
+            var chunkColumnKey = world.MakeAddressByPartitionKey(pos.ToChunkWorldPos());
+            var chunkGrain = GrainFactory.GetGrain<IChunkColumn>(chunkColumnKey);
+            BlockChunkPos blockChunkPos = pos.ToBlockChunkPos();
+
+            return chunkGrain.GetBlockStateUnsafe(blockChunkPos.X, blockChunkPos.Y, blockChunkPos.Z);
         }
 
-        public abstract Task GenerateSingle(IWorld world, ChunkColumnCompactStorage chunk, ChunkWorldPos chunkWorldPos, BlockWorldPos pos);
+        private Task<int> GetGroundHeight(IWorld world, ChunkWorldPos chunkWorldPos, int x, int z)
+        {
+            var blockChunkPos = new BlockWorldPos { X = x, Z = z }.ToBlockChunkPos();
+            var chunkColumnKey = world.MakeAddressByPartitionKey(chunkWorldPos);
+            return GrainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetGroundHeight(blockChunkPos.X, blockChunkPos.Z);
+        }
 
-        public virtual async Task Generate(IWorld world, ChunkColumnCompactStorage chunk, ChunkWorldPos pos, int countPerChunk, int range)
+        public abstract Task GenerateSingle(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos);
+
+        public virtual async Task Generate(IWorld world, ChunkWorldPos pos, int countPerChunk, int range)
         {
             int seed = await world.GetSeed();
 
-            for (int x = -range; x <= range; ++x)
+            for (int chunkXOffset = -range; chunkXOffset <= range; ++chunkXOffset)
             {
-                for (int z = -range; z <= range; ++z)
+                for (int chunkZOffset = -range; chunkZOffset <= range; ++chunkZOffset)
                 {
-                    int chunkSeed = (pos.X + x) ^ (pos.Z + z) ^ seed;
+                    ChunkWorldPos curChunkWorldPos = new ChunkWorldPos { X = pos.X + chunkXOffset, Z = pos.Z + chunkZOffset };
+                    BlockWorldPos curChunkCorner = curChunkWorldPos.ToBlockWorldPos();
+
+                    int chunkSeed = (pos.X + chunkXOffset) ^ (pos.Z + chunkZOffset) ^ seed;
                     Random rand = new Random(chunkSeed);
+
                     for (int count = 0; count < countPerChunk; ++count)
                     {
-                        await GenerateSingle(world, chunk, pos, new BlockWorldPos { X = rand.Next(16), Z = rand.Next(16) });
+                        int x = curChunkCorner.X + rand.Next(16);
+                        int z = curChunkCorner.Z + rand.Next(16);
+                        int groundHeight = await GetGroundHeight(world, pos, x, z);
+                        await GenerateSingle(world, pos, new BlockWorldPos { X = x, Y = groundHeight, Z = z });
                     }
                 }
             }
