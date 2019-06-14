@@ -52,12 +52,14 @@ and also any questions you may have while using this server, or any good suggest
 we welcome and thank your contribution for this project.
 
 * Reach me via e-mail: sunnycase@live.cn
+* [Discord](https://discord.gg/8Z5RSRn) : MineCase
+* QQ Group: 667481568
 
 [License (MIT)](https://raw.githubusercontent.com/dotnetGame/MineCase/master/LICENSE)
 -------------------------------------------------------------------------------
 	MIT License
 
-	Copyright (c) 2017 MineCase
+	Copyright (c) 2017-2019 MineCase
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal

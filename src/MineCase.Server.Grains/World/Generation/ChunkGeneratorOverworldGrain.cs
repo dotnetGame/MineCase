@@ -115,6 +115,11 @@ namespace MineCase.Server.World.Generation
                 var decorator = GrainFactory.GetGrain<IBiomeForestDecorator>((long)BiomeId.Forest);
                 await decorator.Decorate(world, new ChunkWorldPos(x, z));
             }
+            else if (chunkBiome.GetBiomeId() == BiomeId.Taiga)
+            {
+                var decorator = GrainFactory.GetGrain<IBiomeTaigaDecorator>((long)BiomeId.Taiga);
+                await decorator.Decorate(world, new ChunkWorldPos(x, z));
+            }
         }
 
         private void GenerateChunk(MapGenerationInfo info, ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)

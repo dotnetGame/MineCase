@@ -37,7 +37,7 @@ namespace MineCase.Algorithm.World.Layer
                         {
                             parentResult[i, j] = (int)BiomeId.Desert;
                         }
-                        else if (r >= 5 && r < 6)
+                        else if (r >= 5 && r < 7)
                         {
                             parentResult[i, j] = (int)BiomeId.Taiga;
                         }
