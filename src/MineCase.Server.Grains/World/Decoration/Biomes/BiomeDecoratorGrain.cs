@@ -37,17 +37,17 @@ namespace MineCase.Server.World.Decoration.Biomes
 
         public List<MobType> MonsterList { get; set; } = new List<MobType>();
 
-        public virtual Task Decorate(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos)
+        public virtual Task Decorate(IWorld world, ChunkWorldPos chunkWorldPos)
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task SpawnMob(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos)
+        public virtual Task SpawnMob(IWorld world, ChunkWorldPos chunkWorldPos)
         {
             throw new NotImplementedException();
         }
 
-        public virtual Task SpawnMonster(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos)
+        public virtual Task SpawnMonster(IWorld world, ChunkWorldPos chunkWorldPos)
         {
             throw new NotImplementedException();
         }

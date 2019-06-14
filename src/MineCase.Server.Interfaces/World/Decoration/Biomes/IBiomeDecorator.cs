@@ -9,10 +9,10 @@ namespace MineCase.Server.World.Decoration.Biomes
 {
     public interface IBiomeDecorator : IGrainWithIntegerKey
     {
-        Task Decorate(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos);
+        Task Decorate(IWorld world, ChunkWorldPos chunkWorldPos);
 
-        Task SpawnMob(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos);
+        Task SpawnMob(IWorld world, ChunkWorldPos chunkWorldPos);
 
-        Task SpawnMonster(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos);
+        Task SpawnMonster(IWorld world, ChunkWorldPos chunkWorldPos);
     }
 }

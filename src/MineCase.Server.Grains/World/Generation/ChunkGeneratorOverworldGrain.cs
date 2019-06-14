@@ -101,7 +101,20 @@ namespace MineCase.Server.World.Generation
         {
             var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos { X = x, Z = z });
             ChunkColumnCompactStorage chunkColumn = await GrainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetStateUnsafe();
-            PopulateChunk(world, chunkColumn, x, z, settings);
+            Biome chunkBiome = Biome.GetBiome(chunkColumn.Biomes[7 * 16 + 7], settings);
+
+            if (chunkBiome.GetBiomeId() == BiomeId.Plains)
+            {
+                var decorator = GrainFactory.GetGrain<IBiomePlainsDecorator>((long)BiomeId.Plains);
+                await decorator.Decorate(world, new ChunkWorldPos(x, z));
+
+                // decorator.SpawnMob(world, chunk, new ChunkWorldPos(x, z), new BlockWorldPos { X = blockX, Z = blockZ });
+            }
+            else if (chunkBiome.GetBiomeId() == BiomeId.Forest)
+            {
+                var decorator = GrainFactory.GetGrain<IBiomeForestDecorator>((long)BiomeId.Forest);
+                await decorator.Decorate(world, new ChunkWorldPos(x, z));
+            }
         }
 
         private void GenerateChunk(MapGenerationInfo info, ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)
@@ -158,22 +171,6 @@ namespace MineCase.Server.World.Generation
 
         public void PopulateChunk(IWorld world, ChunkColumnCompactStorage chunk, int x, int z, GeneratorSettings settings)
         {
-            int blockX = x * 16;
-            int blockZ = z * 16;
-            Biome chunkBiome = Biome.GetBiome(chunk.Biomes[7 * 16 + 7], settings);
-
-            if (chunkBiome.GetBiomeId() == BiomeId.Plains)
-            {
-                var decorator = GrainFactory.GetGrain<IBiomePlainsDecorator>((long)BiomeId.Plains);
-                decorator.Decorate(world, new ChunkWorldPos(x, z), new BlockWorldPos { X = blockX, Z = blockZ });
-
-                // decorator.SpawnMob(world, chunk, new ChunkWorldPos(x, z), new BlockWorldPos { X = blockX, Z = blockZ });
-            }
-            else if (chunkBiome.GetBiomeId() == BiomeId.Forest)
-            {
-                var decorator = GrainFactory.GetGrain<IBiomeForestDecorator>((long)BiomeId.Forest);
-                decorator.Decorate(world, new ChunkWorldPos(x, z), new BlockWorldPos { X = blockX, Z = blockZ });
-            }
         }
 
         private void GenerateBasicTerrain(ChunkColumnStorage chunk, int x, int z, GeneratorSettings settings)

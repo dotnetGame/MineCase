@@ -53,17 +53,17 @@ namespace MineCase.Server.World.Decoration.Biomes
             return Task.CompletedTask;
         }
 
-        public override Task Decorate(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos)
+        public override Task Decorate(IWorld world, ChunkWorldPos chunkWorldPos)
         {
             return Task.CompletedTask;
         }
 
-        public override Task SpawnMob(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos)
+        public override Task SpawnMob(IWorld world, ChunkWorldPos chunkWorldPos)
         {
             throw new NotImplementedException();
         }
 
-        public override Task SpawnMonster(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos)
+        public override Task SpawnMonster(IWorld world, ChunkWorldPos chunkWorldPos)
         {
             throw new NotImplementedException();
         }
