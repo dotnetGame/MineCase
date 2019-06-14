@@ -27,10 +27,10 @@ namespace MineCase.Algorithm.World.Plants
                 var flowerType = biome.GetRandomFlower(random);
                 switch (flowerType)
                 {
-                    case PlantsType.RedFlower:
+                    case PlantsType.Poppy:
                         chunk[x, y, z] = BlockStates.Poppy();
                         break;
-                    case PlantsType.YellowFlower:
+                    case PlantsType.Dandelion:
                         chunk[x, y, z] = BlockStates.Dandelion();
                         break;
                 }

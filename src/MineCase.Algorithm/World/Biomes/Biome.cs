@@ -204,11 +204,11 @@ namespace MineCase.Algorithm.World.Biomes
             double n = rand.NextDouble();
             if (n > 0.5)
             {
-                return PlantsType.RedFlower;
+                return PlantsType.Poppy;
             }
             else
             {
-                return PlantsType.YellowFlower;
+                return PlantsType.Dandelion;
             }
         }
 
