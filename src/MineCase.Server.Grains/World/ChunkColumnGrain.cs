@@ -39,7 +39,7 @@ namespace MineCase.Server.World
 
         public async Task<BlockState> GetBlockState(int x, int y, int z)
         {
-            await EnsureChunkPopulated();
+            await EnsureAroundChunkPopulated();
             return State.Storage[x, y, z];
         }
 
@@ -51,7 +51,7 @@ namespace MineCase.Server.World
 
         public async Task<ChunkColumnCompactStorage> GetState()
         {
-            await EnsureChunkPopulated();
+            await EnsureAroundChunkPopulated();
             return State.Storage;
         }
 
@@ -74,7 +74,7 @@ namespace MineCase.Server.World
 
         public async Task SetBlockState(int x, int y, int z, BlockState blockState)
         {
-            await EnsureChunkPopulated();
+            await EnsureAroundChunkPopulated();
             var state = State;
             var oldState = state.Storage[x, y, z];
 
@@ -139,7 +139,7 @@ namespace MineCase.Server.World
             }
         }
 
-        private async Task EnsureChunkGenerated()
+        private async Task EnsureChunkGenerated(bool writeState = true)
         {
             if (!State.Generated)
             {
@@ -188,57 +188,14 @@ namespace MineCase.Server.World
                 }
 
                 State.Generated = true;
-
-                // await WriteStateAsync();
+                if (writeState)
+                    await WriteStateAsync();
             }
         }
 
-        private async Task EnsureChunkPopulated()
+        public async Task EnsureChunkPopulated()
         {
-            if (!State.Generated)
-            {
-                var serverSetting = GrainFactory.GetGrain<IServerSettings>(0);
-                string worldType = (await serverSetting.GetSettings()).LevelType;
-                if (worldType == "DEFAULT" || worldType == "default")
-                {
-                    var generator = GrainFactory.GetGrain<IChunkGeneratorOverworld>(await World.GetSeed());
-                    GeneratorSettings settings = new GeneratorSettings
-                    {
-                    };
-                    State.Storage = await generator.Generate(World, ChunkWorldPos.X, ChunkWorldPos.Z, settings);
-                }
-                else if (worldType == "FLAT" || worldType == "flat")
-                {
-                    var generator = GrainFactory.GetGrain<IChunkGeneratorFlat>(await World.GetSeed());
-                    GeneratorSettings settings = new GeneratorSettings
-                    {
-                        FlatBlockId = new BlockState?[]
-                        {
-                            BlockStates.Bedrock(),
-                            BlockStates.Stone(),
-                            BlockStates.Stone(),
-                            BlockStates.Dirt(),
-                            BlockStates.Dirt(),
-                            BlockStates.GrassBlock()
-                        }
-                    };
-                    State.Storage = await generator.Generate(World, ChunkWorldPos.X, ChunkWorldPos.Z, settings);
-                }
-                else
-                {
-                    throw new System.NotSupportedException("Unknown world type in server setting file.");
-                }
-
-                for (int x = 0; x < 16; ++x)
-                {
-                    for (int z = 0; z < 16; ++z)
-                    {
-                        State.GroundHeight[x, z] = GroundHeight(x, z);
-                    }
-                }
-
-                State.Generated = true;
-            }
+            await EnsureChunkGenerated(false);
 
             if (!State.Populated)
             {
@@ -275,6 +232,23 @@ namespace MineCase.Server.World
                 State.Populated = true;
 
                 await WriteStateAsync();
+            }
+        }
+
+        private async Task EnsureAroundChunkPopulated()
+        {
+            await EnsureChunkPopulated();
+
+            (var worldKey, var chunkPos) = this.GetWorldAndChunkWorldPos();
+            var world = GrainFactory.GetGrain<IWorld>(worldKey);
+            for (int xOffset = -2; xOffset <= 2; ++xOffset)
+            {
+                for (int zOffset = -2; zOffset <= 2; ++zOffset)
+                {
+                    var curChunkPos = new ChunkWorldPos(chunkPos.X + xOffset, chunkPos.Z + zOffset);
+                    var chunkColumnKey = world.MakeAddressByPartitionKey(curChunkPos);
+                    await GrainFactory.GetGrain<IChunkColumn>(chunkColumnKey).EnsureChunkPopulated();
+                }
             }
         }
 

@@ -89,29 +89,22 @@ namespace MineCase.Server.World.Decoration.Plants
 
         public abstract Task GenerateSingle(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos);
 
-        public virtual async Task Generate(IWorld world, ChunkWorldPos pos, int countPerChunk, int range)
+        public virtual async Task Generate(IWorld world, ChunkWorldPos pos, int countPerChunk)
         {
             int seed = await world.GetSeed();
 
-            for (int chunkXOffset = -range; chunkXOffset <= range; ++chunkXOffset)
+            BlockWorldPos curChunkCorner = pos.ToBlockWorldPos();
+
+            int chunkSeed = pos.X ^ pos.Z ^ seed;
+            Random rand = new Random(chunkSeed);
+            int countCurChunk = rand.Next(countPerChunk + 1);
+
+            for (int count = 0; count < countCurChunk; ++count)
             {
-                for (int chunkZOffset = -range; chunkZOffset <= range; ++chunkZOffset)
-                {
-                    ChunkWorldPos curChunkWorldPos = new ChunkWorldPos { X = pos.X + chunkXOffset, Z = pos.Z + chunkZOffset };
-                    BlockWorldPos curChunkCorner = curChunkWorldPos.ToBlockWorldPos();
-
-                    int chunkSeed = (pos.X + chunkXOffset) ^ (pos.Z + chunkZOffset) ^ seed ^ this.GetPrimaryKeyString().GetHashCode();
-                    Random rand = new Random(chunkSeed);
-                    int countCurChunk = rand.Next(countPerChunk + 1);
-
-                    for (int count = 0; count < countCurChunk; ++count)
-                    {
-                        int x = curChunkCorner.X + rand.Next(16);
-                        int z = curChunkCorner.Z + rand.Next(16);
-                        int groundHeight = await GetGroundHeight(world, pos, x, z);
-                        await GenerateSingle(world, pos, new BlockWorldPos { X = x, Y = groundHeight, Z = z });
-                    }
-                }
+                int x = curChunkCorner.X + rand.Next(16);
+                int z = curChunkCorner.Z + rand.Next(16);
+                int groundHeight = await GetGroundHeight(world, pos, x, z);
+                await GenerateSingle(world, pos, new BlockWorldPos { X = x, Y = groundHeight, Z = z });
             }
         }
     }

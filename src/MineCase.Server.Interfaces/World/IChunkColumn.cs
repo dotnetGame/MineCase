@@ -32,5 +32,7 @@ namespace MineCase.Server.World
         Task<int> GetGroundHeight(int x, int z);
 
         Task OnBlockNeighborChanged(int x, int y, int z, BlockWorldPos neighborPosition, BlockState oldState, BlockState newState);
+
+        Task EnsureChunkPopulated();
     }
 }

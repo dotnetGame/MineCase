@@ -71,10 +71,10 @@ namespace MineCase.Server.World.Decoration.Biomes
             String infoString = JsonConvert.SerializeObject(info);
 
             var grassGenerator = GrainFactory.GetGrain<IGrassGenerator>(infoString);
-            await grassGenerator.Generate(world, chunkWorldPos, 10, 0);
+            await grassGenerator.Generate(world, chunkWorldPos, 10);
 
             var treeGenerator = GrainFactory.GetGrain<ITreeGenerator>(infoString);
-            await treeGenerator.Generate(world, chunkWorldPos, 2, 1);
+            await treeGenerator.Generate(world, chunkWorldPos, 2);
         }
 
         public override Task SpawnMob(IWorld world, ChunkWorldPos chunkWorldPos)
