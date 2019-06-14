@@ -27,6 +27,18 @@ namespace MineCase.World.Biomes
         WoodedHills = 18,
         TaigaHills = 19,
         DeepOcean = 24,
+        StoneShore = 25,
+        SnowyBeach = 26,
+        BirchForest = 27,
+        WarmOcean = 44,
+        LukewarmOcean = 45,
+        ColdOcean = 46,
+        DeepWarmOcean = 47,
+        DeepLukewarmOcean = 48,
+        DeepColdOcean = 49,
+        DeepFrozenOcean = 50,
+
         SunflowerPlains = 129,
+        FlowerForest = 132,
     }
 }
