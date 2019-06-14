@@ -7,7 +7,7 @@ using Orleans;
 
 namespace MineCase.Server.World.Decoration.Plants
 {
-    public interface IPlantsGenerator : IGrainWithIntegerKey
+    public interface IPlantsGenerator : IGrainWithStringKey
     {
         Task Generate(IWorld world, ChunkWorldPos pos, int countPerChunk, int range);
     }

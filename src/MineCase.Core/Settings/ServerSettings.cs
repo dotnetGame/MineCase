@@ -38,7 +38,7 @@ namespace MineCase.Server.Settings
         /// <summary>
         /// Gets or sets by default it allows packets that are n-1 bytes big to go normally, but a packet that n bytes or more will be compressed down. So, lower number means more compression but compressing small amounts of bytes might actually end up with a larger result than what went in.
         /// -1 - disable compression entirely
-        /// 0 - compress everything
+        /// 0 - compress everything.
         /// </summary>
         [JsonProperty(PropertyName = "network-compression-threshold")]
         [DefaultValue(256)]
