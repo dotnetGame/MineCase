@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MineCase.Algorithm.World.Biomes;
+using MineCase.Block;
 using MineCase.Server.World;
 using MineCase.Server.World.Decoration;
 using MineCase.World;

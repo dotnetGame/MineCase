@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Algorithm.Noise;
+using MineCase.Block;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.World.Decoration.Plants;
 using MineCase.World;

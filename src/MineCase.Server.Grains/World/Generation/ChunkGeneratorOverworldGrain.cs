@@ -11,6 +11,7 @@ using MineCase.Algorithm.World;
 using MineCase.Algorithm.World.Biomes;
 using MineCase.Algorithm.World.Layer;
 using MineCase.Algorithm.World.Mine;
+using MineCase.Block;
 using MineCase.Server.World.Decoration.Biomes;
 using MineCase.World;
 using MineCase.World.Biomes;

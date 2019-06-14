@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MineCase.Block;
 using MineCase.World.Biomes;
 using MineCase.World.Generation;
 

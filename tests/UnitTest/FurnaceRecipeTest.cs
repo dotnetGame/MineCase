@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Algorithm;
+using MineCase.Block;
 using Xunit;
 
 namespace MineCase.UnitTest

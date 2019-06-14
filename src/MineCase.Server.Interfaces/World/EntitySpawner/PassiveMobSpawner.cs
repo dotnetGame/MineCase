@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
+using MineCase.Block;
 using MineCase.Server.Game;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.Components;

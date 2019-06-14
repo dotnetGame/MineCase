@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MineCase.Algorithm.Noise;
 using MineCase.Algorithm.World.Mine;
 using MineCase.Algorithm.World.Plants;
+using MineCase.Block;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.World;
 using MineCase.Server.World.EntitySpawner;

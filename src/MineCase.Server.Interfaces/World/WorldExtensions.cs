@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Block;
 using MineCase.Server.Game.BlockEntities;
 using MineCase.World;
 using Orleans;
@@ -11,7 +12,7 @@ namespace MineCase.Server.World
     public static class WorldExtensions
     {
         /// <summary>
-        /// Worlds to chunk.世界坐标转区块坐标
+        /// Worlds to chunk.世界坐标转区块坐标.
         /// </summary>
         /// <param name="n">The n.</param>
         public static int WorldToChunk(int n)
@@ -22,7 +23,7 @@ namespace MineCase.Server.World
         }
 
         /// <summary>
-        /// Worlds to block.世界坐标转区块内坐标
+        /// Worlds to block.世界坐标转区块内坐标.
         /// </summary>
         /// <param name="n">The n.</param>
         public static int WorldToBlock(int n)
@@ -40,7 +41,7 @@ namespace MineCase.Server.World
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <param name="z">The z.</param>
-        /// <returns>方块类型</returns>
+        /// <returns>方块类型.</returns>
         public static Task<BlockState> GetBlockState(this IWorld world, IGrainFactory grainFactory, int x, int y, int z)
         {
             var xOffset = MakeRelativeBlockOffset(x);
@@ -58,7 +59,7 @@ namespace MineCase.Server.World
         /// <param name="world">The world Grain.</param>
         /// <param name="grainFactory">The grain factory.</param>
         /// <param name="pos">The position.</param>
-        /// <returns>方块类型</returns>
+        /// <returns>方块类型.</returns>
         public static Task<BlockState> GetBlockState(this IWorld world, IGrainFactory grainFactory, BlockWorldPos pos)
         {
             var xOffset = MakeRelativeBlockOffset(pos.X);
@@ -149,7 +150,7 @@ namespace MineCase.Server.World
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <param name="z">The z.</param>
-        /// <returns>方块类型</returns>
+        /// <returns>方块类型.</returns>
         public static Task<IBlockEntity> GetBlockEntity(this IWorld world, IGrainFactory grainFactory, int x, int y, int z)
         {
             var xOffset = MakeRelativeBlockOffset(x);
@@ -167,7 +168,7 @@ namespace MineCase.Server.World
         /// <param name="world">The world Grain.</param>
         /// <param name="grainFactory">The grain factory.</param>
         /// <param name="pos">The position.</param>
-        /// <returns>方块类型</returns>
+        /// <returns>方块类型.</returns>
         public static Task<IBlockEntity> GetBlockEntity(this IWorld world, IGrainFactory grainFactory, BlockWorldPos pos)
         {
             var xOffset = MakeRelativeBlockOffset(pos.X);

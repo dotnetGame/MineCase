@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Block;
 using MineCase.Game.Windows;
 using MineCase.Protocol;
 using MineCase.Protocol.Play;

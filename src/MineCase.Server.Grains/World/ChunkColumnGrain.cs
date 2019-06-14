@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Block;
 using MineCase.Server.Game.BlockEntities;
 using MineCase.Server.Game.Blocks;
 using MineCase.Server.Game.Entities;

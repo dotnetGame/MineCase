@@ -1,4 +1,5 @@
 using System;
+using MineCase.Block;
 
 namespace MineCase.World.Generation
 {

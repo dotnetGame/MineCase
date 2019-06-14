@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MineCase.Algorithm;
 using MineCase.Algorithm.Game.Entity.Ai.MobAi;
+using MineCase.Block;
 using MineCase.Engine;
 using MineCase.Graphics;
 using MineCase.Server.Components;
