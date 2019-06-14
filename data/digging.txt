@@ -1,0 +1,9 @@
+# This file describes Minecase digging table.
+# <GetBlock> = <Block> | <Tool>
+Dirt = GrassBlock | Air
+Air = Stone | *
+Cobblestone = Stone | DiamondPickaxe
+Cobblestone = Stone | GoldenPickaxe
+Cobblestone = Stone | IronPickaxe
+Cobblestone = Stone | StonePickaxe
+Cobblestone = Stone | WoodenPickaxe
