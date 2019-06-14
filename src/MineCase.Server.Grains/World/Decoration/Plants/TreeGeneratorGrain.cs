@@ -101,10 +101,11 @@ namespace MineCase.Server.World.Decoration.Plants
                     {
                         if (y >= 0 && y < 256)
                         {
-                            BlockState state = await GetBlock(world, chunkWorldPos, pos);
+                            var checkPos = new BlockWorldPos(x, y, z);
+                            BlockState state = await GetBlock(world, chunkWorldPos, checkPos);
                             if (!state.IsAir() &&
-                                state.IsSameId(BlockStates.Leaves()) &&
-                                state.IsSameId(BlockStates.Leaves2()))
+                                !state.IsSameId(BlockStates.Leaves()) &&
+                                !state.IsSameId(BlockStates.Leaves2()))
                             {
                                 result = false;
                             }

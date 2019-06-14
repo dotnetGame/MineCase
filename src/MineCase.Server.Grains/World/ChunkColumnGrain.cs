@@ -179,6 +179,14 @@ namespace MineCase.Server.World
                     State.Storage = await generator.Generate(World, ChunkWorldPos.X, ChunkWorldPos.Z, settings);
                 }
 
+                for (int x = 0; x < 16; ++x)
+                {
+                    for (int z = 0; z < 16; ++z)
+                    {
+                        State.GroundHeight[x, z] = GroundHeight(x, z);
+                    }
+                }
+
                 State.Generated = true;
 
                 // await WriteStateAsync();
@@ -219,6 +227,14 @@ namespace MineCase.Server.World
                 else
                 {
                     throw new System.NotSupportedException("Unknown world type in server setting file.");
+                }
+
+                for (int x = 0; x < 16; ++x)
+                {
+                    for (int z = 0; z < 16; ++z)
+                    {
+                        State.GroundHeight[x, z] = GroundHeight(x, z);
+                    }
                 }
 
                 State.Generated = true;
@@ -274,19 +290,9 @@ namespace MineCase.Server.World
             return Task.FromResult<IBlockEntity>(null);
         }
 
-        public async Task<int> GetGroundHeight(int x, int z)
+        public Task<int> GetGroundHeight(int x, int z)
         {
-            await EnsureChunkGenerated();
-            var storage = State.Storage;
-            for (int y = 255; y >= 0; --y)
-            {
-                if (!storage[x, y, z].IsAir())
-                {
-                    return y + 1;
-                }
-            }
-
-            return 0;
+            return Task.FromResult(State.GroundHeight[x, z]);
         }
 
         public Task OnBlockNeighborChanged(int x, int y, int z, BlockWorldPos neighborPosition, BlockState oldState, BlockState newState)
@@ -302,6 +308,20 @@ namespace MineCase.Server.World
             return Task.CompletedTask;
         }
 
+        private int GroundHeight(int x, int z)
+        {
+            var storage = State.Storage;
+            for (int y = 255; y >= 0; --y)
+            {
+                if (!storage[x, y, z].IsAir())
+                {
+                    return y + 1;
+                }
+            }
+
+            return 0;
+        }
+
         private void MarkDirty()
         {
             ValueStorage.IsDirty = true;
@@ -312,6 +332,8 @@ namespace MineCase.Server.World
             public bool Populated { get; set; } = false;
 
             public bool Generated { get; set; } = false;
+
+            public int[,] GroundHeight { get; set; } = new int[16, 16];
 
             public ChunkColumnCompactStorage Storage { get; set; }
 

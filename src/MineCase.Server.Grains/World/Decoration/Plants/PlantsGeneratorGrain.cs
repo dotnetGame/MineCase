@@ -30,13 +30,9 @@ namespace MineCase.Server.World.Decoration.Plants
         {
             var chunkColumnKey = world.MakeAddressByPartitionKey(pos.ToChunkWorldPos());
             var chunkGrain = GrainFactory.GetGrain<IChunkColumn>(chunkColumnKey);
-            if (pos.ToChunkWorldPos() == chunkWorldPos)
-            {
-                BlockChunkPos blockChunkPos = pos.ToBlockChunkPos();
-                return chunkGrain.SetBlockStateUnsafe(blockChunkPos.X, blockChunkPos.Y, blockChunkPos.Z, state);
-            }
 
-            return Task.CompletedTask;
+            BlockChunkPos blockChunkPos = pos.ToBlockChunkPos();
+            return chunkGrain.SetBlockStateUnsafe(blockChunkPos.X, blockChunkPos.Y, blockChunkPos.Z, state);
         }
 
         protected virtual Task<BlockState> GetBlock(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos)
@@ -104,9 +100,9 @@ namespace MineCase.Server.World.Decoration.Plants
                     ChunkWorldPos curChunkWorldPos = new ChunkWorldPos { X = pos.X + chunkXOffset, Z = pos.Z + chunkZOffset };
                     BlockWorldPos curChunkCorner = curChunkWorldPos.ToBlockWorldPos();
 
-                    int chunkSeed = (pos.X + chunkXOffset) ^ (pos.Z + chunkZOffset) ^ seed;
+                    int chunkSeed = (pos.X + chunkXOffset) ^ (pos.Z + chunkZOffset) ^ seed ^ this.GetPrimaryKeyString().GetHashCode();
                     Random rand = new Random(chunkSeed);
-                    int countCurChunk = rand.Next(countPerChunk);
+                    int countCurChunk = rand.Next(countPerChunk + 1);
 
                     for (int count = 0; count < countCurChunk; ++count)
                     {

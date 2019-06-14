@@ -47,10 +47,25 @@ namespace MineCase.World
 
         public ChunkWorldPos ToChunkWorldPos()
         {
-            int chunkPosX = X / ChunkConstants.BlockEdgeWidthInSection;
-            int chunkPosZ = Z / ChunkConstants.BlockEdgeWidthInSection;
-            if (X < 0) chunkPosX--;
-            if (Z < 0) chunkPosZ--;
+            int chunkPosX, chunkPosZ;
+            if (X >= 0)
+            {
+                chunkPosX = X / ChunkConstants.BlockEdgeWidthInSection;
+            }
+            else
+            {
+                chunkPosX = -(((-X - 1) / ChunkConstants.BlockEdgeWidthInSection) + 1);
+            }
+
+            if (Z >= 0)
+            {
+                chunkPosZ = Z / ChunkConstants.BlockEdgeWidthInSection;
+            }
+            else
+            {
+                chunkPosZ = -(((-Z - 1) / ChunkConstants.BlockEdgeWidthInSection) + 1);
+            }
+
             return new ChunkWorldPos(chunkPosX, chunkPosZ);
         }
 
