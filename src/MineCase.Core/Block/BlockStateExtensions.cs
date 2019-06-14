@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using MineCase.World;
 using Orleans;
 
-namespace MineCase.Server.World
+namespace MineCase.Block
 {
     public static class BlockStateExtensions
     {
@@ -79,6 +79,7 @@ namespace MineCase.Server.World
                 !state.IsSameId(BlockStates.Dandelion());
         }
 
+        /*
         public static async Task<bool> CanBlockStay(this BlockState state, IWorld world, IGrainFactory grainFactory, int x, int y, int z)
         {
             if (state.IsSameId(BlockStates.Grass()))
@@ -100,6 +101,7 @@ namespace MineCase.Server.World
                 return true;
             }
         }
+        */
 
         public static uint ToUInt32(this BlockState blockState)
         {

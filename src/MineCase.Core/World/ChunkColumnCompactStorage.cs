@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using MineCase.Block;
 
 namespace MineCase.World
 {

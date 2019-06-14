@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Block;
 using MineCase.Protocol;
 using MineCase.Server.Components;
 using MineCase.Server.Game;

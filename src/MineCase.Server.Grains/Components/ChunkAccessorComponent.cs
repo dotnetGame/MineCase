@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Algorithm.World.Biomes;
+using MineCase.Block;
 using MineCase.Engine;
 using MineCase.Server.World;
 using MineCase.World;
