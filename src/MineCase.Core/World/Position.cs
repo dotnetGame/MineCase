@@ -222,9 +222,11 @@ namespace MineCase.World
         public BlockWorldPos ToBlockWorldPos()
         {
             var x = X * 16;
-            if (x < 0) x++;
+
+            // if (x < 0) x++;
             var z = Z * 16;
-            if (z < 0) z++;
+
+            // if (z < 0) z++;
             return new BlockWorldPos(x, 0, z);
         }
 
