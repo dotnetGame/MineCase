@@ -20,8 +20,8 @@ namespace MineCase.Server.World.Decoration.Plants
         [JsonProperty(PropertyName = "TreeVine")]
         public bool TreeVine { get; set; } = false;
 
-        [JsonProperty(PropertyName = "TreeType")]
-        public PlantsType TreeType { get; set; } = PlantsType.Oak;
+        [JsonProperty(PropertyName = "PlantType")]
+        public PlantsType PlantType { get; set; } = PlantsType.Oak;
     }
 
     public abstract class PlantsGeneratorGrain : Grain, IPlantsGenerator
@@ -95,7 +95,7 @@ namespace MineCase.Server.World.Decoration.Plants
 
             BlockWorldPos curChunkCorner = pos.ToBlockWorldPos();
 
-            int chunkSeed = pos.X ^ pos.Z ^ seed;
+            int chunkSeed = pos.X ^ pos.Z ^ seed ^ this.GetType().GetHashCode() ^ this.GetPrimaryKeyString().GetHashCode();
             Random rand = new Random(chunkSeed);
             int countCurChunk = rand.Next(countPerChunk + 1);
 

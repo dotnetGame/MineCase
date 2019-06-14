@@ -7,8 +7,8 @@ namespace MineCase.World.Plants
     public enum PlantsType : uint
     {
         TallGrass,
-        YellowFlower,
-        RedFlower,
+        Dandelion,
+        Poppy,
 
         Oak,
         Spruce,

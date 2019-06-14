@@ -40,18 +40,18 @@ namespace MineCase.Server.World.Decoration.Plants
 
                 _minTreeHeight = plantsInfo.TreeHeight;
                 _vines = plantsInfo.TreeVine;
-                _treeType = plantsInfo.TreeType;
-                if (plantsInfo.TreeType == PlantsType.Oak)
+                _treeType = plantsInfo.PlantType;
+                if (plantsInfo.PlantType == PlantsType.Oak)
                 {
                     _wood = BlockStates.Wood(WoodType.Oak);
                     _leaves = BlockStates.Leaves(LeaveType.Oak);
                 }
-                else if (plantsInfo.TreeType == PlantsType.Spruce)
+                else if (plantsInfo.PlantType == PlantsType.Spruce)
                 {
                     _wood = BlockStates.Wood(WoodType.Spruce);
                     _leaves = BlockStates.Leaves(LeaveType.Spruce);
                 }
-                else if (plantsInfo.TreeType == PlantsType.Birch)
+                else if (plantsInfo.PlantType == PlantsType.Birch)
                 {
                     _wood = BlockStates.Wood(WoodType.Birch);
                     _leaves = BlockStates.Leaves(LeaveType.Birch);

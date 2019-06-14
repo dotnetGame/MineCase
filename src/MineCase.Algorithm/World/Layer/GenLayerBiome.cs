@@ -21,23 +21,23 @@ namespace MineCase.Algorithm.World.Layer
                     if (parentResult[i, j] == (int)BiomeId.Plains)
                     {
                         int r = random.Next(10);
-                        if (r >= 0 && r < 2)
+                        if (r >= 0 && r < 1)
                         {
                             parentResult[i, j] = (int)BiomeId.Forest;
                         }
-                        else if (r >= 2 && r < 3)
+                        else if (r >= 1 && r < 2)
                         {
                             parentResult[i, j] = (int)BiomeId.ExtremeHills;
                         }
-                        else if (r >= 3 && r < 4)
+                        else if (r >= 2 && r < 3)
                         {
                             parentResult[i, j] = (int)BiomeId.Swampland;
                         }
-                        else if (r >= 4 && r < 6)
+                        else if (r >= 3 && r < 5)
                         {
                             parentResult[i, j] = (int)BiomeId.Desert;
                         }
-                        else if (r >= 6 && r < 8)
+                        else if (r >= 5 && r < 6)
                         {
                             parentResult[i, j] = (int)BiomeId.Taiga;
                         }

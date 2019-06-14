@@ -33,8 +33,8 @@ namespace MineCase.Server.World.Decoration.Biomes
             FillerBlock = BlockStates.Dirt();
 
             PlantsList.Add(PlantsType.TallGrass);
-            PlantsList.Add(PlantsType.RedFlower);
-            PlantsList.Add(PlantsType.YellowFlower);
+            PlantsList.Add(PlantsType.Poppy);
+            PlantsList.Add(PlantsType.Dandelion);
 
             PassiveMobList.Add(MobType.Cow);
             PassiveMobList.Add(MobType.Sheep);
@@ -51,13 +51,36 @@ namespace MineCase.Server.World.Decoration.Biomes
 
         public async override Task Decorate(IWorld world, ChunkWorldPos chunkWorldPos)
         {
-            PlantsInfo info = new PlantsInfo();
-            String infoString = JsonConvert.SerializeObject(info);
+            var grassGenerator = GrainFactory.GetGrain<IGrassGenerator>(JsonConvert.SerializeObject(new PlantsInfo { }));
+            await grassGenerator.Generate(world, chunkWorldPos, 10);
 
-            // var grassGenerator = GrainFactory.GetGrain<IGrassGenerator>(infoString);
-            // await grassGenerator.Generate(world, chunkWorldPos, 10);
-            var treeGenerator = GrainFactory.GetGrain<ITreeGenerator>(infoString);
-            await treeGenerator.Generate(world, chunkWorldPos, 16);
+            var oaktreeGenerator = GrainFactory.GetGrain<ITreeGenerator>(
+                JsonConvert.SerializeObject(new PlantsInfo
+                {
+                    PlantType = PlantsType.Oak
+                }));
+            await oaktreeGenerator.Generate(world, chunkWorldPos, 10);
+
+            var birchtreeGenerator = GrainFactory.GetGrain<ITreeGenerator>(
+                JsonConvert.SerializeObject(new PlantsInfo
+                {
+                    PlantType = PlantsType.Birch
+                }));
+            await birchtreeGenerator.Generate(world, chunkWorldPos, 10);
+
+            var poppyGenerator = GrainFactory.GetGrain<IFlowersGenerator>(
+                JsonConvert.SerializeObject(new PlantsInfo
+                {
+                    PlantType = PlantsType.Poppy
+                }));
+            await poppyGenerator.Generate(world, chunkWorldPos, 3);
+
+            var dandelionGenerator = GrainFactory.GetGrain<IFlowersGenerator>(
+                JsonConvert.SerializeObject(new PlantsInfo
+                {
+                    PlantType = PlantsType.Dandelion
+                }));
+            await dandelionGenerator.Generate(world, chunkWorldPos, 3);
         }
 
         public override Task SpawnMob(IWorld world, ChunkWorldPos chunkWorldPos)
