@@ -4,7 +4,7 @@ MineCase
 
 ![Logo](doc/logo/MineCaseLogo.png)
 
-#### [English](https://github.com/dotnetGame/MineCase/blob/master/README.md) | [中文文档](https://github.com/dotnetGame/MineCase/blob/master/README-zh.md) 
+#### [English](https://github.com/dotnetGame/MineCase/blob/master/README.md) | [中文](https://github.com/dotnetGame/MineCase/blob/master/README-zh.md) 
 
 `MineCase` is a cross-platform application with distributed server of `Minecraft`. 
 The project is designed to create a high-performance, distributed system by using isolating different components through actor mode. 

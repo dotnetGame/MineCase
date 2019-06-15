@@ -11,9 +11,11 @@ using MineCase.World.Generation;
 using MineCase.World.Plants;
 using Newtonsoft.Json;
 using Orleans;
+using Orleans.Concurrency;
 
 namespace MineCase.Server.World.Decoration.Biomes
 {
+    [StatelessWorker]
     public class BiomeHillDecoratorGrain : BiomeDecoratorGrain, IBiomeHillDecorator
     {
         public override Task OnActivateAsync()

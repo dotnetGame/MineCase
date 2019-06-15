@@ -4,7 +4,7 @@ MineCase
 
 ![Logo](doc/logo/MineCaseLogo.png)
 
-#### [English](https://github.com/dotnetGame/MineCase/blob/master/README.md) | [中文文档](https://github.com/dotnetGame/MineCase/blob/master/README-zh.md) 
+#### [English](https://github.com/dotnetGame/MineCase/blob/master/README.md) | [中文](https://github.com/dotnetGame/MineCase/blob/master/README-zh.md) 
 
 `MineCase` 是一个跨平台、分布式的 `Minecraft` 服务端应用。
 
