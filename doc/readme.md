@@ -8,6 +8,4 @@ This folder contains the documents of MineCase project. The document is mainly d
 
 ## User Guide
 
-
-
 ## Developer Guide
