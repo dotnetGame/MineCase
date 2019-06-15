@@ -15,8 +15,6 @@ namespace MineCase.Server.World.Decoration.Plants
     [StatelessWorker]
     public class TaigaGeneratorGrain : AbstractTreeGeneratorGrain, ITaigaGenerator
     {
-        private readonly ILogger _logger;
-
         private int _minTreeHeight;
 
         private bool _vines;
@@ -28,32 +26,23 @@ namespace MineCase.Server.World.Decoration.Plants
         private BlockState _leaves;
 
         public TaigaGeneratorGrain(ILoggerFactory loggerFactory)
+            : base(loggerFactory)
         {
-            _logger = loggerFactory.CreateLogger<TreeGeneratorGrain>();
+            _logger = loggerFactory.CreateLogger<TaigaGeneratorGrain>();
         }
 
-        public override Task OnActivateAsync()
+        public async override Task OnActivateAsync()
         {
-            try
-            {
-                var settings = this.GetPrimaryKeyString();
-                PlantsInfo plantsInfo = JsonConvert.DeserializeObject<PlantsInfo>(settings);
+            await base.OnActivateAsync();
 
-                _minTreeHeight = plantsInfo.TreeHeight;
-                _vines = plantsInfo.TreeVine;
-                _treeType = plantsInfo.PlantType;
-                if (plantsInfo.PlantType == PlantsType.Spruce)
-                {
-                    _wood = BlockStates.Wood(WoodType.Spruce);
-                    _leaves = BlockStates.Leaves(LeaveType.Spruce);
-                }
-            }
-            catch (Exception e)
+            _minTreeHeight = _generatorSettings.TreeHeight;
+            _vines = _generatorSettings.TreeVine;
+            _treeType = _generatorSettings.PlantType;
+            if (_generatorSettings.PlantType == PlantsType.Spruce)
             {
-                this._logger.LogError(default(EventId), e, e.Message);
+                _wood = BlockStates.Wood(WoodType.Spruce);
+                _leaves = BlockStates.Leaves(LeaveType.Spruce);
             }
-
-            return base.OnActivateAsync();
         }
 
         public async override Task GenerateSingle(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos)

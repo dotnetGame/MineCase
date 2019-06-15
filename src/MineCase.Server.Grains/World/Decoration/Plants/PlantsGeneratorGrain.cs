@@ -18,6 +18,9 @@ namespace MineCase.Server.World.Decoration.Plants
         [JsonProperty(PropertyName = "TreeHeight")]
         public int TreeHeight { get; set; } = 5;
 
+        [JsonProperty(PropertyName = "ExtraHeight")]
+        public int ExtraHeight { get; set; } = 10;
+
         [JsonProperty(PropertyName = "TreeVine")]
         public bool TreeVine { get; set; } = false;
 

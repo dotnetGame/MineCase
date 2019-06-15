@@ -74,6 +74,45 @@ namespace MineCase.Server.World
         }
 
         /// <summary>
+        /// Gets the state of the block. Only used in ***decoration*** stage.
+        /// </summary>
+        /// <param name="world">The world Grain.</param>
+        /// <param name="grainFactory">The grain factory.</param>
+        /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
+        /// <param name="z">The z.</param>
+        /// <returns>方块类型.</returns>
+        public static Task<BlockState> GetBlockStateUnsafe(this IWorld world, IGrainFactory grainFactory, int x, int y, int z)
+        {
+            var blockWorldPos = new BlockWorldPos(x, y, z);
+            var blockChunkPos = blockWorldPos.ToBlockChunkPos();
+            var chunkColumnKey = world.MakeAddressByPartitionKey(blockWorldPos.ToChunkWorldPos());
+            return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockStateUnsafe(
+                blockChunkPos.X,
+                blockChunkPos.Y,
+                blockChunkPos.Z);
+        }
+
+        /// <summary>
+        /// Gets the state of the block. Only used in ***decoration*** stage.
+        /// </summary>
+        /// <param name="world">The world Grain.</param>
+        /// <param name="grainFactory">The grain factory.</param>
+        /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
+        /// <param name="z">The z.</param>
+        /// <returns>方块类型.</returns>
+        public static Task<BlockState> GetBlockStateUnsafe(this IWorld world, IGrainFactory grainFactory, BlockWorldPos pos)
+        {
+            var blockChunkPos = pos.ToBlockChunkPos();
+            var chunkColumnKey = world.MakeAddressByPartitionKey(pos.ToChunkWorldPos());
+            return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockStateUnsafe(
+                blockChunkPos.X,
+                blockChunkPos.Y,
+                blockChunkPos.Z);
+        }
+
+        /// <summary>
         /// Sets the state of the block.
         /// </summary>
         /// <param name="world">The world grain.</param>
@@ -111,6 +150,55 @@ namespace MineCase.Server.World
                 blockChunkPos.Y,
                 blockChunkPos.Z,
                 state);
+        }
+
+        /// <summary>
+        /// Sets the state of the block. Only used in ***decoration*** stage.
+        /// </summary>
+        /// <param name="world">The world grain.</param>
+        /// <param name="grainFactory">The grain factory.</param>
+        /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
+        /// <param name="z">The z.</param>
+        /// <param name="state">The state.</param>
+        public static Task SetBlockStateUnsafe(this IWorld world, IGrainFactory grainFactory, int x, int y, int z, BlockState state)
+        {
+            var blockWorldPos = new BlockWorldPos(x, y, z);
+            var blockChunkPos = blockWorldPos.ToBlockChunkPos();
+            var chunkColumnKey = world.MakeAddressByPartitionKey(blockWorldPos.ToChunkWorldPos());
+            return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).SetBlockStateUnsafe(
+                blockChunkPos.X,
+                blockChunkPos.Y,
+                blockChunkPos.Z,
+                state);
+        }
+
+        /// <summary>
+        /// Sets the state of the block. Only used in ***decoration*** stage.
+        /// </summary>
+        /// <param name="world">The world grain.</param>
+        /// <param name="grainFactory">The grain factory.</param>
+        /// <param name="pos">The position.</param>
+        /// <param name="state">The state.</param>
+        public static Task SetBlockStateUnsafe(this IWorld world, IGrainFactory grainFactory, BlockWorldPos pos, BlockState state)
+        {
+            var blockChunkPos = pos.ToBlockChunkPos();
+            var chunkColumnKey = world.MakeAddressByPartitionKey(pos.ToChunkWorldPos());
+            return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).SetBlockStateUnsafe(
+                blockChunkPos.X,
+                blockChunkPos.Y,
+                blockChunkPos.Z,
+                state);
+        }
+
+        public static async Task ApplyChangeUnsafe(this IWorld world, IGrainFactory grainFactory, BatchBlockChange change)
+        {
+            var partitionChange = change.GetByPartition();
+            foreach (var eachPartitionChange in partitionChange)
+            {
+                var chunkColumnKey = world.MakeAddressByPartitionKey(eachPartitionChange.Key);
+                await grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).ApplyChangeUnsafe(eachPartitionChange.Value);
+            }
         }
 
         public static async Task<int> GetHeight(this IWorld world, IGrainFactory grainFactory, BlockWorldPos pos)

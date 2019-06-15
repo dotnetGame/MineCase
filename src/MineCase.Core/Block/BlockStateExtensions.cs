@@ -60,6 +60,11 @@ namespace MineCase.Block
             return state.IsSameId(BlockStates.Leaves()) || state.IsSameId(BlockStates.Leaves2());
         }
 
+        public static bool IsWood(this BlockState state)
+        {
+            return state.IsSameId(BlockStates.Wood()) || state.IsSameId(BlockStates.Wood2());
+        }
+
         public static bool CanMobStand(this BlockState state)
         {
             return !state.IsSameId(BlockStates.Air()) &&

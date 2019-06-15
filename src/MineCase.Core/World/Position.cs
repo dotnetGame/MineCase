@@ -100,6 +100,69 @@ namespace MineCase.World
         }
     }
 
+    public static class BlockWorldPosExtension
+    {
+        public static BlockWorldPos Down(this BlockWorldPos pos)
+        {
+            return new BlockWorldPos(pos.X, pos.Y - 1, pos.Z);
+        }
+
+        public static BlockWorldPos Up(this BlockWorldPos pos)
+        {
+            return new BlockWorldPos(pos.X, pos.Y + 1, pos.Z);
+        }
+
+        public static BlockWorldPos East(this BlockWorldPos pos)
+        {
+            return new BlockWorldPos(pos.X + 1, pos.Y, pos.Z);
+        }
+
+        public static BlockWorldPos South(this BlockWorldPos pos)
+        {
+            return new BlockWorldPos(pos.X, pos.Y, pos.Z + 1);
+        }
+
+        public static BlockWorldPos West(this BlockWorldPos pos)
+        {
+            return new BlockWorldPos(pos.X - 1, pos.Y, pos.Z);
+        }
+
+        public static BlockWorldPos North(this BlockWorldPos pos)
+        {
+            return new BlockWorldPos(pos.X, pos.Y, pos.Z - 1);
+        }
+
+        public static BlockWorldPos Down(this BlockWorldPos pos, int offset)
+        {
+            return new BlockWorldPos(pos.X, pos.Y - offset, pos.Z);
+        }
+
+        public static BlockWorldPos Up(this BlockWorldPos pos, int offset)
+        {
+            return new BlockWorldPos(pos.X, pos.Y + offset, pos.Z);
+        }
+
+        public static BlockWorldPos East(this BlockWorldPos pos, int offset)
+        {
+            return new BlockWorldPos(pos.X + offset, pos.Y, pos.Z);
+        }
+
+        public static BlockWorldPos South(this BlockWorldPos pos, int offset)
+        {
+            return new BlockWorldPos(pos.X, pos.Y, pos.Z + offset);
+        }
+
+        public static BlockWorldPos West(this BlockWorldPos pos, int offset)
+        {
+            return new BlockWorldPos(pos.X - offset, pos.Y, pos.Z);
+        }
+
+        public static BlockWorldPos North(this BlockWorldPos pos, int offset)
+        {
+            return new BlockWorldPos(pos.X, pos.Y, pos.Z - offset);
+        }
+    }
+
     public struct BlockChunkPos : IEquatable<BlockChunkPos>
     {
         public int X { get; set; }

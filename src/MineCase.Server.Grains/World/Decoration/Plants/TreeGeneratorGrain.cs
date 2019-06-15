@@ -15,8 +15,6 @@ namespace MineCase.Server.World.Decoration.Plants
     [StatelessWorker]
     public class TreeGeneratorGrain : AbstractTreeGeneratorGrain, ITreeGenerator
     {
-        private readonly ILogger _logger;
-
         private int _minTreeHeight;
 
         private bool _vines;
@@ -28,42 +26,33 @@ namespace MineCase.Server.World.Decoration.Plants
         private PlantsType _treeType;
 
         public TreeGeneratorGrain(ILoggerFactory loggerFactory)
+            : base(loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<TreeGeneratorGrain>();
         }
 
-        public override Task OnActivateAsync()
+        public async override Task OnActivateAsync()
         {
-            try
-            {
-                var settings = this.GetPrimaryKeyString();
-                PlantsInfo plantsInfo = JsonConvert.DeserializeObject<PlantsInfo>(settings);
+            await base.OnActivateAsync();
 
-                _minTreeHeight = plantsInfo.TreeHeight;
-                _vines = plantsInfo.TreeVine;
-                _treeType = plantsInfo.PlantType;
-                if (plantsInfo.PlantType == PlantsType.Oak)
-                {
-                    _wood = BlockStates.Wood(WoodType.Oak);
-                    _leaves = BlockStates.Leaves(LeaveType.Oak);
-                }
-                else if (plantsInfo.PlantType == PlantsType.Spruce)
-                {
-                    _wood = BlockStates.Wood(WoodType.Spruce);
-                    _leaves = BlockStates.Leaves(LeaveType.Spruce);
-                }
-                else if (plantsInfo.PlantType == PlantsType.Birch)
-                {
-                    _wood = BlockStates.Wood(WoodType.Birch);
-                    _leaves = BlockStates.Leaves(LeaveType.Birch);
-                }
-            }
-            catch (Exception e)
+            _minTreeHeight = _generatorSettings.TreeHeight;
+            _vines = _generatorSettings.TreeVine;
+            _treeType = _generatorSettings.PlantType;
+            if (_generatorSettings.PlantType == PlantsType.Oak)
             {
-                this._logger.LogError(default(EventId), e, e.Message);
+                _wood = BlockStates.Wood(WoodType.Oak);
+                _leaves = BlockStates.Leaves(LeaveType.Oak);
             }
-
-            return base.OnActivateAsync();
+            else if (_generatorSettings.PlantType == PlantsType.Spruce)
+            {
+                _wood = BlockStates.Wood(WoodType.Spruce);
+                _leaves = BlockStates.Leaves(LeaveType.Spruce);
+            }
+            else if (_generatorSettings.PlantType == PlantsType.Birch)
+            {
+                _wood = BlockStates.Wood(WoodType.Birch);
+                _leaves = BlockStates.Leaves(LeaveType.Birch);
+            }
         }
 
         public override async Task GenerateSingle(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos)
