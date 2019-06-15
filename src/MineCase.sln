@@ -34,7 +34,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Core", "MineCase.C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{7DC8CDBD-087D-4F3C-B765-CA77783BECA5}"
 	ProjectSection(SolutionItems) = preProject
+		..\data\brewing.txt = ..\data\brewing.txt
 		..\data\crafting.txt = ..\data\crafting.txt
+		..\data\digging.txt = ..\data\digging.txt
 		..\data\furnace.txt = ..\data\furnace.txt
 	EndProjectSection
 EndProject
