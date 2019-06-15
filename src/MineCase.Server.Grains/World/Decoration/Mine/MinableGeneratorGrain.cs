@@ -12,6 +12,35 @@ namespace MineCase.Server.World.Decoration.Mine
     [StatelessWorker]
     public class MinableGeneratorGrain : Grain, IMinableGenerator
     {
+        protected Task SetBlock(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos, BlockState state)
+        {
+            var chunkColumnKey = world.MakeAddressByPartitionKey(pos.ToChunkWorldPos());
+            var chunkGrain = GrainFactory.GetGrain<IChunkColumn>(chunkColumnKey);
+
+            BlockChunkPos blockChunkPos = pos.ToBlockChunkPos();
+            return chunkGrain.SetBlockStateUnsafe(blockChunkPos.X, blockChunkPos.Y, blockChunkPos.Z, state);
+        }
+
+        protected Task<BlockState> GetBlock(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos)
+        {
+            var chunkColumnKey = world.MakeAddressByPartitionKey(pos.ToChunkWorldPos());
+            var chunkGrain = GrainFactory.GetGrain<IChunkColumn>(chunkColumnKey);
+            BlockChunkPos blockChunkPos = pos.ToBlockChunkPos();
+
+            return chunkGrain.GetBlockStateUnsafe(blockChunkPos.X, blockChunkPos.Y, blockChunkPos.Z);
+        }
+
+        protected async Task SetIfStone(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos, BlockState state)
+        {
+            if (pos.Y >= 0 &&
+                pos.Y < 255 &&
+                (await GetBlock(world, chunkWorldPos, pos)) == BlockStates.Stone())
+            {
+                // replace as ore
+                await SetBlock(world, chunkWorldPos, pos, state);
+            }
+        }
+
         public async Task Generate(IWorld world, ChunkWorldPos chunkWorldPos, BlockState blockState, int count, int size, int minHeight, int maxHeight)
         {
             int seed = await world.GetSeed();
@@ -35,6 +64,7 @@ namespace MineCase.Server.World.Decoration.Mine
                     --minHeight;
             }
 
+            // List<Task> genTasks = new List<Task>();
             for (int j = 0; j < count; ++j)
             {
                 BlockWorldPos blockpos = BlockWorldPos.Add(
@@ -44,6 +74,8 @@ namespace MineCase.Server.World.Decoration.Mine
                     random.Next(16));
                 await GenerateSingle(world, chunkWorldPos, blockpos, blockState, size);
             }
+
+            // await Task.WhenAll(genTasks);
         }
 
         public async Task GenerateSingle(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos, BlockState state, int size)
@@ -114,14 +146,7 @@ namespace MineCase.Server.World.Decoration.Mine
                                     // 参考椭球方程
                                     if (xDist * xDist + yDist * yDist + zDist * zDist < 1.0D)
                                     {
-                                        BlockWorldPos blockpos = new BlockWorldPos(x, y, z);
-                                        if (blockpos.Y >= 0 &&
-                                            blockpos.Y < 255 &&
-                                            (await world.GetBlockState(this.GrainFactory, blockpos)) == BlockStates.Stone())
-                                        {
-                                            // 替换为矿石
-                                            await world.SetBlockState(this.GrainFactory, blockpos, state);
-                                        }
+                                        await SetIfStone(world, chunkWorldPos, new BlockWorldPos(x, y, z), state);
                                     }
                                 }
                             }

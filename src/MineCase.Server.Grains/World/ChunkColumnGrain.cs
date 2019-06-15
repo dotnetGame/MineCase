@@ -242,9 +242,11 @@ namespace MineCase.Server.World
 
             (var worldKey, var chunkPos) = this.GetWorldAndChunkWorldPos();
             var world = GrainFactory.GetGrain<IWorld>(worldKey);
-            for (int xOffset = -2; xOffset <= 2; ++xOffset)
+
+            int range = 1;
+            for (int xOffset = -range; xOffset <= range; ++xOffset)
             {
-                for (int zOffset = -2; zOffset <= 2; ++zOffset)
+                for (int zOffset = -range; zOffset <= range; ++zOffset)
                 {
                     var curChunkPos = new ChunkWorldPos(chunkPos.X + xOffset, chunkPos.Z + zOffset);
                     var chunkColumnKey = world.MakeAddressByPartitionKey(curChunkPos);
