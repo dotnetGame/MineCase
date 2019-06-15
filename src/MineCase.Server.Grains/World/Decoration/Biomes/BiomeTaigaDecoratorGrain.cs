@@ -7,6 +7,7 @@ using MineCase.Server.Game.Entities;
 using MineCase.Server.World.Decoration.Plants;
 using MineCase.World;
 using MineCase.World.Biomes;
+using MineCase.World.Generation;
 using MineCase.World.Plants;
 using Newtonsoft.Json;
 using Orleans;
@@ -56,8 +57,10 @@ namespace MineCase.Server.World.Decoration.Biomes
             return Task.CompletedTask;
         }
 
-        public async override Task Decorate(IWorld world, ChunkWorldPos chunkWorldPos)
+        public async override Task Decorate(IWorld world, ChunkWorldPos chunkWorldPos, GeneratorSettings settings)
         {
+            await GenerateOre(world, chunkWorldPos, settings);
+
             var grassGenerator = GrainFactory.GetGrain<IGrassGenerator>(JsonConvert.SerializeObject(new PlantsInfo { }));
             await grassGenerator.Generate(world, chunkWorldPos, 4);
 
@@ -90,12 +93,12 @@ namespace MineCase.Server.World.Decoration.Biomes
             await dandelionGenerator.Generate(world, chunkWorldPos, 1);
         }
 
-        public override Task SpawnMob(IWorld world, ChunkWorldPos chunkWorldPos)
+        public override Task SpawnMob(IWorld world, ChunkWorldPos chunkWorldPos, GeneratorSettings settings)
         {
             throw new NotImplementedException();
         }
 
-        public override Task SpawnMonster(IWorld world, ChunkWorldPos chunkWorldPos)
+        public override Task SpawnMonster(IWorld world, ChunkWorldPos chunkWorldPos, GeneratorSettings settings)
         {
             throw new NotImplementedException();
         }

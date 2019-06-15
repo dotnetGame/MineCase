@@ -58,17 +58,19 @@ namespace MineCase.Server.World
         /// </summary>
         /// <param name="world">The world Grain.</param>
         /// <param name="grainFactory">The grain factory.</param>
-        /// <param name="pos">The position.</param>
+        /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
+        /// <param name="z">The z.</param>
         /// <returns>方块类型.</returns>
         public static Task<BlockState> GetBlockState(this IWorld world, IGrainFactory grainFactory, BlockWorldPos pos)
         {
-            var xOffset = MakeRelativeBlockOffset(pos.X);
-            var zOffset = MakeRelativeBlockOffset(pos.Z);
-            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.chunk, zOffset.chunk));
+            var chunkPos = pos.ToChunkWorldPos();
+            var blockChunkPos = pos.ToBlockChunkPos();
+            var chunkColumnKey = world.MakeAddressByPartitionKey(chunkPos);
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockState(
-                xOffset.block,
-                pos.Y,
-                zOffset.block);
+                blockChunkPos.X,
+                blockChunkPos.Y,
+                blockChunkPos.Z);
         }
 
         /// <summary>
@@ -101,13 +103,13 @@ namespace MineCase.Server.World
         /// <param name="state">The state.</param>
         public static Task SetBlockState(this IWorld world, IGrainFactory grainFactory, BlockWorldPos pos, BlockState state)
         {
-            var xOffset = MakeRelativeBlockOffset(pos.X);
-            var zOffset = MakeRelativeBlockOffset(pos.Z);
-            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.chunk, zOffset.chunk));
+            var chunkPos = pos.ToChunkWorldPos();
+            var blockChunkPos = pos.ToBlockChunkPos();
+            var chunkColumnKey = world.MakeAddressByPartitionKey(chunkPos);
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).SetBlockState(
-                xOffset.block,
-                pos.Y,
-                zOffset.block,
+                blockChunkPos.X,
+                blockChunkPos.Y,
+                blockChunkPos.Z,
                 state);
         }
 

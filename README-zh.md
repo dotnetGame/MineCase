@@ -23,7 +23,7 @@ MineCase
 ## 安装
 
 ## 从源码编译安装
-* 1 . 下载并安装 [.NET Core sdk 2.0](https://www.microsoft.com/net/download)。
+* 1 . 下载并安装 [.NET Core sdk](https://www.microsoft.com/net/download)。
 * 2 . 下载并安装 [MongoDB](https://www.mongodb.com/download-center?jmp=nav#community)。
 * 3 . 从 [github page](https://github.com/dotnetGame/MineCase/archive/master.zip) 下载`MineCase`(或者使用 **clone:** 指令)。
 	```bash

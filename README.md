@@ -11,6 +11,8 @@ The project is designed to create a high-performance, distributed system by usin
 Different chunks are managed by different servers so that all players can play in a world. This makes minecraft servers more scalable.
 It written in `C#` with `.NET Core 2.0` env and based on `orleans` framework to work with released [1.12 protocol](https://minecraft.net/en-us/article/minecraft-112-pre-release-6).
 
+**MineCase is not stable and lack of many features now. Please don't use MineCase in production unless you know what you're doing.**
+
 ![Screenshots](screenshots/1.jpg)
 
 ## Run Requirements
@@ -18,7 +20,7 @@ It written in `C#` with `.NET Core 2.0` env and based on `orleans` framework to 
 * [MongoDB](https://www.mongodb.com/download-center/community)
 
 ## Install (Build From Source)
-* 1 . Download and install a `.NET Core sdk 2.0` from this [page](https://www.microsoft.com/net/download).
+* 1 . Download and install a `.NET Core sdk` from this [page](https://www.microsoft.com/net/download).
 * 2 . Download and install a `MongoDB` from this [page](https://www.mongodb.com/download-center?jmp=nav#community).
 * 3 . Download a `MineCase` archive from the [github page](https://github.com/dotnetGame/MineCase/archive/master.zip)  (or **clone:**)
 	```bash

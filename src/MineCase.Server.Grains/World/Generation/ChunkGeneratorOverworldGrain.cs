@@ -107,19 +107,19 @@ namespace MineCase.Server.World.Generation
             if (chunkBiome.GetBiomeId() == BiomeId.Plains)
             {
                 var decorator = GrainFactory.GetGrain<IBiomePlainsDecorator>((long)BiomeId.Plains);
-                await decorator.Decorate(world, new ChunkWorldPos(x, z));
+                await decorator.Decorate(world, new ChunkWorldPos(x, z), settings);
 
                 // decorator.SpawnMob(world, chunk, new ChunkWorldPos(x, z), new BlockWorldPos { X = blockX, Z = blockZ });
             }
             else if (chunkBiome.GetBiomeId() == BiomeId.Forest)
             {
                 var decorator = GrainFactory.GetGrain<IBiomeForestDecorator>((long)BiomeId.Forest);
-                await decorator.Decorate(world, new ChunkWorldPos(x, z));
+                await decorator.Decorate(world, new ChunkWorldPos(x, z), settings);
             }
             else if (chunkBiome.GetBiomeId() == BiomeId.Taiga)
             {
                 var decorator = GrainFactory.GetGrain<IBiomeTaigaDecorator>((long)BiomeId.Taiga);
-                await decorator.Decorate(world, new ChunkWorldPos(x, z));
+                await decorator.Decorate(world, new ChunkWorldPos(x, z), settings);
             }
         }
 

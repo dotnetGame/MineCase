@@ -36,6 +36,7 @@ namespace MineCase.Block
 
         /** true if the Block contains a Tile Entity */
         protected bool IsBlockContainer { get; set; }
+
         /** Sound of stepping on the block */
         protected SoundType BlockSoundType { get; set; }
 
