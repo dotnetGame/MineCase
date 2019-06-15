@@ -7,6 +7,7 @@ using MineCase.Server.Game.Entities;
 using MineCase.Server.World.Decoration.Plants;
 using MineCase.World;
 using MineCase.World.Biomes;
+using MineCase.World.Generation;
 using MineCase.World.Plants;
 using Orleans;
 using Orleans.Concurrency;
@@ -54,17 +55,17 @@ namespace MineCase.Server.World.Decoration.Biomes
             return Task.CompletedTask;
         }
 
-        public override Task Decorate(IWorld world, ChunkWorldPos chunkWorldPos)
+        public async override Task Decorate(IWorld world, ChunkWorldPos chunkWorldPos, GeneratorSettings settings)
         {
-            return Task.CompletedTask;
+            await GenerateOre(world, chunkWorldPos, settings);
         }
 
-        public override Task SpawnMob(IWorld world, ChunkWorldPos chunkWorldPos)
+        public override Task SpawnMob(IWorld world, ChunkWorldPos chunkWorldPos, GeneratorSettings settings)
         {
             throw new NotImplementedException();
         }
 
-        public override Task SpawnMonster(IWorld world, ChunkWorldPos chunkWorldPos)
+        public override Task SpawnMonster(IWorld world, ChunkWorldPos chunkWorldPos, GeneratorSettings settings)
         {
             throw new NotImplementedException();
         }

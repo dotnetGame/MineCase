@@ -5,7 +5,7 @@ MineCase的部署方式和普通服务器一样方便。MineCase的程序主要�
 
 ## 安装
 
-### 从源码安装
+#### 从源码安装
 * 1 . 下载并安装 [.NET Core sdk 2.0](https://www.microsoft.com/net/download)。
 * 2 . 下载并安装 [MongoDB](https://www.mongodb.com/download-center?jmp=nav#community)。
 * 3 . 从 [github page](https://github.com/dotnetGame/MineCase/archive/master.zip) 下载`MineCase`(或者使用 **clone:** 指令)。
@@ -19,8 +19,14 @@ MineCase的部署方式和普通服务器一样方便。MineCase的程序主要�
     * **Linux** : 运行 `build_and_run.sh`.
     * **Win** : 双击 `build_and_run.bat`.
 
-### 使用二进制安装
+#### 使用二进制安装
 * 1 . 暂不提供
+
+
+
+## 升级
+
+* 目前暂不提供升级方案
 
 ## 使用方法
 
