@@ -89,6 +89,15 @@ namespace MineCase.Server.World.Decoration.Biomes
                 }));
             await dandelionGenerator.Generate(world, chunkWorldPos, 3);
 
+            var jungletreeGenerator = GrainFactory.GetGrain<IJungleGenerator>(
+                JsonConvert.SerializeObject(new PlantsInfo
+                {
+                    PlantType = PlantsType.Jungle,
+                    TreeHeight = 10,
+                    ExtraHeight = 20
+                }));
+            await jungletreeGenerator.Generate(world, chunkWorldPos, 1);
+
             var oaktreeGenerator = GrainFactory.GetGrain<ITreeGenerator>(
                 JsonConvert.SerializeObject(new PlantsInfo
                 {

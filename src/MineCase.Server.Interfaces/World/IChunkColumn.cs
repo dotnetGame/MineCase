@@ -22,6 +22,8 @@ namespace MineCase.Server.World
 
         Task<BlockState> GetBlockStateUnsafe(int x, int y, int z);
 
+        Task ApplyChangeUnsafe(List<BlockStateChange> blockChanges);
+
         Task SetBlockState(int x, int y, int z, BlockState blockState);
 
         Task SetBlockStateUnsafe(int x, int y, int z, BlockState blockState);

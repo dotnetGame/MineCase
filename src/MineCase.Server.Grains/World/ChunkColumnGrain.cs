@@ -50,6 +50,37 @@ namespace MineCase.Server.World
             return State.Storage[x, y, z];
         }
 
+        public async Task<List<BlockState>> GetBlockStateListUnsafe(List<BlockChunkPos> blockPos)
+        {
+            await EnsureChunkGenerated();
+            List<BlockState> ret = new List<BlockState>();
+            foreach (var eachPos in blockPos)
+            {
+                ret.Add(State.Storage[eachPos.X, eachPos.Y, eachPos.Z]);
+            }
+
+            return ret;
+        }
+
+        public async Task ApplyChangeUnsafe(List<BlockStateChange> blockChanges)
+        {
+            await EnsureChunkGenerated();
+
+            foreach (var eachChange in blockChanges)
+            {
+                var chunkPos = eachChange.Position.ToChunkWorldPos();
+
+                // filter pos not in the chunk
+                if (chunkPos != this.GetChunkWorldPos())
+                    continue;
+                var blockChunkPos = eachChange.Position.ToBlockChunkPos();
+                if (eachChange.Condition.Contains(State.Storage[blockChunkPos.X, blockChunkPos.Y, blockChunkPos.Z]))
+                {
+                    State.Storage[blockChunkPos.X, blockChunkPos.Y, blockChunkPos.Z] = eachChange.State;
+                }
+            }
+        }
+
         public async Task<ChunkColumnCompactStorage> GetState()
         {
             await EnsureAroundChunkPopulated();
@@ -138,6 +169,23 @@ namespace MineCase.Server.World
                 State.Storage[x, y, z] = blockState;
                 MarkDirty();
             }
+        }
+
+        public async Task SetBlockStateListUnsafe(List<BlockChunkPos> blockPos, BlockState blockState)
+        {
+            await EnsureChunkGenerated();
+
+            foreach (var eachPos in blockPos)
+            {
+                var oldState = State.Storage[eachPos.X, eachPos.Y, eachPos.Z];
+
+                if (oldState != blockState)
+                {
+                    State.Storage[eachPos.X, eachPos.Y, eachPos.Z] = blockState;
+                }
+            }
+
+            MarkDirty();
         }
 
         private async Task EnsureChunkGenerated(bool writeState = true)

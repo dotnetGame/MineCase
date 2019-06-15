@@ -13,6 +13,7 @@ namespace MineCase.World.Plants
         Oak,
         Spruce,
         Birch,
+        Jungle,
 
         Sunflower,
         Lilac,

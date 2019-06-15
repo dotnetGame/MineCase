@@ -64,7 +64,6 @@ namespace MineCase.Server.World.Decoration.Mine
                     --minHeight;
             }
 
-            // List<Task> genTasks = new List<Task>();
             for (int j = 0; j < count; ++j)
             {
                 BlockWorldPos blockpos = BlockWorldPos.Add(
@@ -74,8 +73,6 @@ namespace MineCase.Server.World.Decoration.Mine
                     random.Next(16));
                 await GenerateSingle(world, chunkWorldPos, blockpos, blockState, size);
             }
-
-            // await Task.WhenAll(genTasks);
         }
 
         public async Task GenerateSingle(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos, BlockState state, int size)
@@ -100,6 +97,8 @@ namespace MineCase.Server.World.Decoration.Mine
             double endZ = (double)((float)(pos.Z + 8) - Math.Cos(angle) * (float)size / 8.0F);
             double startY = (double)(pos.Y + rand.Next(3) - 2);
             double endY = (double)(pos.Y + rand.Next(3) - 2);
+
+            BatchBlockChange batchBlockChange = new BatchBlockChange();
 
             for (int i = 0; i < size; ++i)
             {
@@ -146,7 +145,11 @@ namespace MineCase.Server.World.Decoration.Mine
                                     // 参考椭球方程
                                     if (xDist * xDist + yDist * yDist + zDist * zDist < 1.0D)
                                     {
-                                        await SetIfStone(world, chunkWorldPos, new BlockWorldPos(x, y, z), state);
+                                        var orePos = new BlockWorldPos(x, y, z);
+                                        if (orePos.Y >= 0 && orePos.Y < 255)
+                                        {
+                                            batchBlockChange.SetIf(orePos, state, BlockStates.Stone());
+                                        }
                                     }
                                 }
                             }
@@ -154,6 +157,8 @@ namespace MineCase.Server.World.Decoration.Mine
                     }
                 }
             }
+
+            await world.ApplyChangeUnsafe(this.GrainFactory, batchBlockChange);
         }
     }
 }
