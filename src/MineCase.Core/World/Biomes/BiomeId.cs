@@ -30,6 +30,7 @@ namespace MineCase.World.Biomes
         StoneShore = 25,
         SnowyBeach = 26,
         BirchForest = 27,
+        Savanna = 35,
         WarmOcean = 44,
         LukewarmOcean = 45,
         ColdOcean = 46,

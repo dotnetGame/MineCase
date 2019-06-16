@@ -14,7 +14,7 @@ namespace MineCase.World.Plants
         Spruce,
         Birch,
         JungleTree,
-        SavannaTree,
+        AcaciaTree,
 
         Sunflower,
         Lilac,

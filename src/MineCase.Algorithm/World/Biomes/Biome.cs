@@ -188,6 +188,8 @@ namespace MineCase.Algorithm.World.Biomes
                      return new BiomeRiver(new BiomeProperties(), settings);
                 case BiomeId.Beach:
                      return new BiomeBeach(new BiomeProperties(), settings);
+                case BiomeId.Savanna:
+                     return new BiomeSavanna(new BiomeProperties(), settings);
                 default:
                      return null;
             }
