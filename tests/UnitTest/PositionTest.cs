@@ -63,6 +63,49 @@ namespace MineCase.UnitTest
         }
 
         [Fact]
+        public void TestBlockWorldPosExtension()
+        {
+            Assert.Equal(_bwPos1.Up(), new BlockWorldPos(0, 1, 0));
+            Assert.Equal(_bwPos1.Down(), new BlockWorldPos(0, -1, 0));
+            Assert.Equal(_bwPos1.East(), new BlockWorldPos(1, 0, 0));
+            Assert.Equal(_bwPos1.West(), new BlockWorldPos(-1, 0, 0));
+            Assert.Equal(_bwPos1.North(), new BlockWorldPos(0, 0, -1));
+            Assert.Equal(_bwPos1.South(), new BlockWorldPos(0, 0, 1));
+
+            Assert.Equal(_bwPos1.Up(2), new BlockWorldPos(0, 2, 0));
+            Assert.Equal(_bwPos1.Down(2), new BlockWorldPos(0, -2, 0));
+            Assert.Equal(_bwPos1.East(2), new BlockWorldPos(2, 0, 0));
+            Assert.Equal(_bwPos1.West(2), new BlockWorldPos(-2, 0, 0));
+            Assert.Equal(_bwPos1.North(2), new BlockWorldPos(0, 0, -2));
+            Assert.Equal(_bwPos1.South(2), new BlockWorldPos(0, 0, 2));
+        }
+
+        [Fact]
+        public void TestBlockVector()
+        {
+            BlockVector bvPos1 = new BlockVector(0, 0, 0);
+            BlockVector bvPos2 = new BlockVector(1, 1, 1);
+            BlockVector bvPos3 = new BlockVector(-1, -1, -1);
+            BlockVector bvPos4 = new BlockVector(6, 7, 8);
+
+            Assert.Equal(0, bvPos1.X);
+            Assert.Equal(0, bvPos1.Y);
+            Assert.Equal(0, bvPos1.Z);
+
+            Assert.Equal(1, bvPos2.X);
+            Assert.Equal(1, bvPos2.Y);
+            Assert.Equal(1, bvPos2.Z);
+
+            Assert.Equal(-1, bvPos3.X);
+            Assert.Equal(-1, bvPos3.Y);
+            Assert.Equal(-1, bvPos3.Z);
+
+            Assert.Equal(6, bvPos4.X);
+            Assert.Equal(7, bvPos4.Y);
+            Assert.Equal(8, bvPos4.Z);
+        }
+
+        [Fact]
         public void TestBlockChunkPos()
         {
             Assert.Equal(_bwPos1, _bcPos1.ToBlockWorldPos(_cwPos1));
