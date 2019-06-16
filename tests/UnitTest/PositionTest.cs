@@ -31,8 +31,8 @@ namespace MineCase.UnitTest
         private readonly BlockWorldPos _cbwPos1 = new BlockWorldPos(0, 0, 0);
         private readonly BlockWorldPos _cbwPos2 = new BlockWorldPos(0, 0, 0);
         private readonly BlockWorldPos _cbwPos3 = new BlockWorldPos(16, 0, 16);
-        private readonly BlockWorldPos _cbwPos4 = new BlockWorldPos(-15, 0, -15);
-        private readonly BlockWorldPos _cbwPos5 = new BlockWorldPos(-31, 0, -31);
+        private readonly BlockWorldPos _cbwPos4 = new BlockWorldPos(-16, 0, -16);
+        private readonly BlockWorldPos _cbwPos5 = new BlockWorldPos(-32, 0, -32);
 
         private readonly EntityWorldPos _ewPos1 = new EntityWorldPos(0, 0, 0);
         private readonly EntityWorldPos _ewPos2 = new EntityWorldPos(1.5f, 1.5f, 1.5f);
