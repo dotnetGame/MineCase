@@ -27,13 +27,15 @@ namespace MineCase.UnitTest
         public async Task TestCraftingRecipeLoader()
         {
             var loader = new CraftingRecipeLoader();
-            using (var sr = new StreamReader(File.OpenRead(Path.Combine(RootDir, "crafting.txt"))))
+            using (var sr = new StreamReader(File.OpenRead(Path.Combine(RootDir, "crafting_test.txt"))))
             {
                 await loader.LoadRecipes(sr);
             }
 
             var recipes = loader.Recipes;
-            Assert.Equal(38, recipes.Count);
+
+            // count test
+            Assert.Equal(13, recipes.Count);
         }
 
         [Fact]
