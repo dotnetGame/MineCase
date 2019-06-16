@@ -72,22 +72,23 @@ namespace MineCase.Server.World.Decoration.Plants
                     }
                 }
 
-                for (int i2 = 0; i2 < height; ++i2)
+                // generate wood
+                for (int y = 0; y < height; ++y)
                 {
-                    BlockWorldPos blockpos = pos.Up(i2);
+                    BlockWorldPos blockpos = pos.Up(y);
 
                     if (await IsAirLeaves(world, blockpos))
                     {
                         await world.SetBlockStateUnsafe(this.GrainFactory, blockpos, _wood);
 
-                        if (i2 > 0)
+                        if (y > 0)
                         {
                             await PlaceVine(world, random, blockpos.West(), VineType.East);
                             await PlaceVine(world, random, blockpos.North(), VineType.South);
                         }
                     }
 
-                    if (i2 < height - 1)
+                    if (y < height - 1)
                     {
                         BlockWorldPos blockpos1 = blockpos.East();
 
@@ -95,7 +96,7 @@ namespace MineCase.Server.World.Decoration.Plants
                         {
                             await world.SetBlockStateUnsafe(this.GrainFactory, blockpos1, _wood);
 
-                            if (i2 > 0)
+                            if (y > 0)
                             {
                                 await PlaceVine(world, random, blockpos1.East(), VineType.West);
                                 await PlaceVine(world, random, blockpos1.North(), VineType.South);
@@ -108,7 +109,7 @@ namespace MineCase.Server.World.Decoration.Plants
                         {
                             await world.SetBlockStateUnsafe(this.GrainFactory, blockpos2, _wood);
 
-                            if (i2 > 0)
+                            if (y > 0)
                             {
                                 await PlaceVine(world, random, blockpos2.East(), VineType.West);
                                 await PlaceVine(world, random, blockpos2.South(), VineType.North);
@@ -121,7 +122,7 @@ namespace MineCase.Server.World.Decoration.Plants
                         {
                             await world.SetBlockStateUnsafe(this.GrainFactory, blockpos3, _wood);
 
-                            if (i2 > 0)
+                            if (y > 0)
                             {
                                 await PlaceVine(world, random, blockpos3.West(), VineType.East);
                                 await PlaceVine(world, random, blockpos3.South(), VineType.North);

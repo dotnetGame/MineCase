@@ -89,6 +89,7 @@ namespace MineCase.Server.World.Decoration.Biomes
                 }));
             await dandelionGenerator.Generate(world, chunkWorldPos, 3);
 
+            /*
             var jungletreeGenerator = GrainFactory.GetGrain<IJungleGenerator>(
                 JsonConvert.SerializeObject(new PlantsInfo
                 {
@@ -97,6 +98,13 @@ namespace MineCase.Server.World.Decoration.Biomes
                     ExtraHeight = 20
                 }));
             await jungletreeGenerator.Generate(world, chunkWorldPos, 1);
+            */
+            var savannatreeGenerator = GrainFactory.GetGrain<ISavannaTreeGenerator>(
+                JsonConvert.SerializeObject(new PlantsInfo
+                {
+                    PlantType = PlantsType.SavannaTree,
+                }));
+            await savannatreeGenerator.Generate(world, chunkWorldPos, 1);
 
             var oaktreeGenerator = GrainFactory.GetGrain<ITreeGenerator>(
                 JsonConvert.SerializeObject(new PlantsInfo

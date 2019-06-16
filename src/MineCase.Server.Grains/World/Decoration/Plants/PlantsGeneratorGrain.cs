@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using MineCase.Algorithm.World.Biomes;
 using MineCase.Block;
 using MineCase.Server.World;
@@ -30,6 +31,30 @@ namespace MineCase.Server.World.Decoration.Plants
 
     public abstract class PlantsGeneratorGrain : Grain, IPlantsGenerator
     {
+        protected ILogger _logger;
+
+        protected PlantsInfo _generatorSettings;
+
+        public PlantsGeneratorGrain(ILoggerFactory loggerFactory)
+        {
+            _logger = loggerFactory.CreateLogger<AbstractTreeGeneratorGrain>();
+        }
+
+        public override Task OnActivateAsync()
+        {
+            try
+            {
+                var settings = this.GetPrimaryKeyString();
+                _generatorSettings = JsonConvert.DeserializeObject<PlantsInfo>(settings);
+            }
+            catch (Exception e)
+            {
+                this._logger.LogError(default(EventId), e, e.Message);
+            }
+
+            return Task.CompletedTask;
+        }
+
         protected virtual Task SetBlock(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos, BlockState state)
         {
             var chunkColumnKey = world.MakeAddressByPartitionKey(pos.ToChunkWorldPos());

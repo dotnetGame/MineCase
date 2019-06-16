@@ -12,28 +12,18 @@ namespace MineCase.Server.World.Decoration.Plants
 {
     public abstract class AbstractTreeGeneratorGrain : PlantsGeneratorGrain, IAbstractTreeGenerator
     {
-        protected ILogger _logger;
-
-        protected PlantsInfo _generatorSettings;
+        protected BlockState _wood;
+        protected BlockState _leaves;
 
         public AbstractTreeGeneratorGrain(ILoggerFactory loggerFactory)
+            : base(loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<AbstractTreeGeneratorGrain>();
         }
 
-        public override Task OnActivateAsync()
+        public async override Task OnActivateAsync()
         {
-            try
-            {
-                var settings = this.GetPrimaryKeyString();
-                _generatorSettings = JsonConvert.DeserializeObject<PlantsInfo>(settings);
-            }
-            catch (Exception e)
-            {
-                this._logger.LogError(default(EventId), e, e.Message);
-            }
-
-            return Task.CompletedTask;
+            await base.OnActivateAsync();
         }
 
         public static bool IsSoil(BlockState state)

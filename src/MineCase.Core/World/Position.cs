@@ -100,6 +100,22 @@ namespace MineCase.World
         }
     }
 
+    public struct BlockVector
+    {
+        public int X { get; set; }
+
+        public int Y { get; set; }
+
+        public int Z { get; set; }
+
+        public BlockVector(int x, int y, int z)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+        }
+    }
+
     public static class BlockWorldPosExtension
     {
         public static BlockWorldPos Down(this BlockWorldPos pos)

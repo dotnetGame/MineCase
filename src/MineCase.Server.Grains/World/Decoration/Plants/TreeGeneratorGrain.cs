@@ -19,10 +19,6 @@ namespace MineCase.Server.World.Decoration.Plants
 
         private bool _vines;
 
-        private BlockState _wood;
-
-        private BlockState _leaves;
-
         private PlantsType _treeType;
 
         public TreeGeneratorGrain(ILoggerFactory loggerFactory)
