@@ -35,32 +35,32 @@ namespace MineCase.Server.World.Decoration.Plants
 
         private async Task<bool> GenerateImpl(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos, Random rand)
         {
-            int i = rand.Next(3) + rand.Next(3) + 5;
+            int height = rand.Next(3) + rand.Next(3) + 5;
             bool flag = true;
 
-            if (pos.Y >= 1 && pos.Y + i + 1 <= 256)
+            if (pos.Y >= 1 && pos.Y + height + 1 <= 256)
             {
-                for (int j = pos.Y; j <= pos.Y + 1 + i; ++j)
+                for (int y = pos.Y; y <= pos.Y + 1 + height; ++y)
                 {
-                    int k = 1;
+                    int xzRange = 1;
 
-                    if (j == pos.Y)
+                    if (y == pos.Y)
                     {
-                        k = 0;
+                        xzRange = 0;
                     }
 
-                    if (j >= pos.Y + 1 + i - 2)
+                    if (y >= pos.Y + 1 + height - 2)
                     {
-                        k = 2;
+                        xzRange = 2;
                     }
 
-                    for (int l = pos.X - k; l <= pos.X + k && flag; ++l)
+                    for (int xOffset = pos.X - xzRange; xOffset <= pos.X + xzRange && flag; ++xOffset)
                     {
-                        for (int i1 = pos.Z - k; i1 <= pos.Z + k && flag; ++i1)
+                        for (int zOffset = pos.Z - xzRange; zOffset <= pos.Z + xzRange && flag; ++zOffset)
                         {
-                            if (j >= 0 && j < 256)
+                            if (y >= 0 && y < 256)
                             {
-                                var blockState = await world.GetBlockStateUnsafe(this.GrainFactory, new BlockWorldPos(l, j, i1));
+                                var blockState = await world.GetBlockStateUnsafe(this.GrainFactory, new BlockWorldPos(xOffset, y, zOffset));
                                 if (!IsReplaceable(blockState))
                                 {
                                     flag = false;
@@ -84,17 +84,17 @@ namespace MineCase.Server.World.Decoration.Plants
                     BlockState state = await world.GetBlockStateUnsafe(this.GrainFactory, down);
                     bool isSoil = IsSoil(state);
 
-                    if (isSoil && pos.Y < ChunkConstants.ChunkHeight - i - 1)
+                    if (isSoil && pos.Y < ChunkConstants.ChunkHeight - height - 1)
                     {
                         // state.getBlock().onPlantGrow(state, world, down, pos);
                         Facing enumfacing = Facing.RadomFacing(rand, Plane.XZ);
-                        int k2 = i - rand.Next(4) - 1;
+                        int k2 = height - rand.Next(4) - 1;
                         int l2 = 3 - rand.Next(3);
                         int i3 = pos.X;
                         int j1 = pos.Z;
                         int k1 = 0;
 
-                        for (int l1 = 0; l1 < i; ++l1)
+                        for (int l1 = 0; l1 < height; ++l1)
                         {
                             int i2 = pos.Y + l1;
 
@@ -152,7 +152,7 @@ namespace MineCase.Server.World.Decoration.Plants
                             int k4 = 1 + rand.Next(3);
                             k1 = 0;
 
-                            for (int l4 = l3; l4 < i && k4 > 0; --k4)
+                            for (int l4 = l3; l4 < height && k4 > 0; --k4)
                             {
                                 if (l4 >= 1)
                                 {
