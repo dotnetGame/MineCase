@@ -37,5 +37,7 @@ namespace MineCase.Server.World
         Task OnBlockNeighborChanged(int x, int y, int z, BlockWorldPos neighborPosition, BlockState oldState, BlockState newState);
 
         Task EnsureChunkPopulated();
+
+        Task EnsureChunkGenerated();
     }
 }

@@ -188,7 +188,7 @@ namespace MineCase.Server.World
             MarkDirty();
         }
 
-        private async Task EnsureChunkGenerated(bool writeState = true)
+        public async Task EnsureChunkGenerated()
         {
             if (!State.Generated)
             {
@@ -237,14 +237,14 @@ namespace MineCase.Server.World
                 }
 
                 State.Generated = true;
-                if (writeState)
-                    await WriteStateAsync();
+
+                await WriteStateAsync();
             }
         }
 
         public async Task EnsureChunkPopulated()
         {
-            await EnsureChunkGenerated(false);
+            await EnsureChunkGenerated();
 
             if (!State.Populated)
             {
@@ -296,6 +296,7 @@ namespace MineCase.Server.World
             {
                 for (int zOffset = -range; zOffset <= range; ++zOffset)
                 {
+                    if (xOffset == 0 && zOffset == 0) continue;
                     var curChunkPos = new ChunkWorldPos(chunkPos.X + xOffset, chunkPos.Z + zOffset);
                     var chunkColumnKey = world.MakeAddressByPartitionKey(curChunkPos);
                     await GrainFactory.GetGrain<IChunkColumn>(chunkColumnKey).EnsureChunkPopulated();
