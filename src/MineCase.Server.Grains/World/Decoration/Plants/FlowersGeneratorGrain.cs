@@ -15,30 +15,18 @@ namespace MineCase.Server.World.Decoration.Plants
     [StatelessWorker]
     public class FlowersGeneratorGrain : PlantsGeneratorGrain, IFlowersGenerator
     {
-        private readonly ILogger _logger;
-
         protected PlantsType _flowerType;
 
         public FlowersGeneratorGrain(ILoggerFactory loggerFactory)
+            : base(loggerFactory)
         {
-            _logger = loggerFactory.CreateLogger<TreeGeneratorGrain>();
+            _logger = loggerFactory.CreateLogger<FlowersGeneratorGrain>();
         }
 
-        public override Task OnActivateAsync()
+        public async override Task OnActivateAsync()
         {
-            try
-            {
-                var settings = this.GetPrimaryKeyString();
-                PlantsInfo plantsInfo = JsonConvert.DeserializeObject<PlantsInfo>(settings);
-
-                _flowerType = plantsInfo.PlantType;
-            }
-            catch (Exception e)
-            {
-                this._logger.LogError(default(EventId), e, e.Message);
-            }
-
-            return base.OnActivateAsync();
+            await base.OnActivateAsync();
+            _flowerType = _generatorSettings.PlantType;
         }
 
         public override async Task GenerateSingle(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos)

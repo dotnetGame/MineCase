@@ -12,8 +12,6 @@ namespace MineCase.Server.World.Decoration.Plants
     {
         protected int _baseHeight;
         protected int _extraRandomHeight;
-        protected BlockState _wood;
-        protected BlockState _leaves;
 
         public HugeTreeGeneratorGrain(ILoggerFactory loggerFactory)
             : base(loggerFactory)

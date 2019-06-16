@@ -21,10 +21,6 @@ namespace MineCase.Server.World.Decoration.Plants
 
         private PlantsType _treeType;
 
-        private BlockState _wood;
-
-        private BlockState _leaves;
-
         public TaigaGeneratorGrain(ILoggerFactory loggerFactory)
             : base(loggerFactory)
         {
