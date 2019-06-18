@@ -40,6 +40,7 @@ namespace MineCase.Server.World.Decoration.Plants
 
             if (pos.Y >= 1 && pos.Y + height + 1 <= 256)
             {
+                // check if enough space
                 for (int y = pos.Y; y <= pos.Y + 1 + height; ++y)
                 {
                     int xzRange = 1;
@@ -74,6 +75,7 @@ namespace MineCase.Server.World.Decoration.Plants
                     }
                 }
 
+                // plant tree
                 if (!flag)
                 {
                     return false;
@@ -88,53 +90,53 @@ namespace MineCase.Server.World.Decoration.Plants
                     {
                         // state.getBlock().onPlantGrow(state, world, down, pos);
                         Facing enumfacing = Facing.RadomFacing(rand, Plane.XZ);
-                        int k2 = height - rand.Next(4) - 1;
+                        int bendingPos = height - rand.Next(4) - 1;
                         int l2 = 3 - rand.Next(3);
-                        int i3 = pos.X;
-                        int j1 = pos.Z;
-                        int k1 = 0;
+                        int woodX = pos.X;
+                        int woodZ = pos.Z;
+                        int branchHeight = 0;
 
-                        for (int l1 = 0; l1 < height; ++l1)
+                        for (int yOffset = 0; yOffset < height; ++yOffset)
                         {
-                            int i2 = pos.Y + l1;
+                            int curHeight = pos.Y + yOffset;
 
-                            if (l1 >= k2 && l2 > 0)
+                            if (yOffset >= bendingPos && l2 > 0)
                             {
-                                i3 += enumfacing.ToBlockVector().X;
-                                j1 += enumfacing.ToBlockVector().Z;
+                                woodX += enumfacing.ToBlockVector().X;
+                                woodZ += enumfacing.ToBlockVector().Z;
                                 --l2;
                             }
 
-                            BlockWorldPos blockpos = new BlockWorldPos(i3, i2, j1);
+                            BlockWorldPos blockpos = new BlockWorldPos(woodX, curHeight, woodZ);
                             state = await world.GetBlockStateUnsafe(this.GrainFactory, blockpos);
 
                             if (state.IsAir() || state.IsLeaves())
                             {
                                 await world.SetBlockStateUnsafe(this.GrainFactory, blockpos, _wood);
-                                k1 = i2;
+                                branchHeight = curHeight;
                             }
                         }
 
-                        BlockWorldPos blockpos2 = new BlockWorldPos(i3, k1, j1);
+                        BlockWorldPos blockpos2 = new BlockWorldPos(woodX, branchHeight, woodZ);
 
-                        for (int j3 = -3; j3 <= 3; ++j3)
+                        for (int xOffset = -3; xOffset <= 3; ++xOffset)
                         {
-                            for (int i4 = -3; i4 <= 3; ++i4)
+                            for (int zOffset = -3; zOffset <= 3; ++zOffset)
                             {
-                                if (Math.Abs(j3) != 3 || Math.Abs(i4) != 3)
+                                if (Math.Abs(xOffset) != 3 || Math.Abs(zOffset) != 3)
                                 {
-                                    await world.SetBlockStateUnsafe(this.GrainFactory, BlockWorldPos.Add(blockpos2, j3, 0, i4), _leaves);
+                                    await world.SetBlockStateUnsafe(this.GrainFactory, BlockWorldPos.Add(blockpos2, xOffset, 0, zOffset), _leaves);
                                 }
                             }
                         }
 
                         blockpos2 = blockpos2.Up();
 
-                        for (int k3 = -1; k3 <= 1; ++k3)
+                        for (int xOffset = -1; xOffset <= 1; ++xOffset)
                         {
-                            for (int j4 = -1; j4 <= 1; ++j4)
+                            for (int zOffset = -1; zOffset <= 1; ++zOffset)
                             {
-                                await world.SetBlockStateUnsafe(this.GrainFactory, BlockWorldPos.Add(blockpos2, k3, 0, j4), _leaves);
+                                await world.SetBlockStateUnsafe(this.GrainFactory, BlockWorldPos.Add(blockpos2, xOffset, 0, zOffset), _leaves);
                             }
                         }
 
@@ -142,58 +144,58 @@ namespace MineCase.Server.World.Decoration.Plants
                         await world.SetBlockStateUnsafe(this.GrainFactory, blockpos2.West(2), _leaves);
                         await world.SetBlockStateUnsafe(this.GrainFactory, blockpos2.South(2), _leaves);
                         await world.SetBlockStateUnsafe(this.GrainFactory, blockpos2.North(2), _leaves);
-                        i3 = pos.X;
-                        j1 = pos.Z;
+                        woodX = pos.X;
+                        woodZ = pos.Z;
                         Facing enumfacing1 = Facing.RadomFacing(rand, Plane.XZ);
 
                         if (enumfacing1 != enumfacing)
                         {
-                            int l3 = k2 - rand.Next(2) - 1;
+                            int l3 = bendingPos - rand.Next(2) - 1;
                             int k4 = 1 + rand.Next(3);
-                            k1 = 0;
+                            branchHeight = 0;
 
                             for (int l4 = l3; l4 < height && k4 > 0; --k4)
                             {
                                 if (l4 >= 1)
                                 {
                                     int j2 = pos.Y + l4;
-                                    i3 += enumfacing1.ToBlockVector().X;
-                                    j1 += enumfacing1.ToBlockVector().Z;
-                                    BlockWorldPos blockpos1 = new BlockWorldPos(i3, j2, j1);
+                                    woodX += enumfacing1.ToBlockVector().X;
+                                    woodZ += enumfacing1.ToBlockVector().Z;
+                                    BlockWorldPos blockpos1 = new BlockWorldPos(woodX, j2, woodZ);
                                     state = await world.GetBlockStateUnsafe(this.GrainFactory, blockpos1);
 
                                     if (state.IsAir() || state.IsLeaves())
                                     {
                                         await world.SetBlockStateUnsafe(this.GrainFactory, blockpos1, _wood);
-                                        k1 = j2;
+                                        branchHeight = j2;
                                     }
                                 }
 
                                 ++l4;
                             }
 
-                            if (k1 > 0)
+                            if (branchHeight > 0)
                             {
-                                BlockWorldPos blockpos3 = new BlockWorldPos(i3, k1, j1);
+                                BlockWorldPos blockpos3 = new BlockWorldPos(woodX, branchHeight, woodZ);
 
-                                for (int i5 = -2; i5 <= 2; ++i5)
+                                for (int xOffset = -2; xOffset <= 2; ++xOffset)
                                 {
-                                    for (int k5 = -2; k5 <= 2; ++k5)
+                                    for (int zOffset = -2; zOffset <= 2; ++zOffset)
                                     {
-                                        if (Math.Abs(i5) != 2 || Math.Abs(k5) != 2)
+                                        if (Math.Abs(xOffset) != 2 || Math.Abs(zOffset) != 2)
                                         {
-                                            await world.SetBlockStateUnsafe(this.GrainFactory, BlockWorldPos.Add(blockpos3, i5, 0, k5), _leaves);
+                                            await world.SetBlockStateUnsafe(this.GrainFactory, BlockWorldPos.Add(blockpos3, xOffset, 0, zOffset), _leaves);
                                         }
                                     }
                                 }
 
                                 blockpos3 = blockpos3.Up();
 
-                                for (int j5 = -1; j5 <= 1; ++j5)
+                                for (int xOffset = -1; xOffset <= 1; ++xOffset)
                                 {
-                                    for (int l5 = -1; l5 <= 1; ++l5)
+                                    for (int zOffset = -1; zOffset <= 1; ++zOffset)
                                     {
-                                        await world.SetBlockStateUnsafe(this.GrainFactory, BlockWorldPos.Add(blockpos3, j5, 0, l5), _leaves);
+                                        await world.SetBlockStateUnsafe(this.GrainFactory, BlockWorldPos.Add(blockpos3, xOffset, 0, zOffset), _leaves);
                                     }
                                 }
                             }

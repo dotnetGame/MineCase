@@ -44,6 +44,6 @@ namespace MineCase.Block
 
         protected BlockState BlockState { get; set; }
 
-        private String UnlocalizedName { get; set; }
+        protected String UnlocalizedName { get; set; }
     }
 }
