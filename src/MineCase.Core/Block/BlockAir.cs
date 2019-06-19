@@ -18,13 +18,9 @@ namespace MineCase.Block
             EnableStats = false;
             NeedsRandomTick = false;
             IsBlockContainer = false;
-
             BlockSoundType = null;
-
             BlockParticleGravity = 1.0f;
-
             BlockState = BlockStates.Air();
-
             UnlocalizedName = "air";
     }
     }

@@ -28,7 +28,7 @@ namespace MineCase.Engine
     }
 
     /// <summary>
-    /// 依赖属性
+    /// 依赖属性.
     /// </summary>
     public abstract class DependencyProperty : IEquatable<DependencyProperty>
     {
@@ -37,32 +37,32 @@ namespace MineCase.Engine
         private static readonly ConcurrentDictionary<string, Type> _ownerTypes = new ConcurrentDictionary<string, Type>();
 
         /// <summary>
-        /// 所有者类型加载器
+        /// 所有者类型加载器.
         /// </summary>
         public static Func<string, Type> OwnerTypeLoader { get; set; } = t => Type.GetType(t);
 
         /// <summary>
-        /// 获取名称
+        /// 获取名称.
         /// </summary>
         public string Name { get; }
 
         /// <summary>
-        /// 获取所有者类型
+        /// 获取所有者类型.
         /// </summary>
         public Type OwnerType { get; }
 
         /// <summary>
-        /// 获取属性类型
+        /// 获取属性类型.
         /// </summary>
         public abstract Type PropertyType { get; }
 
         /// <summary>
-        /// 获取是否附加属性
+        /// 获取是否附加属性.
         /// </summary>
         public bool IsAttached => Flags.HasFlag(DependencyPropertyFlags.Attached);
 
         /// <summary>
-        /// 获取是否只读属性
+        /// 获取是否只读属性.
         /// </summary>
         public bool IsReadOnly => Flags.HasFlag(DependencyPropertyFlags.ReadOnly);
 
@@ -103,26 +103,26 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 注册
+        /// 注册.
         /// </summary>
-        /// <typeparam name="T">属性类型</typeparam>
-        /// <param name="name">名称</param>
-        /// <param name="ownerType">所有者类型</param>
-        /// <param name="metadata">元数据</param>
-        /// <returns>依赖属性</returns>
+        /// <typeparam name="T">属性类型.</typeparam>
+        /// <param name="name">名称.</param>
+        /// <param name="ownerType">所有者类型.</param>
+        /// <param name="metadata">元数据.</param>
+        /// <returns>依赖属性.</returns>
         public static DependencyProperty<T> Register<T>(string name, Type ownerType, PropertyMetadata<T> metadata = null)
         {
             return RegisterIntern(name, ownerType, DependencyPropertyFlags.None, metadata ?? new PropertyMetadata<T>(UnsetValue));
         }
 
         /// <summary>
-        /// 注册附加属性
+        /// 注册附加属性.
         /// </summary>
-        /// <typeparam name="T">属性类型</typeparam>
-        /// <param name="name">名称</param>
-        /// <param name="ownerType">所有者类型</param>
-        /// <param name="metadata">元数据</param>
-        /// <returns>依赖属性</returns>
+        /// <typeparam name="T">属性类型.</typeparam>
+        /// <param name="name">名称.</param>
+        /// <param name="ownerType">所有者类型.</param>
+        /// <param name="metadata">元数据.</param>
+        /// <returns>依赖属性.</returns>
         public static DependencyProperty<T> RegisterAttached<T>(string name, Type ownerType, PropertyMetadata<T> metadata = null)
         {
             return RegisterIntern(name, ownerType, DependencyPropertyFlags.Attached, metadata ?? new PropertyMetadata<T>(UnsetValue));
@@ -139,11 +139,11 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 从名称获取依赖属性
+        /// 从名称获取依赖属性.
         /// </summary>
-        /// <param name="name">名称</param>
-        /// <param name="ownerType">所有者类型</param>
-        /// <returns>依赖属性</returns>
+        /// <param name="name">名称.</param>
+        /// <param name="ownerType">所有者类型.</param>
+        /// <returns>依赖属性.</returns>
         public static DependencyProperty FromName(string name, Type ownerType)
         {
             if (name == null)
@@ -195,10 +195,10 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 添加从名称获取
+        /// 添加从名称获取.
         /// </summary>
-        /// <param name="name">名称</param>
-        /// <param name="ownerType">所有者类型</param>
+        /// <param name="name">名称.</param>
+        /// <param name="ownerType">所有者类型.</param>
         protected void AddFromeNameKey(string name, Type ownerType)
         {
             if (!_fromNameMaps.TryAdd(new FromNameKey(name, ownerType), this))
@@ -208,12 +208,12 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 未设置值
+        /// 未设置值.
         /// </summary>
         public static readonly UnsetValueType UnsetValue = default(UnsetValueType);
 
         /// <summary>
-        /// 未设置值类型
+        /// 未设置值类型.
         /// </summary>
         public struct UnsetValueType
         {
@@ -254,9 +254,9 @@ namespace MineCase.Engine
     }
 
     /// <summary>
-    /// 依赖属性
+    /// 依赖属性.
     /// </summary>
-    /// <typeparam name="T">属性类型</typeparam>
+    /// <typeparam name="T">属性类型.</typeparam>
     public sealed class DependencyProperty<T> : DependencyProperty
     {
         private PropertyMetadata<T> _baseMetadata;
@@ -276,10 +276,10 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 重写元数据
+        /// 重写元数据.
         /// </summary>
-        /// <param name="type">要重写的目标类型</param>
-        /// <param name="metadata">元数据</param>
+        /// <param name="type">要重写的目标类型.</param>
+        /// <param name="metadata">元数据.</param>
         public void OverrideMetadata(Type type, PropertyMetadata<T> metadata)
         {
             if (type == null)
@@ -305,11 +305,11 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 添加所有者
+        /// 添加所有者.
         /// </summary>
-        /// <param name="ownerType">所有者类型</param>
-        /// <param name="metadata">元数据</param>
-        /// <returns>依赖属性</returns>
+        /// <param name="ownerType">所有者类型.</param>
+        /// <param name="metadata">元数据.</param>
+        /// <returns>依赖属性.</returns>
         public DependencyProperty<T> AddOwner(Type ownerType, PropertyMetadata<T> metadata = null)
         {
             if (ownerType == null)
@@ -323,12 +323,12 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 尝试获取默认值
+        /// 尝试获取默认值.
         /// </summary>
-        /// <param name="d">依赖对象</param>
-        /// <param name="type">类型</param>
-        /// <param name="value">值</param>
-        /// <returns>是否获取成功</returns>
+        /// <param name="d">依赖对象.</param>
+        /// <param name="type">类型.</param>
+        /// <param name="value">值.</param>
+        /// <returns>是否获取成功.</returns>
         public bool TryGetDefaultValue(DependencyObject d, Type type, out T value)
         {
             return GetMetadata(type).TryGetDefaultValue(d, this, out value);
@@ -340,10 +340,10 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 获取元数据
+        /// 获取元数据.
         /// </summary>
-        /// <param name="type">类型</param>
-        /// <returns>元数据</returns>
+        /// <param name="type">类型.</param>
+        /// <returns>元数据.</returns>
         public PropertyMetadata<T> GetMetadata(Type type)
         {
             bool metadataIsDervied;
@@ -384,12 +384,12 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 尝试获取非默认值
+        /// 尝试获取非默认值.
         /// </summary>
-        /// <param name="d">依赖对象</param>
-        /// <param name="type">类型</param>
-        /// <param name="value">值</param>
-        /// <returns>是否具有非默认值</returns>
+        /// <param name="d">依赖对象.</param>
+        /// <param name="type">类型.</param>
+        /// <param name="value">值.</param>
+        /// <returns>是否具有非默认值.</returns>
         public bool TryGetNonDefaultValue(DependencyObject d, Type type, out T value)
         {
             return GetMetadata(type).TryGetNonDefaultValue(d, this, out value);

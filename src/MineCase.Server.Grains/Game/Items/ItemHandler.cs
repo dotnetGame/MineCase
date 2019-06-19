@@ -137,7 +137,13 @@ namespace MineCase.Server.Game.Items
                     var blockHandler = BlockHandler.Create((BlockId)blockState.Id);
                     var droppedSlot = blockHandler.DropBlock(ItemId, blockState);
                     if (!droppedSlot.IsEmpty)
-                        await finder.SpawnPickup(position + new Vector3(0.5f, 0.5f, 0.5f), new[] { droppedSlot }.AsImmutable());
+                    {
+                        Random random = new Random();
+                        double randomOffsetX = random.NextDouble() * 0.5F + 0.25D;
+                        double randomOffsetY = random.NextDouble() * 0.5F + 0.25D;
+                        double randomOffsetZ = random.NextDouble() * 0.5F + 0.25D;
+                        await finder.SpawnPickup(position + new Vector3((float)randomOffsetX, (float)randomOffsetY, (float)randomOffsetZ), new[] { droppedSlot }.AsImmutable());
+                    }
                 }
 
                 return true;

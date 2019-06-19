@@ -24,5 +24,7 @@ namespace MineCase.Server.World
         Task<GeneratorSettings> GetGeneratorSettings();
 
         Task<EntityWorldPos> GetSpawnPosition();
+
+        Task<bool> HasSkyLight();
     }
 }

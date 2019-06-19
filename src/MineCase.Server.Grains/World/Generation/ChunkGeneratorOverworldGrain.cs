@@ -419,16 +419,21 @@ namespace MineCase.Server.World.Generation
 
         private void GenerateSkylightMap(ChunkColumnStorage chunk)
         {
-            for (int i = 0; i < ChunkConstants.SectionsPerChunk; ++i)
+            byte skyLightValue = 0xF;
+
+            for (int z = 0; z < ChunkConstants.BlockEdgeWidthInSection; z++)
             {
-                var skyLight = chunk.Sections[i].SkyLight;
-                for (int y = 0; y < ChunkConstants.BlockEdgeWidthInSection; y++)
+                for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; x++)
                 {
-                    for (int z = 0; z < ChunkConstants.BlockEdgeWidthInSection; z++)
+                    skyLightValue = 0xF;
+                    for (int y = ChunkConstants.ChunkHeight - 1; y >= 0; y--)
                     {
-                        for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; x++)
+                        int sectionY = y / ChunkConstants.BlockEdgeWidthInSection;
+                        var skyLight = chunk.Sections[sectionY].SkyLight;
+                        skyLight[x, y % ChunkConstants.BlockEdgeWidthInSection, z] = skyLightValue;
+                        if (!chunk[x, y, z].IsAir())
                         {
-                            skyLight[x, y, z] = 0xF;
+                            skyLightValue = 0x4;
                         }
                     }
                 }
