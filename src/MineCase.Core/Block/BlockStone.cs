@@ -5,29 +5,34 @@ using MineCase.Item;
 
 namespace MineCase.Block
 {
-    public class BlockAir : Block
+    public class BlockStone : Block
     {
-        public BlockAir()
+        public BlockStone()
         {
             FullBlock = true;
-            LightOpacity = 255;
+            LightOpacity = 0;
             Translucent = false;
             LightValue = 0;
             UseNeighborBrightness = false;
             BlockHardness = 1.0f;
             BlockResistance = 0.0f;
             EnableStats = false;
-            NeedsRandomTick = false;
+            NeedsRandomTick = true;
             IsBlockContainer = false;
             BlockSoundType = null;
             BlockParticleGravity = 1.0f;
-            BlockState = BlockStates.Air();
-            UnlocalizedName = "air";
+            BlockState = BlockStates.Stone();
+            UnlocalizedName = "stone";
         }
 
         public override ItemState BlockBrokenItem(ItemState hand, bool silktouch)
         {
-            return new ItemState { Id = (uint)BlockId.Air, MetaValue = 0 };
+            if (silktouch)
+                return new ItemState { Id = (uint)BlockId.Stone, MetaValue = 0 };
+            else if (hand.IsPickaxe())
+                return new ItemState { Id = (uint)BlockId.Cobblestone, MetaValue = 0 };
+            else
+                return new ItemState { Id = (uint)BlockId.Air, MetaValue = 0 };
         }
     }
 }

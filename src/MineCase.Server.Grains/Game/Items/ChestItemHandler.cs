@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Block;
+using MineCase.Item;
 using MineCase.Server.Game.Blocks;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Windows;
@@ -13,15 +14,15 @@ using Orleans;
 
 namespace MineCase.Server.Game.Items
 {
-    [ItemHandler(BlockId.Chest)]
+    [ItemHandler(BlockId.Chest, 0)]
     public class ChestItemHandler : ItemHandler
     {
         public override bool IsUsable => false;
 
         public override bool IsPlaceable => true;
 
-        public ChestItemHandler(uint itemId)
-            : base(itemId)
+        public ChestItemHandler(ItemState item)
+            : base(item)
         {
         }
 

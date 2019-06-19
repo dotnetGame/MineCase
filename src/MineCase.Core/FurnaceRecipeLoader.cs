@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Block;
+using MineCase.Item;
 
 namespace MineCase
 {

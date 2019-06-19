@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase
+namespace MineCase.Item
 {
     public static class ItemStates
     {

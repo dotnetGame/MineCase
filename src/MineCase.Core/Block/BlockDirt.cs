@@ -5,12 +5,12 @@ using MineCase.Item;
 
 namespace MineCase.Block
 {
-    public class BlockAir : Block
+    public class BlockDirt : Block
     {
-        public BlockAir()
+        public BlockDirt()
         {
             FullBlock = true;
-            LightOpacity = 255;
+            LightOpacity = 0;
             Translucent = false;
             LightValue = 0;
             UseNeighborBrightness = false;
@@ -21,13 +21,13 @@ namespace MineCase.Block
             IsBlockContainer = false;
             BlockSoundType = null;
             BlockParticleGravity = 1.0f;
-            BlockState = BlockStates.Air();
-            UnlocalizedName = "air";
+            BlockState = BlockStates.Dirt();
+            UnlocalizedName = "dirt";
         }
 
         public override ItemState BlockBrokenItem(ItemState hand, bool silktouch)
         {
-            return new ItemState { Id = (uint)BlockId.Air, MetaValue = 0 };
+            return new ItemState { Id = (uint)BlockId.Dirt, MetaValue = 0 };
         }
     }
 }

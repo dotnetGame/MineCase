@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Block;
+using MineCase.Item;
 using MineCase.Server.Game.Blocks;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.Game.Entities.Components;
@@ -21,7 +22,7 @@ namespace MineCase.Server.Game.Items
 {
     public abstract class ItemHandler
     {
-        public uint ItemId { get; }
+        public ItemState Item { get; }
 
         public abstract bool IsUsable { get; }
 
@@ -29,13 +30,13 @@ namespace MineCase.Server.Game.Items
 
         public virtual byte MaxStackCount => 64;
 
-        public ItemHandler(uint itemId)
+        public ItemHandler(ItemState item)
         {
-            ItemId = itemId;
+            Item = item;
         }
 
-        private static readonly Dictionary<uint, Type> _itemHandlerTypes;
-        private static readonly ConcurrentDictionary<uint, ItemHandler> _itemHandlers = new ConcurrentDictionary<uint, ItemHandler>();
+        private static readonly Dictionary<ItemState, Type> _itemHandlerTypes;
+        private static readonly ConcurrentDictionary<ItemState, ItemHandler> _itemHandlers = new ConcurrentDictionary<ItemState, ItemHandler>();
         private static readonly ItemHandler _defaultItemHandler = new DefaultItemHandler();
 
         static ItemHandler()
@@ -46,16 +47,18 @@ namespace MineCase.Server.Game.Items
                                  from attr in attrs
                                  select new
                                  {
-                                     ItemId = attr.ItemId,
+                                     Item = attr.Item,
                                      Type = t
-                                 }).ToDictionary(o => o.ItemId, o => o.Type.AsType());
+                                 }).ToDictionary(o => o.Item, o => o.Type.AsType());
         }
 
-        public static ItemHandler Create(uint itemId)
+        public static ItemHandler Create(ItemState item)
         {
-            if (_itemHandlerTypes.TryGetValue(itemId, out var type))
-                return _itemHandlers.GetOrAdd(itemId, k => (ItemHandler)Activator.CreateInstance(type, k));
-            return _defaultItemHandler;
+            if (_itemHandlerTypes.TryGetValue(item, out var type))
+                return _itemHandlers.GetOrAdd(item, k => (ItemHandler)Activator.CreateInstance(type, k));
+
+            // return _defaultItemHandler;
+            return new DefaultItemHandler(item);
         }
 
         public virtual async Task<bool> PlaceBy(IEntity entity, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, Slot heldItem, PlayerDiggingFace face, Vector3 cursorPosition)
@@ -135,7 +138,7 @@ namespace MineCase.Server.Game.Items
                     var chunk = position.ToChunkWorldPos();
                     var finder = grainFactory.GetGrain<ICollectableFinder>(world.MakeAddressByPartitionKey(chunk));
                     var blockHandler = BlockHandler.Create((BlockId)blockState.Id);
-                    var droppedSlot = blockHandler.DropBlock(ItemId, blockState);
+                    var droppedSlot = blockHandler.DropBlock(Item, blockState);
                     if (!droppedSlot.IsEmpty)
                     {
                         Random random = new Random();
@@ -156,16 +159,16 @@ namespace MineCase.Server.Game.Items
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
     public sealed class ItemHandlerAttribute : Attribute
     {
-        public uint ItemId { get; }
+        public ItemState Item { get; }
 
-        public ItemHandlerAttribute(BlockId itemId)
+        public ItemHandlerAttribute(BlockId itemId, uint metaValue)
         {
-            ItemId = (uint)itemId;
+            Item = new ItemState { Id = (uint)itemId, MetaValue = metaValue };
         }
 
-        public ItemHandlerAttribute(ItemId itemId)
+        public ItemHandlerAttribute(ItemId itemId, uint metaValue)
         {
-            ItemId = (uint)itemId;
+            Item = new ItemState { Id = (uint)itemId, MetaValue = metaValue };
         }
     }
 }
