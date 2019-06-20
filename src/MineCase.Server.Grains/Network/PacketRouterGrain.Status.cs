@@ -11,6 +11,9 @@ using Orleans;
 
 namespace MineCase.Server.Network
 {
+    /// <summary>
+    /// Packet router grain used in status requests and response.
+    /// </summary>
     internal partial class PacketRouterGrain
     {
         private Task DispatchStatusPackets(UncompressedPacket packet)

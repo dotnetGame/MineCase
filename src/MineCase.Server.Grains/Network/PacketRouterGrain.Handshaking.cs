@@ -11,6 +11,9 @@ using Orleans;
 
 namespace MineCase.Server.Network
 {
+    /// <summary>
+    /// Packet router grain used in handshaking stage.
+    /// </summary>
     internal partial class PacketRouterGrain
     {
         private Task DispatchHandshakingPackets(UncompressedPacket packet)

@@ -5,7 +5,7 @@ using System.Text;
 namespace MineCase.Nbt
 {
     /// <summary>
-    /// 表示 <see cref="NbtTagType"/> 所关联的 <see cref="Tags.NbtTag"/> 类型
+    /// 表示 <see cref="NbtTagType"/> 所关联的 <see cref="Tags.NbtTag"/> 类型.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
     internal class TagClassAttribute : Attribute
@@ -19,9 +19,9 @@ namespace MineCase.Nbt
     }
 
     /// <summary>
-    /// NBT Tag 的类型
+    /// NBT Tag 的类型.
     /// </summary>
-    /// <remarks>注释内容来自<see href="http://wiki.vg/NBT#Specification"/></remarks>
+    /// <remarks>注释内容来自<see href="http://wiki.vg/NBT#Specification"/>.</remarks>
     public enum NbtTagType : byte
     {
         /// <summary>

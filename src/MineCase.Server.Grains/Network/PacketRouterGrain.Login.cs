@@ -12,6 +12,9 @@ using Orleans;
 
 namespace MineCase.Server.Network
 {
+    /// <summary>
+    /// Packet router grain used in login stage.
+    /// </summary>
     internal partial class PacketRouterGrain
     {
         private Task DispatchLoginPackets(UncompressedPacket packet)
@@ -24,6 +27,11 @@ namespace MineCase.Server.Network
                 case 0x00:
                     task = DispatchPacket(LoginStart.Deserialize(ref br));
                     break;
+
+                // Encryption Response
+                case 0x01:
+                    task = DispatchPacket(EncryptionResponse.Deserialize(ref br));
+                    break;
                 default:
                     throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X2}.");
             }
@@ -35,11 +43,19 @@ namespace MineCase.Server.Network
 
         private async Task DispatchPacket(LoginStart packet)
         {
-            var user = await GrainFactory.GetGrain<INonAuthenticatedUser>(packet.Name).GetUser();
+            _userName = packet.Name;
+            var user = GrainFactory.GetGrain<INonAuthenticatedUser>(packet.Name);
             await user.SetProtocolVersion(_protocolVersion);
 
             var requestGrain = GrainFactory.GetGrain<ILoginFlow>(this.GetPrimaryKey());
             requestGrain.DispatchPacket(packet).Ignore();
+        }
+
+        private Task DispatchPacket(EncryptionResponse packet)
+        {
+            var requestGrain = GrainFactory.GetGrain<ILoginFlow>(this.GetPrimaryKey());
+            requestGrain.DispatchPacket(packet).Ignore();
+            return Task.CompletedTask;
         }
     }
 }

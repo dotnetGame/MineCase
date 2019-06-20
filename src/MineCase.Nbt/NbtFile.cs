@@ -14,7 +14,7 @@ namespace MineCase.Nbt
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NbtFile"/> class.<para />
-        /// 默认构造函数
+        /// 默认构造函数.
         /// </summary>
         public NbtFile()
         {
@@ -23,10 +23,10 @@ namespace MineCase.Nbt
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NbtFile"/> class.<para />
-        /// 从流中初始化 Nbt 数据
+        /// 从流中初始化 Nbt 数据.
         /// </summary>
-        /// <param name="stream">要从中初始化数据的流</param>
-        /// <param name="leaveOpen">读取完成后保持流的打开状态</param>
+        /// <param name="stream">要从中初始化数据的流.</param>
+        /// <param name="leaveOpen">读取完成后保持流的打开状态.</param>
         public NbtFile(Stream stream, bool leaveOpen = true)
         {
             if (stream == null)
@@ -48,10 +48,10 @@ namespace MineCase.Nbt
         }
 
         /// <summary>
-        /// 将内容写入流中
+        /// 将内容写入流中.
         /// </summary>
-        /// <param name="stream">要写入到的流</param>
-        /// <param name="leaveOpen">写入完成后保持流的打开状态</param>
+        /// <param name="stream">要写入到的流.</param>
+        /// <param name="leaveOpen">写入完成后保持流的打开状态.</param>
         public void WriteTo(Stream stream, bool leaveOpen = true)
         {
             if (stream == null)

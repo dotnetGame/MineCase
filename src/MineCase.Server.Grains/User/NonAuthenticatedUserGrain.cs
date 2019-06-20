@@ -26,13 +26,27 @@ namespace MineCase.Server.User
         {
             var user = GrainFactory.GetGrain<IUser>(State.UUID);
             await user.SetName(this.GetPrimaryKeyString());
+            await user.SetProtocolVersion(State.ProtocolVersion);
             await WriteStateAsync();
             return user;
+        }
+
+        public Task<uint> GetProtocolVersion()
+        {
+            return Task.FromResult(State.ProtocolVersion);
+        }
+
+        public Task SetProtocolVersion(uint version)
+        {
+            State.ProtocolVersion = version;
+            return Task.CompletedTask;
         }
 
         internal class StateHolder
         {
             public Guid UUID { get; set; }
+
+            public uint ProtocolVersion { get; set; }
 
             public StateHolder()
             {
