@@ -419,21 +419,38 @@ namespace MineCase.Server.World.Generation
 
         private void GenerateSkylightMap(ChunkColumnStorage chunk)
         {
-            byte skyLightValue = 0xF;
+            int skyLightValue = 15;
 
             for (int z = 0; z < ChunkConstants.BlockEdgeWidthInSection; z++)
             {
                 for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; x++)
                 {
-                    skyLightValue = 0xF;
+                    skyLightValue = 15;
                     for (int y = ChunkConstants.ChunkHeight - 1; y >= 0; y--)
                     {
                         int sectionY = y / ChunkConstants.BlockEdgeWidthInSection;
+                        int sectionOffset = y % ChunkConstants.BlockEdgeWidthInSection;
                         var skyLight = chunk.Sections[sectionY].SkyLight;
-                        skyLight[x, y % ChunkConstants.BlockEdgeWidthInSection, z] = skyLightValue;
-                        if (!chunk[x, y, z].IsAir())
+                        skyLight[x, sectionOffset, z] = 0;
+                    }
+
+                    for (int y = ChunkConstants.ChunkHeight - 1; y >= 0; y--)
+                    {
+                        int sectionY = y / ChunkConstants.BlockEdgeWidthInSection;
+                        int sectionOffset = y % ChunkConstants.BlockEdgeWidthInSection;
+                        var skyLight = chunk.Sections[sectionY].SkyLight;
+                        skyLight[x, sectionOffset, z] = (byte)(skyLightValue & 0xF);
+                        int lightOpacity = Block.Block.FromBlockState(chunk[x, y, z]).LightOpacity;
+                        if (lightOpacity == 0 && skyLightValue != 15)
                         {
-                            skyLightValue = 0x4;
+                            lightOpacity = 1;
+                        }
+
+                        skyLightValue -= lightOpacity;
+
+                        if (skyLightValue <= 0)
+                        {
+                            break;
                         }
                     }
                 }

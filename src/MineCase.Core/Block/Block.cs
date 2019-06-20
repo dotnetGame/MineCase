@@ -52,15 +52,37 @@ namespace MineCase.Block
         public static Block FromBlockState(BlockState blockState)
         {
             if (blockState == BlockStates.Air())
+            {
                 return new BlockAir();
-            else if (blockState == BlockStates.Stone())
-                return new BlockStone();
+            }
+            else if (blockState.IsId(BlockId.Stone))
+            {
+                var stone = new BlockStone();
+                stone.BlockState = blockState;
+                return stone;
+            }
             else if (blockState == BlockStates.GrassBlock())
+            {
                 return new BlockGrassBlock();
+            }
             else if (blockState == BlockStates.Dirt())
+            {
                 return new BlockDirt();
+            }
+            else if (blockState == BlockStates.Cobblestone())
+            {
+                return new BlockCobblestone();
+            }
+            else if (blockState.IsId(BlockId.WoodPlanks))
+            {
+                var planks = new BlockWoodPlanks();
+                planks.BlockState = blockState;
+                return planks;
+            }
             else
+            {
                 return new BlockAir();
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ namespace MineCase.Block
         public BlockStone()
         {
             FullBlock = true;
-            LightOpacity = 0;
+            LightOpacity = 255;
             Translucent = false;
             LightValue = 0;
             UseNeighborBrightness = false;

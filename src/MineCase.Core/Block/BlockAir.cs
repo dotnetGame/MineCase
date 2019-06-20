@@ -10,7 +10,7 @@ namespace MineCase.Block
         public BlockAir()
         {
             FullBlock = true;
-            LightOpacity = 255;
+            LightOpacity = 0;
             Translucent = false;
             LightValue = 0;
             UseNeighborBrightness = false;

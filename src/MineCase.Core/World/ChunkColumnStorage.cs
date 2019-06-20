@@ -17,6 +17,13 @@ namespace MineCase.World
             set => Sections[y / 16].Data[x, y % 16, z] = value;
         }
 
+        public byte GetSkyLight(int x, int y, int z)
+        {
+            int whichSection = y / ChunkConstants.BlockEdgeWidthInSection;
+            int sectionOffset = y % ChunkConstants.BlockEdgeWidthInSection;
+            return Sections[whichSection].SkyLight[x, sectionOffset, z];
+        }
+
         public ChunkColumnCompactStorage Compact()
         {
             var storage = new ChunkColumnCompactStorage();
@@ -53,7 +60,7 @@ namespace MineCase.World
                     {
                         for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection / 2; x++)
                         {
-                            dest[index++] = (byte)((source[x * 2, y, z] << 4) | (source[x * 2 + 1, y, z] & 0xF));
+                            dest[index++] = (byte)((source[x * 2 + 1, y, z] << 4) | (source[x * 2, y, z] & 0xF));
                         }
                     }
                 }

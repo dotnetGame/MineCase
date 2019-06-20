@@ -104,7 +104,7 @@ namespace MineCase.UnitTest
             Assert.Equal(7, bvPos4.Y);
             Assert.Equal(8, bvPos4.Z);
 
-            Assert.Equal(bvPos1, bvPos1 + bvPos2);
+            Assert.Equal(bvPos2, bvPos1 + bvPos2);
             Assert.Equal(bvPos3, bvPos1 + bvPos3);
             Assert.Equal(bvPos1, bvPos2 + bvPos3);
         }

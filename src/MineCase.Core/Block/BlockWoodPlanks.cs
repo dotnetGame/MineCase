@@ -5,9 +5,9 @@ using MineCase.Item;
 
 namespace MineCase.Block
 {
-    public class BlockGrassBlock : Block
+    public class BlockWoodPlanks : Block
     {
-        public BlockGrassBlock()
+        public BlockWoodPlanks()
         {
             FullBlock = true;
             LightOpacity = 255;
@@ -17,20 +17,17 @@ namespace MineCase.Block
             BlockHardness = 1.0f;
             BlockResistance = 0.0f;
             EnableStats = false;
-            NeedsRandomTick = false;
+            NeedsRandomTick = true;
             IsBlockContainer = false;
             BlockSoundType = null;
             BlockParticleGravity = 1.0f;
-            BlockState = BlockStates.GrassBlock();
-            UnlocalizedName = "grass";
+            BlockState = BlockStates.WoodPlanks();
+            UnlocalizedName = "planks";
         }
 
         public override ItemState BlockBrokenItem(ItemState hand, bool silktouch)
         {
-            if (silktouch)
-                return new ItemState { Id = (uint)BlockId.GrassBlock, MetaValue = 0 };
-            else
-                return new ItemState { Id = (uint)BlockId.Dirt, MetaValue = 0 };
+            return new ItemState { Id = (uint)BlockId.WoodPlanks, MetaValue = 0 };
         }
     }
 }
