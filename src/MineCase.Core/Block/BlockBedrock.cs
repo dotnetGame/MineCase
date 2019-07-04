@@ -14,8 +14,8 @@ namespace MineCase.Block
             Translucent = false;
             LightValue = 0;
             UseNeighborBrightness = false;
-            BlockHardness = 1.0f;
-            BlockResistance = 0.0f;
+            BlockHardness = 60000.0f;
+            BlockResistance = 60000.0f;
             EnableStats = false;
             NeedsRandomTick = true;
             IsBlockContainer = false;

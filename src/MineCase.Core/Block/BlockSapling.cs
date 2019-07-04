@@ -9,15 +9,15 @@ namespace MineCase.Block
     {
         public BlockSapling()
         {
-            FullBlock = true;
-            LightOpacity = 3;
+            FullBlock = false;
+            LightOpacity = 0;
             Translucent = false;
             LightValue = 0;
             UseNeighborBrightness = false;
             BlockHardness = 1.0f;
             BlockResistance = 0.0f;
             EnableStats = false;
-            NeedsRandomTick = true;
+            NeedsRandomTick = false;
             IsBlockContainer = false;
             BlockSoundType = null;
             BlockParticleGravity = 1.0f;
@@ -27,10 +27,7 @@ namespace MineCase.Block
 
         public override ItemState BlockBrokenItem(ItemState hand, bool silktouch)
         {
-            if (silktouch)
-                return new ItemState { Id = (uint)BlockId.WoodPlanks, MetaValue = BlockState.MetaValue };
-            else
-                return new ItemState { Id = (uint)BlockId.Air, MetaValue = 0 };
+            return new ItemState { Id = (uint)BlockId.Sapling, MetaValue = BlockState.MetaValue };
         }
     }
 }

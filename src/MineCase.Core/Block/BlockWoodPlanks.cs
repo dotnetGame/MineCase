@@ -27,7 +27,7 @@ namespace MineCase.Block
 
         public override ItemState BlockBrokenItem(ItemState hand, bool silktouch)
         {
-            return new ItemState { Id = (uint)BlockId.WoodPlanks, MetaValue = 0 };
+            return new ItemState { Id = (uint)BlockId.WoodPlanks, MetaValue = BlockState.MetaValue };
         }
     }
 }
