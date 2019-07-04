@@ -2,8 +2,6 @@
 
 在介绍地形生成前，我觉得有必要介绍一下minecraft中和地形相关的基本概念
 
-
-
 ## 基本概念
 
 **坐标**
@@ -47,4 +45,16 @@ Block用于描述不同种类Block的不同行为(MineCase.Core\Block\Block.cs)�
 **chunk数据**
 
 每个chunk的数据包含了16x16x256的block，它也是地图传输与存储的基本单位。用户登入服务器后，服务器会将user所在点周围chunk传给客户端。
+
+
+## 地形生成
+
+**生成阶段**
+地形的生成主要分为两个阶段，generate和populate。
+generate主要进行基本地形生成，生物群落特有方块覆盖，以及基础的skylight计算。
+populate主要负责建筑生成，植物生成，动物生成等地形附加结构。例如矿道，神庙，湖泊等。
+
+
+**generate阶段**
+
 

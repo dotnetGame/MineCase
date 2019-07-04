@@ -79,6 +79,20 @@ namespace MineCase.Block
                 planks.BlockState = blockState;
                 return planks;
             }
+            else if (blockState.IsId(BlockId.Sapling))
+            {
+                var planks = new BlockSapling();
+                planks.BlockState = blockState;
+                return planks;
+            }
+            else if (blockState == BlockStates.Bedrock())
+            {
+                return new BlockBedrock();
+            }
+            else if (blockState == BlockStates.Water())
+            {
+                return new BlockWater();
+            }
             else
             {
                 return new BlockAir();
