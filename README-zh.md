@@ -7,6 +7,10 @@ MineCase
 
 #### [English](https://github.com/dotnetGame/MineCase/blob/master/README.md) | [中文](https://github.com/dotnetGame/MineCase/blob/master/README-zh.md) 
 
+![Logo](doc/logo/MineCaseLogo.png)
+
+#### [English](https://github.com/dotnetGame/MineCase/blob/master/README.md) | [中文](https://github.com/dotnetGame/MineCase/blob/master/README-zh.md) 
+
 `MineCase` 是一个跨平台、分布式的 `Minecraft` 服务端应用。
 
 本项目使用 `.NET Core` 编写，基于 [orleans](https://github.com/dotnet/orleans) 框架。它通过 Actor 模型将各个模块分离开来，从而构建一个高效的分布式系统。
