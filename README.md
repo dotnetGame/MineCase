@@ -1,6 +1,7 @@
 MineCase 
 ======================================
-#### [![Build Status](https://travis-ci.org/dotnetGame/MineCase.svg?branch=master)](https://travis-ci.org/dotnetGame/MineCase)   [![Build status](https://ci.appveyor.com/api/projects/status/w9h243k1lqee2ke5/branch/master?svg=true)](https://ci.appveyor.com/project/sunnycase/minecase/branch/master)
+#### [![Build Status](https://travis-ci.org/dotnetGame/MineCase.svg?branch=master)](https://travis-ci.org/dotnetGame/MineCase)   [![Build status](https://ci.appveyor.com/api/projects/status/w9h243k1lqee2ke5/branch/master?svg=true)](https://ci.appveyor.com/project/sunnycase/minecase/branch/master) 
+<a href="https://www.patreon.com/SooChowJunWang"><img src="https://img.shields.io/endpoint.svg?url=https://shieldsio-patreon.herokuapp.com/SooChowJunWang&style=for-the-badge" alt="Patreon donate button" /></a>
 
 ![Logo](doc/logo/MineCaseLogo.png)
 
@@ -9,6 +10,7 @@ MineCase
 `MineCase` is a cross-platform application with distributed server of `Minecraft`. 
 The project is designed to create a high-performance, distributed system by using isolating different components through actor mode. 
 Different chunks are managed by different servers so that all players can play in a world. This makes minecraft servers more scalable.
+Anarchy servers can allow more players to join in without waiting in queue by using distributing server.
 It written in `C#` with `.NET Core 2.0` env and based on `orleans` framework to work with released [1.12 protocol](https://minecraft.net/en-us/article/minecraft-112-pre-release-6).
 
 **MineCase is not stable and lack of many features now. Please don't use MineCase in production unless you know what you're doing.**
