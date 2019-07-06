@@ -419,16 +419,38 @@ namespace MineCase.Server.World.Generation
 
         private void GenerateSkylightMap(ChunkColumnStorage chunk)
         {
-            for (int i = 0; i < ChunkConstants.SectionsPerChunk; ++i)
+            int skyLightValue = 15;
+
+            for (int z = 0; z < ChunkConstants.BlockEdgeWidthInSection; z++)
             {
-                var skyLight = chunk.Sections[i].SkyLight;
-                for (int y = 0; y < ChunkConstants.BlockEdgeWidthInSection; y++)
+                for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; x++)
                 {
-                    for (int z = 0; z < ChunkConstants.BlockEdgeWidthInSection; z++)
+                    skyLightValue = 15;
+                    for (int y = ChunkConstants.ChunkHeight - 1; y >= 0; y--)
                     {
-                        for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; x++)
+                        int sectionY = y / ChunkConstants.BlockEdgeWidthInSection;
+                        int sectionOffset = y % ChunkConstants.BlockEdgeWidthInSection;
+                        var skyLight = chunk.Sections[sectionY].SkyLight;
+                        skyLight[x, sectionOffset, z] = 0;
+                    }
+
+                    for (int y = ChunkConstants.ChunkHeight - 1; y >= 0; y--)
+                    {
+                        int sectionY = y / ChunkConstants.BlockEdgeWidthInSection;
+                        int sectionOffset = y % ChunkConstants.BlockEdgeWidthInSection;
+                        var skyLight = chunk.Sections[sectionY].SkyLight;
+                        skyLight[x, sectionOffset, z] = (byte)(skyLightValue & 0xF);
+                        int lightOpacity = Block.Block.FromBlockState(chunk[x, y, z]).LightOpacity;
+                        if (lightOpacity == 0 && skyLightValue != 15)
                         {
-                            skyLight[x, y, z] = 0xF;
+                            lightOpacity = 1;
+                        }
+
+                        skyLightValue -= lightOpacity;
+
+                        if (skyLightValue <= 0)
+                        {
+                            break;
                         }
                     }
                 }

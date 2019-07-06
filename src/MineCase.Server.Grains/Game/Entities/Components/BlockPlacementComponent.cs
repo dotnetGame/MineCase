@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Block;
 using MineCase.Engine;
+using MineCase.Item;
 using MineCase.Server.Components;
 using MineCase.Server.Game.Blocks;
 using MineCase.Server.Game.Items;
@@ -36,7 +37,7 @@ namespace MineCase.Server.Game.Entities.Components
                     var heldItem = await AttachedObject.GetComponent<HeldItemComponent>().GetHeldItem();
                     if (!heldItem.slot.IsEmpty)
                     {
-                        var itemHandler = ItemHandler.Create((uint)heldItem.slot.BlockId);
+                        var itemHandler = ItemHandler.Create(new ItemState { Id = (uint)heldItem.slot.BlockId, MetaValue = 0 });
                         if (itemHandler.IsPlaceable)
                         {
                             await itemHandler.PlaceBy(AttachedObject, GrainFactory, world, location, heldItem.slot, face, cursorPosition);

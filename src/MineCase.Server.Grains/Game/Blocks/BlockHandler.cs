@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Block;
+using MineCase.Item;
 using MineCase.Server.Game.Entities;
 using MineCase.Server.World;
 using MineCase.World;
@@ -69,15 +70,17 @@ namespace MineCase.Server.Game.Blocks
             return Task.CompletedTask;
         }
 
-        public virtual Slot DropBlock(uint itemId, BlockState blockState)
+        public virtual Slot DropBlock(ItemState item, BlockState blockState)
         {
+            Block.Block blockObject = Block.Block.FromBlockState(blockState);
             switch ((BlockId)blockState.Id)
             {
                 case BlockId.Air:
                 case BlockId.Water:
                     return Slot.Empty;
                 default:
-                    return new Slot { BlockId = (short)blockState.Id, ItemCount = 1 };
+                    ItemState dropItem = blockObject.BlockBrokenItem(item, false);
+                    return new Slot { BlockId = (short)dropItem.Id, ItemCount = 1 };
             }
         }
     }

@@ -10,5 +10,7 @@ namespace MineCase.Server.Network.Login
     public interface ILoginFlow : IGrainWithGuidKey
     {
         Task DispatchPacket(LoginStart packet);
+
+        Task DispatchPacket(EncryptionResponse packet);
     }
 }

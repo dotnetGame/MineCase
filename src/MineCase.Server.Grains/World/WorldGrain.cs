@@ -95,6 +95,11 @@ namespace MineCase.Server.World
             return new EntityWorldPos(-8, height, -8);
         }
 
+        public Task<bool> HasSkyLight()
+        {
+            return Task.FromResult(true);
+        }
+
         private void MarkDirty()
         {
             ValueStorage.IsDirty = true;

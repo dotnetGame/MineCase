@@ -12,6 +12,12 @@ namespace MineCase.Server.Network
     {
         Task BindToUser(IUser user);
 
+        Task<IUser> GetUser();
+
+        Task SetUserName(string name);
+
+        Task<string> GetUserName();
+
         Task SendPacket(UncompressedPacket packet);
 
         Task Close();

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Block;
 using MineCase.Engine;
+using MineCase.Item;
 using MineCase.Server.Components;
 using MineCase.Server.Game.Items;
 using MineCase.Server.World;
@@ -58,7 +59,7 @@ namespace MineCase.Server.Game.Entities.Components
             if (_diggingBlock != null)
             {
                 var heldItem = await AttachedObject.Ask(new AskHeldItem());
-                var itemHandler = ItemHandler.Create((uint)heldItem.slot.BlockId);
+                var itemHandler = ItemHandler.Create(new ItemState { Id = (uint)heldItem.slot.BlockId, MetaValue = 0 });
 
                 var world = AttachedObject.GetWorld();
                 var usedTick = (await world.GetAge()) - _diggingStartTick;

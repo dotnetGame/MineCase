@@ -100,7 +100,7 @@ namespace MineCase.World
         }
     }
 
-    public struct BlockVector
+    public struct BlockVector : IEquatable<BlockVector>
     {
         public int X { get; set; }
 
@@ -113,6 +113,28 @@ namespace MineCase.World
             X = x;
             Y = y;
             Z = z;
+        }
+
+        public static BlockVector operator +(BlockVector lhs, BlockVector rhs)
+        {
+            return new BlockVector(lhs.X + rhs.X, lhs.Y + rhs.Y, lhs.Z + rhs.Z);
+        }
+
+        public static BlockVector operator - (BlockVector lhs, BlockVector rhs)
+        {
+            return new BlockVector(lhs.X - rhs.X, lhs.Y - rhs.Y, lhs.Z - rhs.Z);
+        }
+
+        public static BlockVector operator *(BlockVector lhs, int rhs)
+        {
+            return new BlockVector(lhs.X * rhs, lhs.Y * rhs, lhs.Z * rhs);
+        }
+
+        public bool Equals(BlockVector other)
+        {
+            return this.X == other.X &&
+                this.Y == other.Y &&
+                this.Z == other.Z;
         }
     }
 

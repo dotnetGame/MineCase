@@ -10,6 +10,11 @@ namespace MineCase.Block
 
         public uint MetaValue { get; set; }
 
+        public bool IsId(BlockId id)
+        {
+            return Id == (uint)id;
+        }
+
         public bool IsSameId(BlockState other)
         {
             return Id == other.Id;

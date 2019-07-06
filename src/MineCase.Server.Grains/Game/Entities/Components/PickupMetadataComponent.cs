@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
+using MineCase.Item;
 using MineCase.Server.Components;
 using MineCase.Server.Game.Entities.EntityMetadata;
 using MineCase.Server.Game.Items;
@@ -61,7 +62,7 @@ namespace MineCase.Server.Game.Entities.Components
             var slot = message.Slot;
             if (slot.CanStack(PickupMetadata.Item))
             {
-                var maxStack = ItemHandler.Create((uint)slot.BlockId).MaxStackCount;
+                var maxStack = ItemHandler.Create(new ItemState { Id = (uint)slot.BlockId, MetaValue = 0 }).MaxStackCount;
                 var toStack = Math.Min(maxStack, slot.ItemCount + PickupMetadata.Item.ItemCount) - PickupMetadata.Item.ItemCount;
                 if (toStack > 0)
                 {
