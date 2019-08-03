@@ -68,7 +68,7 @@
 * 实现聊天
 * 实现命令解析
 * 实现灯光计算
-采用洪水填充算法，为chunk中每个block赋予skylight和blocklight值
+* 采用洪水填充算法，为chunk中每个block赋予skylight和blocklight值
 * 实现物理
 * 实现红石
 * 实现生物AI
