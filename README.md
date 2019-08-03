@@ -26,7 +26,7 @@ It written in `C#` with `.NET Core 2.0` env and based on `orleans` framework to 
 * 2 . Download and install a `MongoDB` from this [page](https://www.mongodb.com/download-center?jmp=nav#community).
 * 3 . Download a `MineCase` archive from the [github page](https://github.com/dotnetGame/MineCase/archive/master.zip)  (or **clone:**)
 	```bash
-	git clone git@github.com:dotnetGame/MineCase.git
+	git clone --depth 1 https://github.com/dotnetGame/MineCase.git
 	cd MineCase
 	```
 * 4 . Un-zip `Minecase` archive.
