@@ -42,8 +42,8 @@ MineCase
     * **Win** : 双击 `build_and_run.bat`.
 
 ## 使用docker安装
-* 1 . 下载[Docker for linux](https://docs.docker.com/engine/installation/)。
-* 2 . 解压 `Docker for linux`，然后在linux上运行 `server`
+* 1 . 下载并安装`Docker` [Mac](https://docs.docker.com/docker-for-mac/install/) [Linux](https://docs.docker.com/install/) [Windows](https://docs.docker.com/docker-for-windows/install/)。
+* 2 .
 
 	```bash
 	url=https://raw.githubusercontent.com/dotnetGame/MineCase/master/build/docker/linux/docker-compose.yml
