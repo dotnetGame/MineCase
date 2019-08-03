@@ -32,7 +32,7 @@ MineCase
 * 2 . 下载并安装 [MongoDB](https://www.mongodb.com/download-center?jmp=nav#community)。
 * 3 . 从 [github page](https://github.com/dotnetGame/MineCase/archive/master.zip) 下载`MineCase`(或者使用 **clone:** 指令)。
 	```bash
-	git clone git@github.com:dotnetGame/MineCase.git
+	git clone --depth 1 https://github.com/dotnetGame/MineCase.git
 	cd MineCase
 	```
 * 4 . 解压 `Minecase` 压缩包.
