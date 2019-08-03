@@ -36,7 +36,7 @@ It written in `C#` with `.NET Core 2.0` env and based on `orleans` framework to 
     * **Win** : Double-click `build_and_run.bat`.
 
 ## Install (Docker)
-* 1 . Download a `Docker for linux` from this [page](https://docs.docker.com/engine/installation/).
+* 1 . Download and install `Docker` [Mac](https://docs.docker.com/docker-for-mac/install/) [Linux](https://docs.docker.com/install/) [Windows](https://docs.docker.com/docker-for-windows/install/).
 * 2 . Un-zip `Docker for linux` and run the `server` on Linux
 
 	```bash
