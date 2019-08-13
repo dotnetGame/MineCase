@@ -7,10 +7,6 @@ MineCase
 
 #### [English](https://github.com/dotnetGame/MineCase/blob/master/README.md) | [中文](https://github.com/dotnetGame/MineCase/blob/master/README-zh.md) 
 
-![Logo](doc/logo/MineCaseLogo.png)
-
-#### [English](https://github.com/dotnetGame/MineCase/blob/master/README.md) | [中文](https://github.com/dotnetGame/MineCase/blob/master/README-zh.md) 
-
 `MineCase` 是一个跨平台、分布式的 `Minecraft` 服务端应用。
 
 本项目使用 `.NET Core` 编写，基于 [orleans](https://github.com/dotnet/orleans) 框架。它通过 Actor 模型将各个模块分离开来，从而构建一个高效的分布式系统。
@@ -42,8 +38,8 @@ MineCase
     * **Win** : 双击 `build_and_run.bat`.
 
 ## 使用docker安装
-* 1 . 下载[Docker for linux](https://docs.docker.com/engine/installation/)。
-* 2 . 解压 `Docker for linux`，然后在linux上运行 `server`
+* 1 . 下载并安装`Docker` [Mac](https://docs.docker.com/docker-for-mac/install/) [Linux](https://docs.docker.com/install/) [Windows](https://docs.docker.com/docker-for-windows/install/)。
+* 2 .
 
 	```bash
 	url=https://raw.githubusercontent.com/dotnetGame/MineCase/master/build/docker/linux/docker-compose.yml
