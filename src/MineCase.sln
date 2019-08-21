@@ -3,13 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Gateway", "MineCase.Gateway\MineCase.Gateway.csproj", "{D43E9B39-0267-4C6C-A9B9-032B47EF0678}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Gateway", "MineCase.Gateway\MineCase.Gateway.csproj", "{D43E9B39-0267-4C6C-A9B9-032B47EF0678}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F8A43438-85F8-4C18-82B7-7250D5A87778} = {F8A43438-85F8-4C18-82B7-7250D5A87778}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Server", "MineCase.Server\MineCase.Server.csproj", "{4BBD4D2B-128D-438B-8999-DA3347B448A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Server", "MineCase.Server\MineCase.Server.csproj", "{4BBD4D2B-128D-438B-8999-DA3347B448A4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7D8D1928-0881-4C96-9F2B-CCF574EB34B2} = {7D8D1928-0881-4C96-9F2B-CCF574EB34B2}
+		{F8A43438-85F8-4C18-82B7-7250D5A87778} = {F8A43438-85F8-4C18-82B7-7250D5A87778}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Server.Grains", "MineCase.Server.Grains\MineCase.Server.Grains.csproj", "{7D8D1928-0881-4C96-9F2B-CCF574EB34B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Server.Grains", "MineCase.Server.Grains\MineCase.Server.Grains.csproj", "{7D8D1928-0881-4C96-9F2B-CCF574EB34B2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F8A43438-85F8-4C18-82B7-7250D5A87778} = {F8A43438-85F8-4C18-82B7-7250D5A87778}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Server.Interfaces", "MineCase.Server.Interfaces\MineCase.Server.Interfaces.csproj", "{F8A43438-85F8-4C18-82B7-7250D5A87778}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Server.Interfaces", "MineCase.Server.Interfaces\MineCase.Server.Interfaces.csproj", "{F8A43438-85F8-4C18-82B7-7250D5A87778}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{2F824C14-4453-443F-9603-0A042C6DB4F7}"
 EndProject
@@ -17,7 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{66D961
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{96E9F43D-37B3-46A6-A314-DBF2A80267B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Core", "MineCase.Core\MineCase.Core.csproj", "{96EAEA39-F37A-4571-BB28-B7D9BF693138}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Core", "MineCase.Core\MineCase.Core.csproj", "{96EAEA39-F37A-4571-BB28-B7D9BF693138}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
