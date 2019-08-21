@@ -1,3 +1,0 @@
-﻿<ClientConfiguration xmlns="urn:orleans">
-  <Gateway Address="localhost" Port="30000"/>
-</ClientConfiguration>

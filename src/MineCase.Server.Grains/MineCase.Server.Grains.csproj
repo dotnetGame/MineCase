@@ -1,73 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>MineCase.Server</RootNamespace>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Configurations>Debug;Release;Appveyor;TravisCI</Configurations>
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TravisCI|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Appveyor|AnyCPU'">
-    <LangVersion>latest</LangVersion>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="GameSystems\**" />
-    <EmbeddedResource Remove="GameSystems\**" />
-    <None Remove="GameSystems\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Autofac" Version="4.9.2" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
-    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.2" />
-    <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="2.3.4">
+    <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Orleans.Core" Version="2.3.4" />
-    <PackageReference Include="Microsoft.Orleans.OrleansRuntime" Version="2.3.4" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-    <PackageReference Include="MongoDB.Driver" Version="2.8.1" />
-    <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.1" />
-    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.9.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\MineCase.Algorithm\MineCase.Algorithm.csproj" />
-    <ProjectReference Include="..\MineCase.Core\MineCase.Core.csproj" />
-    <ProjectReference Include="..\MineCase.Protocol\MineCase.Protocol.csproj" />
-    <ProjectReference Include="..\MineCase.Server.Interfaces\MineCase.Server.Interfaces.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="World\Generation\" />
-
-    <AdditionalFiles Include="..\..\build\stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\MineCase.Protocol\Serialization\BinaryWriterExtensions.cs" Link="BinaryWriterExtensions.cs" />
+    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="2.4.1" />
   </ItemGroup>
 
 </Project>

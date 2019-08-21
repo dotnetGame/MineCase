@@ -1,43 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>MineCase.Server.Interfaces</AssemblyName>
-    <RootNamespace>MineCase.Server</RootNamespace>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
-    <Configurations>Debug;Release;Appveyor;TravisCI</Configurations>
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="World\Biomes\**" />
-    <EmbeddedResource Remove="World\Biomes\**" />
-    <None Remove="World\Biomes\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="2.3.4">
+    <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Orleans.Core" Version="2.3.4" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\MineCase.Core\MineCase.Core.csproj" />
-    <ProjectReference Include="..\MineCase.Engine\MineCase.Server.Engine.csproj" />
-    <ProjectReference Include="..\MineCase.Protocol\MineCase.Protocol.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Network\Handshaking\" />
-    <Folder Include="Play\" />
-
-    <AdditionalFiles Include="..\..\build\stylecop.json" />
+    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="2.4.1" />
   </ItemGroup>
 
 </Project>

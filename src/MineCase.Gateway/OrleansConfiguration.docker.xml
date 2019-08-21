@@ -1,3 +1,0 @@
-﻿<ClientConfiguration xmlns="urn:orleans">
-  <Gateway Address="minecase.server" Port="30000"/>
-</ClientConfiguration>
