@@ -5,13 +5,15 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans.Runtime;
+using System.Threading;
 
 namespace MineCase.Gateway
 {
     class Program
     {
-        const int initializeAttemptsBeforeFailing = 5;
-        private static int attempt = 0;
+        private static int _retryAttempt = 0;
+
+        private static readonly ManualResetEvent _exitEvent = new ManualResetEvent(false);
 
         static int Main(string[] args)
         {
@@ -22,10 +24,15 @@ namespace MineCase.Gateway
         {
             try
             {
+                Console.CancelKeyPress += (s, e) => {
+                    e.Cancel = true;
+                    _exitEvent.Set();
+                };
+
                 using (var client = await StartClientWithRetries())
                 {
-                    await DoClientWork(client);
-                    Console.ReadKey();
+                    await ClientWork(client);
+                    _exitEvent.WaitOne();
                 }
 
                 return 0;
@@ -40,7 +47,7 @@ namespace MineCase.Gateway
 
         private static async Task<IClusterClient> StartClientWithRetries()
         {
-            attempt = 0;
+            _retryAttempt = 0;
             IClusterClient client;
             client = new ClientBuilder()
                 .UseLocalhostClustering()
@@ -59,27 +66,15 @@ namespace MineCase.Gateway
 
         private static async Task<bool> RetryFilter(Exception exception)
         {
-            if (exception.GetType() != typeof(SiloUnavailableException))
-            {
-                Console.WriteLine($"Cluster client failed to connect to cluster with unexpected error.  Exception: {exception}");
-                return false;
-            }
-            attempt++;
-            Console.WriteLine($"Cluster client attempt {attempt} of {initializeAttemptsBeforeFailing} failed to connect to cluster.  Exception: {exception}");
-            if (attempt > initializeAttemptsBeforeFailing)
-            {
-                return false;
-            }
-            await Task.Delay(TimeSpan.FromSeconds(4));
+            _retryAttempt++;
+            Console.WriteLine($"Cluster client attempt {_retryAttempt} failed to connect to cluster.");
+            await Task.Delay(TimeSpan.FromSeconds(Math.Pow(2, _retryAttempt)));
             return true;
         }
 
-        private static async Task DoClientWork(IClusterClient client)
+        private static async Task ClientWork(IClusterClient client)
         {
-            // example of calling grains from the initialized client
-            // var friend = client.GetGrain<IHello>(0);
-            // var response = await friend.SayHello("Good morning, my friend!");
-            Console.WriteLine("\n\n{0}\n\n");
+           
         }
 
         private static void ConfigureApplicationParts(IApplicationPartManager parts)

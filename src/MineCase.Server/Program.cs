@@ -6,11 +6,14 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace MineCase.Server
 {
     class Program
     {
+        private static readonly ManualResetEvent _exitEvent = new ManualResetEvent(false);
+
         static int Main(string[] args)
         {
             return RunMainAsync().Result;
@@ -20,22 +23,35 @@ namespace MineCase.Server
         {
             try
             {
-                var host = await StartSilo();
-                Console.WriteLine("Press Enter to terminate...");
-                Console.ReadLine();
+                // build silo server
+                var host = BuildSilo();
+                // run silo server
+                await host.StartAsync();
+                Console.WriteLine("Press Ctrl+C to terminate...");
+                Console.CancelKeyPress += (s, e) => {
+                    e.Cancel = true;
+                    _exitEvent.Set();
+                };
+                // wait server exit or get ctrl+c key
+                _exitEvent.WaitOne();
 
+                // stop silo server
+                Console.WriteLine("Stopping...");
                 await host.StopAsync();
-
-                return 0;
+                await host.Stopped;
+                Console.WriteLine("Stopped.");
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 Console.WriteLine(ex);
+                Console.ReadKey();
                 return 1;
             }
+            
+            return 0;
         }
 
-        private static async Task<ISiloHost> StartSilo()
+        private static ISiloHost BuildSilo()
         {
             // define the cluster configuration
             var builder = new SiloHostBuilder()
@@ -50,7 +66,6 @@ namespace MineCase.Server
                 .ConfigureLogging(logging => logging.AddConsole());
 
             var host = builder.Build();
-            await host.StartAsync();
             return host;
         }
 
