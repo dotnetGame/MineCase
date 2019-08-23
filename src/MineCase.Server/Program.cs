@@ -1,77 +1,52 @@
-﻿using Orleans;
-using Orleans.ApplicationParts;
+﻿using System.Net;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
-using System;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using System.Threading;
 
-namespace MineCase.Server
+namespace OrleansSiloHost
 {
-    class Program
+    public class Program
     {
-        private static readonly ManualResetEvent _exitEvent = new ManualResetEvent(false);
-
-        static int Main(string[] args)
+        public static int Main(string[] args)
         {
-            return RunMainAsync().Result;
+            return StartUp().Result;   
         }
 
-        private static async Task<int> RunMainAsync()
+        private static async Task<int> StartUp()
         {
-            try
-            {
-                // build silo server
-                var host = BuildSilo();
-                // run silo server
-                await host.StartAsync();
-                Console.WriteLine("Press Ctrl+C to terminate...");
-                Console.CancelKeyPress += (s, e) => {
-                    e.Cancel = true;
-                    _exitEvent.Set();
-                };
-                // wait server exit or get ctrl+c key
-                _exitEvent.WaitOne();
-
-                // stop silo server
-                Console.WriteLine("Stopping...");
-                await host.StopAsync();
-                await host.Stopped;
-                Console.WriteLine("Stopped.");
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex);
-                Console.ReadKey();
-                return 1;
-            }
-            
-            return 0;
-        }
-
-        private static ISiloHost BuildSilo()
-        {
-            // define the cluster configuration
-            var builder = new SiloHostBuilder()
-                .UseLocalhostClustering()
-                .Configure<ClusterOptions>(options =>
+            var host= new HostBuilder()
+                .UseOrleans(builder =>
                 {
-                    options.ClusterId = "dev";
-                    options.ServiceId = "MineCaseService";
+                    builder
+                        .UseLocalhostClustering()
+                        .Configure<ClusterOptions>(options =>
+                        {
+                            options.ClusterId = "dev";
+                            options.ServiceId = "MineCaseApp";
+                        })
+                        .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
+                        .ConfigureApplicationParts(parts => parts.AddFromApplicationBaseDirectory().WithReferences());
                 })
-                .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
-                .ConfigureApplicationParts(ConfigureApplicationParts)
-                .ConfigureLogging(logging => logging.AddConsole());
+                .ConfigureServices(services =>
+                {
+                    services.Configure<ConsoleLifetimeOptions>(options =>
+                    {
+                        options.SuppressStatusMessages = true;
+                    });
+                })
+                .ConfigureLogging(builder =>
+                {
+                    builder.AddConsole();
+                })
+                .RunConsoleAsync();
 
-            var host = builder.Build();
-            return host;
-        }
+            await host;
 
-        private static void ConfigureApplicationParts(IApplicationPartManager parts)
-        {
-            parts.AddFromApplicationBaseDirectory().WithReferences();
+            return 0;
         }
     }
 }
