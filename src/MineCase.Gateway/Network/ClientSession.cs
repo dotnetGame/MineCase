@@ -109,7 +109,7 @@ namespace MineCase.Gateway.Network
                     while (true)
                     {
                         await DispatchIncomingPacket();
-                        // renew subscribe, 10 sec
+                        // renew subscribe, 30 sec
                         if (DateTime.Now > expiredTime)
                         {
                             await _client.GetGrain<IClientboundPacketSink>(_sessionId).Subscribe(_clientboundPacketObserverRef);
