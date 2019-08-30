@@ -109,6 +109,7 @@ namespace MineCase.Gateway.Network
                     while (true)
                     {
                         await DispatchIncomingPacket();
+
                         // renew subscribe, 30 sec
                         if (DateTime.Now > expiredTime)
                         {

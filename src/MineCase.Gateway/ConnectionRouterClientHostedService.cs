@@ -33,18 +33,11 @@ namespace MineCase.Gateway
                 _tcpListener.Start();
 
                 // Enter the listening loop.
-                Thread.CurrentThread.Name = "MainAcceptThread";
                 while (true)
                 {
                     // Console.Write("Waiting for a connection... ");
                     // Waiting for a connection.
-                    var connection = await _tcpListener.AcceptTcpClientAsync();
-
-                    Task.Factory.StartNew(
-                        (ClientSession session) =>
-                        {
-                            session.Startup();
-                        },new ClientSession(connection, _client));
+                    DispatchIncomingClient(await _tcpListener.AcceptTcpClientAsync());
                 }
             }
             catch (SocketException e)
