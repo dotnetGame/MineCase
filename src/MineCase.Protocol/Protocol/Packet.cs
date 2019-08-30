@@ -1,11 +1,9 @@
-﻿using MineCase.Buffers;
-using MineCase.Serialization;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Buffers;
+using MineCase.Serialization;
 
 namespace MineCase.Protocol
 {

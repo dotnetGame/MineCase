@@ -35,9 +35,11 @@ namespace MineCase.Gateway
 
                 if (++attempt < maxAttempts)
                 {
-                    _logger.LogWarning(error,
+                    _logger.LogWarning(
+                        error,
                         "Failed to connect to Orleans cluster on attempt {@Attempt} of {@MaxAttempts}.",
-                        attempt, maxAttempts);
+                        attempt,
+                        maxAttempts);
 
                     try
                     {
@@ -52,9 +54,11 @@ namespace MineCase.Gateway
                 }
                 else
                 {
-                    _logger.LogError(error,
+                    _logger.LogError(
+                        error,
                         "Failed to connect to Orleans cluster on attempt {@Attempt} of {@MaxAttempts}.",
-                        attempt, maxAttempts);
+                        attempt,
+                        maxAttempts);
 
                     return false;
                 }

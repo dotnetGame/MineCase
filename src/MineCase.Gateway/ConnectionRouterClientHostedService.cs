@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using MineCase.Gateway.Network;
 using Orleans;
 
@@ -32,13 +33,18 @@ namespace MineCase.Gateway
                 _tcpListener.Start();
 
                 // Enter the listening loop.
+                Thread.CurrentThread.Name = "MainAcceptThread";
                 while (true)
                 {
                     // Console.Write("Waiting for a connection... ");
                     // Waiting for a connection.
                     var connection = await _tcpListener.AcceptTcpClientAsync();
 
-                    await DispatchIncomingClient(connection);
+                    Task.Factory.StartNew(
+                        (ClientSession session) =>
+                        {
+                            session.Startup();
+                        },new ClientSession(connection, _client));
                 }
             }
             catch (SocketException e)
@@ -51,7 +57,6 @@ namespace MineCase.Gateway
                 _tcpListener.Stop();
             }
 
-
             Console.WriteLine("\nHit enter to continue...");
             Console.Read();
         }
@@ -61,11 +66,18 @@ namespace MineCase.Gateway
             return Task.CompletedTask;
         }
 
-        private async Task DispatchIncomingClient(TcpClient tcpClient)
+        private async void DispatchIncomingClient(TcpClient tcpClient)
         {
-            using (ClientSession session = new ClientSession(tcpClient, _client))
+            try
             {
-                await session.Startup();
+                using (ClientSession session = new ClientSession(tcpClient, _client))
+                {
+                    await session.Startup();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
     }

@@ -39,21 +39,20 @@ namespace MineCase.Server.Network
             return task;
         }
 
-        //private async Task DispatchPacket(LoginStart packet)
-        //{
+        // private async Task DispatchPacket(LoginStart packet)
+        // {
         //    _userName = packet.Name;
         //    var user = GrainFactory.GetGrain<INonAuthenticatedUser>(packet.Name);
         //    await user.SetProtocolVersion(_protocolVersion);
-
         //    var requestGrain = GrainFactory.GetGrain<ILoginFlow>(this.GetPrimaryKey());
         //    requestGrain.DispatchPacket(packet).Ignore();
-        //}
+        // }
 
-        //private Task DispatchPacket(EncryptionResponse packet)
-        //{
+        // private Task DispatchPacket(EncryptionResponse packet)
+        // {
         //    var requestGrain = GrainFactory.GetGrain<ILoginFlow>(this.GetPrimaryKey());
         //    requestGrain.DispatchPacket(packet).Ignore();
         //    return Task.CompletedTask;
-        //}
+        // }
     }
 }

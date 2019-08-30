@@ -23,6 +23,7 @@ namespace MineCase.Protocol.Play
         {
             bw.WriteAsByte(WindowId);
             bw.WriteAsShort(Count);
+
             // FIXME
             // foreach (var slot in Slots)
             //    bw.WriteAsSlot(slot);

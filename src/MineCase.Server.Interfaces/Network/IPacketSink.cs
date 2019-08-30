@@ -14,10 +14,10 @@ namespace MineCase.Server.Network
         Task SendPacket(uint packetId, Immutable<byte[]> data);
     }
 
-    //public interface IBroadcastPacketSink
-    //{
+    // public interface IBroadcastPacketSink
+    // {
     //    Task SendPacket(ISerializablePacket packet, IPlayer except);
 
-    //    Task SendPacket(uint packetId, Immutable<byte[]> data, IPlayer except);
-    //}
+    // Task SendPacket(uint packetId, Immutable<byte[]> data, IPlayer except);
+    // }
 }

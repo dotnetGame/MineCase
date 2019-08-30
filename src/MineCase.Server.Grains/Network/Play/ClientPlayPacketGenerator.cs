@@ -26,23 +26,22 @@ namespace MineCase.Server.Network.Play
             // BroadcastSink = null;
             // _except = null;
         }
-        
 
-        //public Task SendPacket(uint packetId, byte[] data)
-        //{
+        // public Task SendPacket(uint packetId, byte[] data)
+        // {
         //    if (Sink != null)
         //        return Sink.SendPacket(packetId, data.AsImmutable());
         //    else
         //        return BroadcastSink.SendPacket(packetId, data.AsImmutable(), _except);
-        //}
+        // }
 
-        //public Task SendPacket(ISerializablePacket packet)
-        //{
+        // public Task SendPacket(ISerializablePacket packet)
+        // {
         //    if (Sink != null)
         //        return Sink.SendPacket(packet);
         //    else
         //        return BroadcastSink.SendPacket(packet, _except);
-        //}
+        // }
     }
 
     [Flags]

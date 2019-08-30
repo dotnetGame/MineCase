@@ -1,15 +1,15 @@
-﻿using Microsoft.Extensions.ObjectPool;
-using MineCase.Buffers;
-using MineCase.Protocol;
-using MineCase.Server.Network;
-using Orleans;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Microsoft.Extensions.ObjectPool;
+using MineCase.Buffers;
+using MineCase.Protocol;
+using MineCase.Server.Network;
+using Orleans;
 
 namespace MineCase.Gateway.Network
 {
@@ -143,6 +143,7 @@ namespace MineCase.Gateway.Network
                     {
                         packet = await UncompressedPacket.DeserializeAsync(_dataStream, bufferScope, packet);
                     }
+
                     await DispatchIncomingPacket(packet);
                 }
                 finally
