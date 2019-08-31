@@ -7,7 +7,7 @@ using Orleans;
 namespace MineCase.Gateway
 {
     /// <summary>
-    /// Orleans silo client
+    /// Orleans silo client.
     /// </summary>
     public class Program
     {

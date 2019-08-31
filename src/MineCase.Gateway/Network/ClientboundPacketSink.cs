@@ -1,30 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-using MineCase.Protocol;
-using MineCase.Protocol.Handshaking;
-using Orleans;
-using Orleans.Concurrency;
 
-namespace MineCase.Server.Network
+namespace MineCase.Gateway.Network
 {
-    internal class ClientboundPacketSinkGrain : Grain, IClientboundPacketSink
+    public class ClientboundPacketSink
     {
-        private GrainObserverManager<IClientboundPacketObserver> _subsManager;
-        private readonly IPacketPackager _packetPackager;
-
-        public ClientboundPacketSinkGrain(IPacketPackager packetPackager)
+        public ClientboundPacketSink(IPacketPackager packetPackager)
         {
             _packetPackager = packetPackager;
         }
 
         public override Task OnActivateAsync()
         {
-            _subsManager = new GrainObserverManager<IClientboundPacketObserver>();
-            _subsManager.ExpirationDuration = new TimeSpan(0, 0, 60);
+            _subsManager = new Grains.GrainObserverManager<IClientboundPacketObserver>();
+            _subsManager.ExpirationDuration = new TimeSpan(0, 0, 20);
             return base.OnActivateAsync();
         }
 
@@ -53,7 +43,7 @@ namespace MineCase.Server.Network
             var packet = new UncompressedPacket
             {
                 PacketId = packetId,
-                Data = new byte[data.Value.Length]
+                Data = new ArraySegment<byte>(data.Value)
             };
             if (_subsManager.Count == 0)
                 DeactivateOnIdle();
@@ -72,7 +62,7 @@ namespace MineCase.Server.Network
 
         public Task NotifyUseCompression(uint threshold)
         {
-            // _subsManager.Notify(n => n.UseCompression(threshold));
+            _subsManager.Notify(n => n.UseCompression(threshold));
             return Task.CompletedTask;
         }
     }

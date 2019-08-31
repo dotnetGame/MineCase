@@ -16,11 +16,11 @@ namespace MineCase.Protocol
         public uint PacketId;
 
         [SerializeAs(DataType.ByteArray)]
-        public ArraySegment<byte> Data;
+        public byte[] Data;
 
         public async Task SerializeAsync(Stream stream)
         {
-            Length = (uint)Data.Count + PacketId.SizeOfVarInt();
+            Length = (uint)Data.Length + PacketId.SizeOfVarInt();
 
             using (var bw = new BinaryWriter(stream, Encoding.UTF8, true))
             {
@@ -29,12 +29,12 @@ namespace MineCase.Protocol
                 bw.Flush();
             }
 
-            await stream.WriteAsync(Data.Array, Data.Offset, Data.Count);
+            await stream.WriteAsync(Data, 0, Data.Length);
         }
 
-        public static async Task<UncompressedPacket> DeserializeAsync(Stream stream, IBufferPoolScope<byte> bufferPool, UncompressedPacket packet = null)
+        public static async Task<UncompressedPacket> DeserializeAsync(Stream stream)
         {
-            packet = packet ?? new UncompressedPacket();
+            var packet = new UncompressedPacket();
             int packetIdLen;
             using (var br = new BinaryReader(stream, Encoding.UTF8, true))
             {
@@ -43,8 +43,8 @@ namespace MineCase.Protocol
                 packet.PacketId = br.ReadAsVarInt(out packetIdLen);
             }
 
-            packet.Data = bufferPool.Rent((int)(packet.Length - packetIdLen));
-            await stream.ReadExactAsync(packet.Data.Array, packet.Data.Offset, packet.Data.Count);
+            packet.Data = new byte[(int)(packet.Length - packetIdLen)];
+            await stream.ReadExactAsync(packet.Data, 0, packet.Data.Length);
             return packet;
         }
     }
@@ -74,9 +74,9 @@ namespace MineCase.Protocol
             await stream.WriteAsync(CompressedData, 0, CompressedData.Length);
         }
 
-        public static async Task<CompressedPacket> DeserializeAsync(Stream stream, CompressedPacket packet = null)
+        public static async Task<CompressedPacket> DeserializeAsync(Stream stream)
         {
-            packet = packet ?? new CompressedPacket();
+            var packet = new CompressedPacket();
             int dataLengthLen;
             using (var br = new BinaryReader(stream, Encoding.UTF8, true))
             {
