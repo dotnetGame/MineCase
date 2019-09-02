@@ -11,16 +11,13 @@ namespace MineCase.Server.Network
 {
     internal class PacketPackager : IPacketPackager
     {
-        private readonly RecyclableMemoryStreamManager _memoryStreamMgr;
-
-        public PacketPackager(RecyclableMemoryStreamManager memoryStreamMgr)
+        public PacketPackager()
         {
-            _memoryStreamMgr = memoryStreamMgr;
         }
 
         public Task<(uint packetId, byte[] data)> PreparePacket(ISerializablePacket packet)
         {
-            using (var stream = _memoryStreamMgr.GetStream())
+            using (var stream = new MemoryStream())
             {
                 using (var bw = new BinaryWriter(stream, Encoding.UTF8, true))
                     packet.Serialize(bw);

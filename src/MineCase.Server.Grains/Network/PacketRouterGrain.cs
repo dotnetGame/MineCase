@@ -18,7 +18,6 @@ namespace MineCase.Server.Network
     {
         private SessionState _state;
         private uint _protocolVersion;
-        private string _userName;
 
         public Task SendPacket(UncompressedPacket packet)
         {

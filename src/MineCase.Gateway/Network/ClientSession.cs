@@ -25,7 +25,6 @@ namespace MineCase.Gateway.Network
         private volatile bool _useCompression = false;
         private uint _compressThreshold;
         private bool disposed = false;
-        private PacketRouter _packetRouter;
 
         public ClientSession(TcpClient tcpClient, IClusterClient clusterClient)
         {
@@ -34,7 +33,6 @@ namespace MineCase.Gateway.Network
             _client = clusterClient;
             _outcomingPacketDispatcher = new ActionBlock<UncompressedPacket>(SendOutcomingPacket);
             _outcomingPacketObserver = new OutcomingPacketObserver(this);
-            _packetRouter = new PacketRouter(this);
         }
 
         ~ClientSession()
@@ -91,7 +89,8 @@ namespace MineCase.Gateway.Network
 
         private async Task DispatchIncomingPacket(UncompressedPacket packet)
         {
-            await _packetRouter.DispatchPacket(packet);
+            var packetRouter = _client.GetGrain<IPacketRouter>(_sessionId);
+            await packetRouter.SendPacket(packet);
         }
 
         public async Task Startup()
