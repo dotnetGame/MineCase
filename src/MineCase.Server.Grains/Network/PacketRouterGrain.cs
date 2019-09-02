@@ -30,7 +30,7 @@ namespace MineCase.Server.Network
                 case SessionState.Login:
                     return DispatchLoginPackets(packet);
                 case SessionState.Play:
-                   // return _user.ForwardPacket(packet);
+                    return DispatchPlayPackets(packet);
                 case SessionState.Closed:
                     break;
                 default:

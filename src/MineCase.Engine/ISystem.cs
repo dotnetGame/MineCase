@@ -4,9 +4,7 @@ using System.Text;
 
 namespace MineCase.Engine
 {
-    public class CaseEntity
+    public interface ISystem
     {
-        private Guid _entityId;
-        private List<Icomponent> _components;
     }
 }

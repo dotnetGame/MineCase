@@ -4,7 +4,8 @@ using System.Text;
 
 namespace MineCase.Engine
 {
-    public interface IComponent
+    public class Context
     {
+
     }
 }
