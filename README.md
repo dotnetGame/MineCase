@@ -62,6 +62,14 @@ we welcome and thank your contribution for this project.
 * [Discord](https://discord.gg/8Z5RSRn) : MineCase
 * QQ Group: 667481568
 
+## Credits
+
+**Patreon supporters list**
+
+Wooden Pickaxe Supporter:
+
+- Acid Chicken
+
 [License (MIT)](https://raw.githubusercontent.com/dotnetGame/MineCase/master/LICENSE)
 -------------------------------------------------------------------------------
 	MIT License
