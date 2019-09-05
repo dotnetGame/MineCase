@@ -8,9 +8,9 @@ MineCase
 #### [English](https://github.com/dotnetGame/MineCase/blob/master/README.md) | [中文](https://github.com/dotnetGame/MineCase/blob/master/README-zh.md) 
 
 `MineCase` is a cross-platform application with distributed server of `Minecraft`. 
-The project is designed to create a high-performance, distributed system by using isolating different components through actor mode. 
-Different chunks are managed by different servers so that all players can play in a world. This makes minecraft servers more scalable.
-Anarchy servers can allow more players to join in without waiting in queue by using distributing server.
+The project is designed to create a high-performance, distributed system by using Entity-Component-System and virtual actor mode. 
+Different chunks are managed on different servers so that more players can join in and play in the same world. This makes minecraft servers more scalable.
+Servers like Anarchy servers can allow more players to join in without waiting in queue by using distributing server.
 It written in `C#` with `.NET Core 2.0` env and based on `orleans` framework to work with released [1.12 protocol](https://minecraft.net/en-us/article/minecraft-112-pre-release-6).
 
 **MineCase is not stable and lack of many features now. Please don't use MineCase in production unless you know what you're doing.**
@@ -35,17 +35,9 @@ It written in `C#` with `.NET Core 2.0` env and based on `orleans` framework to 
     * **Linux** : Run the `build_and_run.sh`.
     * **Win** : Double-click `build_and_run.bat`.
 
-## Install (Docker)
-* 1 . Download a `Docker for linux` from this [page](https://docs.docker.com/engine/installation/).
-* 2 . Un-zip `Docker for linux` and run the `server` on Linux
+## How it works
+About Virtual ECS: 
 
-	```bash
-	url=https://raw.githubusercontent.com/dotnetGame/MineCase/master/build/docker/linux/docker-compose.yml
-	curl -o docker-compose.yml $url
-	docker-compose up
-	```
-	##### Tips:
-	* You can stop the server by enter `docker-compose stop`.
 
 ## Get Involved
 We need help to make MineCase better. You can help us by fixing bugs, developing new features, improving documents.  

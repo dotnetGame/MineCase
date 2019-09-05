@@ -1,8 +1,9 @@
 ﻿using System;
+using Orleans;
 
 namespace MineCase.Server.Interfaces
 {
-    public class Class1
+    public class IGameContext : IGrainWithStringKey
     {
     }
 }

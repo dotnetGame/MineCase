@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MineCase.Engine
 {
-    public class Context
+    public class ReactiveSystem : ISystem
     {
 
     }

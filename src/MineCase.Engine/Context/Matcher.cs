@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MineCase.Engine
 {
-    public class Component
+    public class Matcher
     {
     }
 }
