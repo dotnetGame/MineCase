@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
 
-namespace MineCase.Server.Grains
+namespace MineCase.Server.Grains.World
 {
     public class GameContextGrain
     {

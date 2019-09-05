@@ -34,15 +34,15 @@ namespace MineCase.Server.Network
 
         private Task DispatchPacket(Request packet)
         {
-            var requestGrain = GrainFactory.GetGrain<IRequest>(0);
-            requestGrain.DispatchPacket(this.GetPrimaryKey(), packet).Ignore();
+            //var requestGrain = GrainFactory.GetGrain<IRequest>(0);
+            //requestGrain.DispatchPacket(this.GetPrimaryKey(), packet).Ignore();
             return Task.CompletedTask;
         }
 
         private Task DispatchPacket(Ping packet)
         {
-            var requestGrain = GrainFactory.GetGrain<IPing>(0);
-            requestGrain.DispatchPacket(this.GetPrimaryKey(), packet).Ignore();
+            //var requestGrain = GrainFactory.GetGrain<IPing>(0);
+            //requestGrain.DispatchPacket(this.GetPrimaryKey(), packet).Ignore();
             return Task.CompletedTask;
         }
     }
