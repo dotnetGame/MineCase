@@ -8,8 +8,6 @@ namespace MineCase.Server.Grains.World
 {
     public class GameContextGrain
     {
-        private Context _context;
-
         public Task AddEntity(Entity entity)
         {
             return Task.CompletedTask;
