@@ -21,6 +21,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="2.2.0" />
     <PackageReference Include="Microsoft.Orleans.Client" Version="2.4.1" />
+    <PackageReference Include="Microsoft.Orleans.Core" Version="2.4.1" />
     <PackageReference Include="Polly" Version="7.1.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>

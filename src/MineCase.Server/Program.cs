@@ -13,12 +13,12 @@ namespace OrleansSiloHost
     {
         public static int Main(string[] args)
         {
-            return StartUp().Result;   
+            return StartUp().Result;
         }
 
         private static async Task<int> StartUp()
         {
-            var host= new HostBuilder()
+            var host = new HostBuilder()
                 .UseOrleans(builder =>
                 {
                     builder

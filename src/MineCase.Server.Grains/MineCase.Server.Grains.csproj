@@ -17,11 +17,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.2.2" />
-    <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="2.4.1">
+    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="2.4.1" />
+    <PackageReference Include="Microsoft.Orleans.OrleansCodeGenerator.Build" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="2.4.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
@@ -35,7 +35,6 @@
   <ItemGroup>
     <Folder Include="Network\Handshaking\" />
     <Folder Include="Network\Login\" />
-    <Folder Include="Network\Status\" />
     <Folder Include="Game\" />
   </ItemGroup>
 

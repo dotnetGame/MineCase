@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MineCase.Protocol;
 using MineCase.Protocol.Status;
 using MineCase.Serialization;
+using MineCase.Server.Network.Status;
 using Orleans;
 
 namespace MineCase.Server.Network
@@ -34,15 +35,15 @@ namespace MineCase.Server.Network
 
         private Task DispatchPacket(Request packet)
         {
-            //var requestGrain = GrainFactory.GetGrain<IRequest>(0);
-            //requestGrain.DispatchPacket(this.GetPrimaryKey(), packet).Ignore();
+            var requestGrain = GrainFactory.GetGrain<IRequest>(0);
+            requestGrain.DispatchPacket(this.GetPrimaryKey(), packet).Ignore();
             return Task.CompletedTask;
         }
 
         private Task DispatchPacket(Ping packet)
         {
-            //var requestGrain = GrainFactory.GetGrain<IPing>(0);
-            //requestGrain.DispatchPacket(this.GetPrimaryKey(), packet).Ignore();
+            var requestGrain = GrainFactory.GetGrain<IPing>(0);
+            requestGrain.DispatchPacket(this.GetPrimaryKey(), packet).Ignore();
             return Task.CompletedTask;
         }
     }

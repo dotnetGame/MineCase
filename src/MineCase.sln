@@ -5,6 +5,7 @@ VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Gateway", "MineCase.Gateway\MineCase.Gateway.csproj", "{D43E9B39-0267-4C6C-A9B9-032B47EF0678}"
 	ProjectSection(ProjectDependencies) = postProject
+		{7D8D1928-0881-4C96-9F2B-CCF574EB34B2} = {7D8D1928-0881-4C96-9F2B-CCF574EB34B2}
 		{F8A43438-85F8-4C18-82B7-7250D5A87778} = {F8A43438-85F8-4C18-82B7-7250D5A87778}
 	EndProjectSection
 EndProject

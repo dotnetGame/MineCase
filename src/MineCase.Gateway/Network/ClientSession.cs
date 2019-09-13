@@ -99,7 +99,8 @@ namespace MineCase.Gateway.Network
             {
                 // subscribe observer to get packet from server
                 _clientboundPacketObserverRef = await _client.CreateObjectReference<IClientboundPacketObserver>(_outcomingPacketObserver);
-                await _client.GetGrain<IClientboundPacketSink>(_sessionId).Subscribe(_clientboundPacketObserverRef);
+                var packetSink = _client.GetGrain<IClientboundPacketSink>(_sessionId);
+                await packetSink.Subscribe(_clientboundPacketObserverRef);
                 try
                 {
                     DateTime expiredTime = DateTime.Now + TimeSpan.FromSeconds(30);
