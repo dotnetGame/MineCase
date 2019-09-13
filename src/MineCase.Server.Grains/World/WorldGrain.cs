@@ -22,6 +22,13 @@ namespace MineCase.Server.Grains.World
             await base.OnActivateAsync();
         }
 
+        public override async Task OnDeactivateAsync()
+        {
+            var tickEmitter = GrainFactory.GetGrain<ITickEmitter>(_name);
+            await tickEmitter.Stop();
+            await base.OnDeactivateAsync();
+        }
+
         public async Task OnTick()
         {
             foreach (var eachPartition in _activePartition)
@@ -29,6 +36,16 @@ namespace MineCase.Server.Grains.World
                 var partition = GrainFactory.GetGrain<IWorldPartition>(eachPartition);
                 await partition.OnTick();
             }
+        }
+
+        public Task ActivatePartition(string key)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task DeactivatePartition(string key)
+        {
+            return Task.CompletedTask;
         }
     }
 }

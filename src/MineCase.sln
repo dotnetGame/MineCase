@@ -25,8 +25,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{2F824C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{66D961CA-776F-4181-8F27-16D464B4514C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{96E9F43D-37B3-46A6-A314-DBF2A80267B3}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Core", "MineCase.Core\MineCase.Core.csproj", "{96EAEA39-F37A-4571-BB28-B7D9BF693138}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Protocol", "MineCase.Protocol\MineCase.Protocol.csproj", "{2B904789-EC33-493E-A7C9-062C54EA0404}"
