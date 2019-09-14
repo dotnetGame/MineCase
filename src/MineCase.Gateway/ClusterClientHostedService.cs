@@ -17,7 +17,6 @@ namespace MineCase.Gateway
             _logger = logger;
             Client = new ClientBuilder()
                 .UseLocalhostClustering()
-                .ConfigureApplicationParts(parts => parts.AddFromApplicationBaseDirectory().WithReferences())
                 .ConfigureLogging(builder => builder.AddProvider(loggerProvider))
                 .Build();
         }

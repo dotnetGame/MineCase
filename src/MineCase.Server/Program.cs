@@ -7,7 +7,7 @@ using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
 
-namespace OrleansSiloHost
+namespace MineCase.Server
 {
     public class Program
     {

@@ -32,7 +32,7 @@ namespace MineCase.Server.Network.Status
                 {
                     Max = 30,
                     Online = 0,
-                    Samples = new ServerInfo.PlayerInfo[0]
+                    Sample = new ServerInfo.PlayerInfo[0]
                 },
                 Description = new ServerInfo.DescriptionInfo
                 {
@@ -70,7 +70,7 @@ namespace MineCase.Server.Network.Status
 
                 public uint Online { get; set; }
 
-                public PlayerInfo[] Samples { get; set; }
+                public PlayerInfo[] Sample { get; set; }
             }
 
             public class DescriptionInfo

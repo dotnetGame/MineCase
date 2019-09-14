@@ -53,7 +53,7 @@ namespace MineCase.Server.Network
             var packet = new UncompressedPacket
             {
                 PacketId = packetId,
-                Data = new byte[data.Value.Length]
+                Data = data.Value
             };
             if (_subsManager.Count == 0)
                 DeactivateOnIdle();
