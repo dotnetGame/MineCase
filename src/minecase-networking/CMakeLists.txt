@@ -1,7 +1,11 @@
 
+set(HEADER_DIR ${PROJECT_SOURCE_DIR}/include/minecase/networking)
+set(SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/minecase-networking)
+
+
 set(
     MINECASE_NETWORKING_LIST
-    ${PROJECT_SOURCE_DIR}/src/minecase-networking/protocol/emerald.cpp
+    ${SOURCE_DIR}/protocol/protocol.cpp
 )
 
 # Add source to this project's executable.
