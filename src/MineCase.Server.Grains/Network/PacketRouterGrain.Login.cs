@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MineCase.Protocol;
 using MineCase.Protocol.Login;
 using MineCase.Serialization;
+using MineCase.Server.Interfaces.Game;
 using Orleans;
 
 namespace MineCase.Server.Network
@@ -23,11 +24,16 @@ namespace MineCase.Server.Network
             {
                 // Login Start
                 case 0x00:
-                    // task = DispatchPacket(LoginStart.Deserialize(ref br));
+                    task = DispatchPacket(LoginStart.Deserialize(ref br));
                     break;
 
                 // Encryption Response
                 case 0x01:
+                    // task = DispatchPacket(EncryptionResponse.Deserialize(ref br));
+                    break;
+
+                // Login Plugin Response
+                case 0x02:
                     // task = DispatchPacket(EncryptionResponse.Deserialize(ref br));
                     break;
                 default:
@@ -39,14 +45,21 @@ namespace MineCase.Server.Network
             return task;
         }
 
-        // private async Task DispatchPacket(LoginStart packet)
-        // {
-        //    _userName = packet.Name;
-        //    var user = GrainFactory.GetGrain<INonAuthenticatedUser>(packet.Name);
-        //    await user.SetProtocolVersion(_protocolVersion);
-        //    var requestGrain = GrainFactory.GetGrain<ILoginFlow>(this.GetPrimaryKey());
-        //    requestGrain.DispatchPacket(packet).Ignore();
-        // }
+        private async Task DispatchPacket(LoginStart packet)
+        {
+
+            // _userName = packet.Name;
+
+            // var user = GrainFactory.GetGrain<INonAuthenticatedUser>(packet.Name);
+
+            // await user.SetProtocolVersion(_protocolVersion);
+
+            // var requestGrain = GrainFactory.GetGrain<ILoginFlow>(this.GetPrimaryKey());
+
+            // requestGrain.DispatchPacket(packet).Ignore();
+            var user = GrainFactory.GetGrain<IUser>(packet.Name);
+            await user.Login(this.GetPrimaryKey());
+        }
 
         // private Task DispatchPacket(EncryptionResponse packet)
         // {

@@ -35,7 +35,6 @@
   <ItemGroup>
     <Folder Include="Network\Handshaking\" />
     <Folder Include="Network\Login\" />
-    <Folder Include="Game\" />
   </ItemGroup>
 
 </Project>

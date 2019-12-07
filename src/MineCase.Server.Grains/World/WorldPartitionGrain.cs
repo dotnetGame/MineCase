@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Engine;
+using MineCase.Core.World;
 using MineCase.Server.Interfaces.World;
 using MineCase.World;
 using Orleans;
@@ -15,16 +15,15 @@ namespace MineCase.Server.Grains.World
 
         public BlockWorldPos Position { get; set; }
 
-        public EntityPack Entities { get; set; }
-
+        // public EntityPack Entities { get; set; }
         public bool IsActive { get; set; }
     }
 
     public class WorldPartitionGrain : Grain, IWorldPartition
     {
-        public const int RangeAOI = 16;
+        public static readonly int RangeAOI = 16;
 
-        public const int PartitionSize = 16 * 16; // 256 x 256 block
+        public static readonly int PartitionSize = 16; // 256 x 256 block
 
         private string _worldName;
 
@@ -32,9 +31,7 @@ namespace MineCase.Server.Grains.World
 
         private bool _isActive = false;
 
-        private EntityPack _entityPack = new EntityPack();
-
-        private Dictionary<string, PartitionState> _ghostPartitions = new Dictionary<string, PartitionState>();
+        private ChunkColumn[,] _chunkColumns = new ChunkColumn[WorldPartitionGrain.PartitionSize, WorldPartitionGrain.PartitionSize];
 
         public override async Task OnActivateAsync()
         {
@@ -45,35 +42,28 @@ namespace MineCase.Server.Grains.World
             await base.OnActivateAsync();
         }
 
-        public Task EnterEntity(Entity entity)
-        {
-            _entityPack.AddEntity(entity);
-            return Task.CompletedTask;
-        }
-
-        public Task LeaveEntity(Entity entity)
-        {
-            _entityPack.RemoveEntity(entity.GetGuid());
-            return Task.CompletedTask;
-        }
-
         public Task OnTick()
         {
             return Task.CompletedTask;
         }
 
-        private string MakeAddressByPartitionKey(IWorld world, BlockWorldPos blockWorldPos)
+        public static string MakeAddressByPartitionKey(IWorld world, BlockWorldPos blockWorldPos)
         {
             return $"{world.GetPrimaryKeyString()},{blockWorldPos.X},{blockWorldPos.Z}";
         }
 
-        private BlockWorldPos GetPartitionPos()
+        public static string MakeAddressByPartitionKey(string world, BlockWorldPos blockWorldPos)
+        {
+            return $"{world},{blockWorldPos.X},{blockWorldPos.Z}";
+        }
+
+        public BlockWorldPos GetPartitionPos()
         {
             var key = this.GetPrimaryKeyString().Split(',');
             return new BlockWorldPos(int.Parse(key[1]), 0, int.Parse(key[2]));
         }
 
-        private (string worldKey, BlockWorldPos partitionPos) GetWorldAndPartitionPos()
+        public (string worldKey, BlockWorldPos partitionPos) GetWorldAndPartitionPos()
         {
             var key = this.GetPrimaryKeyString().Split(',');
             return (key[0], new BlockWorldPos(int.Parse(key[1]), 0, int.Parse(key[2])));

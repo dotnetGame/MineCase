@@ -7,7 +7,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Protocol;
+using MineCase.Protocol.Play;
 using MineCase.Serialization;
+using MineCase.World;
 using Orleans.Concurrency;
 
 namespace MineCase.Server.Network.Play
@@ -19,10 +21,10 @@ namespace MineCase.Server.Network.Play
         // public IBroadcastPacketSink BroadcastSink { get; }
 
         // private IPlayer _except;
-
         public ClientPlayPacketGenerator(IPacketSink sink)
         {
             Sink = sink;
+
             // BroadcastSink = null;
             // _except = null;
         }
@@ -35,13 +37,36 @@ namespace MineCase.Server.Network.Play
         //        return BroadcastSink.SendPacket(packetId, data.AsImmutable(), _except);
         // }
 
-        // public Task SendPacket(ISerializablePacket packet)
-        // {
-        //    if (Sink != null)
-        //        return Sink.SendPacket(packet);
-        //    else
-        //        return BroadcastSink.SendPacket(packet, _except);
-        // }
+        public Task SendPacket(ISerializablePacket packet)
+        {
+            if (Sink != null)
+                return Sink.SendPacket(packet);
+
+            return Task.CompletedTask;
+        }
+
+        public Task ChunkData(Dimension dimension, int chunkX, int chunkZ, ChunkColumnCompactStorage chunkColumn)
+        {
+            return SendPacket(new ChunkData
+            {
+                ChunkX = chunkX,
+                ChunkZ = chunkZ,
+                GroundUpContinuous = chunkColumn.Biomes != null,
+                Biomes = chunkColumn.Biomes,
+                PrimaryBitMask = chunkColumn.SectionBitMask,
+                NumberOfBlockEntities = 0,
+                Data = (from c in chunkColumn.Sections
+                        where c != null
+                        select new Protocol.Play.ChunkSection
+                        {
+                            PaletteLength = 0,
+                            BitsPerBlock = c.BitsPerBlock,
+                            SkyLight = c.SkyLight.Storage,
+                            BlockLight = c.BlockLight.Storage,
+                            DataArray = c.Data.Storage
+                        }).ToArray()
+            });
+        }
     }
 
     [Flags]
