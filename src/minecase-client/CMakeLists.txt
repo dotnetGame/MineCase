@@ -4,6 +4,7 @@ set(SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/minecase-client)
 
 set(
     MINECASE_CLIENT_LIST
+    ${HEADER_DIR}/client.h
     ${SOURCE_DIR}/client.cpp
 )
 
