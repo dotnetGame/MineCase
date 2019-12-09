@@ -18,7 +18,7 @@ namespace MineCase.Protocol.Play
             // TODO: check enum to byte.
             byte animationID = (byte)AnimationID;
             bw.WriteAsVarInt(EntityID, out _);
-            bw.WriteAsByte(animationID);
+            bw.WriteAsByte((sbyte)animationID);
         }
     }
 }

@@ -6,29 +6,29 @@ using MineCase.Nbt.Serialization;
 
 namespace MineCase.Nbt.Tags
 {
-    /// <see cref="NbtTagType.IntArray"/>
-    public sealed class NbtIntArray : NbtTag
+    /// <see cref="NbtTagType.NbtLongArray"/>
+    public sealed class NbtLongArray : NbtTag
     {
-        public override NbtTagType TagType => NbtTagType.IntArray;
+        public override NbtTagType TagType => NbtTagType.LongArray;
 
         public override bool HasValue => true;
 
-        private int[] _value;
+        private long[] _value;
 
-        public int[] Value
+        public long[] Value
         {
             get => _value;
             set => _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NbtIntArray"/> class.<para />
+        /// Initializes a new instance of the <see cref="NbtLongArray"/> class.<para />
         /// 默认构造函数.
         /// </summary>
         /// <param name="value">要初始化的值.</param>
         /// <param name="name">该 Tag 的名称.</param>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> 为 null.</exception>
-        public NbtIntArray(int[] value, string name = null)
+        public NbtLongArray(long[] value, string name = null)
             : base(name)
         {
             Value = value;
@@ -44,26 +44,26 @@ namespace MineCase.Nbt.Tags
                     name = br.ReadTagString();
                 }
 
-                var value = br.ReadTagIntArray(br.ReadInt32().ToggleEndian());
-                return new NbtIntArray(value, name);
+                var value = br.ReadTagLongArray(br.ReadInt32().ToggleEndian());
+                return new NbtLongArray(value, name);
             }
 
             public void Serialize(NbtTag tag, BinaryWriter bw, bool requireName)
             {
-                var nbtIntArray = (NbtIntArray)tag;
+                var nbtLongArray = (NbtLongArray)tag;
 
                 if (requireName)
                 {
-                    bw.WriteTagValue(nbtIntArray.Name);
+                    bw.WriteTagValue(nbtLongArray.Name);
                 }
 
-                bw.WriteTagValue(nbtIntArray.Value);
+                bw.WriteTagValue(nbtLongArray.Value);
             }
         }
 
         internal static void RegisterSerializer()
         {
-            NbtTagSerializer.RegisterTag(NbtTagType.IntArray, new Serializer());
+            NbtTagSerializer.RegisterTag(NbtTagType.LongArray, new Serializer());
         }
     }
 }

@@ -33,10 +33,10 @@ namespace MineCase.Protocol.Play
         public void Serialize(BinaryWriter bw)
         {
             bw.WriteAsInt(EID);
-            bw.WriteAsByte(GameMode);
+            bw.WriteAsByte((sbyte)GameMode);
             bw.WriteAsInt(Dimension);
-            bw.WriteAsByte(Difficulty);
-            bw.WriteAsByte(MaxPlayers);
+            bw.WriteAsByte((sbyte)Difficulty);
+            bw.WriteAsByte((sbyte)MaxPlayers);
             bw.WriteAsString(LevelType);
             bw.WriteAsBoolean(ReducedDebugInfo);
         }

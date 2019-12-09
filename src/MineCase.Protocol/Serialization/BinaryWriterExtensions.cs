@@ -14,7 +14,7 @@ namespace MineCase.Serialization
         public static void WriteAsBoolean(this BinaryWriter bw, bool value) =>
             bw.Write(value);
 
-        public static void WriteAsByte(this BinaryWriter bw, byte value) =>
+        public static void WriteAsByte(this BinaryWriter bw, sbyte value) =>
             bw.Write(value);
 
         // http://wiki.vg/Protocol#VarInt_and_VarLong
@@ -62,6 +62,11 @@ namespace MineCase.Serialization
         public static void WriteAsLong(this BinaryWriter bw, long value)
         {
             bw.Write(((ulong)value).ToBigEndian());
+        }
+
+        public static void WriteAsUnsignedByte(this BinaryWriter bw, byte value)
+        {
+            bw.Write(value);
         }
 
         public static void WriteAsUnsignedShort(this BinaryWriter bw, ushort value)

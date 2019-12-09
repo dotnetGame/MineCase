@@ -49,13 +49,13 @@ namespace MineCase.Protocol.Play
         {
             bw.WriteAsVarInt(EID, out _);
             bw.WriteAsUUID(ObjectUUID);
-            bw.WriteAsByte(Type);
+            bw.WriteAsByte((sbyte)Type);
             bw.WriteAsDouble(X);
             bw.WriteAsDouble(Y);
             bw.WriteAsDouble(Z);
-            bw.WriteAsByte(Pitch);
-            bw.WriteAsByte(Yaw);
-            bw.WriteAsInt(Data);
+            bw.WriteAsByte((sbyte)Pitch);
+            bw.WriteAsByte((sbyte)Yaw);
+            bw.WriteAsInt((sbyte)Data);
             bw.WriteAsShort(VelocityX);
             bw.WriteAsShort(VelocityY);
             bw.WriteAsShort(VelocityZ);

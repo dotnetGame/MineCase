@@ -29,7 +29,7 @@ namespace MineCase.Protocol.Play
 
         public void Serialize(BinaryWriter bw)
         {
-            bw.WriteAsByte(WindowId);
+            bw.WriteAsByte((sbyte)WindowId);
         }
     }
 }

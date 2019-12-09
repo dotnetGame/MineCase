@@ -24,8 +24,8 @@ namespace MineCase.Protocol.Play
         public void Serialize(BinaryWriter bw)
         {
             bw.WriteAsVarInt(EID, out _);
-            bw.WriteAsByte(Yaw);
-            bw.WriteAsByte(Pitch);
+            bw.WriteAsByte((sbyte)Yaw);
+            bw.WriteAsByte((sbyte)Pitch);
             bw.WriteAsBoolean(OnGround);
         }
     }

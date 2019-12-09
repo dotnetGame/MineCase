@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Protocol.Login;
@@ -20,6 +21,8 @@ namespace MineCase.Server.Grains.Game
         private Guid _sessionId = Guid.Empty;
 
         private string _world = "overworld";
+
+        private EntityWorldPos _position = new EntityWorldPos { X = 0.0f, Y = 0.0f, Z = 0.0f };
 
         private HashSet<ChunkWorldPos> _activeChunks = new HashSet<ChunkWorldPos>();
 
@@ -43,45 +46,77 @@ namespace MineCase.Server.Grains.Game
             return Task.CompletedTask;
         }
 
-        public async Task SendChunkData(HashSet<ChunkWorldPos> changeChunks)
+        public Task SetPosition(EntityWorldPos pos)
+        {
+            _position = pos;
+
+            HashSet<ChunkWorldPos> newChunksView = GetChunksInViewRange(_position.ToChunkWorldPos(), 8);
+            var chunksDiff = newChunksView.Except(_activeChunks);
+            return SendChunkData(chunksDiff);
+        }
+
+        private static HashSet<ChunkWorldPos> GetChunksInViewRange(ChunkWorldPos pos, int range)
+        {
+            HashSet<ChunkWorldPos> ret = new HashSet<ChunkWorldPos>();
+            for (int d = 0; d <= range; d++)
+            {
+                for (int x = -d; x <= d; x++)
+                {
+                    var z = d - Math.Abs(x);
+
+                    ret.Add(new ChunkWorldPos(pos.X + x, pos.Z + z));
+                    ret.Add(new ChunkWorldPos(pos.X + x, pos.Z - z));
+                }
+            }
+
+            return ret;
+        }
+
+        private async Task SendChunkData(IEnumerable<ChunkWorldPos> changeChunks)
         {
             var sink = GrainFactory.GetGrain<IClientboundPacketSink>(_sessionId);
             foreach (var chunkPos in changeChunks)
             {
                 var partitionPos = GetPartitionPos(chunkPos);
-                var partitionKey = WorldPartitionGrain.MakeAddressByPartitionKey(_world, partitionPos.ToBlockWorldPos());
+                var partitionKey = WorldPartitionGrain.MakeAddressByPartitionKey(_world, partitionPos);
                 var partition = GrainFactory.GetGrain<IWorldPartition>(partitionKey);
 
                 // TODO
-                /*
                 var chunkColumn = await partition.GetState(chunkPos);
+                var chunkColumnStorage = chunkColumn.Storage;
                 await sink.SendPacket(new ChunkData
                     {
                         ChunkX = chunkPos.X,
                         ChunkZ = chunkPos.Z,
-                        GroundUpContinuous = chunkColumn.Biomes != null,
-                        Biomes = chunkColumn.Biomes,
-                        PrimaryBitMask = chunkColumn.SectionBitMask,
+                        FullChunk = chunkColumnStorage.Biomes != null,
+                        PrimaryBitMask = chunkColumnStorage.SectionBitMask,
                         NumberOfBlockEntities = 0,
-                        Data = (from c in chunkColumn.Sections
+                        Data = (from c in chunkColumnStorage.Sections
                                 where c != null
                                 select new Protocol.Play.ChunkSection
                                 {
                                     PaletteLength = 0,
                                     BitsPerBlock = c.BitsPerBlock,
-                                    SkyLight = c.SkyLight.Storage,
-                                    BlockLight = c.BlockLight.Storage,
-                                    DataArray = c.Data.Storage
+                                    DataArray = Array.ConvertAll<ulong, long>(c.Data.Storage, x => (long)x)
                                 }).ToArray()
                     });
-                    */
             }
         }
 
         public static ChunkWorldPos GetPartitionPos(ChunkWorldPos pos)
         {
-            // TODO
-            return new ChunkWorldPos { X = 0, Z = 0 };
+            ChunkWorldPos ret = new ChunkWorldPos { X = WorldPartitionGrain.PartitionSize, Z = WorldPartitionGrain.PartitionSize };
+            if (pos.X >= 0)
+                ret.X *= pos.X / WorldPartitionGrain.PartitionSize;
+            else
+                ret.X *= -(((-pos.X - 1) / WorldPartitionGrain.PartitionSize) + 1);
+
+            if (pos.Z >= 0)
+                ret.Z *= pos.Z / WorldPartitionGrain.PartitionSize;
+            else
+                ret.Z *= -(((-pos.Z - 1) / WorldPartitionGrain.PartitionSize) + 1);
+
+            return ret;
         }
     }
 }

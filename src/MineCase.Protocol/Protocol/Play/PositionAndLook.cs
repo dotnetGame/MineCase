@@ -37,7 +37,7 @@ namespace MineCase.Protocol.Play
             bw.WriteAsDouble(Z);
             bw.WriteAsFloat(Yaw);
             bw.WriteAsFloat(Pitch);
-            bw.WriteAsByte(Flags);
+            bw.WriteAsByte((sbyte)Flags);
             bw.WriteAsVarInt(TeleportId, out _);
         }
     }

@@ -19,7 +19,7 @@ namespace MineCase.Protocol.Play
         {
             bw.WriteAsVarInt(EntityID, out _);
             bw.WriteAsPosition(BlockPosition);
-            bw.WriteAsByte(DestoryStage);
+            bw.WriteAsByte((sbyte)DestoryStage);
         }
     }
 }

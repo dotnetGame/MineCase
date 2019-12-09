@@ -58,6 +58,17 @@ namespace MineCase.Nbt.Serialization
             return retArr;
         }
 
+        internal static long[] ReadTagLongArray(this BinaryReader br, int count)
+        {
+            var retArr = new long[count];
+            for (var i = 0; i < count; ++i)
+            {
+                retArr[i] = br.ReadInt64().ToggleEndian();
+            }
+
+            return retArr;
+        }
+
         internal static void WriteTagValue(this BinaryWriter bw, NbtTagType tagType)
         {
             bw.Write((byte)tagType);
@@ -104,6 +115,14 @@ namespace MineCase.Nbt.Serialization
         }
 
         internal static void WriteTagValue(this BinaryWriter bw, IEnumerable<int> value)
+        {
+            foreach (var item in value)
+            {
+                bw.Write(item.ToggleEndian());
+            }
+        }
+
+        internal static void WriteTagValue(this BinaryWriter bw, IEnumerable<long> value)
         {
             foreach (var item in value)
             {

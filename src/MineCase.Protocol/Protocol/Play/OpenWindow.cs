@@ -26,12 +26,12 @@ namespace MineCase.Protocol.Play
 
         public void Serialize(BinaryWriter bw)
         {
-            bw.WriteAsByte(WindowId);
+            bw.WriteAsByte((sbyte)WindowId);
             bw.WriteAsString(WindowType);
             bw.WriteAsChat(WindowTitle);
-            bw.WriteAsByte(NumberOfSlots);
+            bw.WriteAsByte((sbyte)NumberOfSlots);
             if (EntityId.HasValue)
-                bw.WriteAsByte(EntityId.Value);
+                bw.WriteAsByte((sbyte)EntityId.Value);
         }
     }
 }

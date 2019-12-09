@@ -51,8 +51,7 @@ namespace MineCase.Server.Network.Play
             {
                 ChunkX = chunkX,
                 ChunkZ = chunkZ,
-                GroundUpContinuous = chunkColumn.Biomes != null,
-                Biomes = chunkColumn.Biomes,
+                FullChunk = chunkColumn.Biomes != null,
                 PrimaryBitMask = chunkColumn.SectionBitMask,
                 NumberOfBlockEntities = 0,
                 Data = (from c in chunkColumn.Sections
@@ -61,9 +60,7 @@ namespace MineCase.Server.Network.Play
                         {
                             PaletteLength = 0,
                             BitsPerBlock = c.BitsPerBlock,
-                            SkyLight = c.SkyLight.Storage,
-                            BlockLight = c.BlockLight.Storage,
-                            DataArray = c.Data.Storage
+                            DataArray = Array.ConvertAll<ulong, long>(c.Data.Storage, x => (long)x)
                         }).ToArray()
             });
         }

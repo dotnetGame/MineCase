@@ -25,10 +25,10 @@ namespace MineCase.Nbt.Tags
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NbtList"/> class.<para />
-        /// 默认构造方法
+        /// 默认构造方法.
         /// </summary>
-        /// <param name="elementType">指定该 <see cref="NbtList"/> 的元素类型</param>
-        /// <param name="name">该 Tag 的名称</param>
+        /// <param name="elementType">指定该 <see cref="NbtList"/> 的元素类型.</param>
+        /// <param name="name">该 Tag 的名称.</param>
         public NbtList(NbtTagType elementType, string name = null)
             : base(name)
         {
@@ -38,12 +38,12 @@ namespace MineCase.Nbt.Tags
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NbtList"/> class.<para />
-        /// 从 <paramref name="tags"/> 初始化子 Tag 的构造方法
+        /// 从 <paramref name="tags"/> 初始化子 Tag 的构造方法.
         /// </summary>
-        /// <param name="tags">要用于提供子 Tag 的范围</param>
-        /// <param name="name">该 Tag 的名称</param>
-        /// <exception cref="ArgumentNullException"><paramref name="tags"/> 为 null</exception>
-        /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了不合法的 Tag</exception>
+        /// <param name="tags">要用于提供子 Tag 的范围.</param>
+        /// <param name="name">该 Tag 的名称.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="tags"/> 为 null.</exception>
+        /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了不合法的 Tag.</exception>
         public NbtList(IEnumerable<NbtTag> tags, string name = null)
             : base(name)
         {
@@ -73,9 +73,9 @@ namespace MineCase.Nbt.Tags
         /// <see cref="Get(int)"/>
         public NbtTag this[int index] => Get(index);
 
-        /// <summary>以指定的索引值获取 Tag</summary>
-        /// <param name="index">指定的索引值</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/>超出边界</exception>
+        /// <summary>以指定的索引值获取 Tag.</summary>
+        /// <param name="index">指定的索引值.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/>超出边界.</exception>
         public NbtTag Get(int index)
         {
             if (index < 0 || index >= _childTags.Count)
@@ -88,20 +88,20 @@ namespace MineCase.Nbt.Tags
             return _childTags[index];
         }
 
-        /// <summary>以指定的索引值及期望的 Tag 类型获取 Tag</summary>
-        /// <typeparam name="T">期望获取的 Tag 类型</typeparam>
-        /// <param name="index">指定的索引值</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> 超出边界</exception>
-        /// <exception cref="InvalidCastException">未能将获得的 Tag 转换为 <typeparamref name="T"/></exception>
+        /// <summary>以指定的索引值及期望的 Tag 类型获取 Tag.</summary>
+        /// <typeparam name="T">期望获取的 Tag 类型.</typeparam>
+        /// <param name="index">指定的索引值.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> 超出边界.</exception>
+        /// <exception cref="InvalidCastException">未能将获得的 Tag 转换为 <typeparamref name="T"/>.</exception>
         public T Get<T>(int index)
             where T : NbtTag
         {
             return (T)Get(index);
         }
 
-        /// <summary>判断指定的 Tag 是否为本 NbtList 的子 Tag</summary>
-        /// <param name="tag">指定的 Tag</param>
-        /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null</exception>
+        /// <summary>判断指定的 Tag 是否为本 NbtList 的子 Tag.</summary>
+        /// <param name="tag">指定的 Tag.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null.</exception>
         public bool ContainsTag(NbtTag tag)
         {
             if (tag == null)
@@ -114,10 +114,10 @@ namespace MineCase.Nbt.Tags
             return tag.Name != null && tag.TagType != ElementType && _childTags.Contains(tag);
         }
 
-        /// <summary>在本 NbtList 的子 Tag 中寻找指定的 Tag</summary>
-        /// <param name="tag">指定的 Tag</param>
-        /// <returns>若找到，返回指定的 Tag 在本 NbtList 中的索引；若未找到，则返回 -1</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null</exception>
+        /// <summary>在本 NbtList 的子 Tag 中寻找指定的 Tag.</summary>
+        /// <param name="tag">指定的 Tag.</param>
+        /// <returns>若找到，返回指定的 Tag 在本 NbtList 中的索引；若未找到，则返回 -1.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null.</exception>
         public int FindTag(NbtTag tag)
         {
             if (tag == null)
@@ -135,10 +135,10 @@ namespace MineCase.Nbt.Tags
             return _childTags.FindIndex(curTag => curTag == tag);
         }
 
-        /// <summary>添加子 Tag</summary>
-        /// <param name="tag">要添加的 Tag</param>
-        /// <exception cref="ArgumentException"><paramref name="tag"/> 不符合要求</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null</exception>
+        /// <summary>添加子 Tag.</summary>
+        /// <param name="tag">要添加的 Tag.</param>
+        /// <exception cref="ArgumentException"><paramref name="tag"/> 不符合要求.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null.</exception>
         public void Add(NbtTag tag)
         {
             if (tag == null)
@@ -175,12 +175,12 @@ namespace MineCase.Nbt.Tags
             tag.Parent = this;
         }
 
-        /// <summary>于指定的索引处添加子 Tag</summary>
-        /// <param name="index">指定的索引</param>
-        /// <param name="tag">要添加的 Tag</param>
-        /// <exception cref="ArgumentException"><paramref name="tag"/> 不符合要求</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> 不在合法范围内</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null</exception>
+        /// <summary>于指定的索引处添加子 Tag.</summary>
+        /// <param name="index">指定的索引.</param>
+        /// <param name="tag">要添加的 Tag.</param>
+        /// <exception cref="ArgumentException"><paramref name="tag"/> 不符合要求.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> 不在合法范围内.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null.</exception>
         public void Add(int index, NbtTag tag)
         {
             if (index < 0 || index > _childTags.Count)
@@ -221,10 +221,10 @@ namespace MineCase.Nbt.Tags
             tag.Parent = this;
         }
 
-        /// <summary>移除子 Tag</summary>
-        /// <param name="tag">要移除的 Tag</param>
-        /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null</exception>
-        /// <exception cref="ArgumentException"><paramref name="tag"/> 不是该 NbtList 的子 Tag</exception>
+        /// <summary>移除子 Tag.</summary>
+        /// <param name="tag">要移除的 Tag.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null.</exception>
+        /// <exception cref="ArgumentException"><paramref name="tag"/> 不是该 NbtList 的子 Tag.</exception>
         public void Remove(NbtTag tag)
         {
             if (tag == null)
@@ -244,9 +244,9 @@ namespace MineCase.Nbt.Tags
             tag.Parent = null;
         }
 
-        /// <summary>于指定的索引处移除子 Tag</summary>
-        /// <param name="index">指定的索引</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> 不在合法范围内</exception>
+        /// <summary>于指定的索引处移除子 Tag.</summary>
+        /// <param name="index">指定的索引.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> 不在合法范围内.</exception>
         public void Remove(int index)
         {
             if (index < 0 || index >= _childTags.Count)

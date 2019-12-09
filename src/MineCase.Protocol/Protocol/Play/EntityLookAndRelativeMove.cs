@@ -50,8 +50,8 @@ namespace MineCase.Protocol.Play
             bw.WriteAsShort(DeltaX);
             bw.WriteAsShort(DeltaY);
             bw.WriteAsShort(DeltaZ);
-            bw.WriteAsByte(Yaw);
-            bw.WriteAsByte(Pitch);
+            bw.WriteAsByte((sbyte)Yaw);
+            bw.WriteAsByte((sbyte)Pitch);
             bw.WriteAsBoolean(OnGround);
         }
     }

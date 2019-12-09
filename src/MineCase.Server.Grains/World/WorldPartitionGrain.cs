@@ -27,11 +27,23 @@ namespace MineCase.Server.Grains.World
 
         private string _worldName;
 
-        private BlockWorldPos _position;
+        private ChunkWorldPos _position;
 
         private bool _isActive = false;
 
-        private ChunkColumn[,] _chunkColumns = new ChunkColumn[WorldPartitionGrain.PartitionSize, WorldPartitionGrain.PartitionSize];
+        private ChunkColumn[,] _chunkColumns;
+
+        public WorldPartitionGrain()
+        {
+            _chunkColumns = new ChunkColumn[WorldPartitionGrain.PartitionSize, WorldPartitionGrain.PartitionSize];
+            for (int x = 0; x < PartitionSize; ++x)
+            {
+                for (int z = 0; z < PartitionSize; ++z)
+                {
+                    _chunkColumns[x, z] = new ChunkColumn();
+                }
+            }
+        }
 
         public override async Task OnActivateAsync()
         {
@@ -47,26 +59,39 @@ namespace MineCase.Server.Grains.World
             return Task.CompletedTask;
         }
 
-        public static string MakeAddressByPartitionKey(IWorld world, BlockWorldPos blockWorldPos)
+        public static string MakeAddressByPartitionKey(IWorld world, ChunkWorldPos chunkWorldPos)
         {
-            return $"{world.GetPrimaryKeyString()},{blockWorldPos.X},{blockWorldPos.Z}";
+            return $"{world.GetPrimaryKeyString()},{chunkWorldPos.X},{chunkWorldPos.Z}";
         }
 
-        public static string MakeAddressByPartitionKey(string world, BlockWorldPos blockWorldPos)
+        public static string MakeAddressByPartitionKey(string world, ChunkWorldPos chunkWorldPos)
         {
-            return $"{world},{blockWorldPos.X},{blockWorldPos.Z}";
+            return $"{world},{chunkWorldPos.X},{chunkWorldPos.Z}";
         }
 
-        public BlockWorldPos GetPartitionPos()
+        public ChunkWorldPos GetPartitionPos()
         {
             var key = this.GetPrimaryKeyString().Split(',');
-            return new BlockWorldPos(int.Parse(key[1]), 0, int.Parse(key[2]));
+            return new ChunkWorldPos(int.Parse(key[1]), int.Parse(key[2]));
         }
 
-        public (string worldKey, BlockWorldPos partitionPos) GetWorldAndPartitionPos()
+        public (string worldKey, ChunkWorldPos partitionPos) GetWorldAndPartitionPos()
         {
             var key = this.GetPrimaryKeyString().Split(',');
-            return (key[0], new BlockWorldPos(int.Parse(key[1]), 0, int.Parse(key[2])));
+            return (key[0], new ChunkWorldPos(int.Parse(key[1]), int.Parse(key[2])));
+        }
+
+        public Task<ChunkColumn> GetState(ChunkWorldPos pos)
+        {
+            if (pos.X >= _position.X && pos.Z >= _position.Z &&
+                pos.X < _position.X + PartitionSize && pos.Z < _position.Z + PartitionSize)
+            {
+                return Task.FromResult(_chunkColumns[pos.X - _position.X, pos.Z - _position.Z]);
+            }
+            else
+            {
+                return Task.FromResult((ChunkColumn)null);
+            }
         }
     }
 }

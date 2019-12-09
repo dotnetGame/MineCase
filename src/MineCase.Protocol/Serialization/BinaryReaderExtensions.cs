@@ -9,8 +9,8 @@ namespace MineCase.Serialization
 {
     internal static class BinaryReaderExtensions
     {
-        public static byte ReadAsByte(this BinaryReader br) =>
-            br.ReadByte();
+        public static sbyte ReadAsByte(this BinaryReader br) =>
+            br.ReadSByte();
 
         public static bool ReadAsBoolean(this BinaryReader br) =>
             br.ReadBoolean();
@@ -52,6 +52,12 @@ namespace MineCase.Serialization
 
         public static short ReadAsShort(this BinaryReader br) =>
             (short)br.ReadAsUnsignedShort();
+
+        public static byte ReadAsUnsignedByte(this BinaryReader br)
+        {
+            var value = br.ReadByte();
+            return value;
+        }
 
         public static ushort ReadAsUnsignedShort(this BinaryReader br)
         {

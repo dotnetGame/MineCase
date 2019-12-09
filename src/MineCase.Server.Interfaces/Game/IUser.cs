@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.Interfaces.Game
@@ -13,5 +14,7 @@ namespace MineCase.Server.Interfaces.Game
         Task Login(Guid sessionId);
 
         Task Logout();
+
+        Task SetPosition(EntityWorldPos pos);
     }
 }

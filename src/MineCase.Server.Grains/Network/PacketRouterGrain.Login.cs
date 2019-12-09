@@ -7,6 +7,7 @@ using MineCase.Protocol;
 using MineCase.Protocol.Login;
 using MineCase.Serialization;
 using MineCase.Server.Interfaces.Game;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.Network
@@ -59,6 +60,7 @@ namespace MineCase.Server.Network
             // requestGrain.DispatchPacket(packet).Ignore();
             var user = GrainFactory.GetGrain<IUser>(packet.Name);
             await user.Login(this.GetPrimaryKey());
+            await user.SetPosition(new EntityWorldPos { X = 0.0f, Y = 0.0f, Z = 0.0f });
         }
 
         // private Task DispatchPacket(EncryptionResponse packet)

@@ -34,7 +34,7 @@ namespace MineCase.Protocol.Play
         public void Serialize(BinaryWriter bw)
         {
             bw.WriteAsChat(JSONData);
-            bw.WriteAsByte(Position);
+            bw.WriteAsByte((sbyte)Position);
         }
     }
 }
