@@ -20,9 +20,9 @@ namespace MineCase.Nbt.Tags
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NbtCompound"/> class.<para />
-        /// 默认构造方法
+        /// 默认构造方法.
         /// </summary>
-        /// <param name="name">该 Tag 的名称</param>
+        /// <param name="name">该 Tag 的名称.</param>
         public NbtCompound(string name = null)
             : this(null, name)
         {
@@ -30,13 +30,13 @@ namespace MineCase.Nbt.Tags
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NbtCompound"/> class.<para />
-        /// 从 <paramref name="tags"/> 初始化子 Tag 的构造方法
+        /// 从 <paramref name="tags"/> 初始化子 Tag 的构造方法.
         /// </summary>
-        /// <param name="tags">要用于提供子 Tag 的范围</param>
-        /// <param name="name">该 Tag 的名称</param>
-        /// <remarks><paramref name="tags"/> 为 null 时将子 Tag 初始化为空集合</remarks>
-        /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了不具有名称的 Tag</exception>
-        /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了 null</exception>
+        /// <param name="tags">要用于提供子 Tag 的范围.</param>
+        /// <param name="name">该 Tag 的名称.</param>
+        /// <remarks><paramref name="tags"/> 为 null 时将子 Tag 初始化为空集合.</remarks>
+        /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了不具有名称的 Tag.</exception>
+        /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了 null.</exception>
         public NbtCompound(IEnumerable<NbtTag> tags, string name = null)
             : base(name)
         {
@@ -50,10 +50,10 @@ namespace MineCase.Nbt.Tags
         /// <see cref="Get(string)"/>
         public NbtTag this[string tagName] => Get(tagName);
 
-        /// <summary>以指定的 Tag 名称获取 Tag</summary>
-        /// <param name="tagName">Tag 的名称</param>
-        /// <exception cref="ArgumentNullException"><paramref name="tagName"/> 为 null</exception>
-        /// <exception cref="KeyNotFoundException">未能自子 Tag 中寻找到具有指定名称的 Tag</exception>
+        /// <summary>以指定的 Tag 名称获取 Tag.</summary>
+        /// <param name="tagName">Tag 的名称.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="tagName"/> 为 null.</exception>
+        /// <exception cref="KeyNotFoundException">未能自子 Tag 中寻找到具有指定名称的 Tag.</exception>
         public NbtTag Get(string tagName)
         {
             if (tagName == null)
@@ -66,37 +66,37 @@ namespace MineCase.Nbt.Tags
             return _childTags[tagName];
         }
 
-        /// <summary>以指定的 Tag 名称及期望的 Tag 类型获取 Tag</summary>
-        /// <typeparam name="T">期望获取的 Tag 类型</typeparam>
-        /// <param name="tagName">Tag 的名称</param>
-        /// <exception cref="ArgumentNullException"><paramref name="tagName"/> 为 null</exception>
-        /// <exception cref="KeyNotFoundException">未能自子 Tag 中寻找到具有指定名称的 Tag</exception>
-        /// <exception cref="InvalidCastException">未能将获得的 Tag 转换为 <typeparamref name="T"/></exception>
+        /// <summary>以指定的 Tag 名称及期望的 Tag 类型获取 Tag.</summary>
+        /// <typeparam name="T">期望获取的 Tag 类型.</typeparam>
+        /// <param name="tagName">Tag 的名称.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="tagName"/> 为 null.</exception>
+        /// <exception cref="KeyNotFoundException">未能自子 Tag 中寻找到具有指定名称的 Tag.</exception>
+        /// <exception cref="InvalidCastException">未能将获得的 Tag 转换为 <typeparamref name="T"/>.</exception>
         public T Get<T>(string tagName)
             where T : NbtTag
         {
             return (T)Get(tagName);
         }
 
-        /// <summary>是否包含指定名称的子 Tag</summary>
-        /// <param name="tagName">指定的名称</param>
+        /// <summary>是否包含指定名称的子 Tag.</summary>
+        /// <param name="tagName">指定的名称.</param>
         public bool ContainsTagName(string tagName)
         {
             return _childTags.ContainsKey(tagName);
         }
 
-        /// <summary>判断指定的 Tag 是否是该 NbtCompound 的子 Tag</summary>
-        /// <param name="tag">指定的 Tag</param>
+        /// <summary>判断指定的 Tag 是否是该 NbtCompound 的子 Tag.</summary>
+        /// <param name="tag">指定的 Tag.</param>
         public bool ContainsTag(NbtTag tag)
         {
             return tag.Parent == this && _childTags.ContainsValue(tag);
         }
 
-        /// <summary>添加子 Tag</summary>
-        /// <param name="tag">需要添加的 tag</param>
-        /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null</exception>
-        /// <exception cref="ArgumentException"><paramref name="tag"/> 不具有名称</exception>
-        /// <exception cref="ArgumentException"><paramref name="tag"/> 与已存在的子 Tag 重名</exception>
+        /// <summary>添加子 Tag.</summary>
+        /// <param name="tag">需要添加的 tag.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null.</exception>
+        /// <exception cref="ArgumentException"><paramref name="tag"/> 不具有名称.</exception>
+        /// <exception cref="ArgumentException"><paramref name="tag"/> 与已存在的子 Tag 重名.</exception>
         public void Add(NbtTag tag)
         {
             if (tag == null)
@@ -120,10 +120,10 @@ namespace MineCase.Nbt.Tags
             tag.Parent = this;
         }
 
-        /// <summary>移除名称为 <paramref name="tagName"/> 的子 Tag</summary>
-        /// <param name="tagName">要移除的子 Tag 的名称</param>
-        /// <exception cref="ArgumentNullException"><paramref name="tagName"/> 为 null</exception>
-        /// <exception cref="ArgumentException">无法找到具有指定名称的子 Tag</exception>
+        /// <summary>移除名称为 <paramref name="tagName"/> 的子 Tag.</summary>
+        /// <param name="tagName">要移除的子 Tag 的名称.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="tagName"/> 为 null.</exception>
+        /// <exception cref="ArgumentException">无法找到具有指定名称的子 Tag.</exception>
         public void Remove(string tagName)
         {
             if (tagName == null)
@@ -142,10 +142,10 @@ namespace MineCase.Nbt.Tags
             tag.Parent = null;
         }
 
-        /// <summary>移除子 Tag</summary>
-        /// <param name="tag">要移除的子 Tag</param>
-        /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null</exception>
-        /// <exception cref="ArgumentException"><paramref name="tag"/>并非本 Tag 的子 Tag</exception>
+        /// <summary>移除子 Tag.</summary>
+        /// <param name="tag">要移除的子 Tag.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null.</exception>
+        /// <exception cref="ArgumentException"><paramref name="tag"/>并非本 Tag 的子 Tag.</exception>
         public void Remove(NbtTag tag)
         {
             if (tag == null)

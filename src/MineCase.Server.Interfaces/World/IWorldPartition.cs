@@ -12,6 +12,6 @@ namespace MineCase.Server.Interfaces.World
     {
         Task OnTick();
 
-        Task<ChunkColumn> GetState(ChunkWorldPos pos);
+        Task<Chunk> GetState(ChunkWorldPos pos);
     }
 }

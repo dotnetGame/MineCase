@@ -149,6 +149,18 @@ namespace MineCase.Serialization
             return bw;
         }
         */
+
+        public static void WriteAsCompoundTag(this BinaryWriter bw, Nbt.Tags.NbtCompound nbt)
+        {
+            if (nbt == null)
+            {
+                bw.WriteAsByte(0);
+            }
+            else
+            {
+                Nbt.Serialization.NbtTagSerializer.SerializeTag(nbt, bw);
+            }
+        }
     }
 
     internal static class DataTypeSizeExtensions

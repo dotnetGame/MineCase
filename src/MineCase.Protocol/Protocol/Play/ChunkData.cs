@@ -24,28 +24,16 @@ namespace MineCase.Protocol.Play
         public uint PrimaryBitMask;
 
         [SerializeAs(DataType.ByteArray)]
-        public long[] Heightmaps;
-
-        [SerializeAs(DataType.VarInt)]
-        public uint Size;
+        public Nbt.Tags.NbtCompound Heightmaps;
 
         [SerializeAs(DataType.Array)]
-        public ChunkSection[] Data;
-
-        [SerializeAs(DataType.Array)]
-        public int[] Biomes;
+        public byte[] Data;
 
         [SerializeAs(DataType.VarInt)]
         public uint NumberOfBlockEntities;
 
         [SerializeAs(DataType.Array)]
-        public Nbt.Tags.NbtList BlockEntities;
-
-        public ChunkData()
-        {
-            Heightmaps = new long[16 * 16];
-            BlockEntities = new Nbt.Tags.NbtList(Nbt.NbtTagType.Compound);
-        }
+        public List<Nbt.Tags.NbtCompound> BlockEntities;
 
         public static ChunkData Deserialize(ref SpanReader br, bool isOverworld)
         {
@@ -80,36 +68,19 @@ namespace MineCase.Protocol.Play
             bw.WriteAsInt(ChunkZ);
             bw.WriteAsBoolean(FullChunk);
             bw.WriteAsVarInt(PrimaryBitMask, out _);
+            bw.WriteAsCompoundTag(Heightmaps);
+            bw.WriteAsVarInt((uint)Data.Length, out _);
+            bw.WriteAsByteArray(Data);
+            bw.WriteAsVarInt((uint)BlockEntities.Count, out _);
 
-            var heightmaps = new Nbt.Tags.NbtCompound();
-            heightmaps.Add(new Nbt.Tags.NbtLongArray(Heightmaps, "MOTION_BLOCKING"));
-
-            Nbt.Serialization.NbtTagSerializer.SerializeTag(heightmaps, bw);
-
-            using (var mem = new MemoryStream())
+            foreach (Nbt.Tags.NbtCompound compoundnbt in BlockEntities)
             {
-                using (var dbw = new BinaryWriter(mem, Encoding.UTF8, true))
-                    dbw.WriteAsArray(Data);
-
-                var dataBytes = mem.ToArray();
-                Size = (uint)dataBytes.Length;
-
-                bw.WriteAsVarInt(Size, out _);
-                bw.WriteAsByteArray(dataBytes);
+                bw.WriteAsCompoundTag(compoundnbt);
             }
-
-            if (Biomes != null)
-            {
-                foreach (var eachBiome in Biomes)
-                    bw.WriteAsInt(eachBiome);
-            }
-
-            bw.WriteAsVarInt(NumberOfBlockEntities, out _);
-
-            Nbt.Serialization.NbtTagSerializer.SerializeTag(BlockEntities, bw);
         }
     }
 
+    /*
     public sealed class ChunkSection : ISerializablePacket
     {
         [SerializeAs(DataType.Short)]
@@ -137,7 +108,6 @@ namespace MineCase.Protocol.Play
                 BitsPerBlock = br.ReadAsByte(),
                 PaletteLength = br.ReadAsVarInt(out _)
             };
-            /*
             if (result.PaletteLength != 0)
             {
                 var paletteReader = br.ReadAsSubReader((int)result.PaletteLength);
@@ -155,7 +125,6 @@ namespace MineCase.Protocol.Play
             result.BlockLight = br.ReadAsByteArray(ChunkConstants.BlocksInSection / 2);
             if (isOverworld)
                 result.SkyLight = br.ReadAsByteArray(ChunkConstants.BlocksInSection / 2);
-                */
             return result;
         }
 
@@ -189,7 +158,7 @@ namespace MineCase.Protocol.Play
             {
                 bw.WriteAsLong(eachData);
             }
-
         }
     }
+    */
 }

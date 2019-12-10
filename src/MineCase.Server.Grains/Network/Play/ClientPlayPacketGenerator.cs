@@ -47,22 +47,7 @@ namespace MineCase.Server.Network.Play
 
         public Task ChunkData(Dimension dimension, int chunkX, int chunkZ, ChunkColumnCompactStorage chunkColumn)
         {
-            return SendPacket(new ChunkData
-            {
-                ChunkX = chunkX,
-                ChunkZ = chunkZ,
-                FullChunk = chunkColumn.Biomes != null,
-                PrimaryBitMask = chunkColumn.SectionBitMask,
-                NumberOfBlockEntities = 0,
-                Data = (from c in chunkColumn.Sections
-                        where c != null
-                        select new Protocol.Play.ChunkSection
-                        {
-                            PaletteLength = 0,
-                            BitsPerBlock = c.BitsPerBlock,
-                            DataArray = Array.ConvertAll<ulong, long>(c.Data.Storage, x => (long)x)
-                        }).ToArray()
-            });
+            return SendPacket(PacketFactory.);
         }
     }
 
