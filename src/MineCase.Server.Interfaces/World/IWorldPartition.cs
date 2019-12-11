@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Core.World;
 using MineCase.World;
 using Orleans;
 
@@ -12,6 +11,6 @@ namespace MineCase.Server.Interfaces.World
     {
         Task OnTick();
 
-        Task<Chunk> GetState(ChunkWorldPos pos);
+        Task<ChunkColumn> GetState(ChunkWorldPos pos);
     }
 }

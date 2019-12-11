@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MineCase.Core.World;
 using MineCase.Protocol.Play;
 using MineCase.World;
+using MineCase.World.Biome;
 
 namespace MineCase.Protocol
 {
     public class PacketFactory
     {
-        protected static int GetChunkDataSize(ChunkData packet,Chunk chunkIn, int p_218709_2_)
+        protected static int GetChunkDataSize(ChunkData packet, ChunkColumn chunkIn, int changedSectionFilter)
         {
             int i = 0;
             ChunkSection[] achunksection = chunkIn.Sections;
@@ -18,21 +18,52 @@ namespace MineCase.Protocol
             for (int k = achunksection.Length; j < k; ++j)
             {
                 ChunkSection chunksection = achunksection[j];
-                if (chunksection != ChunkSection.EmptySection && (!packet.FullChunk || !chunksection.IsEmpty()) && (p_218709_2_ & 1 << j) != 0)
+                if (chunksection != ChunkSection.EmptySection && (!packet.FullChunk || !chunksection.IsEmpty()) && (changedSectionFilter & 1 << j) != 0)
                 {
-                    i += chunksection.GetSize();
+                    // i += chunksection.GetSize();
                 }
             }
 
             if (packet.FullChunk)
             {
-                i += chunkIn.GetBiomes().Length * 4;
+                i += chunkIn.BlockBiomeArray.Length * 4;
             }
 
             return i;
         }
 
-        public static ChunkData ChunkDataPacket(Chunk chunkIn, int changedSectionFilter)
+        /*
+        public static int WriteAndGetPrimaryBitMask(ChunkData packet, PacketBuffer p_218708_1_, ChunkColumn chunkIn, int changedSectionFilter)
+        {
+            int i = 0;
+            ChunkSection[] achunksection = chunkIn.Sections;
+            int j = 0;
+
+            for (int k = achunksection.Length; j < k; ++j)
+            {
+                ChunkSection chunksection = achunksection[j];
+                if (chunksection != ChunkSection.EmptySection && (!packet.FullChunk || !chunksection.IsEmpty()) && (changedSectionFilter & 1 << j) != 0)
+                {
+                    i |= 1 << j;
+                    chunksection.write(p_218708_1_);
+                }
+            }
+
+            if (packet.FullChunk)
+            {
+                Biome[] abiome = chunkIn.BlockBiomeArray;
+
+                for (int l = 0; l < abiome.Length; ++l)
+                {
+                    p_218708_1_.writeInt(abiome[l].Properties.BiomeId);
+                }
+            }
+
+            return i;
+        }
+        */
+
+        public static ChunkData ChunkDataPacket(ChunkColumn chunkIn, int changedSectionFilter)
         {
             ChunkData ret = new ChunkData { };
             ChunkWorldPos chunkpos = chunkIn.Posistion;
@@ -50,19 +81,20 @@ namespace MineCase.Protocol
                 }
             }
 
-            ret.Data = new byte[GetChunkDataSize(chunkIn, changedSectionFilter)];
-            ret.PrimaryBitMask = this.func_218708_a(new PacketBuffer(this.getWriteBuffer()), chunkIn, changedSectionFilter);
-            ret.BlockEntities = Lists.newArrayList();
+            ret.Data = new byte[GetChunkDataSize(ret, chunkIn, changedSectionFilter)];
 
-            for (Entry<BlockPos, TileEntity> entry1 : chunkIn.getTileEntityMap().entrySet())
+            // ret.PrimaryBitMask = WriteAndGetPrimaryBitMask(new PacketBuffer(this.getWriteBuffer()), chunkIn, changedSectionFilter);
+            ret.BlockEntities = new List<Nbt.Tags.NbtCompound>();
+
+            foreach (var entry in chunkIn.BlockEntities)
             {
-                BlockPos blockpos = entry1.getKey();
-                TileEntity tileentity = entry1.getValue();
-                int i = blockpos.getY() >> 4;
-                if (this.isFullChunk() || (changedSectionFilter & 1 << i) != 0)
+                BlockWorldPos blockpos = entry.Key;
+                BlockEntity.BlockEntity blockEntity = entry.Value;
+                int i = blockpos.Y >> 4;
+                if (ret.FullChunk || (changedSectionFilter & 1 << i) != 0)
                 {
-                    CompoundNBT compoundnbt = tileentity.getUpdateTag();
-                    this.tileEntityTags.add(compoundnbt);
+                    // Nbt.Tags.NbtCompound compoundnbt = blockEntity.getUpdateTag();
+                    // ret.BlockEntities.Add(compoundnbt);
                 }
             }
 

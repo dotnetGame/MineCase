@@ -82,6 +82,7 @@ namespace MineCase.Server.Grains.Game
                 var partition = GrainFactory.GetGrain<IWorldPartition>(partitionKey);
 
                 // TODO
+                /*
                 var chunkColumn = await partition.GetState(chunkPos);
                 var chunkColumnStorage = chunkColumn.Storage;
                 await sink.SendPacket(new ChunkData
@@ -100,6 +101,7 @@ namespace MineCase.Server.Grains.Game
                                     DataArray = Array.ConvertAll<ulong, long>(c.Data.Storage, x => (long)x)
                                 }).ToArray()
                     });
+                    */
             }
         }
 

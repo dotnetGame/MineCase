@@ -45,10 +45,12 @@ namespace MineCase.Server.Network.Play
             return Task.CompletedTask;
         }
 
+        /*
         public Task ChunkData(Dimension dimension, int chunkX, int chunkZ, ChunkColumnCompactStorage chunkColumn)
         {
-            return SendPacket(PacketFactory.);
+            return SendPacket(PacketFactory.ChunkDataPacket());
         }
+        */
     }
 
     [Flags]

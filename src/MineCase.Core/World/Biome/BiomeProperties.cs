@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase.World.Biomes
+namespace MineCase.World.Biome
 {
     public class BiomeProperties
     {

@@ -2,18 +2,24 @@
 using System.Collections.Generic;
 using System.Text;
 using MineCase.Block;
+using MineCase.World.Chunk;
 
-namespace MineCase.Core.World
+namespace MineCase.World
 {
     public class ChunkSection
     {
         public static ChunkSection EmptySection = null;
-        private BlockState[] _data;
 
+        private BlockStateContainer<BlockState> _data;
 
         public bool IsEmpty()
         {
             return _data.Length == 0;
+        }
+
+        public int GetSize()
+        {
+            return 2 + _data.GetSerializedSize();
         }
     }
 }

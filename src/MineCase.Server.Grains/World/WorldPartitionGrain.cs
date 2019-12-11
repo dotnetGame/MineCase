@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Core.World;
 using MineCase.Server.Interfaces.World;
 using MineCase.World;
 using Orleans;
@@ -31,16 +30,16 @@ namespace MineCase.Server.Grains.World
 
         private bool _isActive = false;
 
-        private Chunk[,] _chunkColumns;
+        private ChunkColumn[,] _chunkColumns;
 
         public WorldPartitionGrain()
         {
-            _chunkColumns = new Chunk[WorldPartitionGrain.PartitionSize, WorldPartitionGrain.PartitionSize];
+            _chunkColumns = new ChunkColumn[WorldPartitionGrain.PartitionSize, WorldPartitionGrain.PartitionSize];
             for (int x = 0; x < PartitionSize; ++x)
             {
                 for (int z = 0; z < PartitionSize; ++z)
                 {
-                    _chunkColumns[x, z] = new Chunk();
+                    _chunkColumns[x, z] = new ChunkColumn();
                 }
             }
         }
@@ -81,7 +80,7 @@ namespace MineCase.Server.Grains.World
             return (key[0], new ChunkWorldPos(int.Parse(key[1]), int.Parse(key[2])));
         }
 
-        public Task<Chunk> GetState(ChunkWorldPos pos)
+        public Task<ChunkColumn> GetState(ChunkWorldPos pos)
         {
             if (pos.X >= _position.X && pos.Z >= _position.Z &&
                 pos.X < _position.X + PartitionSize && pos.Z < _position.Z + PartitionSize)
@@ -90,7 +89,7 @@ namespace MineCase.Server.Grains.World
             }
             else
             {
-                return Task.FromResult((Chunk)null);
+                return Task.FromResult((ChunkColumn)null);
             }
         }
     }

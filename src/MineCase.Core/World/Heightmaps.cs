@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase.Core.World
+namespace MineCase.World
 {
     public class Heightmap
     {
@@ -13,7 +13,7 @@ namespace MineCase.Core.World
         */
         private int[] _data = new int[256];
 
-        private Chunk _chunk;
+        private ChunkColumn _chunk;
 
         public int GetHeight(int x, int z)
         {
