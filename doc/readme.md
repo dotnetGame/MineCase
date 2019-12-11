@@ -2,9 +2,9 @@
 
 ## Brief
 
-This folder contains the documents of MineCase project. The document is mainly divided into two parts, one is the user guide and the other is the developer manual.
+This folder contains the documents of MineCase project. The document is mainly divided into two parts, one is the user guide and the other is the developer manual.  
 
-
+Note: Due to lack of maintainers, all English documents are obtained by Google Translate
 
 ## User Guide
 
