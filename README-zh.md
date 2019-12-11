@@ -7,22 +7,18 @@ MineCase
 
 #### [English](https://github.com/dotnetGame/MineCase/blob/master/README.md) | [中文](https://github.com/dotnetGame/MineCase/blob/master/README-zh.md) 
 
-![Logo](doc/logo/MineCaseLogo.png)
-
-#### [English](https://github.com/dotnetGame/MineCase/blob/master/README.md) | [中文](https://github.com/dotnetGame/MineCase/blob/master/README-zh.md) 
-
-`MineCase` 是一个跨平台、分布式的 `Minecraft` 服务端应用。
+`MineCase` 是一个跨平台、分布式的 `Minecraft` 服务器。
 
 本项目使用 `.NET Core` 编写，基于 [orleans](https://github.com/dotnet/orleans) 框架。它通过 Actor 模型将各个模块分离开来，从而构建一个高效的分布式系统。
 
 不同的区块由不同的服务器管理，所有的玩家都可以在同一个世界进行游戏，这位minecraft服务器带来了更多的拓展性。
 
-目前仅支持 `Minecraft` [1.12](https://minecraft.net/en-us/article/minecraft-112-pre-release-6) 的版本。
+目前仅支持 `Minecraft`  [1.14.4](https://www.minecraft.net/en-us/article/minecraft-java-1-14-4-released)的版本。
 
 ![Screenshots](screenshots/1.jpg)
 
 ## 运行需要
-* [.Net Core 2.0](https://www.microsoft.com/net/download)
+* [.Net Core 3.1](https://www.microsoft.com/net/download)
 * [MongoDB](https://www.mongodb.com/download-center/community)
 
 ## 安装
@@ -41,18 +37,6 @@ MineCase
     * **Linux** : 运行 `build_and_run.sh`.
     * **Win** : 双击 `build_and_run.bat`.
 
-## 使用docker安装
-* 1 . 下载[Docker for linux](https://docs.docker.com/engine/installation/)。
-* 2 . 解压 `Docker for linux`，然后在linux上运行 `server`
-
-	```bash
-	url=https://raw.githubusercontent.com/dotnetGame/MineCase/master/build/docker/linux/docker-compose.yml
-	curl -o docker-compose.yml $url
-	docker-compose up
-	```
-	##### 建议:
-	* 你可以输入 `docker-compose stop`停止服务器的运行。
-
 ## 参与开发
 我们需要帮助以使MineCase更好。 您可以通过修复错误，开发新功能，改进文档来帮助我们。
 一些新的贡献者想知道该做些什么来帮助我们的开发。 该项目始于对Minecraft的热爱，所以我们的答案始终是“做你喜欢的事”。
@@ -64,7 +48,7 @@ MineCase
 我们欢迎且感谢您对我们项目的贡献。
 
 * 通过e-mail联系我: sunnycase@live.cn
-* [Discord](https://discord.gg/8Z5RSRn) : MineCase
+* Discord : [MineCase](https://discord.gg/8Z5RSRn)
 * QQ群: 667481568
 
 [License (MIT)](https://raw.githubusercontent.com/dotnetGame/MineCase/master/LICENSE)
