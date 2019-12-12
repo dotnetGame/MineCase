@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Interfaces.World;
 using MineCase.World;
+using MineCase.World.Chunk;
 using Orleans;
 
 namespace MineCase.Server.Grains.World

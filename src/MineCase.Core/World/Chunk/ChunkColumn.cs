@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase.World
+namespace MineCase.World.Chunk
 {
     public class ChunkColumn
     {

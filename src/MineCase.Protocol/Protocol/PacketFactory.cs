@@ -4,6 +4,7 @@ using System.Text;
 using MineCase.Protocol.Play;
 using MineCase.World;
 using MineCase.World.Biome;
+using MineCase.World.Chunk;
 
 namespace MineCase.Protocol
 {

@@ -4,7 +4,7 @@ using System.Text;
 using MineCase.Block;
 using MineCase.World.Chunk;
 
-namespace MineCase.World
+namespace MineCase.World.Chunk
 {
     public class ChunkSection
     {

@@ -23,11 +23,11 @@ namespace MineCase.Nbt.Tags
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NbtByteArray"/> class.<para />
-        /// 默认构造函数
+        /// 默认构造函数.
         /// </summary>
-        /// <param name="value">要初始化的值</param>
-        /// <param name="name">该 Tag 的名称</param>
-        /// <exception cref="ArgumentNullException"><paramref name="value"/> 为 null</exception>
+        /// <param name="value">要初始化的值.</param>
+        /// <param name="name">该 Tag 的名称.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> 为 null.</exception>
         public NbtByteArray(sbyte[] value, string name = null)
             : base(name)
         {
