@@ -23,8 +23,7 @@ namespace MineCase.Nbt.Tags
         /// 默认构造方法.
         /// </summary>
         /// <param name="name">该 Tag 的名称.</param>
-        public NbtCompound(string name = null)
-            : this(null, name)
+        public NbtCompound()
         {
         }
 
@@ -37,14 +36,13 @@ namespace MineCase.Nbt.Tags
         /// <remarks><paramref name="tags"/> 为 null 时将子 Tag 初始化为空集合.</remarks>
         /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了不具有名称的 Tag.</exception>
         /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了 null.</exception>
-        public NbtCompound(IEnumerable<NbtTag> tags, string name = null)
-            : base(name)
+        public NbtCompound(IEnumerable<(string, NbtTag)> tags)
         {
             _childTags =
                 tags?.ToDictionary(
-                    tag => tag?.Name ?? throw new ArgumentException($"{nameof(tags)} 中包含了不具有名称的 Tag", nameof(tags)),
-                    tag => tag ?? throw new ArgumentException($"{nameof(tags)} 中包含了 null", nameof(tags))) ??
-                new Dictionary<string, NbtTag>();
+                    tag => tag.Item1 ?? throw new ArgumentException($"{nameof(tags)} 中包含了不具有名称的 Tag", nameof(tags)),
+                    tag => tag.Item2 ?? throw new ArgumentException($"{nameof(tags)} 中包含了 null", nameof(tags)))
+                ?? new Dictionary<string, NbtTag>();
         }
 
         /// <see cref="Get(string)"/>
@@ -97,26 +95,21 @@ namespace MineCase.Nbt.Tags
         /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null.</exception>
         /// <exception cref="ArgumentException"><paramref name="tag"/> 不具有名称.</exception>
         /// <exception cref="ArgumentException"><paramref name="tag"/> 与已存在的子 Tag 重名.</exception>
-        public void Add(NbtTag tag)
+        public void Add(string name, NbtTag tag)
         {
             if (tag == null)
             {
                 throw new ArgumentNullException(nameof(tag));
             }
 
-            if (tag.Name == null)
+            if (_childTags.ContainsKey(name))
             {
-                throw new ArgumentException("NbtCompound 的子 Tag 必须具有名称", nameof(tag));
-            }
-
-            if (_childTags.ContainsKey(tag.Name))
-            {
-                throw new ArgumentException($"试图加入具有名称{tag.Name}的 Tag，但因已有重名的子 Tag 而失败", nameof(tag));
+                throw new ArgumentException($"试图加入具有名称{name}的 Tag，但因已有重名的子 Tag 而失败", nameof(tag));
             }
 
             Contract.EndContractBlock();
 
-            _childTags.Add(tag.Name, tag);
+            _childTags.Add(name, tag);
             tag.Parent = this;
         }
 
@@ -140,38 +133,6 @@ namespace MineCase.Nbt.Tags
 
             _childTags.Remove(tagName);
             tag.Parent = null;
-        }
-
-        /// <summary>移除子 Tag.</summary>
-        /// <param name="tag">要移除的子 Tag.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="tag"/> 为 null.</exception>
-        /// <exception cref="ArgumentException"><paramref name="tag"/>并非本 Tag 的子 Tag.</exception>
-        public void Remove(NbtTag tag)
-        {
-            if (tag == null)
-            {
-                throw new ArgumentNullException(nameof(tag));
-            }
-
-            if (tag.Parent != this || !_childTags.ContainsValue(tag))
-            {
-                throw new ArgumentException($"{nameof(tag)} 不属于此 NbtCompound", nameof(tag));
-            }
-
-            Contract.EndContractBlock();
-
-            _childTags.Remove(tag.Name);
-            tag.Parent = null;
-        }
-
-        protected override void OnChildTagRenamed(NbtTag tag, string newName)
-        {
-            Debug.Assert(tag != null, $"{nameof(tag)} 不得为空");
-            Debug.Assert(tag.Name != null, $"{nameof(tag)} 必须具有名称");
-            Debug.Assert(tag.Parent == this && _childTags.ContainsKey(tag.Name) && _childTags.ContainsValue(tag), $"{nameof(tag)} 不属于此 NbtCompound");
-
-            _childTags.Remove(tag.Name);
-            _childTags.Add(newName, tag);
         }
 
         public override void Accept(INbtTagVisitor visitor)
@@ -200,40 +161,31 @@ namespace MineCase.Nbt.Tags
 
         private class Serializer : ITagSerializer
         {
-            public NbtTag Deserialize(BinaryReader br, bool requireName)
+            public NbtTag Deserialize(BinaryReader br)
             {
-                string name = null;
-                if (requireName)
-                {
-                    name = br.ReadTagString();
-                }
-
-                var elements = new List<NbtTag>();
+                var compound = new NbtCompound();
                 while (true)
                 {
-                    var curElement = NbtTagSerializer.DeserializeTag(br);
+                    string name = null;
+                    var curElement = NbtTagSerializer.DeserializeTag(br, true, out name);
                     if (curElement.TagType == NbtTagType.End)
                     {
                         break;
                     }
 
-                    elements.Add(curElement);
+                    compound.Add(name, curElement);
                 }
 
-                return new NbtCompound(elements, name);
+                return compound;
             }
 
-            public void Serialize(NbtTag tag, BinaryWriter bw, bool requireName)
+            public void Serialize(NbtTag tag, BinaryWriter bw)
             {
                 var nbtCompound = (NbtCompound)tag;
 
-                if (requireName)
-                {
-                    bw.WriteTagValue(nbtCompound.Name);
-                }
-
                 foreach (var elem in nbtCompound._childTags)
                 {
+                    bw.WriteTagValue(elem.Key);
                     NbtTagSerializer.SerializeTag(elem.Value, bw);
                 }
 

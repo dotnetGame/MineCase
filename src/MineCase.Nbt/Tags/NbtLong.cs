@@ -17,39 +17,26 @@ namespace MineCase.Nbt.Tags
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NbtLong"/> class.<para />
-        /// 默认构造函数
+        /// 默认构造函数.
         /// </summary>
-        /// <param name="value">要初始化的值</param>
-        /// <param name="name">该 Tag 的名称</param>
-        public NbtLong(long value, string name = null)
-            : base(name)
+        /// <param name="value">要初始化的值.</param>
+        /// <param name="name">该 Tag 的名称.</param>
+        public NbtLong(long value)
         {
             Value = value;
         }
 
         private class Serializer : ITagSerializer
         {
-            public NbtTag Deserialize(BinaryReader br, bool requireName)
+            public NbtTag Deserialize(BinaryReader br)
             {
-                string name = null;
-                if (requireName)
-                {
-                    name = br.ReadTagString();
-                }
-
                 var value = br.ReadInt64().ToggleEndian();
-                return new NbtLong(value, name);
+                return new NbtLong(value);
             }
 
-            public void Serialize(NbtTag tag, BinaryWriter bw, bool requireName)
+            public void Serialize(NbtTag tag, BinaryWriter bw)
             {
                 var nbtLong = (NbtLong)tag;
-
-                if (requireName)
-                {
-                    bw.WriteTagValue(nbtLong.Name);
-                }
-
                 bw.Write(nbtLong.Value.ToggleEndian());
             }
         }

@@ -21,35 +21,22 @@ namespace MineCase.Nbt.Tags
         /// </summary>
         /// <param name="value">要初始化的值.</param>
         /// <param name="name">该 Tag 的名称.</param>
-        public NbtFloat(float value, string name = null)
-            : base(name)
+        public NbtFloat(float value)
         {
             Value = value;
         }
 
         private class Serializer : ITagSerializer
         {
-            public NbtTag Deserialize(BinaryReader br, bool requireName)
+            public NbtTag Deserialize(BinaryReader br)
             {
-                string name = null;
-                if (requireName)
-                {
-                    name = br.ReadTagString();
-                }
-
                 var value = br.ReadTagFloat();
-                return new NbtFloat(value, name);
+                return new NbtFloat(value);
             }
 
-            public void Serialize(NbtTag tag, BinaryWriter bw, bool requireName)
+            public void Serialize(NbtTag tag, BinaryWriter bw)
             {
                 var nbtFloat = (NbtFloat)tag;
-
-                if (requireName)
-                {
-                    bw.WriteTagValue(nbtFloat.Name);
-                }
-
                 bw.WriteTagValue(nbtFloat.Value);
             }
         }

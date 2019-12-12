@@ -78,7 +78,7 @@ namespace MineCase.Protocol
                 var entryKey = Heightmaps.GetHeightmapType(entry.Key);
                 if (entryKey.Usage == Heightmaps.Usage.CLIENT)
                 {
-                    ret.Heightmaps.Add(new Nbt.Tags.NbtLongArray(entry.Value.GetDataArray(), entryKey.ID));
+                    ret.Heightmaps.Add(entryKey.ID, new Nbt.Tags.NbtLongArray(entry.Value.GetDataArray()));
                 }
             }
 

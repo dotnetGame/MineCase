@@ -29,8 +29,7 @@ namespace MineCase.Nbt.Tags
         /// </summary>
         /// <param name="elementType">指定该 <see cref="NbtList"/> 的元素类型.</param>
         /// <param name="name">该 Tag 的名称.</param>
-        public NbtList(NbtTagType elementType, string name = null)
-            : base(name)
+        public NbtList(NbtTagType elementType)
         {
             ElementType = elementType;
             _childTags = new List<NbtTag>();
@@ -44,8 +43,7 @@ namespace MineCase.Nbt.Tags
         /// <param name="name">该 Tag 的名称.</param>
         /// <exception cref="ArgumentNullException"><paramref name="tags"/> 为 null.</exception>
         /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了不合法的 Tag.</exception>
-        public NbtList(IEnumerable<NbtTag> tags, string name = null)
-            : base(name)
+        public NbtList(IEnumerable<NbtTag> tags)
         {
             if (tags == null)
             {
@@ -62,7 +60,7 @@ namespace MineCase.Nbt.Tags
 
             ElementType = tmpTags[0]?.TagType ?? throw new ArgumentException($"{nameof(tags)} 中包含了 null", nameof(tags));
 
-            if (tmpTags.FindIndex(tag => tag == null || tag.Name != null || tag.TagType != ElementType) != -1)
+            if (tmpTags.FindIndex(tag => tag == null || tag.TagType != ElementType) != -1)
             {
                 throw new ArgumentException($"{nameof(tags)} 中包含了 null 或者具有名称的 Tag 或者具有不同类型的 Tag", nameof(tags));
             }
@@ -111,7 +109,7 @@ namespace MineCase.Nbt.Tags
 
             Contract.EndContractBlock();
 
-            return tag.Name != null && tag.TagType != ElementType && _childTags.Contains(tag);
+            return tag.TagType != ElementType && _childTags.Contains(tag);
         }
 
         /// <summary>在本 NbtList 的子 Tag 中寻找指定的 Tag.</summary>
@@ -127,11 +125,6 @@ namespace MineCase.Nbt.Tags
 
             Contract.EndContractBlock();
 
-            if (tag.Name != null)
-            {
-                return -1;
-            }
-
             return _childTags.FindIndex(curTag => curTag == tag);
         }
 
@@ -144,11 +137,6 @@ namespace MineCase.Nbt.Tags
             if (tag == null)
             {
                 throw new ArgumentNullException(nameof(tag));
-            }
-
-            if (tag.Name != null)
-            {
-                throw new ArgumentException("子 Tag 不能具有名称", nameof(tag));
             }
 
             Contract.EndContractBlock();
@@ -191,11 +179,6 @@ namespace MineCase.Nbt.Tags
             if (tag == null)
             {
                 throw new ArgumentNullException(nameof(tag));
-            }
-
-            if (tag.Name != null)
-            {
-                throw new ArgumentException("子 Tag 不能具有名称", nameof(tag));
             }
 
             Contract.EndContractBlock();
@@ -262,15 +245,6 @@ namespace MineCase.Nbt.Tags
             tag.Parent = null;
         }
 
-        protected override void OnChildTagRenamed(NbtTag tag, string newName)
-        {
-            // 子 Tag 不能具有名称
-            if (tag.Name != null || newName != null)
-            {
-                throw new Exception("NbtList 的子 Tag 不能具有名称");
-            }
-        }
-
         public override void Accept(INbtTagVisitor visitor)
         {
             base.Accept(visitor);
@@ -297,46 +271,35 @@ namespace MineCase.Nbt.Tags
 
         private class Serializer : ITagSerializer
         {
-            public NbtTag Deserialize(BinaryReader br, bool requireName)
+            public NbtTag Deserialize(BinaryReader br)
             {
-                string name = null;
-                if (requireName)
-                {
-                    name = br.ReadTagString();
-                }
-
                 var elementType = br.ReadTagType();
                 var count = br.ReadInt32().ToggleEndian();
 
                 if (count <= 0)
                 {
-                    return new NbtList(elementType, name);
+                    return new NbtList(elementType);
                 }
 
                 var elements = new NbtTag[count];
                 for (var i = 0; i < count; ++i)
                 {
-                    elements[i] = NbtTagSerializer.DeserializeTag(br, elementType, false);
+                    elements[i] = NbtTagSerializer.DeserializeTag(br, elementType, false, out _);
                 }
 
-                return new NbtList(elements, name);
+                return new NbtList(elements);
             }
 
-            public void Serialize(NbtTag tag, BinaryWriter bw, bool requireName)
+            public void Serialize(NbtTag tag, BinaryWriter bw)
             {
                 var nbtList = (NbtList)tag;
-
-                if (requireName)
-                {
-                    bw.WriteTagValue(nbtList.Name);
-                }
 
                 bw.WriteTagValue(nbtList.ElementType);
                 bw.Write(nbtList.Count.ToggleEndian());
 
                 foreach (var elem in nbtList._childTags)
                 {
-                    NbtTagSerializer.SerializeTag(elem, bw, false, false);
+                    NbtTagSerializer.SerializeTag(elem, bw, false);
                 }
             }
         }

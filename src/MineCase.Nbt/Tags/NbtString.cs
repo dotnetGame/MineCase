@@ -23,40 +23,27 @@ namespace MineCase.Nbt.Tags
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NbtString"/> class.<para />
-        /// 默认构造函数
+        /// 默认构造函数.
         /// </summary>
-        /// <param name="value">要初始化的值</param>
-        /// <param name="name">该 Tag 的名称</param>
-        /// <exception cref="ArgumentNullException"><paramref name="value"/> 为 null</exception>
-        public NbtString(string value, string name = null)
-            : base(name)
+        /// <param name="value">要初始化的值.</param>
+        /// <param name="name">该 Tag 的名称.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> 为 null.</exception>
+        public NbtString(string value)
         {
             Value = value;
         }
 
         private class Serializer : ITagSerializer
         {
-            public NbtTag Deserialize(BinaryReader br, bool requireName)
+            public NbtTag Deserialize(BinaryReader br)
             {
-                string name = null;
-                if (requireName)
-                {
-                    name = br.ReadTagString();
-                }
-
                 var value = br.ReadTagString();
-                return new NbtString(value, name);
+                return new NbtString(value);
             }
 
-            public void Serialize(NbtTag tag, BinaryWriter bw, bool requireName)
+            public void Serialize(NbtTag tag, BinaryWriter bw)
             {
                 var nbtString = (NbtString)tag;
-
-                if (requireName)
-                {
-                    bw.WriteTagValue(nbtString.Name);
-                }
-
                 bw.WriteTagValue(nbtString.Value);
             }
         }

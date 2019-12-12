@@ -28,35 +28,22 @@ namespace MineCase.Nbt.Tags
         /// <param name="value">要初始化的值.</param>
         /// <param name="name">该 Tag 的名称.</param>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> 为 null.</exception>
-        public NbtByteArray(sbyte[] value, string name = null)
-            : base(name)
+        public NbtByteArray(sbyte[] value)
         {
             Value = value;
         }
 
         private class Serializer : ITagSerializer
         {
-            public NbtTag Deserialize(BinaryReader br, bool requireName)
+            public NbtTag Deserialize(BinaryReader br)
             {
-                string name = null;
-                if (requireName)
-                {
-                    name = br.ReadTagString();
-                }
-
                 var value = br.ReadTagBytes(br.ReadUInt16().ToggleEndian());
-                return new NbtByteArray(value, name);
+                return new NbtByteArray(value);
             }
 
-            public void Serialize(NbtTag tag, BinaryWriter bw, bool requireName)
+            public void Serialize(NbtTag tag, BinaryWriter bw)
             {
                 var nbtByteArray = (NbtByteArray)tag;
-
-                if (requireName)
-                {
-                    bw.WriteTagValue(nbtByteArray.Name);
-                }
-
                 bw.WriteTagValue(nbtByteArray.Value);
             }
         }

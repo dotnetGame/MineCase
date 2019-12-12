@@ -43,7 +43,7 @@ namespace MineCase.Nbt
 
             using (var br = new BinaryReader(stream, Encoding.UTF8, leaveOpen))
             {
-                RootTag = NbtTagSerializer.DeserializeTag<NbtCompound>(br);
+                RootTag = NbtTagSerializer.DeserializeTag<NbtCompound>(br, false, out _);
             }
         }
 

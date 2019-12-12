@@ -28,27 +28,6 @@ namespace MineCase.Nbt.Tags
         /// <remarks>该属性指示本 Tag 是否具有 Value 属性.</remarks>
         public abstract bool HasValue { get; }
 
-        private string _name;
-
-        /// <summary>
-        /// Gets or sets 该 Tag 的名称.
-        /// </summary>
-        /// <remarks>可为 null.</remarks>
-        public string Name
-        {
-            get => _name;
-            set
-            {
-                if (_name == value)
-                {
-                    return;
-                }
-
-                Parent?.OnChildTagRenamed(this, value);
-                _name = value;
-            }
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="NbtTag"/> class.<para />
         /// 默认构造方法.
@@ -56,9 +35,8 @@ namespace MineCase.Nbt.Tags
         /// <param name="name">该 Tag 的名称.</param>
         /// <param name="parent">该 Tag 所从属于的 Tag.</param>
         /// <remarks>一般不需要手动指定 <paramref name="parent"/>，因为将 Tag 加入其它 Tag 时会自动设置，更加安全.</remarks>
-        protected NbtTag(string name = null, NbtTag parent = null)
+        protected NbtTag(NbtTag parent = null)
         {
-            _name = name;
             Parent = parent;
         }
 
