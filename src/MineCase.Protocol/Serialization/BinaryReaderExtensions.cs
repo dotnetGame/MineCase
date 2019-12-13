@@ -98,6 +98,25 @@ namespace MineCase.Serialization
             return Unsafe.As<ulong, double>(ref value);
         }
 
+        public static long[] ReadLongArray(this BinaryReader br, int maxLength = 65535)
+        {
+            uint i = br.ReadAsVarInt(out _);
+
+            if (i > maxLength)
+            {
+                throw new FormatException("LongArray with size " + i + " is bigger than allowed " + maxLength);
+            }
+
+            long[] array = new long[i];
+
+            for (int j = 0; j < array.Length; ++j)
+            {
+                array[j] = br.ReadAsLong();
+            }
+
+            return array;
+        }
+
         public static Position ReadAsPosition(this BinaryReader br)
         {
             var value = br.ReadAsUnsignedLong();

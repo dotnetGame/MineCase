@@ -4,8 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
-
+using MineCase.Block;
 using MineCase.Protocol;
+using MineCase.World.Chunk;
 
 namespace MineCase.Serialization
 {
@@ -108,6 +109,29 @@ namespace MineCase.Serialization
                 item.Serialize(bw);
         }
 
+        public static void WriteAsIntArray<T>(this BinaryWriter bw, IReadOnlyList<int> array)
+        {
+            bw.WriteAsVarInt((uint)array.Count, out _);
+
+            foreach (int i in array)
+            {
+                bw.WriteAsInt(i);
+            }
+        }
+
+        // TODO write as long
+        // write as var int array
+        // write as var long array
+        public static void WriteAsLongArray(this BinaryWriter bw, IReadOnlyList<long> array)
+        {
+            bw.WriteAsVarInt((uint)array.Count, out _);
+
+            foreach (long i in array)
+            {
+                bw.WriteAsLong(i);
+            }
+        }
+
         public static void WriteAsPosition(this BinaryWriter bw, Position position)
         {
             Debug.Assert(IsValueInRangeInclusive(position.X, -33554432, 33554431), "position X value not in range.");
@@ -118,6 +142,21 @@ namespace MineCase.Serialization
             value |= (ulong)((uint)position.Y & 0xFFF) << 26;
             value |= (ulong)((uint)position.Z & 0x3FFFFFF);
             bw.WriteAsUnsignedLong(value);
+        }
+
+        public static void WriteAsChunkSection(this BinaryWriter bw, ChunkSection value)
+        {
+            bw.WriteAsShort((short)value.BlockCount);
+            bw.WriteAsBlockStateContainer(value.Data);
+        }
+
+        public static void WriteAsBlockStateContainer(this BinaryWriter bw, BlockStateContainer<BlockState> value)
+        {
+            bw.WriteAsByte((sbyte)value.Bits);
+
+            // TODO
+            // this.palette.write(buf);
+            bw.WriteAsLongArray(Array.ConvertAll(value.Storage.GetBackingData(), x => (long)x));
         }
 
         private static bool IsValueInRangeInclusive(long value, long min, long max)

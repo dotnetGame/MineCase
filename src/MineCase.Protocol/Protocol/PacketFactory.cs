@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using MineCase.Protocol.Play;
+using MineCase.Serialization;
 using MineCase.World;
 using MineCase.World.Biome;
 using MineCase.World.Chunk;
@@ -33,8 +35,8 @@ namespace MineCase.Protocol
             return i;
         }
 
-        /*
-        public static int WriteAndGetPrimaryBitMask(ChunkData packet, PacketBuffer p_218708_1_, ChunkColumn chunkIn, int changedSectionFilter)
+
+        public static int WriteAndGetPrimaryBitMask(ChunkData packet, BinaryWriter bw, ChunkColumn chunkIn, int changedSectionFilter)
         {
             int i = 0;
             ChunkSection[] achunksection = chunkIn.Sections;
@@ -46,7 +48,7 @@ namespace MineCase.Protocol
                 if (chunksection != ChunkSection.EmptySection && (!packet.FullChunk || !chunksection.IsEmpty()) && (changedSectionFilter & 1 << j) != 0)
                 {
                     i |= 1 << j;
-                    chunksection.write(p_218708_1_);
+                    bw.WriteAsChunkSection(chunksection);
                 }
             }
 
@@ -56,13 +58,12 @@ namespace MineCase.Protocol
 
                 for (int l = 0; l < abiome.Length; ++l)
                 {
-                    p_218708_1_.writeInt(abiome[l].Properties.BiomeId);
+                    bw.WriteAsInt((int)abiome[l].Properties.BiomeId);
                 }
             }
 
             return i;
         }
-        */
 
         public static ChunkData ChunkDataPacket(ChunkColumn chunkIn, int changedSectionFilter)
         {
@@ -82,9 +83,15 @@ namespace MineCase.Protocol
                 }
             }
 
-            ret.Data = new byte[GetChunkDataSize(ret, chunkIn, changedSectionFilter)];
+            using (var stream = new MemoryStream(ret.Data))
+            {
+                using (BinaryWriter bw = new BinaryWriter(stream))
+                {
+                    ret.PrimaryBitMask = (uint)WriteAndGetPrimaryBitMask(ret, bw, chunkIn, changedSectionFilter);
+                    ret.Data = stream.ToArray();
+                }
+            }
 
-            // ret.PrimaryBitMask = WriteAndGetPrimaryBitMask(new PacketBuffer(this.getWriteBuffer()), chunkIn, changedSectionFilter);
             ret.BlockEntities = new List<Nbt.Tags.NbtCompound>();
 
             foreach (var entry in chunkIn.BlockEntities)

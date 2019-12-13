@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using MineCase.Block;
 using MineCase.World.Chunk;
@@ -10,16 +11,18 @@ namespace MineCase.World.Chunk
     {
         public static ChunkSection EmptySection = null;
 
-        private BlockStateContainer<BlockState> _data;
+        public BlockStateContainer<BlockState> Data { get; set; }
+
+        public int BlockCount { get; set; }
 
         public bool IsEmpty()
         {
-            return _data.Length == 0;
+            return Data.Length == 0;
         }
 
         public int GetSize()
         {
-            return 2 + _data.GetSerializedSize();
+            return 2 + Data.GetSerializedSize();
         }
     }
 }

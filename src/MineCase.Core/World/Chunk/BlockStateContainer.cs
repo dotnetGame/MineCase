@@ -6,13 +6,14 @@ namespace MineCase.World.Chunk
 {
     public class BlockStateContainer<T>
     {
-        protected BitArray _storage;
+        public BitArray Storage { get; set; }
+
+        public int Bits { get; set; }
 
         // private IBlockStatePalette<T> palette;
+        public int Count { get => Storage.Size(); }
 
-        public int Count { get => _storage.Size(); }
-
-        public int Length { get => _storage.Size(); }
+        public int Length { get => Storage.Size(); }
 
         public int GetSerializedSize()
         {
