@@ -284,7 +284,7 @@ namespace MineCase.Nbt.Tags
                 var elements = new NbtTag[count];
                 for (var i = 0; i < count; ++i)
                 {
-                    elements[i] = NbtTagSerializer.DeserializeTag(br, elementType, false, out _);
+                    elements[i] = NbtTagSerializer.DeserializeTag(br, elementType);
                 }
 
                 return new NbtList(elements);

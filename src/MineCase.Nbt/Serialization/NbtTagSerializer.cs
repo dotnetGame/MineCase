@@ -53,7 +53,7 @@ namespace MineCase.Nbt.Serialization
         /// <param name="br">已打开的 <see cref="BinaryReader"/>.</param>
         /// <param name="requireName">当前上下文是否需要 Tag 具有名称，这个参数将会直接被转发到 <see cref="ITagSerializer.Deserialize(BinaryReader, bool)"/>.</param>
         /// <exception cref="ArgumentNullException"><paramref name="br"/> 为 null.</exception>
-        public static NbtTag DeserializeTag(BinaryReader br, bool requireName, out string name)
+        public static NbtTag DeserializeTag(BinaryReader br)
         {
             if (br == null)
             {
@@ -63,14 +63,21 @@ namespace MineCase.Nbt.Serialization
             Contract.EndContractBlock();
 
             var tagType = br.ReadTagType();
-            if (requireName)
+
+            return TagDictionary[tagType].Deserialize(br);
+        }
+
+        public static NbtTag DeserializeTag(BinaryReader br, out string name)
+        {
+            if (br == null)
             {
-                name = br.ReadTagString();
+                throw new ArgumentNullException(nameof(br));
             }
-            else
-            {
-                name = null;
-            }
+
+            Contract.EndContractBlock();
+
+            var tagType = br.ReadTagType();
+            name = br.ReadTagString();
 
             return TagDictionary[tagType].Deserialize(br);
         }
@@ -83,10 +90,16 @@ namespace MineCase.Nbt.Serialization
         /// <param name="requireName">当前上下文是否需要 Tag 具有名称，这个参数将会直接被转发到 <see cref="ITagSerializer.Deserialize(BinaryReader, bool)"/>.</param>
         /// <exception cref="ArgumentNullException"><paramref name="br"/> 为 null.</exception>
         /// <exception cref="InvalidCastException">无法将获得的 Tag 转换到类型 <typeparamref name="T"/>.</exception>
-        public static T DeserializeTag<T>(BinaryReader br, bool requireName, out string name)
+        public static T DeserializeTag<T>(BinaryReader br)
             where T : NbtTag
         {
-            return (T)DeserializeTag(br, requireName, out name);
+            return (T)DeserializeTag(br);
+        }
+
+        public static T DeserializeTag<T>(BinaryReader br, out string name)
+            where T : NbtTag
+        {
+            return (T)DeserializeTag(br, out name);
         }
 
         /// <summary>
@@ -97,7 +110,7 @@ namespace MineCase.Nbt.Serialization
         /// <param name="tagType">已知的 <see cref="NbtTagType"/>.</param>
         /// <param name="requireName">当前上下文是否需要 Tag 具有名称，这个参数将会直接被转发到 <see cref="ITagSerializer.Deserialize(BinaryReader, bool)"/>.</param>
         /// <exception cref="ArgumentNullException"><paramref name="br"/> 为 null.</exception>
-        public static NbtTag DeserializeTag(BinaryReader br, NbtTagType tagType, bool requireName, out string name)
+        public static NbtTag DeserializeTag(BinaryReader br, NbtTagType tagType)
         {
             if (br == null)
             {
@@ -106,14 +119,19 @@ namespace MineCase.Nbt.Serialization
 
             Contract.EndContractBlock();
 
-            if (requireName)
+            return TagDictionary[tagType].Deserialize(br);
+        }
+
+        public static NbtTag DeserializeTag(BinaryReader br, NbtTagType tagType, out string name)
+        {
+            if (br == null)
             {
-                name = br.ReadTagString();
+                throw new ArgumentNullException(nameof(br));
             }
-            else
-            {
-                name = null;
-            }
+
+            Contract.EndContractBlock();
+
+            name = br.ReadTagString();
 
             return TagDictionary[tagType].Deserialize(br);
         }
@@ -131,7 +149,7 @@ namespace MineCase.Nbt.Serialization
         public static T DeserializeTag<T>(BinaryReader br, NbtTagType tagType)
             where T : NbtTag
         {
-            return (T)DeserializeTag(br, tagType, true, out _);
+            return (T)DeserializeTag(br, tagType);
         }
 
         /// <summary>

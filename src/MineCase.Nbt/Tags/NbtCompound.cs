@@ -167,7 +167,7 @@ namespace MineCase.Nbt.Tags
                 while (true)
                 {
                     string name = null;
-                    var curElement = NbtTagSerializer.DeserializeTag(br, true, out name);
+                    var curElement = NbtTagSerializer.DeserializeTag(br, out name);
                     if (curElement.TagType == NbtTagType.End)
                     {
                         break;
