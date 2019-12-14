@@ -14,7 +14,7 @@ namespace MineCase.World
         */
         private int[] _data = new int[256];
 
-        private ChunkColumn _chunk;
+        // private ChunkColumn _chunk;
 
         public int GetHeight(int x, int z)
         {

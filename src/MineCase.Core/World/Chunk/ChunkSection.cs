@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using MineCase.Block;
 using MineCase.World.Chunk;
+using MineCase.Serialization;
 
 namespace MineCase.World.Chunk
 {
@@ -23,6 +24,14 @@ namespace MineCase.World.Chunk
         public int GetSize()
         {
             return 2 + Data.GetSerializedSize();
+        }
+    }
+    public static class BinaryWriterExtensions
+    {
+        public static void WriteAsChunkSection(this BinaryWriter bw, ChunkSection value)
+        {
+            bw.WriteAsShort((short)value.BlockCount);
+            bw.WriteAsBlockStateContainer(value.Data);
         }
     }
 }

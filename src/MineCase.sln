@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.645
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Gateway", "MineCase.Gateway\MineCase.Gateway.csproj", "{D43E9B39-0267-4C6C-A9B9-032B47EF0678}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{2F824C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{66D961CA-776F-4181-8F27-16D464B4514C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Core", "MineCase.Core\MineCase.Core.csproj", "{96EAEA39-F37A-4571-BB28-B7D9BF693138}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Basic", "MineCase.Basic\MineCase.Basic.csproj", "{96EAEA39-F37A-4571-BB28-B7D9BF693138}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Protocol", "MineCase.Protocol\MineCase.Protocol.csproj", "{2B904789-EC33-493E-A7C9-062C54EA0404}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Protocol", "MineCa
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Nbt", "MineCase.Nbt\MineCase.Nbt.csproj", "{BB81DA72-653D-425D-81F9-3DB19F5BD190}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineCase.Core", "MineCase.Core\MineCase.Core.csproj", "{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -214,6 +216,30 @@ Global
 		{BB81DA72-653D-425D-81F9-3DB19F5BD190}.TravisCI|x64.Build.0 = TravisCI|Any CPU
 		{BB81DA72-653D-425D-81F9-3DB19F5BD190}.TravisCI|x86.ActiveCfg = TravisCI|Any CPU
 		{BB81DA72-653D-425D-81F9-3DB19F5BD190}.TravisCI|x86.Build.0 = TravisCI|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Appveyor|Any CPU.ActiveCfg = Debug|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Appveyor|Any CPU.Build.0 = Debug|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Appveyor|x64.ActiveCfg = Debug|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Appveyor|x64.Build.0 = Debug|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Appveyor|x86.ActiveCfg = Debug|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Appveyor|x86.Build.0 = Debug|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Debug|x64.Build.0 = Debug|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Debug|x86.Build.0 = Debug|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Release|x64.ActiveCfg = Release|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Release|x64.Build.0 = Release|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Release|x86.ActiveCfg = Release|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.Release|x86.Build.0 = Release|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.TravisCI|Any CPU.ActiveCfg = Debug|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.TravisCI|Any CPU.Build.0 = Debug|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.TravisCI|x64.ActiveCfg = Debug|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.TravisCI|x64.Build.0 = Debug|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.TravisCI|x86.ActiveCfg = Debug|Any CPU
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.TravisCI|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -226,6 +252,7 @@ Global
 		{96EAEA39-F37A-4571-BB28-B7D9BF693138} = {2F824C14-4453-443F-9603-0A042C6DB4F7}
 		{2B904789-EC33-493E-A7C9-062C54EA0404} = {2F824C14-4453-443F-9603-0A042C6DB4F7}
 		{BB81DA72-653D-425D-81F9-3DB19F5BD190} = {2F824C14-4453-443F-9603-0A042C6DB4F7}
+		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB} = {2F824C14-4453-443F-9603-0A042C6DB4F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B112E92D-919D-4F5E-AD4D-79DE0DC815F3}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Protocol;
 using MineCase.Protocol.Login;
 using MineCase.Protocol.Play;
 using MineCase.Server.Grains.World;
@@ -82,26 +83,8 @@ namespace MineCase.Server.Grains.Game
                 var partition = GrainFactory.GetGrain<IWorldPartition>(partitionKey);
 
                 // TODO
-                /*
                 var chunkColumn = await partition.GetState(chunkPos);
-                var chunkColumnStorage = chunkColumn.Storage;
-                await sink.SendPacket(new ChunkData
-                    {
-                        ChunkX = chunkPos.X,
-                        ChunkZ = chunkPos.Z,
-                        FullChunk = chunkColumnStorage.Biomes != null,
-                        PrimaryBitMask = chunkColumnStorage.SectionBitMask,
-                        NumberOfBlockEntities = 0,
-                        Data = (from c in chunkColumnStorage.Sections
-                                where c != null
-                                select new Protocol.Play.ChunkSection
-                                {
-                                    PaletteLength = 0,
-                                    BitsPerBlock = c.BitsPerBlock,
-                                    DataArray = Array.ConvertAll<ulong, long>(c.Data.Storage, x => (long)x)
-                                }).ToArray()
-                    });
-                    */
+                await sink.SendPacket(PacketFactory.ChunkDataPacket(chunkColumn, 65535));
             }
         }
 
