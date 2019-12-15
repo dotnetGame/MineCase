@@ -5,12 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MineCase.Server.Interfaces\MineCase.Server.Interfaces.csproj" />
+    <Folder Include="Util\" />
+    <Folder Include="Noise\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Util\" />
-    <Folder Include="Noise\" />
+    <ProjectReference Include="..\MineCase.Basic\MineCase.Basic.csproj" />
   </ItemGroup>
 
 </Project>

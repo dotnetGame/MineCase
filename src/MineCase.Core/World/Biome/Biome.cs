@@ -5,7 +5,7 @@ using MineCase.World.Plants;
 using MineCase.Block;
 using MineCase.World;
 using MineCase.World.Generation;
-using Orleans;
+using MineCase.Entity;
 
 namespace MineCase.World.Biome
 {
@@ -71,10 +71,8 @@ namespace MineCase.World.Biome
         protected int _cactiPerChunk;
 
         // 生物种类
-        /*
         protected List<MobType> _passiveMobList;
         protected List<MobType> _monsterList;
-        */
 
         protected int _clayPerChunk;
         protected int _waterlilyPerChunk;

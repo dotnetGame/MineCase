@@ -10,7 +10,7 @@ using MineCase.World.Chunk;
 
 namespace MineCase.Serialization
 {
-    public static class BinaryWriterExtensions
+    internal static class BinaryWriterExtensions
     {
         public static void WriteAsBoolean(this BinaryWriter bw, bool value) =>
             bw.Write(value);
@@ -130,6 +130,12 @@ namespace MineCase.Serialization
             {
                 bw.WriteAsLong(i);
             }
+        }
+
+        public static void WriteAsChunkSection(this BinaryWriter bw, ChunkSection value)
+        {
+            bw.WriteAsShort((short)value.BlockCount);
+            bw.WriteAsBlockStateContainer(value.Data);
         }
 
         public static void WriteAsPosition(this BinaryWriter bw, Position position)

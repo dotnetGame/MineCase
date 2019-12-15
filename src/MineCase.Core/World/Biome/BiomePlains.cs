@@ -1,10 +1,9 @@
 ﻿using System;
 using MineCase.Block;
+using MineCase.Entity;
 using MineCase.World;
-using MineCase.World.Biomes;
 using MineCase.World.Generation;
 using MineCase.World.Plants;
-using Orleans;
 
 namespace MineCase.World.Biome
 {
@@ -33,6 +32,7 @@ namespace MineCase.World.Biome
         }
 
         // 添加其他东西
+        /*
         public override void Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random rand, BlockWorldPos pos)
         {
             float grassColor = (_grassColorNoise.Noise((pos.X + 8) / 200.0F, 0.0F, (pos.Z + 8) / 200.0F) - 0.5F) * 2;
@@ -173,5 +173,6 @@ namespace MineCase.World.Biome
                 }
             }
         }
+        */
     }
 }

@@ -26,4 +26,8 @@
     <ProjectReference Include="..\MineCase.Nbt\MineCase.Nbt.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="World\Chunk\" />
+  </ItemGroup>
+
 </Project>

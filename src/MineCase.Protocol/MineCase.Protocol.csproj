@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MineCase.Basic\MineCase.Basic.csproj" />
+    <ProjectReference Include="..\MineCase.Core\MineCase.Core.csproj" />
   </ItemGroup>
 
 </Project>
