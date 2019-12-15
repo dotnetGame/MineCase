@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using MineCase.Protocol;
 using MineCase.Protocol.Login;
 using MineCase.Serialization;
-using MineCase.Server.Interfaces.Game;
+using MineCase.Server.Game;
+using MineCase.Server.User;
 using MineCase.World;
 using Orleans;
 

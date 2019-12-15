@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 using MineCase.Protocol;
 using MineCase.Protocol.Login;
 using MineCase.Protocol.Play;
-using MineCase.Server.Grains.World;
-using MineCase.Server.Interfaces.Game;
-using MineCase.Server.Interfaces.World;
 using MineCase.Server.Network;
+using MineCase.Server.World;
 using MineCase.World;
 using Orleans;
 
-namespace MineCase.Server.Grains.Game
+namespace MineCase.Server.User
 {
     public class UserGrain : Grain, IUser
     {

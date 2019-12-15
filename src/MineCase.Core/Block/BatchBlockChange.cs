@@ -4,7 +4,7 @@ using System.Text;
 using MineCase.Block;
 using MineCase.World;
 
-namespace MineCase
+namespace MineCase.Block
 {
     public class BlockStateChange
     {

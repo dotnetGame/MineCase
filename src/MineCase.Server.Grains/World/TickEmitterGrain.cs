@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using MineCase.Server.Interfaces.World;
 using Orleans;
 
-namespace MineCase.Server.Grains.World
+namespace MineCase.Server.World
 {
     public class TickEmitterGrain : Grain, ITickEmitter
     {

@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Network\Login\" />
+    <Folder Include="Game\" />
     <Folder Include="Network\Play\" />
   </ItemGroup>
 

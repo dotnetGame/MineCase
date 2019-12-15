@@ -7,7 +7,7 @@ using MineCase.World;
 using MineCase.World.Chunk;
 using Orleans;
 
-namespace MineCase.Server.Grains.World
+namespace MineCase.Server.World
 {
     public class PartitionState
     {

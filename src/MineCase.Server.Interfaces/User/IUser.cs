@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using MineCase.World;
 using Orleans;
 
-namespace MineCase.Server.Interfaces.Game
+namespace MineCase.Server.User
 {
     public interface IUser : IGrainWithStringKey, IGrain
     {

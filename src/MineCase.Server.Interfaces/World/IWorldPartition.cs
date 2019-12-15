@@ -6,7 +6,7 @@ using MineCase.World;
 using MineCase.World.Chunk;
 using Orleans;
 
-namespace MineCase.Server.Interfaces.World
+namespace MineCase.Server.World
 {
     public interface IWorldPartition : IGrainWithStringKey
     {
