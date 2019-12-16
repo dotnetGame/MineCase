@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MineCase.Protocol;
 using MineCase.Protocol.Login;
 using MineCase.Protocol.Play;
+using MineCase.Server.Game;
 using MineCase.Server.Game.Entity;
 using MineCase.Server.Network;
 using MineCase.Server.World;
@@ -22,12 +23,11 @@ namespace MineCase.Server.User
 
         private Guid _sessionId = Guid.Empty;
 
-        // private IWorld _world = null;
         // private EntityWorldPos _position = new EntityWorldPos { X = 0.0f, Y = 0.0f, Z = 0.0f };
         // private HashSet<ChunkWorldPos> _activeChunks = new HashSet<ChunkWorldPos>();
         private IClientboundPacketSink _sink;
 
-        private Player _player;
+        private IPlayer _ghostPlayer;
 
         public Task<string> GetName()
         {

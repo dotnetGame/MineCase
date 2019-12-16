@@ -8,7 +8,7 @@ using Orleans;
 
 namespace MineCase.Server.World
 {
-    public interface IWorldPartition : IGrainWithStringKey
+    public interface IWorldPartition : IAddressByPartition
     {
         Task OnTick();
 

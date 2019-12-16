@@ -24,6 +24,8 @@ namespace MineCase.Server.Game
         private Dictionary<string, IWorld> _worlds = new Dictionary<string, IWorld>();
         private readonly Dictionary<IUser, UserContext> _users = new Dictionary<IUser, UserContext>();
 
+        public uint NextAvailEId { get; set; }
+
         private ILogger _logger;
 
         public GameSession(ILogger<GameSession> logger)
@@ -45,12 +47,51 @@ namespace MineCase.Server.Game
             var sink = await user.GetClientPacketSink();
             var settings = await GrainFactory.GetGrain<IServerSettings>(0).GetSettings();
 
-            _users[user] = new UserContext
+            if (!_users.ContainsKey(user))
             {
-                Sink = sink
-            };
+                _users[user] = new UserContext
+                {
+                    Sink = sink,
+                    Player = new Player {
+                        EntityId = await NewEntityId(),
+                        UUID = Guid.NewGuid(),
+                        UserName = await user.GetName(),
+                        Position = new EntityWorldPos { X = 0, Y = 60, Z = 0 }
+                    }
+                };
+            }
 
-            await user.Login(sink.GetPrimaryKey());
+            // get player
+            var player = _users[user].Player;
+
+            // add player to partition
+            var pos = await player.GetPosition();
+            var chunkPos = pos.ToChunkWorldPos();
+            var partitionPos = chunkPos.ToPartitionWorldPos();
+
+            var partition = GrainFactory.GetPartitionGrain<IWorldPartition>(await player.GetWorld(), partitionPos);
+            // partition.EnterEntity(player);
+
+            // register this user to partition tracking hub
+            HashSet<ChunkWorldPos> trackingHubs = new HashSet<ChunkWorldPos>();
+            var aoiRange = settings.ViewDistance;
+            for (int d = 0; d <= aoiRange; d++)
+            {
+                for (int x = -d; x <= d; x++)
+                {
+                    var z = d - Math.Abs(x);
+
+                    trackingHubs.Add(new ChunkWorldPos(chunkPos.X + x, chunkPos.Z + z).ToPartitionWorldPos());
+                    trackingHubs.Add(new ChunkWorldPos(chunkPos.X + x, chunkPos.Z - z).ToPartitionWorldPos());
+                }
+            }
+
+            foreach (var eachPartition in trackingHubs)
+            {
+                var trackingHub = GrainFactory.GetPartitionGrain<IPartitionTrackingHub>(await player.GetWorld(), eachPartition);
+            }
+
+            // await user.Login(sink.GetPrimaryKey());
             /*
             sink.SendPacket(
                 new JoinGame
@@ -114,9 +155,17 @@ namespace MineCase.Server.Game
             await user.UpdatePlayerList(list);
         }
 
+        public Task<uint> NewEntityId()
+        {
+            var id = NextAvailEId++;
+            return Task.FromResult(id);
+        }
+
         private class UserContext
         {
             public IClientboundPacketSink Sink { get; set; }
+
+            public IPlayer Player { get; set; }
         }
     }
 }

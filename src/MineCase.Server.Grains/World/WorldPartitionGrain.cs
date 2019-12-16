@@ -84,4 +84,31 @@ namespace MineCase.Server.World
             }
         }
     }
+
+    public static class ChunkWorldPosExtension
+    {
+        public static ChunkWorldPos ToPartitionWorldPos(this ChunkWorldPos pos)
+        {
+            var ret = new ChunkWorldPos { X = 0, Z = 0 };
+            if (pos.X > 0)
+            {
+                ret.X = (pos.X / WorldPartitionGrain.PartitionSize) * WorldPartitionGrain.PartitionSize;
+            }
+            else
+            {
+                ret.X = -(((-pos.X - 1) / WorldPartitionGrain.PartitionSize) + 1) * WorldPartitionGrain.PartitionSize;
+            }
+
+            if (pos.Z > 0)
+            {
+                ret.Z = (pos.Z / WorldPartitionGrain.PartitionSize) * WorldPartitionGrain.PartitionSize;
+            }
+            else
+            {
+                ret.Z = -(((-pos.Z - 1) / WorldPartitionGrain.PartitionSize) + 1) * WorldPartitionGrain.PartitionSize;
+            }
+
+            return ret;
+        }
+    }
 }

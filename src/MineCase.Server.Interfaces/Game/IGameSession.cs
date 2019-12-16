@@ -17,5 +17,7 @@ namespace MineCase.Server.Game
         Task LeaveGame(IUser player);
 
         Task<int> UserNumber();
+
+        Task<uint> NewEntityId();
     }
 }
