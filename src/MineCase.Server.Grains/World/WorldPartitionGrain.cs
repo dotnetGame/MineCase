@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Server.Game.Entity;
 using MineCase.Server.World;
 using MineCase.World;
 using MineCase.World.Chunk;
@@ -32,6 +33,10 @@ namespace MineCase.Server.World
         private bool _isActive = false;
 
         private ChunkColumn[,] _chunkColumns;
+
+        private List<EntityBase> _entities;
+
+        private List<EntityBase> _ghostEntities;
 
         public WorldPartitionGrain()
         {

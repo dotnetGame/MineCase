@@ -62,8 +62,7 @@ namespace MineCase.Server.Network.Login
                 else
                 {
                     // TODO refuse him if server is full
-                    var world = await user.GetWorld();
-                    var gameSession = GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());
+                    var gameSession = GrainFactory.GetGrain<IGameSession>("MainSession");
 
                     // await SendSetCompression();
                     var uuid = user.GetPrimaryKey();
@@ -76,8 +75,7 @@ namespace MineCase.Server.Network.Login
                     await packetRouter.BindToUser(user);
 
                     // let user join game
-                    var game = GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());
-                    await game.JoinGame(user);
+                    await gameSession.JoinGame(user);
                 }
             }
         }

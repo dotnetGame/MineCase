@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MineCase.Protocol;
 using MineCase.Protocol.Login;
 using MineCase.Protocol.Play;
+using MineCase.Server.Game.Entity;
 using MineCase.Server.Network;
 using MineCase.Server.World;
 using MineCase.World;
@@ -28,6 +29,8 @@ namespace MineCase.Server.User
         private HashSet<ChunkWorldPos> _activeChunks = new HashSet<ChunkWorldPos>();
 
         private IClientboundPacketSink _sink;
+
+        private Player _player;
 
         public Task<string> GetName()
         {
@@ -137,6 +140,55 @@ namespace MineCase.Server.User
         {
             _sink = sink;
             return Task.CompletedTask;
+        }
+
+        public Task<IPlayer> GetPlayer()
+        {
+            return Task.FromResult((IPlayer)_player);
+        }
+
+        public async Task UpdatePlayerList(IReadOnlyList<IPlayer> desc)
+        {
+            foreach (var player in desc)
+            {
+                var uuid = await player.GetUUID();
+                var name = await player.GetUserName();
+                var gamemode = await player.GetGamemode();
+                var ping = await player.GetPing();
+                await _sink.SendPacket(new PlayerListItem<PlayerListItemAddPlayerAction>
+                {
+                    Action = 0,
+                    NumberOfPlayers = (uint)desc.Count,
+                    Players = (from d in desc
+                               select new PlayerListItemAddPlayerAction
+                               {
+                                   UUID = uuid,
+                                   Name = name,
+                                   NumberOfProperties = 0,
+                                   GameMode = gamemode.ToByte(),
+                                   Ping = ping,
+                                   HasDisplayName = false
+                               }).ToArray()
+                });
+            }
+        }
+
+        public async Task RemovePlayerList(IReadOnlyList<IPlayer> desc)
+        {
+            foreach (var player in desc)
+            {
+                var uuid = await player.GetUUID();
+                await _sink.SendPacket(new PlayerListItem<PlayerListItemRemovePlayerAction>
+                {
+                    Action = 4,
+                    NumberOfPlayers = (uint)desc.Count,
+                    Players = (from d in desc
+                               select new PlayerListItemRemovePlayerAction
+                               {
+                                   UUID = uuid
+                               }).ToArray()
+                });
+            }
         }
     }
 }

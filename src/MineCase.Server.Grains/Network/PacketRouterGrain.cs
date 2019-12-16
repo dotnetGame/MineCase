@@ -21,6 +21,12 @@ namespace MineCase.Server.Network
         private uint _protocolVersion;
         private IUser _user;
 
+        public PacketRouterGrain()
+        {
+            _state = SessionState.Handshaking;
+            _protocolVersion = Protocol.Protocol.Version;
+        }
+
         public Task SendPacket(UncompressedPacket packet)
         {
             switch (_state)

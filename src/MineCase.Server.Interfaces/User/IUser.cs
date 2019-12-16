@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Network;
 using MineCase.Server.World;
+using MineCase.Server.Game.Entity;
 using MineCase.World;
 using Orleans;
 
@@ -30,5 +31,11 @@ namespace MineCase.Server.User
         Task<IClientboundPacketSink> GetClientPacketSink();
 
         Task SetClientPacketSink(IClientboundPacketSink sink);
+
+        Task<IPlayer> GetPlayer();
+
+        Task UpdatePlayerList(IReadOnlyList<IPlayer> desc);
+
+        Task RemovePlayerList(IReadOnlyList<IPlayer> desc);
     }
 }

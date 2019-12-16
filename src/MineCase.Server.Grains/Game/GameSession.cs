@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MineCase.Protocol.Play;
+using MineCase.Server.Game.Entity;
 using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
 using MineCase.Server.Settings;
@@ -97,6 +98,20 @@ namespace MineCase.Server.Game
         public Task<int> UserNumber()
         {
             return Task.FromResult(_users.Count);
+        }
+
+        private async Task BroadcastRemovePlayerFromList(IUser user)
+        {
+            var players = new List<IPlayer> { await user.GetPlayer() };
+            await Task.WhenAll(from u in _users.Keys select u.RemovePlayerList(players));
+        }
+
+        public async Task SendWholePlayersList(IUser user)
+        {
+            var list = await Task.WhenAll(from p in _users.Keys
+                                          select p.GetPlayer());
+
+            await user.UpdatePlayerList(list);
         }
 
         private class UserContext

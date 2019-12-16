@@ -17,5 +17,10 @@ namespace MineCase
         public Class ModeClass { get; set; }
 
         public bool IsHardcore { get; set; }
+
+        public byte ToByte()
+        {
+            return (byte)(((uint)this.ModeClass) | (this.IsHardcore ? 0b100u : 0u));
+        }
     }
 }
