@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Server.Interfaces.World;
+using MineCase.Server.World;
 using Orleans;
 
 namespace MineCase.Server.World

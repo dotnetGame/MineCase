@@ -15,15 +15,19 @@ namespace MineCase.Server.User
 {
     public class UserGrain : Grain, IUser
     {
-        private bool _online = false;
+        private uint _protocolVersion;
+
+        private bool _online;
 
         private Guid _sessionId = Guid.Empty;
 
-        private string _world = "overworld";
+        private IWorld _world = null;
 
         private EntityWorldPos _position = new EntityWorldPos { X = 0.0f, Y = 0.0f, Z = 0.0f };
 
         private HashSet<ChunkWorldPos> _activeChunks = new HashSet<ChunkWorldPos>();
+
+        private IClientboundPacketSink _sink;
 
         public Task<string> GetName()
         {
@@ -100,6 +104,39 @@ namespace MineCase.Server.User
                 ret.Z *= -(((-pos.Z - 1) / WorldPartitionGrain.PartitionSize) + 1);
 
             return ret;
+        }
+
+        public Task<uint> GetProtocolVersion()
+        {
+            return Task.FromResult(_protocolVersion);
+        }
+
+        public Task SetProtocolVersion(uint version)
+        {
+            _protocolVersion = version;
+            return Task.CompletedTask;
+        }
+
+        public Task<IWorld> GetWorld()
+        {
+            return Task.FromResult(_world);
+        }
+
+        public Task SetWorld(IWorld world)
+        {
+            _world = world;
+            return Task.CompletedTask;
+        }
+
+        public Task<IClientboundPacketSink> GetClientPacketSink()
+        {
+            return Task.FromResult(_sink);
+        }
+
+        public Task SetClientPacketSink(IClientboundPacketSink sink)
+        {
+            _sink = sink;
+            return Task.CompletedTask;
         }
     }
 }

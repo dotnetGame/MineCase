@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Protocol;
 using MineCase.Protocol.Handshaking;
+using MineCase.Server.User;
 using Orleans;
 using Orleans.Concurrency;
 
@@ -18,6 +19,7 @@ namespace MineCase.Server.Network
     {
         private SessionState _state;
         private uint _protocolVersion;
+        private IUser _user;
 
         public Task SendPacket(UncompressedPacket packet)
         {
@@ -51,6 +53,17 @@ namespace MineCase.Server.Network
         {
             _state = SessionState.Play;
             return Task.CompletedTask;
+        }
+
+        public Task BindToUser(IUser user)
+        {
+            _user = user;
+            return Task.CompletedTask;
+        }
+
+        public Task<IUser> GetUser()
+        {
+            return Task.FromResult(_user);
         }
 
         private sealed class DeferredPacketMark

@@ -25,15 +25,15 @@ namespace MineCase.Server.Network.Login
             if (settings.OnlineMode)
             {
                 // TODO auth and compression
-                var user = GrainFactory.GetGrain<INonAuthenticatedUser>(packet.Name);
+                var user = GrainFactory.GetGrain<IUser>(packet.Name);
 
                 if (await user.GetProtocolVersion() > MineCase.Protocol.Protocol.Version)
                 {
-                    await SendLoginDisconnect("{\"text\":\"Outdated server!I'm still on 1.12\"}");
+                    await SendLoginDisconnect("{\"text\":\"Outdated server!I'm still on 1.14.4\"}");
                 }
                 else if (await user.GetProtocolVersion() < MineCase.Protocol.Protocol.Version)
                 {
-                    await SendLoginDisconnect("{\"text\":\"Outdated client!Please use 1.12\"}");
+                    await SendLoginDisconnect("{\"text\":\"Outdated client!Please use 1.14.4\"}");
                 }
                 else
                 {
@@ -49,37 +49,35 @@ namespace MineCase.Server.Network.Login
             }
             else
             {
-                var nonAuthenticatedUser = GrainFactory.GetGrain<INonAuthenticatedUser>(packet.Name);
+                var user = GrainFactory.GetGrain<IUser>(packet.Name);
 
-                if (await nonAuthenticatedUser.GetProtocolVersion() > MineCase.Protocol.Protocol.Version)
+                if (await user.GetProtocolVersion() > MineCase.Protocol.Protocol.Version)
                 {
-                    await SendLoginDisconnect("{\"text\":\"Outdated server!I'm still on 1.12\"}");
+                    await SendLoginDisconnect("{\"text\":\"Outdated server!I'm still on 1.14.4\"}");
                 }
-                else if (await nonAuthenticatedUser.GetProtocolVersion() < MineCase.Protocol.Protocol.Version)
+                else if (await user.GetProtocolVersion() < MineCase.Protocol.Protocol.Version)
                 {
-                    await SendLoginDisconnect("{\"text\":\"Outdated client!Please use 1.12\"}");
+                    await SendLoginDisconnect("{\"text\":\"Outdated client!Please use 1.14.4\"}");
                 }
                 else
                 {
-                    /*
                     // TODO refuse him if server is full
-                    var user = await nonAuthenticatedUser.GetUser();
                     var world = await user.GetWorld();
                     var gameSession = GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());
 
-                    await SendSetCompression();
-
+                    // await SendSetCompression();
                     var uuid = user.GetPrimaryKey();
                     await SendLoginSuccess(packet.Name, uuid);
 
                     await user.SetClientPacketSink(GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey()));
                     var packetRouter = GrainFactory.GetGrain<IPacketRouter>(this.GetPrimaryKey());
-                    await user.SetPacketRouter(packetRouter);
+
+                    // await user.SetPacketRouter(packetRouter);
                     await packetRouter.BindToUser(user);
 
+                    // let user join game
                     var game = GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());
                     await game.JoinGame(user);
-                    */
                 }
             }
         }
@@ -111,9 +109,9 @@ namespace MineCase.Server.Network.Login
             var game = GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());
             await game.JoinGame(user);
             */
-                }
+        }
 
-                private async Task SendSetCompression()
+        private async Task SendSetCompression()
         {
             var sink = GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey());
             await sink.SendPacket(new SetCompression { Threshold = CompressPacketThreshold });

@@ -6,8 +6,10 @@ using Orleans;
 
 namespace MineCase.Server.World
 {
-    public interface IWorld : IGrainWithStringKey, IGrain
+    public interface IWorldAccessor : IGrainWithIntegerKey
     {
-        Task OnTick();
+        Task<IWorld> GetDefaultWorld();
+
+        Task<IWorld> GetWorld(string name);
     }
 }

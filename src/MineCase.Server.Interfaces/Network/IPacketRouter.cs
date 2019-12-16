@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Protocol;
+using MineCase.Server.User;
 using Orleans;
 
 namespace MineCase.Server.Network
@@ -14,5 +15,9 @@ namespace MineCase.Server.Network
         Task Close();
 
         Task Play();
+
+        Task BindToUser(IUser user);
+
+        Task<IUser> GetUser();
     }
 }
