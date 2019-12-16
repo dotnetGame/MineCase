@@ -62,7 +62,7 @@ namespace MineCase.Server.Network.Login
                 else
                 {
                     // TODO refuse him if server is full
-                    var gameSession = GrainFactory.GetGrain<IGameSession>("MainSession");
+                    var gameSession = GrainFactory.GetGrain<IGameSession>("Main");
 
                     // await SendSetCompression();
                     var uuid = user.GetPrimaryKey();

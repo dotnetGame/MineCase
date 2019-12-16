@@ -50,8 +50,8 @@ namespace MineCase.Server.Game
                 Sink = sink
             };
 
+            await user.Login(sink.GetPrimaryKey());
             /*
-            await user.JoinGame();
             sink.SendPacket(
                 new JoinGame
                 {

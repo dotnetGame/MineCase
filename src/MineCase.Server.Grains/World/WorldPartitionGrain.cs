@@ -20,7 +20,7 @@ namespace MineCase.Server.World
         public bool IsActive { get; set; }
     }
 
-    public class WorldPartitionGrain : Grain, IWorldPartition
+    public class WorldPartitionGrain : AddressByPartitionGrain, IWorldPartition
     {
         public static readonly int RangeAOI = 16;
 
@@ -36,6 +36,7 @@ namespace MineCase.Server.World
 
         private List<EntityBase> _entities;
 
+        // read-only
         private List<EntityBase> _ghostEntities;
 
         public WorldPartitionGrain()
@@ -52,9 +53,9 @@ namespace MineCase.Server.World
 
         public override async Task OnActivateAsync()
         {
-            var keys = this.GetWorldAndPartitionPos();
+            var keys = this.GetWorldAndChunkWorldPos();
             _worldName = keys.worldKey;
-            _position = keys.partitionPos;
+            _position = keys.chunkWorldPos;
 
             await base.OnActivateAsync();
         }
@@ -64,26 +65,10 @@ namespace MineCase.Server.World
             return Task.CompletedTask;
         }
 
-        public static string MakeAddressByPartitionKey(IWorld world, ChunkWorldPos chunkWorldPos)
-        {
-            return $"{world.GetPrimaryKeyString()},{chunkWorldPos.X},{chunkWorldPos.Z}";
-        }
-
-        public static string MakeAddressByPartitionKey(string world, ChunkWorldPos chunkWorldPos)
-        {
-            return $"{world},{chunkWorldPos.X},{chunkWorldPos.Z}";
-        }
-
         public ChunkWorldPos GetPartitionPos()
         {
             var key = this.GetPrimaryKeyString().Split(',');
             return new ChunkWorldPos(int.Parse(key[1]), int.Parse(key[2]));
-        }
-
-        public (string worldKey, ChunkWorldPos partitionPos) GetWorldAndPartitionPos()
-        {
-            var key = this.GetPrimaryKeyString().Split(',');
-            return (key[0], new ChunkWorldPos(int.Parse(key[1]), int.Parse(key[2])));
         }
 
         public Task<ChunkColumn> GetState(ChunkWorldPos pos)

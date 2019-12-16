@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="server.json" />
     <None Remove="stylecop.json" />
   </ItemGroup>
 
@@ -31,6 +32,12 @@
   <ItemGroup>
     <ProjectReference Include="..\MineCase.Server.Grains\MineCase.Server.Grains.csproj" />
     <ProjectReference Include="..\MineCase.Server.Interfaces\MineCase.Server.Interfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="server.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

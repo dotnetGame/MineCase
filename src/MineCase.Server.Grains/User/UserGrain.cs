@@ -22,12 +22,9 @@ namespace MineCase.Server.User
 
         private Guid _sessionId = Guid.Empty;
 
-        private IWorld _world = null;
-
-        private EntityWorldPos _position = new EntityWorldPos { X = 0.0f, Y = 0.0f, Z = 0.0f };
-
-        private HashSet<ChunkWorldPos> _activeChunks = new HashSet<ChunkWorldPos>();
-
+        // private IWorld _world = null;
+        // private EntityWorldPos _position = new EntityWorldPos { X = 0.0f, Y = 0.0f, Z = 0.0f };
+        // private HashSet<ChunkWorldPos> _activeChunks = new HashSet<ChunkWorldPos>();
         private IClientboundPacketSink _sink;
 
         private Player _player;
@@ -37,12 +34,11 @@ namespace MineCase.Server.User
             return Task.FromResult(this.GetPrimaryKeyString());
         }
 
-        public async Task Login(Guid sessionId)
+        public Task Login(Guid sessionId)
         {
             _online = true;
             _sessionId = sessionId;
-            var packet = new LoginSuccess { UUID = sessionId.ToString(), Username = this.GetPrimaryKeyString() };
-            await GrainFactory.GetGrain<IClientboundPacketSink>(sessionId).SendPacket(packet);
+            return Task.CompletedTask;
         }
 
         public Task Logout()
@@ -52,6 +48,7 @@ namespace MineCase.Server.User
             return Task.CompletedTask;
         }
 
+        /*
         public Task SetPosition(EntityWorldPos pos)
         {
             _position = pos;
@@ -60,6 +57,7 @@ namespace MineCase.Server.User
             var chunksDiff = newChunksView.Except(_activeChunks);
             return SendChunkData(chunksDiff);
         }
+        */
 
         private static HashSet<ChunkWorldPos> GetChunksInViewRange(ChunkWorldPos pos, int range)
         {
@@ -78,6 +76,7 @@ namespace MineCase.Server.User
             return ret;
         }
 
+        /*
         private async Task SendChunkData(IEnumerable<ChunkWorldPos> changeChunks)
         {
             var sink = GrainFactory.GetGrain<IClientboundPacketSink>(_sessionId);
@@ -92,7 +91,7 @@ namespace MineCase.Server.User
                 await sink.SendPacket(PacketFactory.ChunkDataPacket(chunkColumn, 65535));
             }
         }
-
+        */
         public static ChunkWorldPos GetPartitionPos(ChunkWorldPos pos)
         {
             ChunkWorldPos ret = new ChunkWorldPos { X = WorldPartitionGrain.PartitionSize, Z = WorldPartitionGrain.PartitionSize };
@@ -117,17 +116,6 @@ namespace MineCase.Server.User
         public Task SetProtocolVersion(uint version)
         {
             _protocolVersion = version;
-            return Task.CompletedTask;
-        }
-
-        public Task<IWorld> GetWorld()
-        {
-            return Task.FromResult(_world);
-        }
-
-        public Task SetWorld(IWorld world)
-        {
-            _world = world;
             return Task.CompletedTask;
         }
 

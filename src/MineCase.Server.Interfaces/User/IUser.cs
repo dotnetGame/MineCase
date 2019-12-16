@@ -18,15 +18,9 @@ namespace MineCase.Server.User
 
         Task Logout();
 
-        Task SetPosition(EntityWorldPos pos);
-
         Task<uint> GetProtocolVersion();
 
         Task SetProtocolVersion(uint version);
-
-        Task<IWorld> GetWorld();
-
-        Task SetWorld(IWorld world);
 
         Task<IClientboundPacketSink> GetClientPacketSink();
 
