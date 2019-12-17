@@ -7,7 +7,7 @@ using Orleans;
 
 namespace MineCase.Server.World
 {
-    public class TickEmitterGrain : Grain, ITickEmitter
+    public class TickEmitterGrain : AddressByPartitionGrain, ITickEmitter
     {
         private IDisposable _timer;
 
@@ -26,9 +26,9 @@ namespace MineCase.Server.World
 
         private Task OnTick(object state)
         {
-            var worldName = this.GetPrimaryKeyString();
-            var world = GrainFactory.GetGrain<IWorld>(worldName);
-            return world.OnTick();
+            var keys = this.GetWorldAndChunkWorldPos();
+            var partition = GrainFactory.GetPartitionGrain<IWorldPartition>(GrainFactory.GetGrain<IWorld>(keys.worldKey), keys.chunkWorldPos);
+            return partition.OnTick();
         }
 
         public Task Stop()

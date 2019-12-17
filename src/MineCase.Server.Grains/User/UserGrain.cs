@@ -132,7 +132,7 @@ namespace MineCase.Server.User
 
         public Task<IPlayer> GetPlayer()
         {
-            return Task.FromResult((IPlayer)_player);
+            return Task.FromResult((IPlayer)_ghostPlayer);
         }
 
         public async Task UpdatePlayerList(IReadOnlyList<IPlayer> desc)

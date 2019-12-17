@@ -28,6 +28,8 @@ namespace MineCase.Server.World
 
         private string _worldName;
 
+        private ITickEmitter _tickEmitter;
+
         private ChunkWorldPos _position;
 
         private bool _isActive = false;
@@ -49,6 +51,8 @@ namespace MineCase.Server.World
                     _chunkColumns[x, z] = new ChunkColumn();
                 }
             }
+
+            _tickEmitter = GrainFactory.GetPartitionGrain<ITickEmitter>(this);
         }
 
         public override async Task OnActivateAsync()
@@ -62,6 +66,43 @@ namespace MineCase.Server.World
 
         public Task OnTick()
         {
+            return Task.CompletedTask;
+        }
+
+        public Task Enter(IPlayer player)
+        {
+            /*
+            bool active = _players.Count == 0;
+            if (_players.Add(player))
+            {
+                var message = new DiscoveredByPlayer { Player = player };
+                foreach (var entity in State.DiscoveryEntities)
+                {
+                    if (entity.Equals(player)) continue;
+                    entity.InvokeOneWay(g => g.Tell(message));
+                }
+
+                if (active && State.IsTickEmitterActive)
+                    return _fixedUpdate.Start(World);
+            }
+            */
+
+            return Task.CompletedTask;
+        }
+
+        public Task Leave(IPlayer player)
+        {
+            /*
+            if (_players.Remove(player))
+            {
+                if (_players.Count == 0)
+                {
+                    _fixedUpdate.Stop();
+                    DeactivateOnIdle();
+                }
+            }
+            */
+
             return Task.CompletedTask;
         }
 

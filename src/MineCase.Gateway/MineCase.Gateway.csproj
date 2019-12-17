@@ -22,6 +22,7 @@
     <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="3.1.0" />
     <PackageReference Include="Microsoft.Orleans.Client" Version="3.0.1" />
     <PackageReference Include="Microsoft.Orleans.Core" Version="3.0.1" />
+    <PackageReference Include="Orleans.Providers.MongoDB" Version="3.1.1" />
     <PackageReference Include="Polly" Version="7.2.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>

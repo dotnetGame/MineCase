@@ -23,6 +23,7 @@
     <PackageReference Include="Microsoft.Orleans.Core" Version="3.0.1" />
     <PackageReference Include="Microsoft.Orleans.OrleansProviders" Version="3.0.1" />
     <PackageReference Include="Microsoft.Orleans.Server" Version="3.0.1" />
+    <PackageReference Include="Orleans.Providers.MongoDB" Version="3.1.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

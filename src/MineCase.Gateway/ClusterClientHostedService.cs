@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Orleans;
+using Orleans.Configuration;
 using Orleans.Runtime;
 
 namespace MineCase.Gateway
@@ -14,11 +15,24 @@ namespace MineCase.Gateway
 
         public ClusterClientHostedService(ILogger<ClusterClientHostedService> logger, ILoggerProvider loggerProvider)
         {
+            var connectionString = "mongodb://localhost/MineCase";
+
             _logger = logger;
             Client = new ClientBuilder()
-                .UseLocalhostClustering()
+                .UseMongoDBClient(connectionString)
+                .UseMongoDBClustering(options =>
+                {
+                    options.DatabaseName = "MineCase";
+                })
+                .Configure<ClusterOptions>(options =>
+                {
+                    options.ClusterId = "dev";
+                    options.ServiceId = "MineCaseApp";
+                })
                 .ConfigureLogging(builder => builder.AddProvider(loggerProvider))
                 .Build();
+
+            // .UseLocalhostClustering()
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

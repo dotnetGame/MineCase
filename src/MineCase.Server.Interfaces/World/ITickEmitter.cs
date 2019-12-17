@@ -6,7 +6,7 @@ using Orleans;
 
 namespace MineCase.Server.World
 {
-    public interface ITickEmitter : IGrainWithStringKey
+    public interface ITickEmitter : IAddressByPartition
     {
         Task Start();
 
