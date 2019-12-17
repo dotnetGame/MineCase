@@ -19,7 +19,7 @@ using Orleans.Concurrency;
 namespace MineCase.Server.Game
 {
     [Reentrant]
-    internal class GameSession : Grain, IGameSession
+    internal class GameServer : Grain, IGameServer
     {
         private Dictionary<string, IWorld> _worlds = new Dictionary<string, IWorld>();
         private readonly Dictionary<IUser, UserContext> _users = new Dictionary<IUser, UserContext>();
@@ -28,7 +28,7 @@ namespace MineCase.Server.Game
 
         private ILogger _logger;
 
-        public GameSession(ILogger<GameSession> logger)
+        public GameServer(ILogger<GameServer> logger)
         {
             _logger = logger;
         }

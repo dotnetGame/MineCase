@@ -10,7 +10,7 @@ using Orleans;
 
 namespace MineCase.Server.Game
 {
-    public interface IGameSession : IGrainWithStringKey
+    public interface IGameServer : IGrainWithStringKey
     {
         Task JoinGame(IUser player);
 
