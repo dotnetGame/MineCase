@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2005
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.UnitTest", "UnitTest\MineCase.UnitTest.csproj", "{8EA43298-B73A-4A32-9A43-59D385ADA787}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Appveyor|Any CPU = Appveyor|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		TravisCI|Any CPU = TravisCI|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8EA43298-B73A-4A32-9A43-59D385ADA787}.Appveyor|Any CPU.ActiveCfg = Appveyor|Any CPU
+		{8EA43298-B73A-4A32-9A43-59D385ADA787}.Appveyor|Any CPU.Build.0 = Appveyor|Any CPU
+		{8EA43298-B73A-4A32-9A43-59D385ADA787}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EA43298-B73A-4A32-9A43-59D385ADA787}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EA43298-B73A-4A32-9A43-59D385ADA787}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EA43298-B73A-4A32-9A43-59D385ADA787}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EA43298-B73A-4A32-9A43-59D385ADA787}.TravisCI|Any CPU.ActiveCfg = TravisCI|Any CPU
+		{8EA43298-B73A-4A32-9A43-59D385ADA787}.TravisCI|Any CPU.Build.0 = TravisCI|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F4A5642D-56BF-4E11-AEDF-3D900DE95C69}
+	EndGlobalSection
+EndGlobal
