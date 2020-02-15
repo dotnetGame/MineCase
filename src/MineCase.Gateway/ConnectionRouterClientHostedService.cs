@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MineCase.Gateway.Network;
 using Orleans;
 
 namespace MineCase.Gateway
@@ -61,6 +60,7 @@ namespace MineCase.Gateway
 
         private async void DispatchIncomingClient(TcpClient tcpClient)
         {
+            /*
             try
             {
                 using (ClientSession session = new ClientSession(tcpClient, _client))
@@ -72,6 +72,7 @@ namespace MineCase.Gateway
             {
                 Console.WriteLine(ex.Message);
             }
+            */
         }
     }
 }

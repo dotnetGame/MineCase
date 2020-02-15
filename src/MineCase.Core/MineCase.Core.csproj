@@ -5,12 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Util\" />
-    <Folder Include="Noise\" />
+    <None Remove="stylecop.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MineCase.Basic\MineCase.Basic.csproj" />
+    <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 
 </Project>
