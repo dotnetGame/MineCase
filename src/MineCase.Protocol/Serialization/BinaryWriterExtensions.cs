@@ -44,19 +44,20 @@ namespace MineCase.Protocol.Serialization
         }
 
         // http://wiki.vg/Protocol#VarInt_and_VarLong
-        public static void WriteAsVarInt(this BinaryWriter bw, uint value, out uint bytesWrite)
+        public static void WriteAsVarInt(this BinaryWriter bw, int value, out uint bytesWrite)
         {
+            uint uvalue = (uint)value;
             uint numWrite = 0;
             do
             {
-                byte temp = (byte)(value & 0b01111111);
-                value >>= 7;
-                if (value != 0)
+                byte temp = (byte)(uvalue & 0b01111111);
+                uvalue >>= 7;
+                if (uvalue != 0)
                     temp |= 0b10000000;
                 bw.Write(temp);
                 numWrite++;
             }
-            while (value != 0);
+            while (uvalue != 0);
             bytesWrite = numWrite;
         }
 
@@ -66,41 +67,8 @@ namespace MineCase.Protocol.Serialization
         public static void WriteAsString(this BinaryWriter bw, string value)
         {
             var bytes = Encoding.UTF8.GetBytes(value);
-            bw.WriteAsVarInt((uint)bytes.Length, out _);
+            bw.WriteAsVarInt(bytes.Length, out _);
             bw.Write(bytes);
-        }
-    }
-
-    internal static class DataTypeSizeExtensions
-    {
-        public static uint SizeOfVarInt(this uint value)
-        {
-            uint numWrite = 0;
-            do
-            {
-                value >>= 7;
-                numWrite++;
-            }
-            while (value != 0);
-            return numWrite;
-        }
-
-        public static ushort ToBigEndian(this ushort value)
-        {
-            return (ushort)((value >> 8) | (((byte)value) << 8));
-        }
-
-        public static uint ToBigEndian(this uint value)
-        {
-            return (value >> 24) | ((value & 0x00FF_0000) >> 8) |
-                ((value & 0x0000_FF00) << 8) | ((value & 0x0000_00FF) << 24);
-        }
-
-        public static ulong ToBigEndian(this ulong value)
-        {
-            return (value >> 56) | ((value & 0x00FF_0000_0000_0000) >> 40) | ((value & 0x0000_FF00_0000_0000) >> 24) |
-                ((value & 0x0000_00FF_0000_0000) >> 8) | ((value & 0x0000_0000_FF00_0000) << 8) | ((value & 0x0000_0000_00FF_0000) << 24) |
-                ((value & 0x0000_0000_0000_FF00) << 40) | ((value & 0x0000_0000_0000_00FF) << 56);
         }
     }
 }

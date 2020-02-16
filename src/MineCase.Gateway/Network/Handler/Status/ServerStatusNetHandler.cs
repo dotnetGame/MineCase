@@ -25,7 +25,19 @@ namespace MineCase.Gateway.Network.Handler.Status
 
         public Task ProcessRequest(Request packetIn)
         {
-            throw new NotImplementedException();
+            var reponse = new Response();
+            reponse.JsonResponse = @"
+{""version"": {
+        ""name"": ""1.15.2"",
+        ""protocol"": 578
+    }, ""players"": {
+        ""max"": 100,
+        ""online"": 0,
+        ""sample"": []
+    }, ""description"": { ""text"": ""Hello MineCase""},
+""favicon"": null
+}";
+            return _clientSession.SendPacket(reponse);
         }
     }
 }

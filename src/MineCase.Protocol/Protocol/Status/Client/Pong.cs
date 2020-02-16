@@ -15,7 +15,6 @@ namespace MineCase.Protocol.Protocol.Status.Client
 
         public void Deserialize(BinaryReader br)
         {
-
             Payload = br.ReadAsLong();
         }
 

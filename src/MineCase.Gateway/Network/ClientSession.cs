@@ -5,7 +5,10 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using MineCase.Gateway.Network.Handler;
+using MineCase.Gateway.Network.Handler.Handshaking;
 using MineCase.Gateway.Network.Handler.Status;
+using MineCase.Protocol.Handshaking;
 using MineCase.Protocol.Protocol;
 using MineCase.Protocol.Protocol.Status.Server;
 using Orleans;
@@ -28,7 +31,9 @@ namespace MineCase.Gateway.Network
         private PacketInfo _packetInfo;
         private PacketEncoder _encoder;
         private PacketDecoder _decoder;
-        private IServerStatusNetHandler _statusHandler;
+        private INetHandler _packetHandler;
+
+        private SessionState _sessionState = SessionState.Handshake;
 
         private readonly ActionBlock<ISerializablePacket> _outcomingPacketDispatcher;
 
@@ -41,7 +46,7 @@ namespace MineCase.Gateway.Network
             _packetInfo = new PacketInfo();
             _encoder = new PacketEncoder(PacketDirection.ClientBound, _packetInfo);
             _decoder = new PacketDecoder(PacketDirection.ServerBound, _packetInfo);
-            _statusHandler = new ServerStatusNetHandler(this);
+            _packetHandler = new ServerHandshakeNetHandler(this);
             _outcomingPacketDispatcher = new ActionBlock<ISerializablePacket>(SendOutcomingPacket);
         }
 
@@ -84,6 +89,30 @@ namespace MineCase.Gateway.Network
         {
         }
 
+        // Switch session state
+        public void SetSessionState(SessionState state)
+        {
+            _sessionState = state;
+        }
+
+        public void SetNetHandler(SessionState state)
+        {
+            switch (state)
+            {
+                case SessionState.Login:
+                    throw new NotImplementedException();
+                    break;
+                case SessionState.Status:
+                    _packetHandler = new ServerStatusNetHandler(this);
+                    break;
+                case SessionState.Play:
+                    throw new NotImplementedException();
+                    break;
+                default:
+                    throw new NotImplementedException("Invalid intention " + state.ToString());
+            }
+        }
+
         // Startup session
         public async Task Startup()
         {
@@ -98,6 +127,7 @@ namespace MineCase.Gateway.Network
                 }
                 catch (EndOfStreamException)
                 {
+                    await _outcomingPacketDispatcher.Completion;
                 }
             }
         }
@@ -116,7 +146,7 @@ namespace MineCase.Gateway.Network
             }
         }
 
-        private Task SendOutcomingPacket(ISerializablePacket packet)
+        private async Task SendOutcomingPacket(ISerializablePacket packet)
         {
             if (packet == null)
             {
@@ -125,59 +155,70 @@ namespace MineCase.Gateway.Network
             }
             else
             {
-                if (_useCompression)
+                RawPacket rawPacket = new RawPacket();
+                using (MemoryStream ms = new MemoryStream())
                 {
-                    _encoder.Encode(packet, _dataStream);
+                    if (_useCompression)
+                        _encoder.Encode(packet, ms);
+                    else
+                        _encoder.Encode(packet, ms);
+                    rawPacket.RawData = ms.ToArray();
+                    rawPacket.Length = rawPacket.RawData.Length;
                 }
-                else
-                {
-                    _encoder.Encode(packet, _dataStream);
-                }
-            }
 
-            return Task.CompletedTask;
+                System.Console.WriteLine($"Send packet id:{_packetInfo.GetPacketId(packet):x2}, length: {rawPacket.Length}");
+
+                await rawPacket.SerializeAsync(_dataStream);
+            }
         }
 
         // Process packets from game clients
         private async Task ProcessPacket()
         {
-            ISerializablePacket packet = _decoder.Decode(_dataStream);
-            var protocolType = _packetInfo.GetProtocolType(packet);
-            if (protocolType == ProtocolType.Status)
+            // Read raw packet
+            RawPacket rawPacket = new RawPacket();
+            await rawPacket.DeserializeAsync(_dataStream);
+
+            // Read packet
+            ISerializablePacket packet = null;
+            using (MemoryStream ms = new MemoryStream(rawPacket.RawData))
             {
-                await ProcessStatusPacket(packet);
+                packet = _decoder.Decode((ProtocolType)_sessionState, ms);
             }
-            else if (protocolType == ProtocolType.Handshake)
+
+            switch (_sessionState)
             {
-                await ProcessHandshakePacket(packet);
-            }
-            else if (protocolType == ProtocolType.Login)
-            {
-                await ProcessLoginPacket(packet);
-            }
-            else if (protocolType == ProtocolType.Play)
-            {
-                await ProcessPlayPacket(packet);
-            }
-            else
-            {
-                throw new InvalidDataException($"Unrecognizable packet type.");
+                case SessionState.Handshake:
+                    await ProcessHandshakePacket(packet);
+                    break;
+                case SessionState.Login:
+                    await ProcessLoginPacket(packet);
+                    break;
+                case SessionState.Play:
+                    await ProcessPlayPacket(packet);
+                    break;
+                case SessionState.Status:
+                    await ProcessStatusPacket(packet);
+                    break;
+                default:
+                    throw new InvalidDataException($"Invalid session state.");
             }
         }
 
         private async Task ProcessStatusPacket(ISerializablePacket packet)
         {
+            var handler = (IServerStatusNetHandler)_packetHandler;
             int packetId = _packetInfo.GetPacketId(packet);
             switch (packetId)
             {
                 // request
                 case 0x00:
-                    await _statusHandler.ProcessRequest((Request)packet);
+                    await handler.ProcessRequest((Request)packet);
                     break;
 
                 // ping
                 case 0x01:
-                    await _statusHandler.ProcessPing((Ping)packet);
+                    await handler.ProcessPing((Ping)packet);
                     break;
                 default:
                     throw new InvalidDataException($"Unrecognizable packet id: 0x{packetId:X2}.");
@@ -186,17 +227,27 @@ namespace MineCase.Gateway.Network
 
         private async Task ProcessHandshakePacket(ISerializablePacket packet)
         {
-
+            var handler = (IHandshakeNetHandler)_packetHandler;
+            int packetId = _packetInfo.GetPacketId(packet);
+            switch (packetId)
+            {
+                // handshake
+                case 0x00:
+                    await handler.ProcessHandshake((Handshake)packet);
+                    break;
+                default:
+                    throw new InvalidDataException($"Unrecognizable packet id: 0x{packetId:X2}.");
+            }
         }
 
-        private async Task ProcessLoginPacket(ISerializablePacket packet)
+        private Task ProcessLoginPacket(ISerializablePacket packet)
         {
-
+            return Task.CompletedTask;
         }
 
-        private async Task ProcessPlayPacket(ISerializablePacket packet)
+        private Task ProcessPlayPacket(ISerializablePacket packet)
         {
-
+            return Task.CompletedTask;
         }
     }
 }

@@ -18,12 +18,17 @@ namespace MineCase.Protocol.Protocol
             _packetInfo = packetInfo;
         }
 
-        public ISerializablePacket Decode(Stream stream)
+        public ISerializablePacket Decode(ProtocolType protocolType, Stream stream)
         {
-            var br = new BinaryReader(stream);
-            uint id = br.ReadAsVarInt(out _);
-            var packet = _packetInfo.GetPacket(_direction, (int)id);
-            packet.Deserialize(br);
+            ISerializablePacket packet = null;
+            using (BinaryReader br = new BinaryReader(stream, Encoding.UTF8, true))
+            {
+                int id = br.ReadAsVarInt(out _);
+                System.Console.WriteLine($"Read packet id: {id:X2}");
+                packet = _packetInfo.GetPacket(_direction, protocolType, id);
+                packet.Deserialize(br);
+            }
+
             return packet;
         }
     }

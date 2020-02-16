@@ -24,9 +24,12 @@ namespace MineCase.Protocol.Protocol
             var packetId = _packetInfo.GetPacketId(packet);
             if (packetId < 0)
                 throw new ArgumentException("Can not find packet id in PacketInfo.");
-            BinaryWriter bw = new BinaryWriter(stream);
-            bw.WriteAsVarInt((uint)packetId, out _);
-            packet.Serialize(bw);
+
+            using (BinaryWriter bw = new BinaryWriter(stream, Encoding.UTF8, true))
+            {
+                bw.WriteAsVarInt(packetId, out _);
+                packet.Serialize(bw);
+            }
         }
     }
 }

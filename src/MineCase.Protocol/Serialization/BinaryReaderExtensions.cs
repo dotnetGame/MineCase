@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MineCase.Protocol.Serialization
 {
@@ -17,19 +18,31 @@ namespace MineCase.Protocol.Serialization
             br.ReadByte();
 
         public static short ReadAsShort(this BinaryReader br) =>
-            br.ReadInt16();
+            (short)br.ReadAsUnsignedShort();
 
         public static ushort ReadAsUnsignedShort(this BinaryReader br) =>
-            br.ReadUInt16();
+            br.ReadUInt16().ToBigEndian();
 
         public static int ReadAsInt(this BinaryReader br) =>
-            br.ReadInt32();
+            (int)br.ReadAsUnsignedInt();
 
-        public static long ReadAsLong(this BinaryReader br) =>
-            br.ReadInt64();
+        public static uint ReadAsUnsignedInt(this BinaryReader br) =>
+            br.ReadUInt32().ToBigEndian();
+
+        public static long ReadAsLong(this BinaryReader br)
+        {
+            var value = br.ReadUInt64();
+            return (long)value.ToBigEndian();
+        }
+
+        public static ulong ReadAsUnsignedLong(this BinaryReader br)
+        {
+            var value = br.ReadUInt64();
+            return value.ToBigEndian();
+        }
 
         // http://wiki.vg/Protocol#VarInt_and_VarLong"
-        public static uint ReadAsVarInt(this BinaryReader br, out int bytesRead)
+        public static int ReadAsVarInt(this BinaryReader br, out int bytesRead)
         {
             int numRead = 0;
             uint result = 0;
@@ -47,7 +60,7 @@ namespace MineCase.Protocol.Serialization
             while ((read & 0b10000000) != 0);
 
             bytesRead = numRead;
-            return result;
+            return (int)result;
         }
 
         public static string ReadAsString(this BinaryReader br)
@@ -55,6 +68,21 @@ namespace MineCase.Protocol.Serialization
             var len = br.ReadAsVarInt(out _);
             var bytes = br.ReadBytes((int)len);
             return Encoding.UTF8.GetString(bytes);
+        }
+    }
+
+    internal static class StreamExtensions
+    {
+        public static async Task ReadExactAsync(this Stream stream, byte[] buffer, int offset, int count)
+        {
+            while (count != 0)
+            {
+                var numRead = await stream.ReadAsync(buffer, offset, count);
+                if (numRead == 0)
+                    throw new EndOfStreamException();
+                offset += numRead;
+                count -= numRead;
+            }
         }
     }
 }
