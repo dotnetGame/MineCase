@@ -17,16 +17,6 @@ namespace MineCase.Protocol.Protocol
 
         [SerializeAs(DataType.ByteArray)]
         public byte[] Data;
-
-        public async Task SerializeAsync(Stream stream)
-        {
-            
-        }
-
-        public static async Task<UncompressedPacket> DeserializeAsync(Stream stream)
-        {
-            
-        }
     }
 
     public class CompressedPacket
@@ -39,16 +29,6 @@ namespace MineCase.Protocol.Protocol
 
         [SerializeAs(DataType.VarInt)]
         public byte[] CompressedData;
-
-        public async Task SerializeAsync(Stream stream)
-        {
-            
-        }
-
-        public static async Task<CompressedPacket> DeserializeAsync(Stream stream)
-        {
-            
-        }
     }
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false, AllowMultiple = false)]

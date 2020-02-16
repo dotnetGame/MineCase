@@ -15,7 +15,7 @@ namespace MineCase.Gateway
         private TcpListener _tcpListener = null;
         private readonly IClusterClient _client;
 
-        public ConnectionRouterClientHostedService(IClusterClient client, IApplicationLifetime lifetime)
+        public ConnectionRouterClientHostedService(IClusterClient client, IHostApplicationLifetime lifetime)
         {
             _client = client;
         }

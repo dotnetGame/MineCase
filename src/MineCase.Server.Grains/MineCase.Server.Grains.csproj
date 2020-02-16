@@ -33,4 +33,8 @@
     <ProjectReference Include="..\MineCase.Server.Interfaces\MineCase.Server.Interfaces.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Server\" />
+  </ItemGroup>
+
 </Project>
