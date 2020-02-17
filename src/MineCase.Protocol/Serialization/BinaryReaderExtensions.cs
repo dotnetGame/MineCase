@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MineCase.Protocol.Serialization
+namespace MineCase.Serialization
 {
     internal static class BinaryReaderExtensions
     {
@@ -68,6 +68,11 @@ namespace MineCase.Protocol.Serialization
             var len = br.ReadAsVarInt(out _);
             var bytes = br.ReadBytes((int)len);
             return Encoding.UTF8.GetString(bytes);
+        }
+
+        public static byte[] ReadAsByteArray(this BinaryReader br, int length)
+        {
+            return br.ReadBytes(length);
         }
     }
 

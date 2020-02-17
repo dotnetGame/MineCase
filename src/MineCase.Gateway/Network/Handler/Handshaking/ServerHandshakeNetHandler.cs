@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Gateway.Network.Handler.Status;
-using MineCase.Protocol.Handshaking;
 using MineCase.Protocol.Protocol;
-using MineCase.Protocol.Protocol.Status.Server;
+using MineCase.Protocol.Protocol.Handshaking.Server;
+using Orleans;
 
 namespace MineCase.Gateway.Network.Handler.Handshaking
 {
@@ -13,9 +13,12 @@ namespace MineCase.Gateway.Network.Handler.Handshaking
     {
         private ClientSession _clientSession;
 
-        public ServerHandshakeNetHandler(ClientSession session)
+        private IGrainFactory _client;
+
+        public ServerHandshakeNetHandler(ClientSession session, IGrainFactory client)
         {
             _clientSession = session;
+            _client = client;
         }
 
         public Task ProcessHandshake(Handshake packet)

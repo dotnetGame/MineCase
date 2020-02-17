@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Protocol.Serialization;
 using MineCase.Serialization;
 
 namespace MineCase.Protocol.Protocol
@@ -40,7 +39,7 @@ namespace MineCase.Protocol.Protocol
             if (RawData != null)
             {
                 await stream.WriteAsync(RawData, 0, Length);
-                System.Console.WriteLine($"Write packet length to stream: {Length}");
+                // System.Console.WriteLine($"Write packet length to stream: {Length}");
             }
 
             // System.Console.WriteLine($"Write packet length: {Length}");
@@ -52,9 +51,15 @@ namespace MineCase.Protocol.Protocol
     {
         public uint PacketId { get; }
 
-        public PacketAttribute(uint packetId)
+        public ProtocolType PacketType { get; }
+
+        public PacketDirection Direction { get; }
+
+        public PacketAttribute(uint packetId, ProtocolType packetType, PacketDirection direction)
         {
             PacketId = packetId;
+            PacketType = packetType;
+            Direction = direction;
         }
     }
 

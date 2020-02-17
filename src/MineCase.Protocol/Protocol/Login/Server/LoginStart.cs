@@ -4,22 +4,22 @@ using System.IO;
 using System.Text;
 using MineCase.Serialization;
 
-namespace MineCase.Protocol.Protocol.Status.Client
+namespace MineCase.Protocol.Protocol.Login.Server
 {
-    [Packet(0x00, ProtocolType.Status, PacketDirection.ClientBound)]
-    public sealed class Response : ISerializablePacket
+    [Packet(0x00, ProtocolType.Login, PacketDirection.ServerBound)]
+    public sealed class LoginStart : ISerializablePacket
     {
         [SerializeAs(DataType.String)]
-        public string JsonResponse;
+        public string Name;
 
         public void Deserialize(BinaryReader br)
         {
-            JsonResponse = br.ReadAsString();
+            Name = br.ReadAsString();
         }
 
         public void Serialize(BinaryWriter bw)
         {
-            bw.WriteAsString(JsonResponse);
+            bw.WriteAsString(Name);
         }
     }
 }

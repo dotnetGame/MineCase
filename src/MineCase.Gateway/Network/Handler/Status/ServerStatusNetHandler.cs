@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Protocol.Protocol.Status.Client;
 using MineCase.Protocol.Protocol.Status.Server;
+using Orleans;
 
 namespace MineCase.Gateway.Network.Handler.Status
 {
@@ -11,9 +12,12 @@ namespace MineCase.Gateway.Network.Handler.Status
     {
         private ClientSession _clientSession;
 
-        public ServerStatusNetHandler(ClientSession session)
+        private IGrainFactory _client;
+
+        public ServerStatusNetHandler(ClientSession session, IGrainFactory client)
         {
             _clientSession = session;
+            _client = client;
         }
 
         public Task ProcessPing(Ping packetIn)
@@ -34,8 +38,7 @@ namespace MineCase.Gateway.Network.Handler.Status
         ""max"": 100,
         ""online"": 0,
         ""sample"": []
-    }, ""description"": { ""text"": ""Hello MineCase""},
-""favicon"": null
+    }, ""description"": { ""text"": ""Hello MineCase""}
 }";
             return _clientSession.SendPacket(reponse);
         }

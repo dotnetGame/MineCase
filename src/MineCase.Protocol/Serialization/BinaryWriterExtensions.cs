@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace MineCase.Protocol.Serialization
+namespace MineCase.Serialization
 {
     internal static class BinaryWriterExtensions
     {

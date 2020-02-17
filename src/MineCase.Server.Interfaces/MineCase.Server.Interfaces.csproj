@@ -31,8 +31,4 @@
     <ProjectReference Include="..\MineCase.Protocol\MineCase.Protocol.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Server\" />
-  </ItemGroup>
-
 </Project>

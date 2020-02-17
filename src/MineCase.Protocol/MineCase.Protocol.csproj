@@ -28,4 +28,9 @@
     <ProjectReference Include="..\MineCase.Core\MineCase.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Protocol\Play\Server\" />
+    <Folder Include="Protocol\Play\Client\" />
+  </ItemGroup>
+
 </Project>

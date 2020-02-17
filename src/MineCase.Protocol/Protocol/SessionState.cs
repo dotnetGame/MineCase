@@ -26,5 +26,4 @@ namespace MineCase.Protocol.Protocol
         /// </summary>
         Login = 2,
     }
-
 }

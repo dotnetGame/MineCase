@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MineCase.Protocol.Protocol;
-using MineCase.Protocol.Serialization;
 using MineCase.Serialization;
 
-namespace MineCase.Protocol.Handshaking
+namespace MineCase.Protocol.Protocol.Handshaking.Server
 {
-    [Packet(0x00)]
+    [Packet(0x00, ProtocolType.Handshake, PacketDirection.ServerBound)]
     public sealed class Handshake : ISerializablePacket
     {
         [SerializeAs(DataType.VarInt)]

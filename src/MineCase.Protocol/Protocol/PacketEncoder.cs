@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Protocol.Serialization;
+using MineCase.Serialization;
 
 namespace MineCase.Protocol.Protocol
 {

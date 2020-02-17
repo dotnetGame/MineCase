@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MineCase.Protocol.Protocol;
-using MineCase.Protocol.Serialization;
 using MineCase.Serialization;
 
 namespace MineCase.Protocol.Protocol.Status.Server
 {
-    [Packet(0x01)]
+    [Packet(0x01, ProtocolType.Status, PacketDirection.ServerBound)]
     public sealed class Ping : ISerializablePacket
     {
         [SerializeAs(DataType.Long)]

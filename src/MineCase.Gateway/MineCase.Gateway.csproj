@@ -34,9 +34,4 @@
     <ProjectReference Include="..\MineCase.Server.Interfaces\MineCase.Server.Interfaces.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Network\Handler\Play\" />
-    <Folder Include="Network\Handler\Login\" />
-  </ItemGroup>
-
 </Project>

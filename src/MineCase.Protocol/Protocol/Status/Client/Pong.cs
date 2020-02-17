@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using MineCase.Protocol.Serialization;
 using MineCase.Serialization;
 
 namespace MineCase.Protocol.Protocol.Status.Client
 {
-    [Packet(0x01)]
+    [Packet(0x01, ProtocolType.Status, PacketDirection.ClientBound)]
     public sealed class Pong : ISerializablePacket
     {
         [SerializeAs(DataType.Long)]

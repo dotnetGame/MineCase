@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase.Protocol.Serialization
+namespace MineCase.Serialization
 {
     internal static class DataTypeSizeExtensions
     {
