@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Core.Game;
+using MineCase.Protocol.Protocol;
 using MineCase.Protocol.Protocol.Login.Client;
 using MineCase.Protocol.Protocol.Login.Server;
 using MineCase.Server.Server;
@@ -83,6 +84,12 @@ namespace MineCase.Gateway.Network.Handler.Login
             };
 
             await _clientSession.SendPacket(successPacket);
+
+            // Change session state
+            _clientSession.SetSessionState(SessionState.Play);
+
+            // Set net handler
+            _clientSession.SetNetHandler(SessionState.Play);
         }
     }
 }

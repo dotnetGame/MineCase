@@ -12,4 +12,9 @@ namespace MineCase.Core.World
         Adventure = 2,
         Spectator = 3,
     }
+
+    public class GameTypes
+    {
+
+    }
 }
