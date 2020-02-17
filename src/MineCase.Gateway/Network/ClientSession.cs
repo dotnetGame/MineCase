@@ -14,6 +14,7 @@ using MineCase.Protocol.Protocol;
 using MineCase.Protocol.Protocol.Handshaking.Server;
 using MineCase.Protocol.Protocol.Login.Server;
 using MineCase.Protocol.Protocol.Status.Server;
+using MineCase.Server.Network;
 using Orleans;
 using ProtocolType = MineCase.Protocol.Protocol.ProtocolType;
 
@@ -40,6 +41,10 @@ namespace MineCase.Gateway.Network
 
         private readonly ActionBlock<ISerializablePacket> _outcomingPacketDispatcher;
 
+        private IClientboundPacketObserver _clientboundPacketObserverRef;
+
+        private readonly OutcomingPacketObserver _outcomingPacketObserver;
+
         public ClientSession(TcpClient tcpClient, IClusterClient clusterClient)
         {
             _sessionId = Guid.NewGuid();
@@ -51,6 +56,9 @@ namespace MineCase.Gateway.Network
             _decoder = new PacketDecoder(PacketDirection.ServerBound, _packetInfo);
             _packetHandler = new ServerHandshakeNetHandler(this, _client);
             _outcomingPacketDispatcher = new ActionBlock<ISerializablePacket>(SendOutcomingPacket);
+
+            _clientboundPacketObserverRef = null;
+            _outcomingPacketObserver = new OutcomingPacketObserver(this);
         }
 
         ~ClientSession()
@@ -121,11 +129,23 @@ namespace MineCase.Gateway.Network
         {
             using (_dataStream = _tcpClient.GetStream())
             {
+                // Subscribe observer to get packet from server
+                _clientboundPacketObserverRef = await _client.CreateObjectReference<IClientboundPacketObserver>(_outcomingPacketObserver);
+                var packetSink = _client.GetGrain<IClientboundPacketSink>(_sessionId);
+                await packetSink.Subscribe(_clientboundPacketObserverRef);
                 try
                 {
+                    DateTime expiredTime = DateTime.Now + TimeSpan.FromSeconds(30);
                     while (true)
                     {
                         await ProcessPacket();
+
+                        // Renew subscribe, per 30 sec
+                        if (DateTime.Now > expiredTime)
+                        {
+                            await _client.GetGrain<IClientboundPacketSink>(_sessionId).Subscribe(_clientboundPacketObserverRef);
+                            expiredTime = DateTime.Now + TimeSpan.FromSeconds(30);
+                        }
                     }
                 }
                 catch (EndOfStreamException)
@@ -137,6 +157,19 @@ namespace MineCase.Gateway.Network
 
         // Send Packet to game clients
         public async Task SendPacket(ISerializablePacket packet)
+        {
+            try
+            {
+                if (!_outcomingPacketDispatcher.Completion.IsCompleted)
+                    await _outcomingPacketDispatcher.SendAsync(packet);
+            }
+            catch
+            {
+                _outcomingPacketDispatcher.Complete();
+            }
+        }
+
+        public async void DispatchOutcomingPacket(ISerializablePacket packet)
         {
             try
             {
@@ -277,6 +310,26 @@ namespace MineCase.Gateway.Network
             }
 
             return Task.CompletedTask;
+        }
+
+        private class OutcomingPacketObserver : IClientboundPacketObserver
+        {
+            private readonly ClientSession _session;
+
+            public OutcomingPacketObserver(ClientSession session)
+            {
+                _session = session;
+            }
+
+            public void OnClosed()
+            {
+                _session.OnClosed();
+            }
+
+            public void ReceivePacket(ISerializablePacket packet)
+            {
+                _session.DispatchOutcomingPacket(packet);
+            }
         }
     }
 }
