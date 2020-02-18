@@ -39,6 +39,7 @@ namespace MineCase.Protocol.Protocol
             if (RawData != null)
             {
                 await stream.WriteAsync(RawData, 0, Length);
+
                 // System.Console.WriteLine($"Write packet length to stream: {Length}");
             }
 

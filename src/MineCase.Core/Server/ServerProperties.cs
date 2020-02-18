@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase.Core.Server
+namespace MineCase.Server
 {
     public class ServerProperties
     {

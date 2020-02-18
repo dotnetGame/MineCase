@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MineCase.Core.World;
 using MineCase.Server.Server;
+using MineCase.World;
 using Orleans;
 
 namespace MineCase.Server.Server.Management

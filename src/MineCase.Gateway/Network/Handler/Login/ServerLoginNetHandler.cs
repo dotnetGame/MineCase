@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Core.Game;
+using MineCase.Game;
 using MineCase.Protocol.Protocol;
 using MineCase.Protocol.Protocol.Login.Client;
 using MineCase.Protocol.Protocol.Login.Server;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase.Core.Util.Text
+namespace MineCase.Util.Text
 {
     public class IText
     {

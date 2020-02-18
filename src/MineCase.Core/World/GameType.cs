@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase.Core.World
+namespace MineCase.World
 {
     public enum GameType
     {

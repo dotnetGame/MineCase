@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using MineCase.Serialization;
+using MineCase.World.Biome;
 
 namespace MineCase.Protocol.Protocol.Play.Client
 {
@@ -25,6 +26,9 @@ namespace MineCase.Protocol.Protocol.Play.Client
         public Nbt.Tags.NbtCompound Heightmaps;
 
         [SerializeAs(DataType.Array)]
+        public BiomeId[] Biomes;
+
+        [SerializeAs(DataType.Array)]
         public byte[] Data;
 
         [SerializeAs(DataType.VarInt)]
@@ -42,7 +46,11 @@ namespace MineCase.Protocol.Protocol.Play.Client
             Heightmaps = br.ReadAsCompoundTag();
             if (FullChunk)
             {
-                // TODO: read biome
+                Biomes = new BiomeId[BiomeConstants.ChunkBiomeNum];
+                for (int i = 0; i < Biomes.Length; ++i)
+                {
+                    Biomes[i] = (BiomeId)br.ReadAsInt();
+                }
             }
 
             int size = br.ReadAsVarInt(out _);
@@ -65,6 +73,14 @@ namespace MineCase.Protocol.Protocol.Play.Client
             bw.WriteAsBoolean(FullChunk);
             bw.WriteAsVarInt(PrimaryBitMask, out _);
             bw.WriteAsCompoundTag(Heightmaps);
+            if (Biomes != null)
+            {
+                foreach (BiomeId id in Biomes)
+                {
+                    bw.WriteAsInt((int)id);
+                }
+            }
+
             bw.WriteAsVarInt(Data.Length, out _);
             bw.WriteAsByteArray(Data);
             bw.WriteAsVarInt(BlockEntities.Count, out _);

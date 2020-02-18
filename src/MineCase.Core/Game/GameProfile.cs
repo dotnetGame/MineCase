@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase.Core.Game
+namespace MineCase.Game
 {
     public class GameProfile
     {
