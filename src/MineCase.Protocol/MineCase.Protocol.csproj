@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>7.2</LangVersion>
     <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -26,11 +26,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MineCase.Core\MineCase.Core.csproj" />
+    <ProjectReference Include="..\MineCase.Nbt\MineCase.Nbt.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Protocol\Play\Server\" />
-    <Folder Include="Protocol\Play\Client\" />
   </ItemGroup>
 
 </Project>

@@ -11,7 +11,7 @@ MineCase
 The project is designed to create a high-performance, distributed `Minecraft` server with virtual actor provided by Orleans distributed framework. 
 Different chunks are managed on different servers so that more players can join in and play in the same world. This makes minecraft servers more scalable.
 Servers like Anarchy servers can allow more players to join in without waiting in queue by using distributed server.
-It written in `C#` with `.NET Core 2.0` env and based on `orleans` framework to work with released [1.14.4 protocol](https://www.minecraft.net/en-us/article/minecraft-java-1-14-4-released). The [website](https://wiki.vg/) describes the Minecraft protocol clearly.
+It written in `C#` with `.NET Core 3.1` env and based on `orleans` framework to work with released [1.15.2 protocol](https://www.minecraft.net/en-us/article/minecraft-java-edition-1-15-2). The [website](https://wiki.vg/) describes the Minecraft protocol clearly.
 
 **MineCase is under refactoring, so branch refactor may not work.**
 

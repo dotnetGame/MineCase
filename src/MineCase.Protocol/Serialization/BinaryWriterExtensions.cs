@@ -70,5 +70,17 @@ namespace MineCase.Serialization
             bw.WriteAsVarInt(bytes.Length, out _);
             bw.Write(bytes);
         }
+
+        public static void WriteAsCompoundTag(this BinaryWriter bw, Nbt.Tags.NbtCompound nbt)
+        {
+            if (nbt == null)
+            {
+                bw.WriteAsByte(0);
+            }
+            else
+            {
+                Nbt.Serialization.NbtTagSerializer.SerializeTag(nbt, bw);
+            }
+        }
     }
 }

@@ -74,6 +74,11 @@ namespace MineCase.Serialization
         {
             return br.ReadBytes(length);
         }
+
+        public static Nbt.Tags.NbtCompound ReadAsCompoundTag(this BinaryReader br)
+        {
+            return (Nbt.Tags.NbtCompound)Nbt.Serialization.NbtTagSerializer.DeserializeTag(br);
+        }
     }
 
     internal static class StreamExtensions

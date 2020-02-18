@@ -13,7 +13,7 @@ MineCase
 
 不同的区块由不同的服务器管理，所有的玩家都可以在同一个世界进行游戏，这位minecraft服务器带来了更多的拓展性。
 
-目前仅支持 `Minecraft`  [1.14.4](https://www.minecraft.net/en-us/article/minecraft-java-1-14-4-released)的版本。
+目前仅支持 `Minecraft`  [1.15.2](https://www.minecraft.net/en-us/article/minecraft-java-edition-1-15-2)的版本。
 
 ![Screenshots](screenshots/1.jpg)
 
