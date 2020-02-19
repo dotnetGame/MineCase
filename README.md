@@ -44,7 +44,7 @@ None
 
 
 ## Contributors
-![https://github.com/sunnycase](https://i.loli.net/2020/02/19/QWGu4759qeUam8c.png)![https://github.com/jstzwj](https://i.loli.net/2020/02/19/kSqmT7cFfp5Qi4L.png)![https://github.com/akemimadoka](https://i.loli.net/2020/02/19/s2GmUF7SwqzC9ER.png)![https://github.com/Alinshans](https://i.loli.net/2020/02/19/yt9DE4LT1RkweQb.png)![https://github.com/ray-cast](https://i.loli.net/2020/02/19/r42VmKzjlpaQPCc.png)![https://github.com/Melonpi](https://i.loli.net/2020/02/19/KcW4pes71AR5bqH.png)![https://github.com/zaoqi](https://i.loli.net/2020/02/19/15ByH8UoICESudh.png)
+[![sunnycase](https://i.loli.net/2020/02/19/QWGu4759qeUam8c.png)](https://github.com/sunnycase)[![jstzwj](https://i.loli.net/2020/02/19/kSqmT7cFfp5Qi4L.png)](https://github.com/jstzwj)[![akemimadoka](https://i.loli.net/2020/02/19/s2GmUF7SwqzC9ER.png)](https://github.com/akemimadoka)[![Alinshans](https://i.loli.net/2020/02/19/yt9DE4LT1RkweQb.png)](https://github.com/Alinshans)[![ray-cast](https://i.loli.net/2020/02/19/r42VmKzjlpaQPCc.png)](https://github.com/ray-cast)[![Melonpi](https://i.loli.net/2020/02/19/KcW4pes71AR5bqH.png)](https://github.com/Melonpi)[![zaoqi](https://i.loli.net/2020/02/19/15ByH8UoICESudh.png)](https://github.com/zaoqi)
 
 ## Credits
 
@@ -52,8 +52,8 @@ None
 
 Wooden Pickaxe Supporter:
 
-* ![https://www.patreon.com/acid_chicken](https://i.loli.net/2020/02/19/qoR9anvrkNLtSY8.png) Acid Chicken
-* ![https://www.patreon.com/user/creators?u=4934636](https://i.loli.net/2020/02/19/KCRsaH4JTSIow29.png) Balajanovski
+* [![https://www.patreon.com/acid_chicken](https://i.loli.net/2020/02/19/qoR9anvrkNLtSY8.png)](https://www.patreon.com/acid_chicken) Acid Chicken
+* [![https://www.patreon.com/user/creators?u=4934636](https://i.loli.net/2020/02/19/KCRsaH4JTSIow29.png)](https://www.patreon.com/user/creators?u=4934636) Balajanovski
 
 ## Get Involved
 
