@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Protocol.Protocol.Handshaking.Server;
 
-namespace MineCase.Gateway.Network.Handler.Handshaking
+namespace MineCase.Server.Network.Handler.Handshaking
 {
     public interface IHandshakeNetHandler : INetHandler
     {

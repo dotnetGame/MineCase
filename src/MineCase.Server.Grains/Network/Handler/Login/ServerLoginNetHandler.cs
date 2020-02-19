@@ -9,7 +9,7 @@ using MineCase.Protocol.Protocol.Login.Server;
 using MineCase.Server.Server;
 using Orleans;
 
-namespace MineCase.Gateway.Network.Handler.Login
+namespace MineCase.Server.Network.Handler.Login
 {
     public enum LoginState
     {
@@ -23,7 +23,9 @@ namespace MineCase.Gateway.Network.Handler.Login
 
     public class ServerLoginNetHandler : IServerLoginNetHandler
     {
-        private ClientSession _clientSession;
+        private IPacketRouter _clientSession;
+
+        private IClientboundPacketSink _packetSink;
 
         private IGrainFactory _client;
 
@@ -31,9 +33,10 @@ namespace MineCase.Gateway.Network.Handler.Login
 
         private GameProfile _gameProfile;
 
-        public ServerLoginNetHandler(ClientSession session, IGrainFactory client)
+        public ServerLoginNetHandler(IPacketRouter session, IClientboundPacketSink packetSink, IGrainFactory client)
         {
             _clientSession = session;
+            _packetSink = packetSink;
             _client = client;
             _loginState = LoginState.Hello;
             _gameProfile = new GameProfile();
@@ -83,13 +86,13 @@ namespace MineCase.Gateway.Network.Handler.Login
                 Username = _gameProfile.Name,
             };
 
-            await _clientSession.SendPacket(successPacket);
+            await _packetSink.SendPacket(successPacket);
 
             // Change session state
-            _clientSession.SetSessionState(SessionState.Play);
+            await _clientSession.SetSessionState(SessionState.Play);
 
             // Set net handler
-            _clientSession.SetNetHandler(SessionState.Play);
+            await _clientSession.SetNetHandler(SessionState.Play);
         }
     }
 }

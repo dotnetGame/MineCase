@@ -6,17 +6,20 @@ using MineCase.Protocol.Protocol.Status.Client;
 using MineCase.Protocol.Protocol.Status.Server;
 using Orleans;
 
-namespace MineCase.Gateway.Network.Handler.Status
+namespace MineCase.Server.Network.Handler.Status
 {
     public class ServerStatusNetHandler : IServerStatusNetHandler
     {
-        private ClientSession _clientSession;
+        private IPacketRouter _clientSession;
+
+        private IClientboundPacketSink _packetSink;
 
         private IGrainFactory _client;
 
-        public ServerStatusNetHandler(ClientSession session, IGrainFactory client)
+        public ServerStatusNetHandler(IPacketRouter session, IClientboundPacketSink packetSink, IGrainFactory client)
         {
             _clientSession = session;
+            _packetSink = packetSink;
             _client = client;
         }
 
@@ -24,7 +27,7 @@ namespace MineCase.Gateway.Network.Handler.Status
         {
             var pong = new Pong();
             pong.Payload = packetIn.Payload;
-            return _clientSession.SendPacket(pong);
+            return _packetSink.SendPacket(pong);
         }
 
         public Task ProcessRequest(Request packetIn)
@@ -40,7 +43,7 @@ namespace MineCase.Gateway.Network.Handler.Status
         ""sample"": []
     }, ""description"": { ""text"": ""Hello MineCase""}
 }";
-            return _clientSession.SendPacket(reponse);
+            return _packetSink.SendPacket(reponse);
         }
     }
 }

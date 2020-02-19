@@ -9,7 +9,7 @@ namespace MineCase.Server.Network
 {
     public interface IClientboundPacketObserver : IGrainObserver
     {
-        void ReceivePacket(ISerializablePacket packet);
+        void ReceivePacket(RawPacket packet);
 
         void OnClosed();
     }

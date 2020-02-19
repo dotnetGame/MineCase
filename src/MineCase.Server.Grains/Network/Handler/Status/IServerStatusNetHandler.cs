@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Protocol.Protocol.Status.Server;
 
-namespace MineCase.Gateway.Network.Handler.Status
+namespace MineCase.Server.Network.Handler.Status
 {
     public interface IServerStatusNetHandler : INetHandler
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase.Gateway.Network.Handler
+namespace MineCase.Server.Network.Handler
 {
     public interface INetHandler
     {

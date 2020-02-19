@@ -2,58 +2,58 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Gateway.Network.Handler.Status;
 using MineCase.Protocol.Protocol;
 using MineCase.Protocol.Protocol.Handshaking.Server;
 using Orleans;
 
-namespace MineCase.Gateway.Network.Handler.Handshaking
+namespace MineCase.Server.Network.Handler.Handshaking
 {
     public class ServerHandshakeNetHandler : IHandshakeNetHandler
     {
-        private ClientSession _clientSession;
+        private IPacketRouter _clientSession;
+
+        private IClientboundPacketSink _packetSink;
 
         private IGrainFactory _client;
 
-        public ServerHandshakeNetHandler(ClientSession session, IGrainFactory client)
+        public ServerHandshakeNetHandler(IPacketRouter session, IClientboundPacketSink packetSink, IGrainFactory client)
         {
             _clientSession = session;
+            _packetSink = packetSink;
             _client = client;
         }
 
-        public Task ProcessHandshake(Handshake packet)
+        public async Task ProcessHandshake(Handshake packet)
         {
             if (packet.NextState == (int)SessionState.Login)
             {
-                _clientSession.SetSessionState(SessionState.Login);
+                await _clientSession.SetSessionState(SessionState.Login);
                 if (packet.ProtocolVersion > Protocol.Protocol.Protocol.Version)
                 {
                     // ITextComponent itextcomponent = new TranslationTextComponent("multiplayer.disconnect.outdated_server", SharedConstants.getVersion().getName());
                     // this.networkManager.sendPacket(new SDisconnectLoginPacket(itextcomponent));
-                    _clientSession.Close();
+                    await _packetSink.Close();
                 }
                 else if (packet.ProtocolVersion > Protocol.Protocol.Protocol.Version)
                 {
                     // ITextComponent itextcomponent1 = new TranslationTextComponent("multiplayer.disconnect.outdated_client", SharedConstants.getVersion().getName());
                     // this.networkManager.sendPacket(new SDisconnectLoginPacket(itextcomponent1));
-                    _clientSession.Close();
+                    await _packetSink.Close();
                 }
                 else
                 {
-                    _clientSession.SetNetHandler(SessionState.Login);
+                    await _clientSession.SetNetHandler(SessionState.Login);
                 }
             }
             else if (packet.NextState == (int)SessionState.Status)
             {
-                _clientSession.SetSessionState(SessionState.Status);
-                _clientSession.SetNetHandler(SessionState.Status);
+                await _clientSession.SetSessionState(SessionState.Status);
+                await _clientSession.SetNetHandler(SessionState.Status);
             }
             else
             {
                 throw new NotImplementedException("Invalid intention " + packet.NextState.ToString());
             }
-
-            return Task.CompletedTask;
         }
     }
 }
