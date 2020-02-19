@@ -38,55 +38,11 @@ MineCase
     * **Win** : 双击 `build_and_run.bat`.
 
 ## 开发者
-<div>
-<span>
-<a href="https://github.com/sunnycase">
-<img style="border-radius:50%;width:55px;" src="https://avatars3.githubusercontent.com/u/3644879?s=460&v=4"  alt="sunnycase" />
-</a>
-</span>
-<span>
-<a href="https://github.com/jstzwj">
-<img style="border-radius:50%;width:55px;" src="https://avatars0.githubusercontent.com/u/13167278?s=460&v=4"  alt="jstzwj" />
-</a>
-</span>
-<span>
-<a href="https://github.com/akemimadoka">
-<img style="border-radius:50%;width:55px;" src="https://avatars3.githubusercontent.com/u/8528322?s=460&v=4"  alt="akemimadoka" />
-</a>
-</span>
-<span>
-<a href="https://github.com/Alinshans">
-<img style="border-radius:50%;width:55px;" src="https://avatars1.githubusercontent.com/u/20122802?s=460&v=4"  alt="Alinshans" />
-</a>
-</span>
-<span>
-<a href="https://github.com/ray-cast">
-<img style="border-radius:50%;width:55px;" src="https://avatars1.githubusercontent.com/u/6936875?s=460&v=4"  alt="ray-cast" />
-</a>
-</span>
-<span>
-<a href="https://github.com/Melonpi">
-<img style="border-radius:50%;width:55px;" src="https://avatars2.githubusercontent.com/u/17426880?s=460&v=4"  alt="Melonpi" />
-</a>
-</span>
-<span>
-<a href="https://github.com/zaoqi">
-<img style="border-radius:50%;width:55px;" src="https://avatars3.githubusercontent.com/u/19170231?s=460&v=4"  alt="zaoqi" />
-</a>
-</span>
-</div>
+![https://github.com/sunnycase](https://i.loli.net/2020/02/19/QWGu4759qeUam8c.png)![https://github.com/jstzwj](https://i.loli.net/2020/02/19/kSqmT7cFfp5Qi4L.png)![https://github.com/akemimadoka](https://i.loli.net/2020/02/19/s2GmUF7SwqzC9ER.png)![https://github.com/Alinshans](https://i.loli.net/2020/02/19/yt9DE4LT1RkweQb.png)![https://github.com/ray-cast](https://i.loli.net/2020/02/19/r42VmKzjlpaQPCc.png)![https://github.com/Melonpi](https://i.loli.net/2020/02/19/KcW4pes71AR5bqH.png)![https://github.com/zaoqi](https://i.loli.net/2020/02/19/15ByH8UoICESudh.png)
 
 ## 特别感谢
-<div>
-<a href="https://www.patreon.com/acid_chicken">
-<img style="border-radius:50%;width:55px;" src="https://c10.patreonusercontent.com/3/eyJ3IjoyMDB9/patreon-media/p/campaign/1299941/279827931eba4d3ebc5cc2586a106771/2.png?token-time=2145916800&token-hash=Fv8I_E9X9rxLgrnpW9dlYd5UuLKq4CEuFtCV4zmBJMc%3D"  alt="Acid Chicken" />
-</a>Acid Chicken
-</div>
-<div>
-<a href="https://www.patreon.com/user/creators?u=4934636">
-<img style="border-radius:50%;width:55px;" src="https://c10.patreonusercontent.com/3/eyJ3IjoyMDB9/patreon-media/p/user/4934636/e1e75d594c234690a68fd3383bc377c2/1.jpg?token-time=2145916800&token-hash=JXAJzPnLZ5TmPij2y0SSOYgHg8Is_QQiOr6DjH9L_LU%3D"  alt="Balajanovski" />
-</a>Balajanovski
-</div>
+* ![https://www.patreon.com/acid_chicken](https://i.loli.net/2020/02/19/qoR9anvrkNLtSY8.png) Acid Chicken
+* ![https://www.patreon.com/user/creators?u=4934636](https://i.loli.net/2020/02/19/KCRsaH4JTSIow29.png) Balajanovski
 
 ## 参与开发
 
