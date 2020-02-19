@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MineCase.World.Biome;
 
 namespace MineCase.Server.World.Biome
 {
@@ -15,7 +16,7 @@ namespace MineCase.Server.World.Biome
 
         public BiomeArray()
         {
-            _biomes = new Biome[ChunkBiomeNum];
+            _biomes = new Biome[BiomeConstants.ChunkBiomeNum];
         }
     }
 }
