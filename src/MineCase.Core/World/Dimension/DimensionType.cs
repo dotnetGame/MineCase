@@ -6,8 +6,8 @@ namespace MineCase.Core.World.Dimension
 {
     public enum DimensionType
     {
-        Overworld,
-        TheNether,
-        TheEnd,
+        Overworld = 1,
+        TheNether = 0,
+        TheEnd = 2,
     }
 }

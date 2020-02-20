@@ -31,4 +31,9 @@
     <ProjectReference Include="..\MineCase.Protocol\MineCase.Protocol.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="World\Chunk\" />
+    <Folder Include="World\Biome\" />
+  </ItemGroup>
+
 </Project>
