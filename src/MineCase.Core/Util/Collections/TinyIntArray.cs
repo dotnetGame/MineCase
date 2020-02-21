@@ -36,7 +36,7 @@ namespace MineCase.Util.Collections
             get
             {
                 if (!(index >= 0 && index <= _arraySize - 1))
-                    throw new ArgumentException("TinyIntArray.operator[]: invalid bits per entry number");
+                    throw new IndexOutOfRangeException("TinyIntArray.operator[]: index out of range.");
                 int bitOffset = index * _bitsPerEntry;
                 int ulongOfsset = bitOffset >> 6;
                 int ulongOfssetNext = (index + 1) * _bitsPerEntry - 1 >> 6;
@@ -53,9 +53,8 @@ namespace MineCase.Util.Collections
             }
             set
             {
-                long longIndex = (long)index;
-                if (!(longIndex >= 0L && longIndex <= (long)(_arraySize - 1)))
-                    throw new ArgumentException("TinyIntArray.operator[]: invalid bits per entry number");
+                if (!(index >= 0 && index <= _arraySize - 1))
+                    throw new IndexOutOfRangeException("TinyIntArray.operator[]: index out of range.");
                 if (!(value >= 0 && value <= _maxEntryValue))
                     throw new ArgumentException("TinyIntArray.operator[]: invalid entry value.");
                 int bitOffset = index * _bitsPerEntry;

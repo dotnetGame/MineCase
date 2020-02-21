@@ -12,8 +12,4 @@
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Util\Palette\" />
-  </ItemGroup>
-
 </Project>
