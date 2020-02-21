@@ -12,7 +12,7 @@ namespace MineCase.Nbt.Tags
 
         public abstract short GetShort();
 
-        public abstract byte GetByte();
+        public abstract sbyte GetByte();
 
         public abstract double GetDouble();
 

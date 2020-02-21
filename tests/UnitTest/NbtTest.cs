@@ -89,15 +89,15 @@ namespace MineCase.UnitTest
         public void Test1()
         {
             var nbtFile = new NbtFile();
-            nbtFile.RootTag.Add(new NbtInt(1, "23333"));
-            nbtFile.RootTag.Add(new NbtCompound("test"));
+            nbtFile.RootTag.Add("23333", new NbtInt(1));
+            nbtFile.RootTag.Add("test", new NbtCompound());
             var testCompound = nbtFile.RootTag["test"] as NbtCompound;
             Assert.NotNull(testCompound);
-            var testList = new NbtList(NbtTagType.Int, "testList");
-            testCompound.Add(testList);
+            var testList = new NbtList(NbtTagType.Int);
+            testCompound.Add("testList", testList);
             testList.Add(new NbtInt(2));
             testList.Add(new NbtInt(4));
-            testCompound.Add(new NbtLong(0x000000FFFFFFFFFF, "testLong"));
+            testCompound.Add("testLong", new NbtLong(0x000000FFFFFFFFFF));
 
             using (var sw = new StringWriter())
             {

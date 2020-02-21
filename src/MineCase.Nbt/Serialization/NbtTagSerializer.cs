@@ -192,7 +192,7 @@ namespace MineCase.Nbt.Serialization
 
         static NbtTagSerializer()
         {
-            foreach (var type in from t in typeof(NbtTag).GetTypeInfo().Assembly.DefinedTypes where t.IsSubclassOf(typeof(NbtTag)) select t)
+            foreach (var type in from t in typeof(NbtTag).GetTypeInfo().Assembly.DefinedTypes where t.IsSubclassOf(typeof(NbtTag)) && !t.IsAbstract select t)
             {
                 type.GetDeclaredMethod("RegisterSerializer").Invoke(null, null);
             }

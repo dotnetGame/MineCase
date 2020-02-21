@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Nbt", "MineCase.Nb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.Core", "MineCase.Core\MineCase.Core.csproj", "{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MineCase.UnitTest", "..\tests\UnitTest\MineCase.UnitTest.csproj", "{1793B8FD-2D7C-4F06-9435-C31DCF19F387}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Appveyor|Any CPU = Appveyor|Any CPU
@@ -211,6 +213,30 @@ Global
 		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.TravisCI|x64.Build.0 = Debug|Any CPU
 		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.TravisCI|x86.ActiveCfg = Debug|Any CPU
 		{41C8ACC7-09CF-4DC4-B372-76E9288F2CFB}.TravisCI|x86.Build.0 = Debug|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Appveyor|Any CPU.ActiveCfg = Appveyor|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Appveyor|Any CPU.Build.0 = Appveyor|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Appveyor|x64.ActiveCfg = Appveyor|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Appveyor|x64.Build.0 = Appveyor|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Appveyor|x86.ActiveCfg = Appveyor|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Appveyor|x86.Build.0 = Appveyor|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Debug|x64.Build.0 = Debug|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Debug|x86.Build.0 = Debug|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Release|x64.ActiveCfg = Release|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Release|x64.Build.0 = Release|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Release|x86.ActiveCfg = Release|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.Release|x86.Build.0 = Release|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.TravisCI|Any CPU.ActiveCfg = TravisCI|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.TravisCI|Any CPU.Build.0 = TravisCI|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.TravisCI|x64.ActiveCfg = TravisCI|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.TravisCI|x64.Build.0 = TravisCI|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.TravisCI|x86.ActiveCfg = TravisCI|Any CPU
+		{1793B8FD-2D7C-4F06-9435-C31DCF19F387}.TravisCI|x86.Build.0 = TravisCI|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -10,13 +10,13 @@ using MineCase.Nbt.Serialization;
 namespace MineCase.Nbt.Tags
 {
     /// <see cref="NbtTagType.Compound"/>
-    public sealed class NbtCompound : NbtTag, IEnumerable<NbtTag>
+    public sealed class NbtCompound : NbtTag, IEnumerable<KeyValuePair<string, NbtTag>>
     {
         public override NbtTagType TagType => NbtTagType.Compound;
 
         public override bool HasValue => false;
 
-        private readonly Dictionary<string, NbtTag> _childTags;
+        private readonly Dictionary<string, NbtTag> _childTags = new Dictionary<string, NbtTag>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NbtCompound"/> class.<para />
@@ -149,9 +149,9 @@ namespace MineCase.Nbt.Tags
             visitor.EndChild();
         }
 
-        public IEnumerator<NbtTag> GetEnumerator()
+        public IEnumerator<KeyValuePair<string, NbtTag>> GetEnumerator()
         {
-            return _childTags.Select(pair => pair.Value).GetEnumerator();
+            return _childTags.Select(pair => pair).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

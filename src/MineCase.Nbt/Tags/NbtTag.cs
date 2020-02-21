@@ -29,6 +29,20 @@ namespace MineCase.Nbt.Tags
         public abstract bool HasValue { get; }
 
         /// <summary>
+        /// Get name from parent if parent is a compound.
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                if (Parent is NbtCompound)
+                    return ((NbtCompound)Parent).Name;
+                else
+                    return null;
+            }
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="NbtTag"/> class.<para />
         /// 默认构造方法.
         /// </summary>

@@ -7,7 +7,7 @@ using MineCase.Nbt.Serialization;
 namespace MineCase.Nbt.Tags
 {
     /// <see cref="NbtTagType.Int"/>
-    public sealed class NbtInt : NbtTag
+    public sealed class NbtInt : NbtNumber
     {
         public override NbtTagType TagType => NbtTagType.Int;
 
@@ -44,6 +44,36 @@ namespace MineCase.Nbt.Tags
         internal static void RegisterSerializer()
         {
             NbtTagSerializer.RegisterTag(NbtTagType.Int, new Serializer());
+        }
+
+        public override long GetLong()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int GetInt()
+        {
+            return Value;
+        }
+
+        public override short GetShort()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override sbyte GetByte()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override double GetDouble()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override float GetFloat()
+        {
+            throw new NotImplementedException();
         }
     }
 }
