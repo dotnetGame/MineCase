@@ -43,6 +43,7 @@ MineCase
 ## 特别感谢
 * ![https://www.patreon.com/acid_chicken](https://i.loli.net/2020/02/19/qoR9anvrkNLtSY8.png) Acid Chicken
 * ![https://www.patreon.com/user/creators?u=4934636](https://i.loli.net/2020/02/19/KCRsaH4JTSIow29.png) Balajanovski
+* [![https://www.patreon.com/Gongo/creators](https://i.loli.net/2020/02/22/gH68tvU4S2JrOPL.png)](https://www.patreon.com/Gongo/creators) Gongo
 
 ## 参与开发
 

@@ -54,6 +54,7 @@ Wooden Pickaxe Supporter:
 
 * [![https://www.patreon.com/acid_chicken](https://i.loli.net/2020/02/19/qoR9anvrkNLtSY8.png)](https://www.patreon.com/acid_chicken) Acid Chicken
 * [![https://www.patreon.com/user/creators?u=4934636](https://i.loli.net/2020/02/19/KCRsaH4JTSIow29.png)](https://www.patreon.com/user/creators?u=4934636) Balajanovski
+* [![https://www.patreon.com/Gongo/creators](https://i.loli.net/2020/02/22/gH68tvU4S2JrOPL.png)](https://www.patreon.com/Gongo/creators) Gongo
 
 ## Get Involved
 

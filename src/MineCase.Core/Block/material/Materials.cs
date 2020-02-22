@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MineCase.Block.Material
 {
-    public class MaterialColor
+    public class Materials
     {
     }
 }

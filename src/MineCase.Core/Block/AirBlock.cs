@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase.Block.Material
+namespace MineCase.Block
 {
-    public class MaterialColor
+    public class AirBlock : Block
     {
     }
 }
