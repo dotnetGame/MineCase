@@ -8,7 +8,7 @@ using MineCase.Util.Math;
 using MineCase.World;
 using Orleans;
 
-namespace MineCase.Server.Grains.World
+namespace MineCase.Server.World
 {
     public class WorldPartitionState
     {
@@ -23,6 +23,10 @@ namespace MineCase.Server.Grains.World
 
         private IWorld _world = null;
 
+        private WorldPartitionData _partition;
+
+        private WorldAccessor _worldAccessor;
+
         public event AsyncEventHandler<GameTickArgs> Tick;
 
         public override async Task OnActivateAsync()
@@ -31,6 +35,8 @@ namespace MineCase.Server.Grains.World
 
             (string worldKey, ChunkPos chunkPos) = this.GetWorldAndChunkPos();
             _world = GrainFactory.GetGrain<IWorld>(worldKey);
+            _partition = new WorldPartitionData();
+            _worldAccessor = new WorldAccessor(GrainFactory, _partition);
         }
 
         public override async Task OnDeactivateAsync()

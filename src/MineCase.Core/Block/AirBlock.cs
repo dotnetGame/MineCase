@@ -6,5 +6,9 @@ namespace MineCase.Block
 {
     public class AirBlock : Block
     {
+        public AirBlock(BlockProperties properties)
+            :base(properties)
+        {
+        }
     }
 }

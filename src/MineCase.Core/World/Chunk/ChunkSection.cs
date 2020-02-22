@@ -8,9 +8,14 @@ namespace MineCase.World.Chunk
 {
     public class ChunkSection
     {
-        private readonly PalettedData<BlockState> _data = new PalettedData<BlockState>();
+        private readonly PalettedData<BlockState> _data;
 
-        public bool Empty { get; }
+        public bool Empty { get => _data == null; }
+        public ChunkSection()
+        {
+            _data = new PalettedData<BlockState>(ChunkConstants.BlocksInSection, Blocks.Air.GetDefaultState());
+        }
+
         public BlockState this[int x, int y, int z]
         {
             get => _data[GetIndex(x, y, z)];

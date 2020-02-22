@@ -8,11 +8,21 @@ namespace MineCase.Util.Palette
 {
     public class PalettedData<T>
     {
-        private T _defaultState;
+        private readonly T _defaultState;
 
-        private TinyIntArray _storage;
+        private readonly TinyIntArray _storage;
 
-        private IPalette<T> _palette;
+        private readonly IPalette<T> _palette;
+
+        private int _bits;
+
+        public PalettedData(int size, T value)
+        {
+            _bits = 4;
+            _storage = new TinyIntArray(_bits, size);
+            _defaultState = value;
+            _palette = new PaletteArray<T>(_bits);
+        }
 
         public T this[int offset]
         {

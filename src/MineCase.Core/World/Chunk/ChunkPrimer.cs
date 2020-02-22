@@ -14,9 +14,28 @@ namespace MineCase.World.Chunk
             get
             {
                 ChunkSection chunksection = Sections[y >> 4];
-                return chunksection.Empty ? Blocks.AIR.getDefaultState() : chunksection[x & 15, y & 15, z & 15];
+                if ((y >= 0 && y < ChunkConstants.ChunkHeight))
+                    throw new IndexOutOfRangeException("ChunkPrimer.operator[]: position out of range.");
+                if (chunksection.Empty)
+                    return Blocks.Air.GetDefaultState();
+                else
+                    return chunksection[x & 0xFFFF, y & 0xFFFF, z & 0xFFFF];
             }
-            set => _data[GetIndex(x, y, z)] = value;
+            set
+            {
+                if (y >= 0 && y < 256)
+                {
+                    if (!(Sections[y >> 4].Empty && value.GetBlock() == Blocks.Air))
+                    {
+                        ChunkSection chunksection = Sections[y >> 4];
+                        chunksection[x, y & 0xFFFF, z] = value;
+                    }
+                }
+                else
+                {
+                    throw new IndexOutOfRangeException("ChunkPrimer.operator[]: position out of range.");
+                }
+            }
         }
     }
 }
