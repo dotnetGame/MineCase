@@ -19,5 +19,10 @@ namespace MineCase.Block
         {
             return _block;
         }
+
+        public bool IsAir()
+        {
+            return GetBlock() == Blocks.Air;
+        }
     }
 }

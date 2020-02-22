@@ -7,10 +7,12 @@ namespace MineCase.Util.Collections
 {
     public class TinyIntArray
     {
-        private readonly ulong[] _data;
+        private ulong[] _data;
         private readonly int _bitsPerEntry;
         private readonly ulong _maxEntryValue;
         private readonly int _arraySize;
+
+        public int Count { get => _arraySize; }
 
         public TinyIntArray(int bitsPerEntry, int arraySize)
             :this(bitsPerEntry, arraySize, new ulong[MathHelper.RoundUp(arraySize * bitsPerEntry, 64) / 64])
@@ -69,6 +71,16 @@ namespace MineCase.Util.Collections
                     _data[ulongOfssetNext] = _data[ulongOfssetNext] >> entryOffset << entryOffset | (value & _maxEntryValue) >> bitsHigh;
                 }
             }
+        }
+
+        public ulong[] GetRawArray()
+        {
+            return _data;
+        }
+
+        public void SetRawArray(ulong[] data)
+        {
+            _data = data;
         }
     }
 }

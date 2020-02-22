@@ -33,6 +33,8 @@ namespace MineCase.Block
         private readonly float _slipperiness;
         protected readonly LootTable _lootTable;
 
+        public BlockState Default { get => _defaultState; }
+
         public Block(BlockProperties properties)
         {
             _lightValue = properties.LightValue;
@@ -44,6 +46,7 @@ namespace MineCase.Block
             _defaultState = new BlockState(this);
         }
 
+        [ObsoleteAttribute("This method will soon be deprecated. Use Default property instead.")]
         public BlockState GetDefaultState()
         {
             return _defaultState;

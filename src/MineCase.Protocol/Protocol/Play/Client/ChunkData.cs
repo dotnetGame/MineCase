@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using MineCase.Serialization;
 using MineCase.World.Biome;
+using MineCase.World.Chunk;
 
 namespace MineCase.Protocol.Protocol.Play.Client
 {
@@ -28,7 +29,7 @@ namespace MineCase.Protocol.Protocol.Play.Client
         [SerializeAs(DataType.Array)]
         public BiomeId[] Biomes;
 
-        [SerializeAs(DataType.Array)]
+        [SerializeAs(DataType.ByteArray)]
         public byte[] Data;
 
         [SerializeAs(DataType.VarInt)]

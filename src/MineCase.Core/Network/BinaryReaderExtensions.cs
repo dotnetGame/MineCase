@@ -8,7 +8,7 @@ using MineCase.Util.Collections;
 using MineCase.Util.Palette;
 using MineCase.World.Chunk;
 
-namespace MineCase.Serialization
+namespace MineCase.Network
 {
     internal static class BinaryReaderExtensions
     {
@@ -103,11 +103,6 @@ namespace MineCase.Serialization
             }
 
             return array;
-        }
-
-        public static Nbt.Tags.NbtCompound ReadAsCompoundTag(this BinaryReader br)
-        {
-            return (Nbt.Tags.NbtCompound)Nbt.Serialization.NbtTagSerializer.DeserializeTag(br);
         }
     }
 

@@ -80,6 +80,7 @@ namespace MineCase.Server.Network.Handler.Login
                 throw new NotImplementedException("TryAcceptPlayer: Packet compression is not implemented.");
             }
 
+            // Send success packet
             LoginSuccess successPacket = new LoginSuccess
             {
                 UUID = _gameProfile.UUID,
@@ -93,6 +94,9 @@ namespace MineCase.Server.Network.Handler.Login
 
             // Set net handler
             await _clientSession.SetNetHandler(SessionState.Play);
+
+            MineCase.Protocol.Protocol.Play.Client.ChunkData chunkData = new MineCase.Protocol.Protocol.Play.Client.ChunkData();
+            await _packetSink.SendPacket(chunkData);
         }
     }
 }
