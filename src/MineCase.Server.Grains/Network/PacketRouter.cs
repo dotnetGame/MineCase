@@ -12,12 +12,14 @@ using MineCase.Server.Network.Handler.Handshaking;
 using MineCase.Server.Network.Handler.Login;
 using MineCase.Server.Network.Handler.Play;
 using MineCase.Server.Network.Handler.Status;
+using MineCase.Server.Server.MultiPlayer;
 using Orleans;
 
 namespace MineCase.Server.Network
 {
     public class PacketRouter : Grain, IPacketRouter
     {
+        private IUser _user;
         private PacketInfo _packetInfo;
         private PacketDecoder _decoder;
         private INetHandler _packetHandler;
@@ -62,12 +64,21 @@ namespace MineCase.Server.Network
                     _packetHandler = new ServerPlayNetHandler(
                         GrainFactory.GetGrain<IPacketRouter>(this.GetPrimaryKey()),
                         GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey()),
-                        GrainFactory);
+                        GrainFactory,
+                        _user
+                        );
                     break;
                 default:
                     throw new NotImplementedException("Invalid intention " + state.ToString());
             }
 
+            return Task.CompletedTask;
+        }
+
+        // Bind this router to user when user login
+        public Task BindToUser(IUser user)
+        {
+            _user = user;
             return Task.CompletedTask;
         }
 

@@ -7,6 +7,7 @@ using MineCase.Protocol.Protocol;
 using MineCase.Protocol.Protocol.Login.Client;
 using MineCase.Protocol.Protocol.Login.Server;
 using MineCase.Server.Server;
+using MineCase.Server.Server.MultiPlayer;
 using Orleans;
 
 namespace MineCase.Server.Network.Handler.Login
@@ -80,6 +81,12 @@ namespace MineCase.Server.Network.Handler.Login
                 throw new NotImplementedException("TryAcceptPlayer: Packet compression is not implemented.");
             }
 
+            // Create user
+            IUser user = _client.GetGrain<IUser>(Guid.Parse(_gameProfile.UUID));
+            await user.SetName(_gameProfile.Name);
+
+            await _clientSession.BindToUser(user);
+
             // Send success packet
             LoginSuccess successPacket = new LoginSuccess
             {
@@ -89,14 +96,14 @@ namespace MineCase.Server.Network.Handler.Login
 
             await _packetSink.SendPacket(successPacket);
 
+            // Call server join
+            await server.UserJoin(user);
+
             // Change session state
             await _clientSession.SetSessionState(SessionState.Play);
 
-            // Set net handler
+            // Set net handler to play handler
             await _clientSession.SetNetHandler(SessionState.Play);
-
-            MineCase.Protocol.Protocol.Play.Client.ChunkData chunkData = new MineCase.Protocol.Protocol.Play.Client.ChunkData();
-            await _packetSink.SendPacket(chunkData);
         }
     }
 }

@@ -36,7 +36,7 @@ namespace MineCase.Server.World
             (string worldKey, ChunkPos chunkPos) = this.GetWorldAndChunkPos();
             _world = GrainFactory.GetGrain<IWorld>(worldKey);
             _partition = new WorldPartitionData();
-            _worldAccessor = new WorldAccessor(GrainFactory, _partition);
+            _worldAccessor = new WorldAccessor(GrainFactory);
         }
 
         public override async Task OnDeactivateAsync()

@@ -8,12 +8,10 @@ namespace MineCase.Server.World
     public class WorldAccessor
     {
         private IGrainFactory _grainFactory;
-        private WorldPartitionData _partition;
 
-        public WorldAccessor(IGrainFactory grainFactory, WorldPartitionData partition)
+        public WorldAccessor(IGrainFactory grainFactory)
         {
             _grainFactory = grainFactory;
-            _partition = partition;
         }
     }
 }
