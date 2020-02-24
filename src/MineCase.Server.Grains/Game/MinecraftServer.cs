@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Core.World.Dimension;
-using MineCase.Server.Server.MultiPlayer;
+using MineCase.Game.Server.MultiPlayer;
 using MineCase.Server.World;
 using Orleans;
 using Orleans.Providers;
 
-namespace MineCase.Server.Server
+namespace MineCase.Game.Server
 {
     public class MinecraftServerState
     {
@@ -33,7 +33,11 @@ namespace MineCase.Server.Server
         public Task UserJoin(IUser user)
         {
             _users.Add(user);
-            user.SetSession(GrainFactory.GetGrain<IGameSession>(user.GetPrimaryKey()));
+            user.SetServer(this);
+
+            // Get main session and join in
+            var mainSession = GrainFactory.GetGrain<IGameSession>(Guid.Empty);
+            mainSession.UserEnter(user);
             return Task.CompletedTask;
         }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Protocol.Protocol;
-using MineCase.Server.Server.MultiPlayer;
+using MineCase.Game.Server.MultiPlayer;
 using Orleans;
 
 namespace MineCase.Server.Network

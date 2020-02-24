@@ -6,8 +6,8 @@ using MineCase.Game;
 using MineCase.Protocol.Protocol;
 using MineCase.Protocol.Protocol.Login.Client;
 using MineCase.Protocol.Protocol.Login.Server;
-using MineCase.Server.Server;
-using MineCase.Server.Server.MultiPlayer;
+using MineCase.Game.Server;
+using MineCase.Game.Server.MultiPlayer;
 using Orleans;
 
 namespace MineCase.Server.Network.Handler.Login
@@ -53,7 +53,7 @@ namespace MineCase.Server.Network.Handler.Login
             if (_loginState != LoginState.Hello)
                 throw new InvalidOperationException("ProcessLoginStart: Invalid login state.");
             _gameProfile = new GameProfile(null, packet.Name);
-            var server = _client.GetGrain<IMinecraftServer>("Default");
+            var server = _client.GetGrain<IMinecraftServer>(0);
 
             if (await server.GetOnlineMode())
             {
@@ -75,7 +75,7 @@ namespace MineCase.Server.Network.Handler.Login
             }
 
             _loginState = LoginState.Accepted;
-            var server = _client.GetGrain<IMinecraftServer>("Default");
+            var server = _client.GetGrain<IMinecraftServer>(0);
             if (await server.GetNetworkCompressionThreshold() >= 0)
             {
                 throw new NotImplementedException("TryAcceptPlayer: Packet compression is not implemented.");
@@ -85,7 +85,11 @@ namespace MineCase.Server.Network.Handler.Login
             IUser user = _client.GetGrain<IUser>(Guid.Parse(_gameProfile.UUID));
             await user.SetName(_gameProfile.Name);
 
+            // Bind user to router so that PlayNetHandler can find user 
             await _clientSession.BindToUser(user);
+
+            // Bind packet sink to user so that user can send packet to client
+            await user.BindPacketSink(_packetSink);
 
             // Send success packet
             LoginSuccess successPacket = new LoginSuccess

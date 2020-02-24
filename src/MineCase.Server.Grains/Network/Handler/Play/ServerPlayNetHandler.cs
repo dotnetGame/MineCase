@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MineCase.Server.Server.MultiPlayer;
+using MineCase.Game.Server.MultiPlayer;
 using Orleans;
 
 namespace MineCase.Server.Network.Handler.Play

@@ -185,6 +185,50 @@ namespace MineCase.Util.Math
         {
             return new BlockPos((X << 4) + x, y, (Z << 4) + z);
         }
+
+        public override bool Equals(object obj)
+        {
+            return obj is ChunkWorldPos && Equals((ChunkWorldPos)obj);
+        }
+
+        public bool Equals(ChunkWorldPos other)
+        {
+            return X == other.X &&
+                   Z == other.Z;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 1911744652;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + X.GetHashCode();
+            hashCode = hashCode * -1521134295 + Z.GetHashCode();
+            return hashCode;
+        }
+
+        public static bool operator ==(ChunkPos pos1, ChunkPos pos2)
+        {
+            return pos1.Equals(pos2);
+        }
+
+        public static bool operator !=(ChunkPos pos1, ChunkPos pos2)
+        {
+            return !(pos1 == pos2);
+        }
+    }
+
+    public struct SectionPos
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Z { get; set; }
+
+        public SectionPos(int x, int y, int z)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+        }
     }
 
     public struct EntityPos

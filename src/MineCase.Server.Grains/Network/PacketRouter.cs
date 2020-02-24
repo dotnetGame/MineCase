@@ -12,7 +12,7 @@ using MineCase.Server.Network.Handler.Handshaking;
 using MineCase.Server.Network.Handler.Login;
 using MineCase.Server.Network.Handler.Play;
 using MineCase.Server.Network.Handler.Status;
-using MineCase.Server.Server.MultiPlayer;
+using MineCase.Game.Server.MultiPlayer;
 using Orleans;
 
 namespace MineCase.Server.Network
@@ -65,8 +65,7 @@ namespace MineCase.Server.Network
                         GrainFactory.GetGrain<IPacketRouter>(this.GetPrimaryKey()),
                         GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey()),
                         GrainFactory,
-                        _user
-                        );
+                        _user);
                     break;
                 default:
                     throw new NotImplementedException("Invalid intention " + state.ToString());

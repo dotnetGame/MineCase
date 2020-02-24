@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Server.Server.MultiPlayer;
+using MineCase.Game.Server.MultiPlayer;
 using Orleans;
 
-namespace MineCase.Server.Server
+namespace MineCase.Game.Server
 {
-    public interface IMinecraftServer : IGrainWithStringKey
+    public interface IMinecraftServer : IGrainWithIntegerKey
     {
         Task<bool> GetOnlineMode();
 

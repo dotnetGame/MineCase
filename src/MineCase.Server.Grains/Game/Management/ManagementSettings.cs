@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MineCase.Server.Server;
+using MineCase.Game.Server;
 using MineCase.World;
 using Orleans;
 
-namespace MineCase.Server.Server.Management
+namespace MineCase.Game.Server.Management
 {
     public class ManagementSettings : Grain, IManagementSettings
     {

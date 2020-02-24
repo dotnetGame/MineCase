@@ -6,15 +6,15 @@ using MineCase.Game.Server;
 using Orleans;
 using Orleans.Providers;
 
-namespace MineCase.Server.World.Chunk
+namespace MineCase.Server.Entity
 {
-    public class ChunkHolderState
+    public class EntityHolderState
     {
-        public Chunk Chunk { get; set; }
+        public IEntity Entity { get; set; }
     }
 
     [StorageProvider(ProviderName = "MongoDBStore")]
-    public class ChunkHolder : Grain<ChunkHolderState>, IChunkHolder
+    public class EntityHolder : Grain<EntityHolderState>, IEntityHolder
     {
         private IGameSession _gameSession;
 
@@ -44,14 +44,14 @@ namespace MineCase.Server.World.Chunk
             }
         }
 
-        public Task<Chunk> Load()
+        public Task<IEntity> Load()
         {
-            return Task.FromResult(State.Chunk);
+            return Task.FromResult(State.Entity);
         }
 
-        public Task Save(Chunk chunk)
+        public Task Save(IEntity entity)
         {
-            State.Chunk = chunk;
+            State.Entity = entity;
             return Task.CompletedTask;
         }
     }
