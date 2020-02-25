@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using MineCase.Protocol.Protocol;
+using MineCase.Protocol;
 using MineCase.Serialization;
 
-namespace MineCase.Protocol.Protocol.Handshaking.Server
+namespace MineCase.Protocol.Handshaking.Server
 {
     [Packet(0x00, ProtocolType.Handshake, PacketDirection.ServerBound)]
     public sealed class Handshake : ISerializablePacket

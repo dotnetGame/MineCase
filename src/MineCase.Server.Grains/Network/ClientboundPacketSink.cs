@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using MineCase.Protocol.Protocol;
+using MineCase.Protocol;
 using Orleans;
 using Orleans.Concurrency;
 

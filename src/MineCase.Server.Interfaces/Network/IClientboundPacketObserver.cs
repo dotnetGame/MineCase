@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using MineCase.Protocol;
-using MineCase.Protocol.Protocol;
+using MineCase.Protocol;
 using Orleans;
 
 namespace MineCase.Server.Network

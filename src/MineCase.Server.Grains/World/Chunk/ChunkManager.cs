@@ -79,12 +79,28 @@ namespace MineCase.Server.World.Chunk
         private async Task UpdatePlayerPosition(PlayerEntity player)
         {
             // TODO: update tracking
+
+            // Unload chunks out of range and load new chunks
             var chunkPos = player.Position.ToChunkPos();
             var lastSectionPos = player.LastSectionPos;
             if (Math.Abs(lastSectionPos.X - chunkPos.X) <= _viewDistance * 2
                 && Math.Abs(lastSectionPos.Z - lastSectionPos.Z) <= _viewDistance * 2)
             {
-                // TODO
+                int xMin = Math.Min(chunkPos.X, lastSectionPos.X) - _viewDistance;
+                int zMin = Math.Min(chunkPos.Z, lastSectionPos.Z) - _viewDistance;
+                int xMax = Math.Max(chunkPos.X, lastSectionPos.X) + _viewDistance;
+                int zMax = Math.Max(chunkPos.Z, lastSectionPos.Z) + _viewDistance;
+
+                for (int x = xMin; x <= xMax; ++x)
+                {
+                    for (int z = zMin; z <= zMax; ++z)
+                    {
+                        ChunkPos eachChunkPos = new ChunkPos(x, z);
+                        bool isLoaded = GetChunkDistance(eachChunkPos, lastSectionPos.X, lastSectionPos.Z) <= _viewDistance;
+                        bool needLoad = GetChunkDistance(eachChunkPos, chunkPos.X, chunkPos.Z) <= _viewDistance;
+                        await SyncClientChunkState(player, eachChunkPos, isLoaded, needLoad);
+                    }
+                }
             }
             else
             {
@@ -120,14 +136,21 @@ namespace MineCase.Server.World.Chunk
                 if (needLoad && !isLoaded)
                 {
                     IChunk chunk = await GetChunk(chunkPos);
-                    user.SendChunkData(chunk);
+                    await user.SendChunkData(chunkPos.X, chunkPos.Z, await chunk.GetChunkColumn());
                 }
 
                 if (!needLoad && isLoaded)
                 {
-                    user.SendChunkUnload(chunkPos);
+                    // user.SendChunkUnload(chunkPos);
                 }
             }
+        }
+
+        private static int GetChunkDistance(ChunkPos chunkPos, int x, int y)
+        {
+            int xDiff = chunkPos.X - x;
+            int zDiff = chunkPos.Z - y;
+            return Math.Max(Math.Abs(xDiff), Math.Abs(zDiff));
         }
     }
 }

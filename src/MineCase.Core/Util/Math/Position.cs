@@ -188,10 +188,10 @@ namespace MineCase.Util.Math
 
         public override bool Equals(object obj)
         {
-            return obj is ChunkWorldPos && Equals((ChunkWorldPos)obj);
+            return obj is ChunkPos && Equals((ChunkPos)obj);
         }
 
-        public bool Equals(ChunkWorldPos other)
+        public bool Equals(ChunkPos other)
         {
             return X == other.X &&
                    Z == other.Z;

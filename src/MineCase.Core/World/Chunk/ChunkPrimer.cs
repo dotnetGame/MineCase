@@ -17,7 +17,7 @@ namespace MineCase.World.Chunk
                 if ((y >= 0 && y < ChunkConstants.ChunkHeight))
                     throw new IndexOutOfRangeException("ChunkPrimer.operator[]: position out of range.");
                 if (chunksection.Empty)
-                    return Blocks.Air.GetDefaultState();
+                    return Blocks.Air.Default;
                 else
                     return chunksection[x & 0xFFFF, y & 0xFFFF, z & 0xFFFF];
             }

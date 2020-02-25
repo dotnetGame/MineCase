@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Protocol.Protocol.Status.Client;
-using MineCase.Protocol.Protocol.Status.Server;
+using MineCase.Protocol.Status.Client;
+using MineCase.Protocol.Status.Server;
 using Orleans;
 
 namespace MineCase.Server.Network.Handler.Status

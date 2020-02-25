@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Protocol.Protocol.Login.Server;
+using MineCase.Protocol.Login.Server;
 
 namespace MineCase.Server.Network.Handler.Login
 {

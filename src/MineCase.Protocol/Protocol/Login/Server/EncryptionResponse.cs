@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using MineCase.Serialization;
 
-namespace MineCase.Protocol.Protocol.Login.Server
+namespace MineCase.Protocol.Login.Server
 {
     [Packet(0x02, ProtocolType.Login, PacketDirection.ServerBound)]
     public sealed class EncryptionResponse : ISerializablePacket

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Protocol.Protocol.Status.Server;
+using MineCase.Protocol.Status.Server;
 
 namespace MineCase.Server.Network.Handler.Status
 {

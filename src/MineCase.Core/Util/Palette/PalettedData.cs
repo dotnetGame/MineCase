@@ -97,6 +97,11 @@ namespace MineCase.Util.Palette
             return _storage.GetRawArray();
         }
 
+        public int GetSerializedSize()
+        {
+            return 1 + _palette.GetSerializedSize() + (int)_storage.Count.SizeOfVarInt() + _storage.GetRawArray().Length * 8;
+        }
+
         public void Read(BinaryReader br)
         {
             int bits = br.ReadAsByte();

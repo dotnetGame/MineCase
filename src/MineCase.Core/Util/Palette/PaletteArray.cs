@@ -53,6 +53,18 @@ namespace MineCase.Util.Palette
             return _values[index];
         }
 
+        public int GetSerializedSize()
+        {
+            uint size = Length.SizeOfVarInt();
+
+            for (int i = 0; i < Length; ++i)
+            {
+                size += _stateRegistry.GetSecond(_values[i]).SizeOfVarInt();
+            }
+
+            return (int)size;
+        }
+
         public void Read(BinaryReader br)
         {
             Length = br.ReadAsVarInt(out _);

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Protocol.Protocol.Handshaking.Server;
+using MineCase.Protocol.Handshaking.Server;
 
 namespace MineCase.Server.Network.Handler.Handshaking
 {

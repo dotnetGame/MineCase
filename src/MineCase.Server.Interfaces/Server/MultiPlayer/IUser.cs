@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MineCase.Server.Network;
 using MineCase.Server.World;
 using MineCase.Util.Math;
+using MineCase.World.Chunk;
 using Orleans;
 
 namespace MineCase.Game.Server.MultiPlayer
@@ -32,5 +33,7 @@ namespace MineCase.Game.Server.MultiPlayer
         Task BindPacketSink(IPacketSink sink);
 
         Task SetPlayerPosition(EntityPos pos);
+
+        Task SendChunkData(int chunkX, int chunkZ, ChunkColumn chunk);
     }
 }

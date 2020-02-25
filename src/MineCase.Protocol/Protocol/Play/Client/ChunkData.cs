@@ -6,7 +6,7 @@ using MineCase.Serialization;
 using MineCase.World.Biome;
 using MineCase.World.Chunk;
 
-namespace MineCase.Protocol.Protocol.Play.Client
+namespace MineCase.Protocol.Play.Client
 {
     [Packet(0x22, ProtocolType.Play, PacketDirection.ClientBound)]
     public sealed class ChunkData : ISerializablePacket

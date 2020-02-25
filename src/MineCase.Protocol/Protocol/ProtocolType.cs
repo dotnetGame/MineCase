@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using MineCase.Protocol.Protocol.Handshaking.Server;
-using MineCase.Protocol.Protocol.Login.Client;
-using MineCase.Protocol.Protocol.Login.Server;
-using MineCase.Protocol.Protocol.Status.Client;
-using MineCase.Protocol.Protocol.Status.Server;
+using MineCase.Protocol.Handshaking.Server;
+using MineCase.Protocol.Login.Client;
+using MineCase.Protocol.Login.Server;
+using MineCase.Protocol.Status.Client;
+using MineCase.Protocol.Status.Server;
 
-namespace MineCase.Protocol.Protocol
+namespace MineCase.Protocol
 {
     public enum ProtocolType
     {

@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using MineCase.Protocol.Play.Client;
 using MineCase.Server.Network;
 using MineCase.Server.World;
 using MineCase.Util.Math;
+using MineCase.World.Chunk;
 using Orleans;
 using Orleans.Providers;
 
@@ -17,8 +19,6 @@ namespace MineCase.Game.Server.MultiPlayer
         public IWorld World { get; set; }
 
         public string Name { get; set; }
-
-        public Guid EntityKey { get; set; }
 }
 
     [StorageProvider(ProviderName = "MongoDBStore")]
@@ -26,10 +26,12 @@ namespace MineCase.Game.Server.MultiPlayer
     {
         private IPacketSink _packetSink;
         private IGameSession _gameSession;
+        private ClientPlayPacketGenerator _packetGenerator;
 
         public override async Task OnActivateAsync()
         {
             await base.OnActivateAsync();
+            _packetGenerator = new ClientPlayPacketGenerator(GrainFactory);
         }
 
         public override async Task OnDeactivateAsync()
@@ -84,7 +86,7 @@ namespace MineCase.Game.Server.MultiPlayer
 
         public Task<Guid> GetEntityId()
         {
-            return Task.FromResult(State.EntityKey);
+            return Task.FromResult(this.GetPrimaryKey());
         }
 
         public Task BindPacketSink(IPacketSink sink)
@@ -95,7 +97,14 @@ namespace MineCase.Game.Server.MultiPlayer
 
         public async Task SetPlayerPosition(EntityPos pos)
         {
-            await _gameSession.SetPlayerPosition(State.EntityKey, pos);
+            await _gameSession.SetPlayerPosition(this.GetPrimaryKey(), pos);
+        }
+
+        // Packets
+        public async Task SendChunkData(int chunkX, int chunkZ, ChunkColumn chunk)
+        {
+            var packet = await _packetGenerator.ChunkData(chunkX, chunkZ, chunk, 0xFFFF);
+            await _packetSink.SendPacket(packet);
         }
     }
 }

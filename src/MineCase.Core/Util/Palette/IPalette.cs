@@ -14,5 +14,7 @@ namespace MineCase.Util.Palette
         void Read(BinaryReader br);
 
         void Write(BinaryWriter bw);
+
+        int GetSerializedSize();
     }
 }

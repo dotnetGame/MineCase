@@ -5,13 +5,13 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using MineCase.Protocol.Protocol;
-using MineCase.Protocol.Protocol.Handshaking.Server;
-using MineCase.Protocol.Protocol.Login.Server;
-using MineCase.Protocol.Protocol.Status.Server;
+using MineCase.Protocol;
+using MineCase.Protocol.Handshaking.Server;
+using MineCase.Protocol.Login.Server;
+using MineCase.Protocol.Status.Server;
 using MineCase.Server.Network;
 using Orleans;
-using ProtocolType = MineCase.Protocol.Protocol.ProtocolType;
+using ProtocolType = MineCase.Protocol.ProtocolType;
 
 namespace MineCase.Gateway.Network
 {

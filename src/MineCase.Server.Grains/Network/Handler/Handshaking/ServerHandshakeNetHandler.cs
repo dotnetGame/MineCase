@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MineCase.Protocol.Protocol;
-using MineCase.Protocol.Protocol.Handshaking.Server;
+using MineCase.Protocol;
+using MineCase.Protocol.Handshaking.Server;
 using Orleans;
 
 namespace MineCase.Server.Network.Handler.Handshaking
@@ -28,13 +28,13 @@ namespace MineCase.Server.Network.Handler.Handshaking
             if (packet.NextState == (int)SessionState.Login)
             {
                 await _clientSession.SetSessionState(SessionState.Login);
-                if (packet.ProtocolVersion > Protocol.Protocol.Protocol.Version)
+                if (packet.ProtocolVersion > Protocol.Protocol.Version)
                 {
                     // ITextComponent itextcomponent = new TranslationTextComponent("multiplayer.disconnect.outdated_server", SharedConstants.getVersion().getName());
                     // this.networkManager.sendPacket(new SDisconnectLoginPacket(itextcomponent));
                     await _packetSink.Close();
                 }
-                else if (packet.ProtocolVersion > Protocol.Protocol.Protocol.Version)
+                else if (packet.ProtocolVersion > Protocol.Protocol.Version)
                 {
                     // ITextComponent itextcomponent1 = new TranslationTextComponent("multiplayer.disconnect.outdated_client", SharedConstants.getVersion().getName());
                     // this.networkManager.sendPacket(new SDisconnectLoginPacket(itextcomponent1));

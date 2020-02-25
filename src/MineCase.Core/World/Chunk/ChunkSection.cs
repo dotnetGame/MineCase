@@ -55,6 +55,11 @@ namespace MineCase.World.Chunk
             Data.Read(br);
         }
 
+        public int GetSerializedSize()
+        {
+            return 2 + Data.GetSerializedSize();
+        }
+
         private static int GetIndex(int x, int y, int z)
         {
             return y << 8 | z << 4 | x;

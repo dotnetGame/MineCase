@@ -1,4 +1,5 @@
-﻿using MineCase.Util.Collections;
+﻿using MineCase.Network;
+using MineCase.Util.Collections;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -42,6 +43,11 @@ namespace MineCase.Util.Palette
         public void Write(BinaryWriter bw)
         {
             throw new NotImplementedException();
+        }
+
+        public int GetSerializedSize()
+        {
+            return (int)0.SizeOfVarInt();
         }
     }
 }

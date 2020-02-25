@@ -19,11 +19,14 @@ namespace MineCase.Server.Entity
 
         public EntityPos Position { get; set; }
 
-        protected IGrainFactory _grainFactory;
-
-        public Entity(IGrainFactory grainFactory)
+        // protected IGrainFactory _grainFactory;
+        public Entity(IGrainFactory grainFactory, IWorld world)
         {
-            _grainFactory = grainFactory;
+            PrimaryKey = Guid.NewGuid();
+            World = world;
+            Position = new EntityPos(0, 0, 0);
+
+            // _grainFactory = grainFactory;
         }
 
         public Task<Guid> GetID()

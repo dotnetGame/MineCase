@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Server.Network;
+using MineCase.Server.World;
 using MineCase.Util.Math;
 using MineCase.World;
 using Orleans;
@@ -15,9 +16,10 @@ namespace MineCase.Server.Entity.Player
 
         public int ViewDistance { get; set; }
 
-        public PlayerEntity(IGrainFactory grainFactory)
-            : base(grainFactory)
+        public PlayerEntity(IGrainFactory grainFactory, IWorld world)
+            : base(grainFactory, world)
         {
+            ViewDistance = 12;
         }
 
         public new Task OnGameTick(object sender, GameTickArgs tickArgs)

@@ -22,6 +22,8 @@ namespace MineCase.Block
 
     public class Block
     {
+        // Name
+        public string Name { get; set; }
         // Default state
         private BlockState _defaultState;
 
@@ -35,8 +37,10 @@ namespace MineCase.Block
 
         public BlockState Default { get => _defaultState; }
 
-        public Block(BlockProperties properties)
+        public Block(string name, BlockProperties properties)
         {
+            Name = name;
+
             _lightValue = properties.LightValue;
             _hardness = properties.Hardness;
             _resistance = properties.Resistance;
@@ -44,6 +48,32 @@ namespace MineCase.Block
             _slipperiness = properties.Slipperiness;
 
             _defaultState = new BlockState(this);
+        }
+
+
+        public override bool Equals(object obj)
+        {
+            return (obj is Block || obj.GetType().IsSubclassOf(typeof(Block))) && Equals((Block)obj);
+        }
+
+        public bool Equals(Block other)
+        {
+            return Name == other.Name;
+        }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
+        }
+
+        public static bool operator ==(Block pos1, Block pos2)
+        {
+            return pos1.Equals(pos2);
+        }
+
+        public static bool operator !=(Block pos1, Block pos2)
+        {
+            return !(pos1 == pos2);
         }
 
         [ObsoleteAttribute("This method will soon be deprecated. Use Default property instead.")]

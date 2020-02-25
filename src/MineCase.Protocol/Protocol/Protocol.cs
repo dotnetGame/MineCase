@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase.Protocol.Protocol
+namespace MineCase.Protocol
 {
     public static class Protocol
     {

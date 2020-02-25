@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MineCase.World.Biome
 {
-    public enum BiomeId : byte
+    public enum BiomeId : Int32
     {
         Ocean = 0,
         Plains = 1,

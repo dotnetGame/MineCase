@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace MineCase.Protocol.Protocol.Login.Client
+namespace MineCase.Protocol.Login.Client
 {
     [Packet(0x04, ProtocolType.Login, PacketDirection.ClientBound)]
     public sealed class LoginPluginRequest : ISerializablePacket

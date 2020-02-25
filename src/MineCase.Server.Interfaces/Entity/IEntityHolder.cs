@@ -9,6 +9,8 @@ namespace MineCase.Server.Entity
 {
     public interface IEntityHolder : IGrainWithGuidKey
     {
+        Task<bool> IsSpawned();
+
         Task<bool> Lock(IGameSession gameSession);
 
         Task<bool> UnLock(IGameSession gameSession);

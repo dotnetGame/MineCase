@@ -4,6 +4,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Core.World.Dimension;
 using MineCase.Game.Server.MultiPlayer;
+using MineCase.Server.Entity;
+using MineCase.Server.Entity.Player;
 using MineCase.Server.World;
 using Orleans;
 using Orleans.Providers;
@@ -20,6 +22,17 @@ namespace MineCase.Game.Server
     {
         private readonly List<IUser> _users = new List<IUser>();
 
+        public override async Task OnActivateAsync()
+        {
+            await base.OnActivateAsync();
+
+            if (!State.Worlds.ContainsKey(DimensionType.Overworld))
+            {
+                var world = GrainFactory.GetGrain<IWorld>(DimensionType.Overworld.ToString());
+                State.Worlds[DimensionType.Overworld] = world;
+            }
+        }
+
         public Task<int> GetNetworkCompressionThreshold()
         {
             return Task.FromResult(-1);
@@ -30,15 +43,22 @@ namespace MineCase.Game.Server
             return Task.FromResult(false);
         }
 
-        public Task UserJoin(IUser user)
+        public async Task UserJoin(IUser user)
         {
             _users.Add(user);
-            user.SetServer(this);
+            await user.SetServer(this);
+
+            // Spawn Player Entity
+            var playerHolder = GrainFactory.GetGrain<IEntityHolder>(user.GetPrimaryKey());
+            if (!await playerHolder.IsSpawned())
+            {
+                PlayerEntity player = new PlayerEntity(GrainFactory, State.Worlds[DimensionType.Overworld]);
+                await playerHolder.Save(player);
+            }
 
             // Get main session and join in
             var mainSession = GrainFactory.GetGrain<IGameSession>(Guid.Empty);
-            mainSession.UserEnter(user);
-            return Task.CompletedTask;
+            await mainSession.UserEnter(user);
         }
 
         public Task UserLeave()

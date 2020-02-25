@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Serialization;
 
-namespace MineCase.Protocol.Protocol
+namespace MineCase.Protocol
 {
     public class RawPacket
     {

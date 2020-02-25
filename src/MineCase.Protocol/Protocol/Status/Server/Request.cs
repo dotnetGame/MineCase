@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace MineCase.Protocol.Protocol.Status.Server
+namespace MineCase.Protocol.Status.Server
 {
     [Packet(0x00, ProtocolType.Status, PacketDirection.ServerBound)]
     public sealed class Request : ISerializablePacket

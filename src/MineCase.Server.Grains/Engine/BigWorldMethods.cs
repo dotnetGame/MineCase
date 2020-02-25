@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase.Server.Entity
+namespace MineCase.Server.Engine
 {
-    public class EntityAccesor
+    public class BigWorldMethods
     {
     }
 }

@@ -18,6 +18,11 @@ namespace MineCase.Server.Entity
     {
         private IGameSession _gameSession;
 
+        public Task<bool> IsSpawned()
+        {
+            return Task.FromResult(State.Entity != null);
+        }
+
         public Task<bool> Lock(IGameSession gameSession)
         {
             if (_gameSession == null)

@@ -18,6 +18,18 @@ namespace MineCase.Network
             return numWrite;
         }
 
+        public static uint SizeOfVarInt(this int value)
+        {
+            uint numWrite = 0;
+            do
+            {
+                value >>= 7;
+                numWrite++;
+            }
+            while (value != 0);
+            return numWrite;
+        }
+
         public static ushort ToBigEndian(this ushort value)
         {
             return (ushort)((value >> 8) | (((byte)value) << 8));

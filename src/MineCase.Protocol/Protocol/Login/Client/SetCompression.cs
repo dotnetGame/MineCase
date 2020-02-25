@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using MineCase.Serialization;
 
-namespace MineCase.Protocol.Protocol.Login.Client
+namespace MineCase.Protocol.Login.Client
 {
     [Packet(0x03, ProtocolType.Login, PacketDirection.ClientBound)]
     public sealed class SetCompression : ISerializablePacket

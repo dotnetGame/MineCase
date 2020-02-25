@@ -44,14 +44,14 @@ namespace MineCase.Server.World.Chunk
             }
         }
 
-        public Task<Chunk> Load()
+        public Task<IChunk> Load()
         {
-            return Task.FromResult(State.Chunk);
+            return Task.FromResult((IChunk)State.Chunk);
         }
 
-        public Task Save(Chunk chunk)
+        public Task Save(IChunk chunk)
         {
-            State.Chunk = chunk;
+            State.Chunk = (Chunk)chunk;
             return Task.CompletedTask;
         }
     }
