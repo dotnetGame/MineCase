@@ -28,6 +28,8 @@ namespace MineCase.Server
             ConfigureAppConfiguration(configBuilder);
             Configuration = configBuilder.Build();
 
+            var createShardKey = false;
+
             SelectAssemblies();
             var builder = new SiloHostBuilder()
                 .ConfigureLogging(ConfigureLogging)
@@ -42,15 +44,18 @@ namespace MineCase.Server
                     options.PerformDeadlockDetection = true;
                 })
                 .ConfigureEndpoints(siloPort: 11111, gatewayPort: 30000)
+                .UseMongoDBClient(Configuration.GetSection("persistenceOptions")["connectionString"])
                 .AddSimpleMessageStreamProvider("JobsProvider")
                 .AddSimpleMessageStreamProvider("TransientProvider")
                 .UseMongoDBReminders(options =>
                 {
-                    options.ConnectionString = Configuration.GetSection("persistenceOptions")["connectionString"];
+                    options.DatabaseName = Configuration.GetSection("persistenceOptions")["databaseName"];
+                    options.CreateShardKeyForCosmos = createShardKey;
                 })
                 .UseMongoDBClustering(c =>
                 {
-                    c.ConnectionString = Configuration.GetSection("persistenceOptions")["connectionString"];
+                    c.DatabaseName = Configuration.GetSection("persistenceOptions")["databaseName"];
+                    c.CreateShardKeyForCosmos = createShardKey;
                     // c.UseJsonFormat = true;
                 })
                 .ConfigureApplicationParts(ConfigureApplicationParts)
@@ -58,11 +63,13 @@ namespace MineCase.Server
                 .UseServiceProviderFactory(ConfigureServices);
 
             MongoDBSiloExtensions.AddMongoDBGrainStorageAsDefault(builder, options => {
-                options.ConnectionString = Configuration.GetSection("persistenceOptions")["connectionString"];
+                options.DatabaseName = Configuration.GetSection("persistenceOptions")["databaseName"];
+                options.CreateShardKeyForCosmos = createShardKey;
             });
 
             MongoDBSiloExtensions.AddMongoDBGrainStorage(builder, "PubSubStore", options => {
-                options.ConnectionString = Configuration.GetSection("persistenceOptions")["connectionString"];
+                options.DatabaseName = Configuration.GetSection("persistenceOptions")["databaseName"];
+                options.CreateShardKeyForCosmos = createShardKey;
             });
 
             // ConfigureApplicationParts(builder);

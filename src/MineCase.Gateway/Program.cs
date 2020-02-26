@@ -67,9 +67,10 @@ namespace MineCase.Gateway
                     .ConfigureApplicationParts(ConfigureApplicationParts)
                     .AddSimpleMessageStreamProvider("JobsProvider")
                     .AddSimpleMessageStreamProvider("TransientProvider")
+                    .UseMongoDBClient(Configuration.GetSection("persistenceOptions")["connectionString"])
                     .UseMongoDBClustering(options=>
                     {
-                        options.ConnectionString = Configuration.GetSection("persistenceOptions")["connectionString"];
+                        options.DatabaseName = Configuration.GetSection("persistenceOptions")["databaseName"];
                     });
                 
                 // ConfigureApplicationParts(builder);

@@ -31,7 +31,7 @@ namespace MineCase.Server.Persistence
             {
                 var coll = GetStateCollection();
                 var key = GrainReference.ToKeyString();
-                await coll.ReplaceOneAsync(o => o.GrainKeyString == key, state, new UpdateOptions { IsUpsert = true });
+                await coll.ReplaceOneAsync(o => o.GrainKeyString == key, state, new ReplaceOptions { IsUpsert = true });
             }
         }
 
