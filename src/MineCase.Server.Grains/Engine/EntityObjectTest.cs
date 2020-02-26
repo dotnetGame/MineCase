@@ -3,21 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MineCase.Util.Math;
+using Orleans;
 
 namespace MineCase.Server.Engine
 {
-    public class EntityObjectTest : BigWorldObject
+    public class EntityObjectTest : BigWorldEntity
     {
-        private BigWorldPropertyEntry<int> _viewDistance;
-
-        public EntityObjectTest()
+        public EntityObjectTest(IGrainFactory grainFactory)
+            : base(grainFactory)
         {
-            _viewDistance = Properties.Register<int>("ViewDistance");
-        }
-
-        public Task<int> GetViewDistance()
-        {
-            return Task.FromResult(Properties.GetValue(_viewDistance));
         }
     }
 }

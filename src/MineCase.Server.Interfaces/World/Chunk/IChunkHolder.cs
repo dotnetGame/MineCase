@@ -8,9 +8,9 @@ namespace MineCase.Server.World.Chunk
 {
     public interface IChunkHolder : IAddressByPartition
     {
-        Task<bool> Lock(IGameSession gameSession);
+        Task Subscribe(IGameSession gameSession);
 
-        Task<bool> UnLock(IGameSession gameSession);
+        Task Unsubscribe(IGameSession gameSession);
 
         Task<IChunk> Load();
 

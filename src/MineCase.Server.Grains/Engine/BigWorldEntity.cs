@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Orleans;
 
 namespace MineCase.Server.Engine
 {
@@ -22,10 +23,7 @@ namespace MineCase.Server.Engine
 
     public class BigWorldEntityRef
     {
-        private Guid _id;
-        private Guid _spaceId;
-        private BigWorldPosition _position;
-        private bool _isDestroyed;
+        public Guid Id { get; set; }
     }
 
     public enum BigWorldEntityLocation
@@ -41,13 +39,34 @@ namespace MineCase.Server.Engine
         Ghost
     }
 
+    public class BigWorldEntityState
+    {
+        public Guid Id { get; set; }
+
+        public Guid AppId { get; set; }
+
+        public Guid SpaceId { get; set; }
+
+        public BigWorldEntityType EntityType { get; set; }
+
+        public BigWorldPosition Position { get; set; }
+
+        public bool IsDestroyed { get; set; }
+
+        public Dictionary<string, IBigWorldValue> Properties { get; set; }
+    }
+
     public class BigWorldEntity
     {
-        private Guid _id;
-        private Guid _spaceId;
-        private BigWorldEntityLocation _entityLocation;
-        private BigWorldEntityType _entityType;
-        private BigWorldPosition _position;
-        private bool _isDestroyed;
+        public BigWorldEntityState State { get; set; }
+
+        public BigWorldEntityLocation EntityLocation { get; set; }
+
+        private IGrainFactory _grainFactory;
+
+        public BigWorldEntity(IGrainFactory grainFactory)
+        {
+            _grainFactory = grainFactory;
+        }
     }
 }

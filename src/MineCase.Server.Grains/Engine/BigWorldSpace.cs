@@ -15,11 +15,6 @@ namespace MineCase.Server.Engine
             await base.OnActivateAsync();
         }
 
-        public Task<BigWorldEntityRef> CreateEntity()
-        {
-            return Task.CompletedTask;
-        }
-
         protected Task<IBigWorldCellApp> CreateCell()
         {
             Guid cellId = Guid.NewGuid();
