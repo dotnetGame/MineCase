@@ -6,7 +6,7 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x08)]
+    [Packet(0x09)]
     public sealed class BlockBreakAnimation : ISerializablePacket
     {
         [SerializeAs(DataType.VarInt)]

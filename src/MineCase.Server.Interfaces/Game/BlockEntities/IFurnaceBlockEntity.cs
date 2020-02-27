@@ -5,7 +5,7 @@ using MineCase.Server.Game.Entities;
 namespace MineCase.Server.Game.BlockEntities
 {
     [BlockEntity(BlockId.Furnace)]
-    [BlockEntity(BlockId.BurningFurnace)]
+    [BlockEntity(BlockId.BlastFurnace)]
     public interface IFurnaceBlockEntity : IBlockEntity
     {
     }

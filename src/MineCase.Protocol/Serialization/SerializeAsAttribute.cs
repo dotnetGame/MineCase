@@ -26,6 +26,8 @@ namespace MineCase.Serialization
         Angle,
         UUID,
         ByteArray,
+        IntArray,
+        NbtArray,
         Array
     }
 

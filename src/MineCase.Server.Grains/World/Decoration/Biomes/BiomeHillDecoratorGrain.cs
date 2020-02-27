@@ -20,7 +20,7 @@ namespace MineCase.Server.World.Decoration.Biomes
     {
         public override Task OnActivateAsync()
         {
-            if (this.GetPrimaryKeyLong() == (long)BiomeId.ExtremeHills)
+            if (this.GetPrimaryKeyLong() == (long)BiomeId.Mountains)
             {
                 BiomeProperties.BaseHeight = 1.0f;
                 BiomeProperties.HeightVariation = 0.5f;

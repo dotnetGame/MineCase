@@ -199,7 +199,7 @@ namespace MineCase.Server.Game.BlockEntities.Components
             State.IsCooking = true;
             MarkDirty();
             var meta = (await AttachedObject.World.GetBlockState(GrainFactory, AttachedObject.Position)).MetaValue;
-            await AttachedObject.World.SetBlockState(GrainFactory, AttachedObject.Position, new BlockState { Id = (uint)BlockId.BurningFurnace, MetaValue = meta });
+            await AttachedObject.World.SetBlockState(GrainFactory, AttachedObject.Position, new BlockState { Id = (uint)BlockId.BlastFurnace, MetaValue = meta });
         }
 
         private async Task StopCooking()

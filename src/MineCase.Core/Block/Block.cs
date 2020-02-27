@@ -73,13 +73,13 @@ namespace MineCase.Block
             {
                 return new BlockCobblestone();
             }
-            else if (blockState.IsId(BlockId.WoodPlanks))
+            else if (blockState.IsId(BlockId.OakPlanks))
             {
                 var planks = new BlockWoodPlanks();
                 planks.BlockState = blockState;
                 return planks;
             }
-            else if (blockState.IsId(BlockId.Sapling))
+            else if (blockState.IsId(BlockId.OakSapling))
             {
                 var planks = new BlockSapling();
                 planks.BlockState = blockState;

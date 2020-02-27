@@ -68,6 +68,7 @@ namespace MineCase.Server.Network.Play
 
         public Task SpawnPlayer(uint entityId, Guid uuid, Vector3 position, float pitch, float yaw, Game.Entities.EntityMetadata.Player metadata)
         {
+            // TODO: This metadata may be used in other places
             var metaPacket = CreateEntityMetadata(entityId, metadata, bw =>
             {
                 WriteEntityMetadata(bw, (Game.Entities.EntityMetadata.Entity)metadata);
@@ -82,8 +83,7 @@ namespace MineCase.Server.Network.Play
                 Y = position.Y,
                 Z = position.Z,
                 Pitch = pitch,
-                Yaw = yaw,
-                Metadata = metaPacket.Metadata
+                Yaw = yaw
             });
         }
 
@@ -266,6 +266,7 @@ namespace MineCase.Server.Network.Play
             }
         }
 
+        // TODO update params for 1.15.2
         public Task JoinGame(uint eid, GameMode gameMode, Dimension dimension, Difficulty difficulty, byte maxPlayers, string levelType, bool reducedDebugInfo)
         {
             return SendPacket(new JoinGame
@@ -273,7 +274,7 @@ namespace MineCase.Server.Network.Play
                 EID = (int)eid,
                 GameMode = ToByte(gameMode),
                 Dimension = (int)dimension,
-                Difficulty = (byte)difficulty,
+                HashedSeed = 0, // FIXME
                 LevelType = levelType,
                 MaxPlayers = maxPlayers,
                 ReducedDebugInfo = reducedDebugInfo
@@ -365,12 +366,12 @@ namespace MineCase.Server.Network.Play
 
         public Task PlayerListItemAddPlayer(IReadOnlyList<PlayerDescription> desc)
         {
-            return SendPacket(new PlayerListItem<PlayerListItemAddPlayerAction>
+            return SendPacket(new PlayerInfo<PlayerInfoAddPlayerAction>
             {
                 Action = 0,
                 NumberOfPlayers = (uint)desc.Count,
                 Players = (from d in desc
-                           select new PlayerListItemAddPlayerAction
+                           select new PlayerInfoAddPlayerAction
                            {
                                UUID = d.UUID,
                                Name = d.Name,
@@ -384,12 +385,12 @@ namespace MineCase.Server.Network.Play
 
         public Task PlayerListItemRemovePlayer(IReadOnlyList<Guid> desc)
         {
-            return SendPacket(new PlayerListItem<PlayerListItemRemovePlayerAction>
+            return SendPacket(new PlayerInfo<PlayerInfoRemovePlayerAction>
             {
                 Action = 4,
                 NumberOfPlayers = (uint)desc.Count,
                 Players = (from d in desc
-                           select new PlayerListItemRemovePlayerAction
+                           select new PlayerInfoRemovePlayerAction
                            {
                                UUID = d
                            }).ToArray()
@@ -445,20 +446,21 @@ namespace MineCase.Server.Network.Play
             {
                 ChunkX = chunkX,
                 ChunkZ = chunkZ,
-                GroundUpContinuous = chunkColumn.Biomes != null,
-                Biomes = chunkColumn.Biomes,
+                FullChunk = chunkColumn.Biomes != null,
                 PrimaryBitMask = chunkColumn.SectionBitMask,
-                NumberOfBlockEntities = 0,
+                Heightmaps = chunkColumn.Heightmaps,
+                Biomes = chunkColumn.Biomes,
                 Data = (from c in chunkColumn.Sections
                         where c != null
                         select new Protocol.Play.ChunkSection
                         {
-                            PaletteLength = 0,
+                            BlockCount = c.NonAirBlockCount,
                             BitsPerBlock = c.BitsPerBlock,
-                            SkyLight = c.SkyLight.Storage,
-                            BlockLight = c.BlockLight.Storage,
+                            PaletteLength = 0,
                             DataArray = c.Data.Storage
-                        }).ToArray()
+                        }).ToArray(),
+                NumberOfBlockEntities = 0,
+                BlockEntities = new Nbt.Tags.NbtCompound[0], // TODO : read real block entities
             });
         }
 

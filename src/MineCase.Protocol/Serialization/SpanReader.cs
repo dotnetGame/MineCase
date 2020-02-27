@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 using MineCase.Nbt;
+using MineCase.Nbt.Serialization;
+using MineCase.Nbt.Tags;
 
 namespace MineCase.Serialization
 {
@@ -146,6 +148,44 @@ namespace MineCase.Serialization
             return bytes;
         }
 
+        public int[] ReadAsIntArray(int length)
+        {
+            int[] ret = new int[length];
+            for (int i = 0; i < length; ++i)
+            {
+                ret[i] = ReadAsInt();
+            }
+
+            return ret;
+        }
+
+        public NbtCompound ReadAsNbtTag()
+        {
+            NbtCompound nbt;
+            using (MemoryStream ms = new MemoryStream(_span.ToArray()))
+            {
+                using (var br = new BinaryReader(ms, Encoding.UTF8, false))
+                {
+                    nbt = NbtTagSerializer.DeserializeTag<NbtCompound>(br);
+                }
+
+                Advance((int)ms.Position);
+            }
+
+            return nbt;
+        }
+
+        public NbtCompound[] ReadAsNbtTagArray(int length)
+        {
+            NbtCompound[] ret = new NbtCompound[length];
+            for (int i = 0; i < length; ++i)
+            {
+                ret[i] = ReadAsNbtTag();
+            }
+
+            return ret;
+        }
+
         public Position ReadAsPosition()
         {
             var value = _span.ReadBigEndian<ulong>();
@@ -177,11 +217,12 @@ namespace MineCase.Serialization
 
         public Slot ReadAsSlot()
         {
-            var slot = new Slot { BlockId = ReadAsShort() };
-            if (!slot.IsEmpty)
+            bool present = ReadAsBoolean();
+            var slot = new Slot { BlockId = -1 };
+            if (present)
             {
+                slot.BlockId = (short)ReadAsVarInt(out _);
                 slot.ItemCount = ReadAsByte();
-                slot.ItemDamage = ReadAsShort();
                 if (PeekAsByte() == 0)
                     Advance(1);
                 else

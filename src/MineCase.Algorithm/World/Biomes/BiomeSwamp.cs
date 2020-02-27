@@ -18,7 +18,7 @@ namespace MineCase.Algorithm.World.Biomes
             : base(properties, genSettings)
         {
             _name = "swampland";
-            _biomeId = BiomeId.Swampland;
+            _biomeId = BiomeId.Swamp;
 
             _treesPerChunk = 2;
             _flowersPerChunk = 1;

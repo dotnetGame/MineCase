@@ -29,7 +29,7 @@ namespace MineCase.Algorithm.World.Biomes
             if (type == BiomeHillType.Normal)
             {
                 _name = "extreme_hills";
-                _biomeId = BiomeId.ExtremeHills;
+                _biomeId = BiomeId.Mountains; // TODO: 1.15.2 do not have extreme hills
 
                 _baseHeight = 1.0F;
                 _heightVariation = 0.5F;
@@ -40,7 +40,7 @@ namespace MineCase.Algorithm.World.Biomes
             else
             {
                 _name = "extreme_hills";
-                _biomeId = BiomeId.ExtremeHills;
+                _biomeId = BiomeId.Mountains;
 
                 _baseHeight = 1.0F;
                 _heightVariation = 0.5F;

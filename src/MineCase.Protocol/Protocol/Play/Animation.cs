@@ -14,7 +14,7 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x1D)]
+    [Packet(0x2A)]
     public sealed class ServerboundAnimation
     {
         [SerializeAs(DataType.VarInt)]

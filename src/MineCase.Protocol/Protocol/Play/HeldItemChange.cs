@@ -9,7 +9,7 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x1A)]
+    [Packet(0x23)]
     public sealed class ServerboundHeldItemChange
     {
         [SerializeAs(DataType.Short)]

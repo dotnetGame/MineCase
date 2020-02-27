@@ -20,7 +20,10 @@ namespace MineCase.Serialization.Serializers
             if (value.Biomes != null)
             {
                 writer.WriteName(nameof(ChunkColumnCompactStorage.Biomes));
-                writer.WriteBytes(value.Biomes);
+                writer.WriteStartArray();
+                foreach (var eachBiome in value.Biomes)
+                    writer.WriteInt32(eachBiome);
+                writer.WriteEndArray();
             }
 
             writer.WriteName(nameof(ChunkColumnCompactStorage.Sections));
@@ -37,7 +40,7 @@ namespace MineCase.Serialization.Serializers
             var reader = context.Reader;
             reader.ReadStartDocument();
 
-            var biomes = default(byte[]);
+            var biomes = new int[1024];
             var sections = new ChunkSectionCompactStorage[ChunkConstants.SectionsPerChunk];
             while (reader.ReadBsonType() != MongoDB.Bson.BsonType.EndOfDocument)
             {
@@ -45,7 +48,10 @@ namespace MineCase.Serialization.Serializers
                 switch (name)
                 {
                     case nameof(ChunkColumnCompactStorage.Biomes):
-                        biomes = reader.ReadBytes();
+                        reader.ReadStartArray();
+                        for (int i = 0; i < 1024; i++)
+                            biomes[i] = reader.ReadInt32();
+                        reader.ReadEndArray();
                         break;
                     case nameof(ChunkColumnCompactStorage.Sections):
                         reader.ReadStartArray();

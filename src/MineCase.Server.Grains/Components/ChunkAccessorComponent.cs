@@ -52,6 +52,7 @@ namespace MineCase.Server.Components
             var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(chunkWorldPos.X, chunkWorldPos.Z));
             return GrainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockBiome(
                 blockChunkPos.X,
+                blockChunkPos.Y,
                 blockChunkPos.Z);
         }
 

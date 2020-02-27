@@ -18,7 +18,7 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.UUID)]
         public Guid ObjectUUID;
 
-        [SerializeAs(DataType.Byte)]
+        [SerializeAs(DataType.VarInt)]
         public byte Type;
 
         [SerializeAs(DataType.Double)]
@@ -52,7 +52,7 @@ namespace MineCase.Protocol.Play
         {
             bw.WriteAsVarInt(EID, out _);
             bw.WriteAsUUID(ObjectUUID);
-            bw.WriteAsByte(Type);
+            bw.WriteAsVarInt(Type, out _);
             bw.WriteAsDouble(X);
             bw.WriteAsDouble(Y);
             bw.WriteAsDouble(Z);

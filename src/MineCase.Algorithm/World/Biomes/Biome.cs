@@ -17,7 +17,7 @@ namespace MineCase.Algorithm.World.Biomes
 {
     public abstract class Biome
     {
-        // Biome有关的生成器的设置
+        // Biome锟叫关碉拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
         protected GeneratorSettings _genSettings;
 
         protected string _name;
@@ -42,15 +42,15 @@ namespace MineCase.Algorithm.World.Biomes
         /** The block to fill spots in when not on the top */
         public BlockState _fillerBlock = BlockStates.Dirt();
 
-        // 噪声函数
+        // 锟斤拷锟斤拷锟斤拷锟斤拷
         protected static readonly OctavedNoise<PerlinNoise> _temperatureNoise =
             new OctavedNoise<PerlinNoise>(new PerlinNoise(1234), 4, 0.5F);
 
         protected static readonly OctavedNoise<PerlinNoise> _grassColorNoise =
             new OctavedNoise<PerlinNoise>(new PerlinNoise(2345), 4, 0.5F);
 
-        // 矿物生成器
-        private MinableGenerator _dirtGen; // 你没看错，这些当作矿物生成
+        // 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+        private MinableGenerator _dirtGen; // 锟斤拷没锟斤拷锟斤拷锟斤拷锟斤拷些锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
         private MinableGenerator _gravelOreGen;
         private MinableGenerator _graniteGen;
         private MinableGenerator _dioriteGen;
@@ -63,7 +63,7 @@ namespace MineCase.Algorithm.World.Biomes
         private MinableGenerator _diamondGen;
         private MinableGenerator _lapisGen;
 
-        // 植被设置
+        // 植锟斤拷锟斤拷锟斤拷
         protected int _treesPerChunk;
         protected float _extraTreeChance;
         protected int _grassPerChunk;
@@ -74,7 +74,7 @@ namespace MineCase.Algorithm.World.Biomes
         protected int _reedsPerChunk;
         protected int _cactiPerChunk;
 
-        // 生物种类
+        // 锟斤拷锟斤拷锟斤拷锟斤拷
         protected List<MobType> _passiveMobList;
         protected List<MobType> _monsterList;
 
@@ -121,6 +121,7 @@ namespace MineCase.Algorithm.World.Biomes
             _goldGen = new MinableGenerator(
                 BlockStates.GoldOre(),
                 genSettings.GoldSize);
+
             _redstoneGen = new MinableGenerator(
                 BlockStates.RedstoneOre(),
                 genSettings.RedstoneSize);
@@ -176,13 +177,13 @@ namespace MineCase.Algorithm.World.Biomes
                      return new BiomePlains(new BiomeProperties(), settings);
                 case BiomeId.Desert:
                      return new BiomeDesert(new BiomeProperties(), settings);
-                case BiomeId.ExtremeHills:
+                case BiomeId.Mountains:
                      return new BiomeHill(BiomeHillType.Normal, new BiomeProperties(), settings);
                 case BiomeId.Forest:
                      return new BiomeForest(new BiomeProperties(), settings);
                 case BiomeId.Taiga:
                      return new BiomeTaiga(BiomeTaigaType.Normal, new BiomeProperties(), settings);
-                case BiomeId.Swampland:
+                case BiomeId.Swamp:
                      return new BiomeSwamp(new BiomeProperties(), settings);
                 case BiomeId.River:
                      return new BiomeRiver(new BiomeProperties(), settings);
@@ -195,13 +196,13 @@ namespace MineCase.Algorithm.World.Biomes
             }
         }
 
-        // 随机获得一个该生物群系可能出现的草
+        // 锟斤拷锟斤拷锟斤拷一锟斤拷锟斤拷锟斤拷锟斤拷群系锟斤拷锟杰筹拷锟街的诧拷
         public virtual PlantsType GetRandomGrass(Random rand)
         {
             return PlantsType.TallGrass;
         }
 
-        // 随机获得一个该生物群系可能出现的花
+        // 锟斤拷锟斤拷锟斤拷一锟斤拷锟斤拷锟斤拷锟斤拷群系锟斤拷锟杰筹拷锟街的伙拷
         public virtual PlantsType GetRandomFlower(Random rand)
         {
             double n = rand.NextDouble();
@@ -215,7 +216,7 @@ namespace MineCase.Algorithm.World.Biomes
             }
         }
 
-        // 随机获得一个该生物群系可能出现的树
+        // 锟斤拷锟斤拷锟斤拷一锟斤拷锟斤拷锟斤拷锟斤拷群系锟斤拷锟杰筹拷锟街碉拷锟斤拷
         public virtual PlantsType GetRandomTree(Random rand)
         {
             int n = rand.Next(2);
@@ -257,7 +258,7 @@ namespace MineCase.Algorithm.World.Biomes
             }
         }
 
-        // 后期添加一些方块，Biome基类主要生成矿物
+        // 锟斤拷锟斤拷锟斤拷锟斤拷一些锟斤拷锟介，Biome锟斤拷锟斤拷锟斤拷要锟斤拷锟缴匡拷锟斤拷
         public virtual void Decorate(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random rand, BlockWorldPos pos)
         {
             GenerateOre(_dirtGen, world, grainFactory, chunk, rand, pos, _genSettings.DirtCount, _genSettings.DirtMaxHeight, _genSettings.DirtMinHeight);
@@ -274,7 +275,7 @@ namespace MineCase.Algorithm.World.Biomes
             GenerateOre(_lapisGen, world, grainFactory, chunk, rand, pos, _genSettings.LapisCount, _genSettings.LapisCenterHeight + _genSettings.LapisSpread, _genSettings.LapisCenterHeight - _genSettings.LapisSpread);
         }
 
-        // 添加生物群系特有的生物
+        // 锟斤拷锟斤拷锟斤拷锟斤拷群系锟斤拷锟叫碉拷锟斤拷锟斤拷
         public virtual void SpawnMob(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Random rand, BlockWorldPos pos)
         {
             ChunkWorldPos chunkPos = pos.ToChunkWorldPos();
@@ -290,7 +291,7 @@ namespace MineCase.Algorithm.World.Biomes
             }
         }
 
-        // 添加生物群系特有的怪物
+        // 锟斤拷锟斤拷锟斤拷锟斤拷群系锟斤拷锟叫的癸拷锟斤拷
         public virtual void SpawnMonster(IWorld world, IGrainFactory grainFactory, IChunkColumnStorage chunk, Random rand, BlockWorldPos pos)
         {
             ChunkWorldPos chunkPos = pos.ToChunkWorldPos();
@@ -306,7 +307,7 @@ namespace MineCase.Algorithm.World.Biomes
             }
         }
 
-        // 产生生物群系特有的方块
+        // 锟斤拷锟斤拷锟斤拷锟斤拷群系锟斤拷锟叫的凤拷锟斤拷
         public virtual void GenerateBiomeTerrain(int seaLevel, Random rand, ChunkColumnStorage chunk, int chunk_x, int chunk_z, int x_in_chunk, int z_in_chunk, double noiseVal)
         {
             BlockState topBlockstate = _topBlock;
@@ -330,7 +331,7 @@ namespace MineCase.Algorithm.World.Biomes
                     }
                     else if (iblockstate == BlockStates.Stone())
                     {
-                        // 将地面石头进行生物群系替换
+                        // 锟斤拷锟斤拷锟斤拷石头锟斤拷锟斤拷锟斤拷锟斤拷群系锟芥换
                         if (surfaceFlag == -1)
                         {
                             if (surfaceDepth <= 0)
@@ -344,7 +345,7 @@ namespace MineCase.Algorithm.World.Biomes
                                 fillerBlockstate = _fillerBlock;
                             }
 
-                            // TODO 根据温度变化决定水的状态
+                            // TODO 锟斤拷锟斤拷锟铰度变化锟斤拷锟斤拷水锟斤拷状态
                             surfaceFlag = surfaceDepth;
 
                             if (y >= seaLevel - 1)

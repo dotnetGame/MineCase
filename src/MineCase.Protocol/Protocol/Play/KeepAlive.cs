@@ -9,17 +9,17 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x0C)]
+    [Packet(0x0F)]
     public sealed class ServerboundKeepAlive
     {
-        [SerializeAs(DataType.VarInt)]
-        public uint KeepAliveId;
+        [SerializeAs(DataType.Long)]
+        public long KeepAliveId;
 
         public static ServerboundKeepAlive Deserialize(ref SpanReader br)
         {
             return new ServerboundKeepAlive
             {
-                KeepAliveId = br.ReadAsVarInt(out _)
+                KeepAliveId = br.ReadAsLong()
             };
         }
     }
@@ -27,15 +27,15 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x1F)]
+    [Packet(0x21)]
     public sealed class ClientboundKeepAlive : ISerializablePacket
     {
-        [SerializeAs(DataType.VarInt)]
-        public uint KeepAliveId;
+        [SerializeAs(DataType.Long)]
+        public long KeepAliveId;
 
         public void Serialize(BinaryWriter bw)
         {
-            bw.WriteAsVarInt(KeepAliveId, out _);
+            bw.WriteAsLong(KeepAliveId);
         }
     }
 }

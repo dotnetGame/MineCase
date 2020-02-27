@@ -18,12 +18,15 @@ namespace MineCase.Algorithm.World.Mine
             _canReplaceSet.Add((uint)BlockId.Stone);
             _canReplaceSet.Add((uint)BlockId.Dirt);
             _canReplaceSet.Add((uint)BlockId.GrassBlock);
-            _canReplaceSet.Add((uint)BlockId.HardenedClay);
-            _canReplaceSet.Add((uint)BlockId.StainedClay);
+
+            // FIXME
+            // _canReplaceSet.Add((uint)BlockId.HardenedClay);
+            // _canReplaceSet.Add((uint)BlockId.StainedClay);
             _canReplaceSet.Add((uint)BlockId.Sandstone);
             _canReplaceSet.Add((uint)BlockId.RedSandstone);
             _canReplaceSet.Add((uint)BlockId.Mycelium);
-            _canReplaceSet.Add((uint)BlockId.SnowLayer);
+
+            _canReplaceSet.Add((uint)BlockId.Snow);
         }
 
         public CavesGenerator(MapGenerationInfo info, int range = 8)

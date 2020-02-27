@@ -55,7 +55,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.WoodPlanks,
+                Id = (uint)BlockId.OakPlanks,
                 MetaValue = (uint)type
             };
         }
@@ -64,7 +64,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.Sapling,
+                Id = (uint)BlockId.OakSapling,
                 MetaValue = (uint)type
             };
         }
@@ -87,11 +87,12 @@ namespace MineCase.Block
             };
         }
 
+        [ObsoleteAttribute]
         public static BlockState StationaryWater(FluidType type = FluidType.FallingFlag)
         {
             return new BlockState
             {
-                Id = (uint)BlockId.StationaryWater,
+                Id = (uint)BlockId.Water,
                 MetaValue = (uint)type
             };
         }
@@ -105,11 +106,12 @@ namespace MineCase.Block
             };
         }
 
+        [ObsoleteAttribute]
         public static BlockState StationaryLava(FluidType type = FluidType.FallingFlag)
         {
             return new BlockState
             {
-                Id = (uint)BlockId.StationaryLava,
+                Id = (uint)BlockId.Lava,
                 MetaValue = 0
             };
         }
@@ -163,7 +165,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.Wood,
+                Id = (uint)BlockId.OakLog,
                 MetaValue = (uint)type
             };
         }
@@ -172,7 +174,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.Leaves,
+                Id = (uint)BlockId.OakLeaves,
                 MetaValue = (uint)type
             };
         }
@@ -199,7 +201,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.LapisLazuliOre,
+                Id = (uint)BlockId.LapisOre,
                 MetaValue = 0
             };
         }
@@ -208,7 +210,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.LapisLazuliBlock,
+                Id = (uint)BlockId.LapisBlock,
                 MetaValue = 0
             };
         }
@@ -244,7 +246,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.Bed,
+                Id = (uint)BlockId.RedBed,
                 MetaValue = (uint)type
             };
         }
@@ -325,17 +327,8 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.Wool,
+                Id = (uint)BlockId.WhiteWool,
                 MetaValue = (uint)type
-            };
-        }
-
-        public static BlockState BlockMovedByPiston()
-        {
-            return new BlockState
-            {
-                Id = (uint)BlockId.BlockMovedByPiston,
-                MetaValue = 0
             };
         }
 
@@ -379,7 +372,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.BlockOfGold,
+                Id = (uint)BlockId.GoldBlock,
                 MetaValue = 0
             };
         }
@@ -388,7 +381,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.BlockOfIron,
+                Id = (uint)BlockId.IronBlock,
                 MetaValue = 0
             };
         }
@@ -397,7 +390,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.DoubleStoneSlab,
+                Id = (uint)BlockId.StoneSlab,
                 MetaValue = (uint)type
             };
         }
@@ -424,7 +417,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.TNT,
+                Id = (uint)BlockId.Tnt,
                 MetaValue = 0
             };
         }
@@ -442,7 +435,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.MossStone,
+                Id = (uint)BlockId.MossyCobblestone,
                 MetaValue = 0
             };
         }
@@ -478,7 +471,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.MonsterSpawner,
+                Id = (uint)BlockId.Spawner,
                 MetaValue = 0
             };
         }
@@ -487,7 +480,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.OakWoodStairs,
+                Id = (uint)BlockId.OakStairs,
                 MetaValue = (uint)type
             };
         }
@@ -523,7 +516,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.BlockOfDiamond,
+                Id = (uint)BlockId.DiamondBlock,
                 MetaValue = 0
             };
         }
@@ -568,7 +561,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.BurningFurnace,
+                Id = (uint)BlockId.BlastFurnace,
                 MetaValue = (uint)type
             };
         }
@@ -577,7 +570,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.StandingSign,
+                Id = (uint)BlockId.OakSign,
                 MetaValue = (uint)type
             };
         }
@@ -622,7 +615,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.WallSign,
+                Id = (uint)BlockId.OakWallSign,
                 MetaValue = (uint)type
             };
         }
@@ -658,7 +651,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.WoodenPressurePlate,
+                Id = (uint)BlockId.OakPressurePlate, // TODO
                 MetaValue = (uint)type
             };
         }
@@ -672,29 +665,41 @@ namespace MineCase.Block
             };
         }
 
+        [Obsolete]
         public static BlockState GlowingRedstoneOre()
         {
             return new BlockState
             {
-                Id = (uint)BlockId.GlowingRedstoneOre,
+                Id = (uint)BlockId.Glowstone,
                 MetaValue = 0
             };
         }
 
-        public static BlockState RedstoneTorchInactive(TorchesType type = TorchesType.FacingUp)
+        public static BlockState RedstoneTorch(TorchesType type = TorchesType.FacingUp)
         {
             return new BlockState
             {
-                Id = (uint)BlockId.RedstoneTorchInactive,
+                Id = (uint)BlockId.RedstoneTorch,
                 MetaValue = (uint)type
             };
         }
 
+        [Obsolete]
+        public static BlockState RedstoneTorchInactive(TorchesType type = TorchesType.FacingUp)
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.RedstoneTorch,
+                MetaValue = (uint)type
+            };
+        }
+
+        [Obsolete]
         public static BlockState RedstoneTorchActive(TorchesType type = TorchesType.FacingUp)
         {
             return new BlockState
             {
-                Id = (uint)BlockId.RedstoneTorchActive,
+                Id = (uint)BlockId.RedstoneTorch,
                 MetaValue = (uint)type
             };
         }
@@ -712,7 +717,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.SnowLayer,
+                Id = (uint)BlockId.Snow,
                 MetaValue = (uint)type
             };
         }
@@ -829,7 +834,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.JackLantern,
+                Id = (uint)BlockId.JackOLantern,
                 MetaValue = (uint)type
             };
         }
@@ -843,20 +848,31 @@ namespace MineCase.Block
             };
         }
 
-        public static BlockState RedstoneRepeaterInactive(RedstoneRepeaterType type = RedstoneRepeaterType.FacingNorth)
+        public static BlockState RedstoneRepeater(RedstoneRepeaterType type = RedstoneRepeaterType.FacingNorth)
         {
             return new BlockState
             {
-                Id = (uint)BlockId.RedstoneRepeaterInactive,
+                Id = (uint)BlockId.Repeater,
                 MetaValue = (uint)type
             };
         }
 
+        [Obsolete]
+        public static BlockState RedstoneRepeaterInactive(RedstoneRepeaterType type = RedstoneRepeaterType.FacingNorth)
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.Repeater,
+                MetaValue = (uint)type
+            };
+        }
+
+        [Obsolete]
         public static BlockState RedstoneRepeaterActive(RedstoneRepeaterType type = RedstoneRepeaterType.FacingNorth)
         {
             return new BlockState
             {
-                Id = (uint)BlockId.RedstoneRepeaterActive,
+                Id = (uint)BlockId.Repeater,
                 MetaValue = (uint)type
             };
         }
@@ -865,7 +881,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.StainedGlass,
+                Id = (uint)BlockId.WhiteStainedGlass,
                 MetaValue = (uint)type
             };
         }
@@ -874,7 +890,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.Trapdoor,
+                Id = (uint)BlockId.OakTrapdoor,
                 MetaValue = (uint)type
             };
         }
@@ -883,7 +899,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.MonsterEgg,
+                Id = (uint)BlockId.DragonEgg,
                 MetaValue = (uint)type
             };
         }
@@ -964,7 +980,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.Vines,
+                Id = (uint)BlockId.Vine,
                 MetaValue = (uint)type
             };
         }
@@ -973,7 +989,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.FenceGate,
+                Id = (uint)BlockId.OakFenceGate, // TODO
                 MetaValue = (uint)type
             };
         }
@@ -1018,7 +1034,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.NetherBrick,
+                Id = (uint)BlockId.NetherBricks,
                 MetaValue = 0
             };
         }
@@ -1054,7 +1070,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.EnchantmentTable,
+                Id = (uint)BlockId.EnchantingTable,
                 MetaValue = 0
             };
         }
@@ -1113,20 +1129,31 @@ namespace MineCase.Block
             };
         }
 
-        public static BlockState RedstoneLampInactive()
+        public static BlockState RedstoneLamp()
         {
             return new BlockState
             {
-                Id = (uint)BlockId.RedstoneLampInactive,
+                Id = (uint)BlockId.RedstoneLamp,
                 MetaValue = 0
             };
         }
 
+        [Obsolete]
+        public static BlockState RedstoneLampInactive()
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.RedstoneLamp,
+                MetaValue = 0
+            };
+        }
+
+        [Obsolete]
         public static BlockState RedstoneLampActive()
         {
             return new BlockState
             {
-                Id = (uint)BlockId.RedstoneLampActive,
+                Id = (uint)BlockId.RedstoneLamp,
                 MetaValue = 0
             };
         }
@@ -1135,7 +1162,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.DoubleWoodenSlab,
+                Id = (uint)BlockId.OakSlab,
                 MetaValue = (uint)type
             };
         }
@@ -1144,7 +1171,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.WoodenSlab,
+                Id = (uint)BlockId.OakSlab,
                 MetaValue = (uint)type
             };
         }
@@ -1207,7 +1234,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.BlockOfEmerald,
+                Id = (uint)BlockId.EmeraldBlock,
                 MetaValue = 0
             };
         }
@@ -1216,7 +1243,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.SpruceWoodStairs,
+                Id = (uint)BlockId.SpruceStairs,
                 MetaValue = (uint)type
             };
         }
@@ -1225,7 +1252,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.BirchWoodStairs,
+                Id = (uint)BlockId.BirchStairs,
                 MetaValue = (uint)type
             };
         }
@@ -1234,7 +1261,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.JungleWoodStairs,
+                Id = (uint)BlockId.JungleStairs,
                 MetaValue = (uint)type
             };
         }
@@ -1279,7 +1306,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.Carrot,
+                Id = (uint)BlockId.Carrots,
                 MetaValue = (uint)type
             };
         }
@@ -1288,7 +1315,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.Potato,
+                Id = (uint)BlockId.Potatoes,
                 MetaValue = (uint)type
             };
         }
@@ -1297,7 +1324,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.WoodenButton,
+                Id = (uint)BlockId.OakButton, // TODO:
                 MetaValue = (uint)type
             };
         }
@@ -1306,7 +1333,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.Mobhead,
+                Id = (uint)BlockId.PlayerHead,
                 MetaValue = (uint)type
             };
         }
@@ -1333,7 +1360,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.WeightedPressurePlateLight,
+                Id = (uint)BlockId.LightWeightedPressurePlate,
                 MetaValue = (uint)type
             };
         }
@@ -1342,7 +1369,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.WeightedPressurePlateHeavy,
+                Id = (uint)BlockId.HeavyWeightedPressurePlate,
                 MetaValue = (uint)type
             };
         }
@@ -1351,16 +1378,17 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.RedstoneComparator,
+                Id = (uint)BlockId.Comparator,
                 MetaValue = (uint)type
             };
         }
 
+        [Obsolete]
         public static BlockState RedstoneComparatorDeprecated(RedstoneComparatorType type = RedstoneComparatorType.FacingNorth)
         {
             return new BlockState
             {
-                Id = (uint)BlockId.RedstoneComparatorDeprecated,
+                Id = (uint)BlockId.Comparator,
                 MetaValue = (uint)type
             };
         }
@@ -1369,7 +1397,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.DaylightSensor,
+                Id = (uint)BlockId.DaylightDetector,
                 MetaValue = 0
             };
         }
@@ -1378,7 +1406,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.BlockOfRedstone,
+                Id = (uint)BlockId.RedstoneBlock,
                 MetaValue = 0
             };
         }
@@ -1405,7 +1433,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.BlockOfQuartz,
+                Id = (uint)BlockId.QuartzBlock,
                 MetaValue = (uint)type
             };
         }
@@ -1441,7 +1469,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.StainedClay,
+                Id = (uint)BlockId.GrayStainedGlass, // TODO: 这个行为是否正确
                 MetaValue = (uint)type
             };
         }
@@ -1450,7 +1478,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.StainedGlassPane,
+                Id = (uint)BlockId.WhiteStainedGlassPane,
                 MetaValue = (uint)type
             };
         }
@@ -1459,7 +1487,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.Leaves2,
+                Id = (uint)BlockId.AcaciaLeaves,
                 MetaValue = (uint)type
             };
         }
@@ -1468,7 +1496,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.Wood2,
+                Id = (uint)BlockId.AcaciaLog,
                 MetaValue = (uint)type
             };
         }
@@ -1477,7 +1505,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.AcaciaWoodStairs,
+                Id = (uint)BlockId.AcaciaStairs,
                 MetaValue = (uint)type
             };
         }
@@ -1486,7 +1514,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.DarkOakWoodStairs,
+                Id = (uint)BlockId.DarkOakStairs,
                 MetaValue = (uint)type
             };
         }
@@ -1540,7 +1568,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.HayBale,
+                Id = (uint)BlockId.HayBlock,
                 MetaValue = 0
             };
         }
@@ -1549,7 +1577,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.Carpet,
+                Id = (uint)BlockId.WhiteCarpet,
                 MetaValue = (uint)type
             };
         }
@@ -1558,7 +1586,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.HardenedClay,
+                Id = (uint)BlockId.Clay,
                 MetaValue = 0
             };
         }
@@ -1567,7 +1595,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.BlockOfCoal,
+                Id = (uint)BlockId.CoalBlock,
                 MetaValue = 0
             };
         }
@@ -1585,7 +1613,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.LargeFlowers,
+                Id = (uint)BlockId.Sunflower,
                 MetaValue = (uint)type
             };
         }
@@ -1594,7 +1622,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.StandingBanner,
+                Id = (uint)BlockId.WhiteBanner,
                 MetaValue = (uint)type
             };
         }
@@ -1603,7 +1631,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.WallBanner,
+                Id = (uint)BlockId.WhiteWallBanner,
                 MetaValue = (uint)type
             };
         }
@@ -1612,7 +1640,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.InvertedDaylightSensor,
+                Id = (uint)BlockId.DaylightDetector,
                 MetaValue = 0
             };
         }
@@ -1639,7 +1667,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.DoubleRedSandstoneSlab,
+                Id = (uint)BlockId.RedSandstoneSlab,
                 MetaValue = (uint)type
             };
         }
@@ -1846,7 +1874,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.PurpurDoubleSlab,
+                Id = (uint)BlockId.PurpurSlab,
                 MetaValue = 0
             };
         }
@@ -1873,7 +1901,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.BeetrootSeeds,
+                Id = (uint)BlockId.Beetroots,
                 MetaValue = 0
             };
         }
@@ -1945,7 +1973,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.RedNetherBrick,
+                Id = (uint)BlockId.RedNetherBricks,
                 MetaValue = 0
             };
         }
@@ -2269,7 +2297,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.Concrete,
+                Id = (uint)BlockId.BlackConcrete,
                 MetaValue = 0
             };
         }
@@ -2278,7 +2306,7 @@ namespace MineCase.Block
         {
             return new BlockState
             {
-                Id = (uint)BlockId.ConcretePowder,
+                Id = (uint)BlockId.BlackConcretePowder,
                 MetaValue = 0
             };
         }

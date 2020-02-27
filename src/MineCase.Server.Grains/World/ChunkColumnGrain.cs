@@ -93,10 +93,10 @@ namespace MineCase.Server.World
             return State.Storage;
         }
 
-        public async Task<BiomeId> GetBlockBiome(int x, int z)
+        public async Task<BiomeId> GetBlockBiome(int x, int y, int z)
         {
             await EnsureChunkGenerated();
-            return (BiomeId)State.Storage.Biomes[(z * ChunkConstants.BlockEdgeWidthInSection) + x];
+            return (BiomeId)State.Storage.Biomes[((y / 4) * 4 + z / 4) * 4 + x / 4];
         }
 
         public static readonly (int x, int z)[] CrossCoords = new[]
@@ -232,7 +232,7 @@ namespace MineCase.Server.World
                 {
                     for (int z = 0; z < 16; ++z)
                     {
-                        State.GroundHeight[x, z] = GroundHeight(x, z);
+                        State.Storage.GroundHeight[x, z] = GroundHeight(x, z);
                     }
                 }
 
@@ -318,7 +318,7 @@ namespace MineCase.Server.World
 
         public Task<int> GetGroundHeight(int x, int z)
         {
-            return Task.FromResult(State.GroundHeight[x, z]);
+            return Task.FromResult(State.Storage.GroundHeight[x, z]);
         }
 
         public Task OnBlockNeighborChanged(int x, int y, int z, BlockWorldPos neighborPosition, BlockState oldState, BlockState newState)
@@ -358,8 +358,6 @@ namespace MineCase.Server.World
             public bool Populated { get; set; } = false;
 
             public bool Generated { get; set; } = false;
-
-            public int[,] GroundHeight { get; set; } = new int[16, 16];
 
             public ChunkColumnCompactStorage Storage { get; set; }
 

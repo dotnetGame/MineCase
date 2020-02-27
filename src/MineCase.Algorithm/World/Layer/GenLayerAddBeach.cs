@@ -36,7 +36,7 @@ namespace MineCase.Algorithm.World.Layer
                     // 中心不为0 且 周围有0
                     if (parentValueX1Y1 != 0 && (parentValue == 0 || parentValueX2 == 0 || parentValueY2 == 0 || parentValueX2Y2 == 0))
                     {
-                        if (parentValueX1Y1 != (int)BiomeId.ExtremeHills)
+                        if (parentValueX1Y1 != (int)BiomeId.Mountains)
                             result[y, x] = (int)BiomeId.Beach;
                     }
                     else

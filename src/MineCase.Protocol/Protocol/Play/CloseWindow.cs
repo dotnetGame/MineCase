@@ -9,7 +9,7 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x09)]
+    [Packet(0x0A)]
     public sealed class ServerboundCloseWindow
     {
         [SerializeAs(DataType.Byte)]
@@ -27,7 +27,7 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x12)]
+    [Packet(0x14)]
     public sealed class ClientboundCloseWindow : ISerializablePacket
     {
         [SerializeAs(DataType.Byte)]

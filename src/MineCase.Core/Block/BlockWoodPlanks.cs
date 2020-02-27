@@ -25,9 +25,10 @@ namespace MineCase.Block
             UnlocalizedName = "planks";
         }
 
+        // FIXME: drop WoodPlanks
         public override ItemState BlockBrokenItem(ItemState hand, bool silktouch)
         {
-            return new ItemState { Id = (uint)BlockId.WoodPlanks, MetaValue = BlockState.MetaValue };
+            return new ItemState { Id = (uint)BlockId.Air, MetaValue = BlockState.MetaValue };
         }
     }
 }

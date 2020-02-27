@@ -102,7 +102,7 @@ namespace MineCase.Server.World.Generation
         {
             var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos { X = x, Z = z });
             ChunkColumnCompactStorage chunkColumn = await GrainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetStateUnsafe();
-            Biome chunkBiome = Biome.GetBiome(chunkColumn.Biomes[7 * 16 + 7], settings);
+            Biome chunkBiome = Biome.GetBiome(chunkColumn.Biomes[(31 * 4 + 1) * 4 + 1], settings);
 
             if (chunkBiome.GetBiomeId() == BiomeId.Plains)
             {
@@ -157,11 +157,14 @@ namespace MineCase.Server.World.Generation
             }
 
             // 设置生物群系
-            for (int i = 0; i < 16; ++i)
+            for (int height = 0; height < 64; ++height)
             {
-                for (int j = 0; j < 16; ++j)
+                for (int i = 0; i < 4; ++i)
                 {
-                    chunk.Biomes[j * 16 + i] = (byte)_biomesForGeneration[j, i].GetBiomeId();
+                    for (int j = 0; j < 4; ++j)
+                    {
+                        chunk.Biomes[(height * 4 + i) * 4 + j] = (int)_biomesForGeneration[j * 4, i * 4].GetBiomeId();
+                    }
                 }
             }
 

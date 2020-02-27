@@ -27,11 +27,11 @@ namespace MineCase.Algorithm.World.Layer
                         }
                         else if (r >= 1 && r < 2)
                         {
-                            parentResult[i, j] = (int)BiomeId.ExtremeHills;
+                            parentResult[i, j] = (int)BiomeId.Mountains;
                         }
                         else if (r >= 2 && r < 3)
                         {
-                            parentResult[i, j] = (int)BiomeId.Swampland;
+                            parentResult[i, j] = (int)BiomeId.Swamp;
                         }
                         else if (r >= 3 && r < 5)
                         {

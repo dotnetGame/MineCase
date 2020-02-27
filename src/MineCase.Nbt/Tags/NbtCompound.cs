@@ -20,9 +20,9 @@ namespace MineCase.Nbt.Tags
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NbtCompound"/> class.<para />
-        /// 默认构造方法
+        /// 默认构造方法.
         /// </summary>
-        /// <param name="name">该 Tag 的名称</param>
+        /// <param name="name">该 Tag 的名称.</param>
         public NbtCompound(string name = null)
             : this(null, name)
         {
@@ -30,13 +30,13 @@ namespace MineCase.Nbt.Tags
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NbtCompound"/> class.<para />
-        /// 从 <paramref name="tags"/> 初始化子 Tag 的构造方法
+        /// 从 <paramref name="tags"/> 初始化子 Tag 的构造方法.
         /// </summary>
-        /// <param name="tags">要用于提供子 Tag 的范围</param>
-        /// <param name="name">该 Tag 的名称</param>
-        /// <remarks><paramref name="tags"/> 为 null 时将子 Tag 初始化为空集合</remarks>
-        /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了不具有名称的 Tag</exception>
-        /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了 null</exception>
+        /// <param name="tags">要用于提供子 Tag 的范围.</param>
+        /// <param name="name">该 Tag 的名称.</param>
+        /// <remarks><paramref name="tags"/> 为 null 时将子 Tag 初始化为空集合.</remarks>
+        /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了不具有名称的 Tag.</exception>
+        /// <exception cref="ArgumentException"><paramref name="tags"/> 中包含了 null.</exception>
         public NbtCompound(IEnumerable<NbtTag> tags, string name = null)
             : base(name)
         {

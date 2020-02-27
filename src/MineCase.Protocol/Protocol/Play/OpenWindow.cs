@@ -9,7 +9,7 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x13)]
+    [Packet(0x2F)]
     public sealed class OpenWindow : ISerializablePacket
     {
         [SerializeAs(DataType.Byte)]

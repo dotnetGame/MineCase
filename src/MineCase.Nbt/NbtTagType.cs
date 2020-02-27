@@ -102,6 +102,13 @@ namespace MineCase.Nbt
         /// The prefix is a signed integer (thus 4 bytes, <see cref="int"/>) and indicates the number of 4 byte integers.
         /// </summary>
         [TagClass(typeof(Tags.NbtIntArray))]
-        IntArray = 0x0b
+        IntArray = 0x0b,
+
+        /// <summary>
+        /// A length-prefixed array of signed integers (<see cref="T:long[]"/>).
+        /// The prefix is a signed integer (thus 4 bytes, <see cref="int"/>) and indicates the number of 8 byte integers.
+        /// </summary>
+        [TagClass(typeof(Tags.NbtLongArray))]
+        LongArray = 0x0c,
     }
 }

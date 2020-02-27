@@ -6,7 +6,7 @@ namespace MineCase.Protocol
 {
     public static class Protocol
     {
-        public const uint Version = 335;
+        public const uint Version = 578;
 
         public static void ValidatePacketLength(uint length)
         {

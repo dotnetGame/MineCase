@@ -9,7 +9,7 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x4A)]
+    [Packet(0x56)]
     public sealed class CollectItem : ISerializablePacket
     {
         [SerializeAs(DataType.VarInt)]

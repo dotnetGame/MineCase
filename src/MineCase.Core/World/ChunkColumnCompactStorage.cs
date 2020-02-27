@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using MineCase.Block;
+using MineCase.Nbt;
+using MineCase.Nbt.Tags;
+using MineCase.World.Biomes;
 
 namespace MineCase.World
 {
@@ -36,9 +39,45 @@ namespace MineCase.World
             }
         }
 
+        public NbtCompound Heightmaps
+        {
+            get
+            {
+                long[] compactArray = new long[36];
+
+                // Load WorldSurface to it
+                for (int x = 0; x < ChunkConstants.BlockEdgeWidthInSection; ++x)
+                {
+                    for (int z = 0; z < ChunkConstants.BlockEdgeWidthInSection; ++z)
+                    {
+                        int i = z * ChunkConstants.BlockEdgeWidthInSection + x;
+
+                        int maxEntryValue = (1 << 9) - 1;
+                        int bitOffset = i * 9;
+                        int ulongOfsset = bitOffset >> 6;
+                        int ulongOfssetNext = (i + 1) * 9 - 1 >> 6;
+                        int bitsLow = bitOffset ^ ulongOfsset << 6;
+                        compactArray[ulongOfsset] = compactArray[ulongOfsset] & ~(maxEntryValue << bitsLow) | ((long)GroundHeight[x, z] & maxEntryValue) << bitsLow;
+                        if (ulongOfsset != ulongOfssetNext)
+                        {
+                            int bitsHigh = 64 - bitsLow;
+                            int entryOffset = 9 - bitsHigh;
+                            compactArray[ulongOfssetNext] = compactArray[ulongOfssetNext] >> entryOffset << entryOffset | ((long)GroundHeight[x, z] & maxEntryValue) >> bitsHigh;
+                        }
+                    }
+                }
+
+                NbtCompound ret = new NbtCompound();
+                ret.Add(new NbtLongArray(compactArray, "MOTION_BLOCKING"));
+                return ret;
+            }
+        }
+
         public ChunkSectionCompactStorage[] Sections { get; } = new ChunkSectionCompactStorage[ChunkConstants.SectionsPerChunk];
 
-        public byte[] Biomes { get; }
+        public int[,] GroundHeight { get; } = new int[ChunkConstants.BlockEdgeWidthInSection, ChunkConstants.BlockEdgeWidthInSection];
+
+        public int[] Biomes { get; }
 
         public BlockState this[int x, int y, int z]
         {
@@ -48,10 +87,14 @@ namespace MineCase.World
 
         public ChunkColumnCompactStorage()
         {
-            Biomes = new byte[256];
+            Biomes = new int[1024];
+            for (int i = 0; i < Biomes.Length; ++i)
+            {
+                Biomes[i] = (int)BiomeId.Plains;
+            }
         }
 
-        public ChunkColumnCompactStorage(byte[] biomes)
+        public ChunkColumnCompactStorage(int[] biomes)
         {
             Biomes = biomes;
         }
@@ -59,12 +102,10 @@ namespace MineCase.World
 
     public sealed class ChunkSectionCompactStorage
     {
-        private const byte _bitsId = 9;
-        private const byte _bitsMeta = 4;
-        private const byte _bitsPerBlock = _bitsId + _bitsMeta;
-        private const uint _idMask = (1u << _bitsId) - 1;
-        private const uint _metaMask = (1u << _bitsMeta) - 1;
+        private const byte _bitsPerBlock = 13;
         public const ulong BlockMask = (1u << _bitsPerBlock) - 1;
+
+        private short _nonAirBlockCount = 4096; // FIXME: count block non air
 
         public byte BitsPerBlock => _bitsPerBlock;
 
@@ -73,6 +114,8 @@ namespace MineCase.World
         public NibbleArray BlockLight { get; }
 
         public NibbleArray SkyLight { get; }
+
+        public short NonAirBlockCount { get => _nonAirBlockCount; }
 
         public ChunkSectionCompactStorage(bool hasSkylight)
         {
@@ -103,12 +146,12 @@ namespace MineCase.World
                     var rest = _bitsPerBlock - toRead;
                     if (rest > 0)
                         value |= (Storage[offset.indexOffset + 1] & ((1u << rest) - 1)) << toRead;
-                    return new BlockState { Id = (uint)((value >> _bitsMeta) & _idMask), MetaValue = (uint)(value & _metaMask) };
+                    return new BlockState { Id = (uint)(value & BlockMask) };
                 }
 
                 set
                 {
-                    var stgValue = ((ulong)value.Id << _bitsMeta) | (value.MetaValue & _metaMask);
+                    var stgValue = (ulong)(value.Id & BlockMask);
                     var offset = GetOffset(x, y, z);
                     var tmpValue = Storage[offset.indexOffset];
                     var mask = BlockMask << offset.bitOffset;
@@ -184,7 +227,7 @@ namespace MineCase.World
 
         public static uint ToUInt32(ref BlockState blockState)
         {
-            return ((blockState.Id & _idMask) << _bitsMeta) | (blockState.MetaValue & _metaMask);
+            return blockState.Id;
         }
     }
 }

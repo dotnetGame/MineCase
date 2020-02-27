@@ -9,7 +9,7 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x0B)]
+    [Packet(0x0C)]
     public sealed class BlockChange : ISerializablePacket
     {
         [SerializeAs(DataType.Position)]

@@ -8,7 +8,7 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x20)]
+    [Packet(0x2D)]
     public sealed class UseItem
     {
         [SerializeAs(DataType.VarInt)]

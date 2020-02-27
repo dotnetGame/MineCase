@@ -12,7 +12,7 @@ namespace MineCase.Server.Game.Entities.Components
     internal class KeepAliveComponent : Component, IHandle<BeginLogin>, IHandle<PlayerLoggedIn>, IHandle<KickPlayer>
     {
         private uint _keepAliveId = 0;
-        public readonly Dictionary<uint, DateTime> _keepAliveWaiters = new Dictionary<uint, DateTime>();
+        public readonly Dictionary<long, DateTime> _keepAliveWaiters = new Dictionary<long, DateTime>();
         private bool _isOnline = false;
 
         private const int ClientKeepInterval = 6;
@@ -24,7 +24,7 @@ namespace MineCase.Server.Game.Entities.Components
         {
         }
 
-        public Task ReceiveResponse(uint keepAliveId)
+        public Task ReceiveResponse(long keepAliveId)
         {
             if (_keepAliveWaiters.TryGetValue(keepAliveId, out var sendTime))
             {

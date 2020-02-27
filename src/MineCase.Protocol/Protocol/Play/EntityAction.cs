@@ -19,7 +19,7 @@ namespace MineCase.Protocol.Play
         StartFlyingWithElytra = 8
     }
 
-    [Packet(0x15)]
+    [Packet(0x1B)]
     public sealed class EntityAction
     {
         [SerializeAs(DataType.VarInt)]

@@ -9,7 +9,7 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x3B)]
+    [Packet(0x44)]
     public sealed class EntityMetadata : ISerializablePacket
     {
         [SerializeAs(DataType.VarInt)]

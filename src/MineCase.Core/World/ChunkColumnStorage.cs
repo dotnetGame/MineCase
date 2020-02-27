@@ -9,7 +9,7 @@ namespace MineCase.World
     {
         public ChunkSectionStorage[] Sections { get; } = new ChunkSectionStorage[ChunkConstants.SectionsPerChunk];
 
-        public byte[] Biomes { get; } = new byte[256];
+        public int[] Biomes { get; } = new int[1024];
 
         public BlockState this[int x, int y, int z]
         {
@@ -30,7 +30,7 @@ namespace MineCase.World
             for (int i = 0; i < Sections.Length; i++)
                 storage.Sections[i] = Sections[i]?.Compact();
 
-            Buffer.BlockCopy(Biomes, 0, storage.Biomes, 0, Biomes.Length);
+            Buffer.BlockCopy(Biomes, 0, storage.Biomes, 0, Biomes.Length * sizeof(int));
             return storage;
         }
     }

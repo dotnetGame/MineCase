@@ -74,12 +74,12 @@ namespace MineCase.Server.Network.Play
                     break;
 
                 // Plugin Message
-                case 0x0A:
+                case 0x0B:
                     task = DispatchPacket(ServerboundPluginMessage.Deserialize(ref br));
                     break;
 
                 // Keep Alive
-                case 0x0C:
+                case 0x0F:
                     task = DispatchPacket(ServerboundKeepAlive.Deserialize(ref br));
                     break;
 
@@ -89,57 +89,57 @@ namespace MineCase.Server.Network.Play
                     break;
 
                 // Player Position
-                case 0x0E:
+                case 0x11:
                     task = DispatchPacket(PlayerPosition.Deserialize(ref br));
                     break;
 
-                // Position And Look
-                case 0x0F:
+                // Position And Look (In new wiki, it is Player Position And Rotation)
+                case 0x12:
                     task = DispatchPacket(ServerboundPositionAndLook.Deserialize(ref br));
                     break;
 
-                // Player Look
-                case 0x10:
+                // Player Look (In new wiki, it is Player Rotation)
+                case 0x13:
                     task = DispatchPacket(PlayerLook.Deserialize(ref br));
                     break;
 
                 // Player Digging
-                case 0x14:
+                case 0x1A:
                     task = DispatchPacket(PlayerDigging.Deserialize(ref br));
                     break;
 
                 // Entity Action
-                case 0x15:
+                case 0x1B:
                     task = DispatchPacket(EntityAction.Deserialize(ref br));
                     break;
 
                 // Held Item Change
-                case 0x1A:
+                case 0x23:
                     task = DispatchPacket(ServerboundHeldItemChange.Deserialize(ref br));
                     break;
 
                 // Animation
-                case 0x1D:
+                case 0x2A:
                     task = DispatchPacket(ServerboundAnimation.Deserialize(ref br));
                     break;
 
                 // Player Block Placement
-                case 0x1F:
+                case 0x2C:
                     task = DispatchPacket(PlayerBlockPlacement.Deserialize(ref br));
                     break;
 
                 // Use Item
-                case 0x20:
+                case 0x2D:
                     task = DispatchPacket(UseItem.Deserialize(ref br));
                     break;
 
                 // Click Window
-                case 0x08:
+                case 0x09:
                     task = DispatchPacket(ClickWindow.Deserialize(ref br));
                     break;
 
                 // Close Window
-                case 0x09:
+                case 0x0A:
                     task = DispatchPacket(ServerboundCloseWindow.Deserialize(ref br));
                     break;
                 default:
@@ -147,8 +147,9 @@ namespace MineCase.Server.Network.Play
                     return Task.CompletedTask;
             }
 
+            // Logger.LogInformation($"Got packet id: 0x{packet.PacketId:X2}.");
             if (!br.IsCosumed)
-                throw new InvalidDataException($"Packet data is not fully consumed.");
+                throw new InvalidDataException($"Packet data is not fully consumed, packet id: 0x{packet.PacketId:X2}.");
             return task;
         }
 

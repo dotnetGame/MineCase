@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using MineCase.Nbt;
+using MineCase.Nbt.Tags;
 using MineCase.Serialization;
 using MineCase.World;
 
@@ -10,7 +12,7 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x20)]
+    [Packet(0x22)]
     public sealed class ChunkData : ISerializablePacket
     {
         [SerializeAs(DataType.Int)]
@@ -20,10 +22,13 @@ namespace MineCase.Protocol.Play
         public int ChunkZ;
 
         [SerializeAs(DataType.Boolean)]
-        public bool GroundUpContinuous;
+        public bool FullChunk;
 
         [SerializeAs(DataType.VarInt)]
         public uint PrimaryBitMask;
+
+        [SerializeAs(DataType.NBTTag)]
+        public NbtCompound Heightmaps;
 
         [SerializeAs(DataType.VarInt)]
         public uint Size;
@@ -31,11 +36,14 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.Array)]
         public ChunkSection[] Data;
 
-        [SerializeAs(DataType.ByteArray)]
-        public byte[] Biomes;
+        [SerializeAs(DataType.IntArray)]
+        public int[] Biomes;
 
         [SerializeAs(DataType.VarInt)]
         public uint NumberOfBlockEntities;
+
+        [SerializeAs(DataType.NbtArray)]
+        public NbtCompound[] BlockEntities;
 
         public static ChunkData Deserialize(ref SpanReader br, bool isOverworld)
         {
@@ -43,22 +51,24 @@ namespace MineCase.Protocol.Play
             {
                 ChunkX = br.ReadAsInt(),
                 ChunkZ = br.ReadAsInt(),
-                GroundUpContinuous = br.ReadAsBoolean(),
-                PrimaryBitMask = br.ReadAsVarInt(out _)
+                FullChunk = br.ReadAsBoolean(),
+                PrimaryBitMask = br.ReadAsVarInt(out _),
+                Heightmaps = br.ReadAsNbtTag(),
             };
 
-            var hasBioms = result.GroundUpContinuous;
+            var hasBioms = result.FullChunk;
+            if (hasBioms)
+                result.Biomes = br.ReadAsIntArray(1024);
 
             result.Size = br.ReadAsVarInt(out _);
-            var dataReader = br.ReadAsSubReader((int)result.Size - (hasBioms ? 256 : 0));
+            var dataReader = br.ReadAsSubReader((int)result.Size);
             var data = new List<ChunkSection>();
             while (!dataReader.IsCosumed)
                 data.Add(ChunkSection.Deserialize(ref dataReader, isOverworld));
             result.Data = data.ToArray();
 
-            if (hasBioms)
-                result.Biomes = br.ReadAsByteArray(256);
             result.NumberOfBlockEntities = br.ReadAsVarInt(out _);
+            result.BlockEntities = br.ReadAsNbtTagArray((int)result.NumberOfBlockEntities);
             return result;
         }
 
@@ -66,8 +76,11 @@ namespace MineCase.Protocol.Play
         {
             bw.WriteAsInt(ChunkX);
             bw.WriteAsInt(ChunkZ);
-            bw.WriteAsBoolean(GroundUpContinuous);
+            bw.WriteAsBoolean(FullChunk);
             bw.WriteAsVarInt(PrimaryBitMask, out _);
+            bw.WriteAsNbtTag(Heightmaps);
+            if (FullChunk && Biomes != null)
+                bw.WriteAsIntArray(Biomes);
 
             using (var mem = new MemoryStream())
             {
@@ -75,16 +88,14 @@ namespace MineCase.Protocol.Play
                     dbw.WriteAsArray(Data);
 
                 var dataBytes = mem.ToArray();
-                Size = (uint)(dataBytes.Length + (Biomes?.Length ?? 0));
+                Size = (uint)dataBytes.Length;
 
                 bw.WriteAsVarInt(Size, out _);
                 bw.WriteAsByteArray(dataBytes);
             }
 
-            if (Biomes != null)
-                bw.WriteAsByteArray(Biomes);
-
             bw.WriteAsVarInt(NumberOfBlockEntities, out _);
+            bw.WriteAsNbtTagArray(BlockEntities);
         }
     }
 
@@ -93,6 +104,9 @@ namespace MineCase.Protocol.Play
 #endif
     public sealed class ChunkSection : ISerializablePacket
     {
+        [SerializeAs(DataType.Short)]
+        public short BlockCount;
+
         [SerializeAs(DataType.Byte)]
         public byte BitsPerBlock;
 
@@ -108,27 +122,29 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.Array)]
         public ulong[] DataArray;
 
-        [SerializeAs(DataType.Array)]
-        public byte[] BlockLight;
-
-        [SerializeAs(DataType.Array)]
-        public byte[] SkyLight;
-
         public static ChunkSection Deserialize(ref SpanReader br, bool isOverworld)
         {
             var result = new ChunkSection
             {
+                BlockCount = br.ReadAsShort(),
                 BitsPerBlock = br.ReadAsByte(),
                 PaletteLength = br.ReadAsVarInt(out _)
             };
 
-            if (result.PaletteLength != 0)
+            if (result.BitsPerBlock < 4)
             {
-                var paletteReader = br.ReadAsSubReader((int)result.PaletteLength);
-                var palette = new List<uint>();
-                while (!paletteReader.IsCosumed)
-                    palette.Add(paletteReader.ReadAsVarInt(out _));
-                result.Palette = palette.ToArray();
+                throw new InvalidDataException("ChunkSection: BitsPerBlock should be greater than or equal to 4.");
+            }
+            else if (result.BitsPerBlock >= 5 && result.BitsPerBlock < 9)
+            {
+                if (result.PaletteLength != 0)
+                {
+                    var paletteReader = br.ReadAsSubReader((int)result.PaletteLength);
+                    var palette = new List<uint>();
+                    while (!paletteReader.IsCosumed)
+                        palette.Add(paletteReader.ReadAsVarInt(out _));
+                    result.Palette = palette.ToArray();
+                }
             }
 
             result.DataArrayLength = br.ReadAsVarInt(out _);
@@ -136,45 +152,42 @@ namespace MineCase.Protocol.Play
             for (int i = 0; i < dataArray.Length; i++)
                 dataArray[i] = br.ReadAsUnsignedLong();
             result.DataArray = dataArray;
-            result.BlockLight = br.ReadAsByteArray(ChunkConstants.BlocksInSection / 2);
-            if (isOverworld)
-                result.SkyLight = br.ReadAsByteArray(ChunkConstants.BlocksInSection / 2);
             return result;
         }
 
         public void Serialize(BinaryWriter bw)
         {
             DataArrayLength = (uint)DataArray.Length;
+            bw.WriteAsShort(BlockCount);
             bw.WriteAsByte(BitsPerBlock);
 
-            if (Palette != null)
+            if (BitsPerBlock < 4)
             {
-                using (var mem = new MemoryStream())
-                {
-                    using (var pbw = new BinaryWriter(mem, Encoding.UTF8, true))
-                    {
-                        foreach (var item in Palette)
-                            pbw.WriteAsVarInt(item, out _);
-                    }
-
-                    var paletteBytes = mem.ToArray();
-                    PaletteLength = (uint)paletteBytes.Length;
-                    bw.WriteAsVarInt(PaletteLength, out _);
-                    bw.WriteAsByteArray(paletteBytes);
-                }
+                throw new InvalidDataException("ChunkSection: BitsPerBlock should be greater than or equal to 4.");
             }
-            else
+            else if (BitsPerBlock >= 5 && BitsPerBlock < 9)
             {
-                PaletteLength = 0;
-                bw.WriteAsVarInt(PaletteLength, out _);
+                if (Palette != null)
+                {
+                    using (var mem = new MemoryStream())
+                    {
+                        using (var pbw = new BinaryWriter(mem, Encoding.UTF8, true))
+                        {
+                            foreach (var item in Palette)
+                                pbw.WriteAsVarInt(item, out _);
+                        }
+
+                        var paletteBytes = mem.ToArray();
+                        PaletteLength = (uint)paletteBytes.Length;
+                        bw.WriteAsVarInt(PaletteLength, out _);
+                        bw.WriteAsByteArray(paletteBytes);
+                    }
+                }
             }
 
             bw.WriteAsVarInt(DataArrayLength, out _);
             foreach (var item in DataArray)
                 bw.WriteAsUnsignedLong(item);
-            bw.WriteAsByteArray(BlockLight);
-            if (SkyLight != null)
-                bw.WriteAsByteArray(SkyLight);
         }
     }
 }

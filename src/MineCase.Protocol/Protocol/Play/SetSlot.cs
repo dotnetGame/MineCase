@@ -10,7 +10,7 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x16)]
+    [Packet(0x17)]
     public sealed class SetSlot : ISerializablePacket
     {
         [SerializeAs(DataType.Byte)]

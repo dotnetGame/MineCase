@@ -184,7 +184,8 @@ namespace MineCase.Server.User
                 await _generator.TimeUpdate(e.WorldAge, e.TimeOfDay);
             }
 
-            if (e.WorldAge % 20 == 0)
+            // When server has not sent Join Game, TimeUpdate will cause minecraft client NullPointerException.(Test in 1.15.2)
+            if (e.WorldAge % 20 == 0 && _userState == UserState.Playing)
                 await _generator.TimeUpdate(e.WorldAge, e.TimeOfDay);
 
             await Tell(new GameTick { Args = e });
@@ -254,7 +255,7 @@ namespace MineCase.Server.User
                 Slots = new[]
                 {
                     new Slot { BlockId = (short)BlockId.Furnace, ItemCount = 1 },
-                    new Slot { BlockId = (short)BlockId.Wood, ItemCount = 8 }
+                    new Slot { BlockId = (short)BlockId.OakLog, ItemCount = 8 }
                 }.Concat(Enumerable.Repeat(Slot.Empty, SlotArea.UserSlotsCount - 2)).ToArray();
             }
         }

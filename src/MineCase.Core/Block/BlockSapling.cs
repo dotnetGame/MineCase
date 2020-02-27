@@ -25,9 +25,10 @@ namespace MineCase.Block
             UnlocalizedName = "sapling";
         }
 
+        // FIXME the broken item is not correct
         public override ItemState BlockBrokenItem(ItemState hand, bool silktouch)
         {
-            return new ItemState { Id = (uint)BlockId.Sapling, MetaValue = BlockState.MetaValue };
+            return new ItemState { Id = (uint)BlockId.OakSapling, MetaValue = BlockState.MetaValue };
         }
     }
 }

@@ -30,11 +30,8 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.Angle)]
         public Angle Yaw;
 
-        [SerializeAs(DataType.Double)]
+        [SerializeAs(DataType.Angle)]
         public Angle Pitch;
-
-        [SerializeAs(DataType.ByteArray)]
-        public byte[] Metadata;
 
         public void Serialize(BinaryWriter bw)
         {
@@ -45,7 +42,6 @@ namespace MineCase.Protocol.Play
             bw.WriteAsDouble(Z);
             bw.WriteAsAngle(Yaw);
             bw.WriteAsAngle(Pitch);
-            bw.WriteAsByteArray(Metadata);
         }
     }
 }

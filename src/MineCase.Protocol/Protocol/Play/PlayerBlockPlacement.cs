@@ -10,7 +10,7 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x1F)]
+    [Packet(0x2C)]
     public sealed class PlayerBlockPlacement
     {
         [SerializeAs(DataType.Position)]

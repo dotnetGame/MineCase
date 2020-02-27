@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
-
+using MineCase.Nbt;
+using MineCase.Nbt.Serialization;
+using MineCase.Nbt.Tags;
 using MineCase.Protocol;
 using MineCase.Protocol.Play;
 
@@ -37,6 +39,14 @@ namespace MineCase.Serialization
 
         public static void WriteAsByteArray(this BinaryWriter bw, byte[] value) =>
             bw.Write(value);
+
+        public static void WriteAsIntArray(this BinaryWriter bw, int[] value)
+        {
+            foreach (var eachInt in value)
+            {
+                bw.WriteAsInt(eachInt);
+            }
+        }
 
         public static void WriteAsString(this BinaryWriter bw, string value)
         {
@@ -104,6 +114,19 @@ namespace MineCase.Serialization
                 item.Serialize(bw);
         }
 
+        public static void WriteAsNbtTag(this BinaryWriter bw, NbtCompound value)
+        {
+            NbtTagSerializer.SerializeTag(value, bw);
+        }
+
+        public static void WriteAsNbtTagArray(this BinaryWriter bw, NbtCompound[] data)
+        {
+            for (int i = 0; i < data.Length; ++i)
+            {
+                bw.WriteAsNbtTag(data[i]);
+            }
+        }
+
         public static void WriteAsPosition(this BinaryWriter bw, Position position)
         {
             Debug.Assert(IsValueInRangeInclusive(position.X, -33554432, 33554431), "position X value not in range.");
@@ -123,11 +146,11 @@ namespace MineCase.Serialization
 
         public static void WriteAsSlot(this BinaryWriter bw, Slot slot)
         {
-            bw.WriteAsShort(slot.BlockId);
+            bw.WriteAsBoolean(!slot.IsEmpty);
             if (!slot.IsEmpty)
             {
+                bw.WriteAsVarInt((uint)slot.BlockId, out _);
                 bw.WriteAsByte(slot.ItemCount);
-                bw.WriteAsShort(slot.ItemDamage);
                 if (slot.NBT != null)
                     slot.NBT.WriteTo(bw.BaseStream);
                 else

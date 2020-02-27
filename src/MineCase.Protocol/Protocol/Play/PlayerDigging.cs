@@ -28,7 +28,7 @@ namespace MineCase.Protocol.Play
         Special = 255
     }
 
-    [Packet(0x14)]
+    [Packet(0x1A)]
     public sealed class PlayerDigging
     {
         [SerializeAs(DataType.VarInt)]

@@ -40,10 +40,13 @@ namespace MineCase.Block
             {
                 return 255;
             }
+
+            /*
             else if (state.IsSameId(BlockStates.LargeFlowers()))
             {
                 return 255;
             }
+            */
             else
             {
                 return 0;
@@ -57,12 +60,12 @@ namespace MineCase.Block
 
         public static bool IsLeaves(this BlockState state)
         {
-            return state.IsSameId(BlockStates.Leaves()) || state.IsSameId(BlockStates.Leaves2());
+            return state.IsSameId(BlockStates.Leaves()); // || state.IsSameId(BlockStates.Leaves2());
         }
 
         public static bool IsWood(this BlockState state)
         {
-            return state.IsSameId(BlockStates.Wood()) || state.IsSameId(BlockStates.Wood2());
+            return state.IsSameId(BlockStates.Wood()); // || state.IsSameId(BlockStates.Wood2());
         }
 
         public static bool CanMobStand(this BlockState state)
@@ -70,7 +73,8 @@ namespace MineCase.Block
             return !state.IsSameId(BlockStates.Air()) &&
                 !state.IsSameId(BlockStates.Grass()) &&
                 !state.IsSameId(BlockStates.Water()) &&
-                !state.IsSameId(BlockStates.LargeFlowers()) &&
+
+                // !state.IsSameId(BlockStates.LargeFlowers()) &&
                 !state.IsSameId(BlockStates.Poppy()) &&
                 !state.IsSameId(BlockStates.Dandelion());
         }
@@ -79,7 +83,8 @@ namespace MineCase.Block
         {
             return !state.IsSameId(BlockStates.Air()) &&
                 !state.IsSameId(BlockStates.Grass()) &&
-                !state.IsSameId(BlockStates.LargeFlowers()) &&
+
+                // !state.IsSameId(BlockStates.LargeFlowers()) &&
                 !state.IsSameId(BlockStates.Poppy()) &&
                 !state.IsSameId(BlockStates.Dandelion());
         }

@@ -9,7 +9,7 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x40)]
+    [Packet(0x49)]
     public sealed class UpdateHealth : ISerializablePacket
     {
         [SerializeAs(DataType.Float)]

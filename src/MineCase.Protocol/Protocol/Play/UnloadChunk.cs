@@ -9,7 +9,7 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x1D)]
+    [Packet(0x1E)]
     public sealed class UnloadChunk : ISerializablePacket
     {
         [SerializeAs(DataType.Int)]

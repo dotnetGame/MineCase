@@ -13,7 +13,7 @@ using Orleans;
 namespace MineCase.Server.Game.Blocks
 {
     [BlockHandler(BlockId.Furnace)]
-    [BlockHandler(BlockId.BurningFurnace)]
+    [BlockHandler(BlockId.BlastFurnace)]
     public class FurnaceBlockHandler : BlockHandler
     {
         public override bool IsUsable => true;
