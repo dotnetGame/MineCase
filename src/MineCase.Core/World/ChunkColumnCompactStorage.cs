@@ -102,7 +102,7 @@ namespace MineCase.World
 
     public sealed class ChunkSectionCompactStorage
     {
-        private const byte _bitsPerBlock = 13;
+        private const byte _bitsPerBlock = 14;
         public const ulong BlockMask = (1u << _bitsPerBlock) - 1;
 
         private short _nonAirBlockCount = 4096; // FIXME: count block non air
@@ -146,12 +146,13 @@ namespace MineCase.World
                     var rest = _bitsPerBlock - toRead;
                     if (rest > 0)
                         value |= (Storage[offset.indexOffset + 1] & ((1u << rest) - 1)) << toRead;
-                    return new BlockState { Id = (uint)(value & BlockMask) };
+                    var blockState = BlockType.ParseBlockStateId((uint)(value & BlockMask));
+                    return new BlockState { Id = blockState.id, MetaValue = blockState.meta };
                 }
 
                 set
                 {
-                    var stgValue = (ulong)(value.Id & BlockMask);
+                    var stgValue = (ulong)((value.Id + value.MetaValue) & BlockMask);
                     var offset = GetOffset(x, y, z);
                     var tmpValue = Storage[offset.indexOffset];
                     var mask = BlockMask << offset.bitOffset;
