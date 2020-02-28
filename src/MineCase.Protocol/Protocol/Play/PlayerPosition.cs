@@ -9,7 +9,7 @@ namespace MineCase.Protocol.Play
 #if !NET46
     [Orleans.Concurrency.Immutable]
 #endif
-    [Packet(0x0E)]
+    [Packet(0x11)]
     public sealed class PlayerPosition
     {
         [SerializeAs(DataType.Double)]

@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Engine;
 using MineCase.Server.World;
+using MineCase.World;
 
 namespace MineCase.Server.Components
 {

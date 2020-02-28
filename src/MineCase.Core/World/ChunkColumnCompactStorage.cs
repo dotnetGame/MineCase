@@ -140,6 +140,8 @@ namespace MineCase.World
             {
                 get
                 {
+                    if (y < 0 || y > 255)
+                        return BlockStates.Air();
                     var offset = GetOffset(x, y, z);
                     var toRead = Math.Min(_bitsPerBlock, 64 - offset.bitOffset);
                     var value = Storage[offset.indexOffset] >> offset.bitOffset;
@@ -152,6 +154,8 @@ namespace MineCase.World
 
                 set
                 {
+                    if (y < 0 || y > 255)
+                        throw new IndexOutOfRangeException("Axis y out of range");
                     var stgValue = (ulong)((value.Id + value.MetaValue) & BlockMask);
                     var offset = GetOffset(x, y, z);
                     var tmpValue = Storage[offset.indexOffset];
@@ -228,7 +232,7 @@ namespace MineCase.World
 
         public static uint ToUInt32(ref BlockState blockState)
         {
-            return blockState.Id;
+            return blockState.Id + blockState.MetaValue;
         }
     }
 }

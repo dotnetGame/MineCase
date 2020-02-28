@@ -25,6 +25,8 @@ namespace MineCase.Server.Game.Entities
     [Reentrant]
     internal class PlayerGrain : EntityGrain, IPlayer
     {
+        public uint ViewDistance => GetValue(ViewDistanceComponent.ViewDistanceProperty);
+
         protected override void InitializeComponents()
         {
             base.InitializeComponents();
@@ -56,13 +58,15 @@ namespace MineCase.Server.Game.Entities
             SetComponent(new CollectorComponent());
             SetComponent(new ColliderComponent());
             SetComponent(new MobSpawnerComponent());
+            SetComponent(new OutOfWorldComponent());
+            SetComponent(new DeathComponent());
         }
 
         public override async Task OnActivateAsync()
         {
             await base.OnActivateAsync();
-            this.SetLocalValue(HealthComponent.MaxHealthProperty, 20u);
-            this.SetLocalValue(FoodComponent.MaxFoodProperty, 20u);
+            this.SetLocalValue(HealthComponent.MaxHealthProperty, 20);
+            this.SetLocalValue(FoodComponent.MaxFoodProperty, 20);
             this.SetLocalValue(HealthComponent.HealthProperty, GetValue(HealthComponent.MaxHealthProperty));
             this.SetLocalValue(FoodComponent.FoodProperty, GetValue(FoodComponent.MaxFoodProperty));
         }
@@ -79,6 +83,11 @@ namespace MineCase.Server.Game.Entities
         {
             // await _generator.SendClientAnimation(entityID, animationID);
             throw new NotImplementedException();
+        }
+
+        public Task<uint> GetViewDistance()
+        {
+            return Task.FromResult(ViewDistance);
         }
     }
 }

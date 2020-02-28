@@ -8,25 +8,25 @@ namespace MineCase.Server.Game.Entities.Components
 {
     internal class HealthComponent : Component
     {
-        public static readonly DependencyProperty<uint> MaxHealthProperty =
-            DependencyProperty.Register<uint>("MaxHealth", typeof(HealthComponent));
+        public static readonly DependencyProperty<int> MaxHealthProperty =
+            DependencyProperty.Register<int>("MaxHealth", typeof(HealthComponent));
 
-        public static readonly DependencyProperty<uint> HealthProperty =
-            DependencyProperty.Register<uint>("Health", typeof(HealthComponent));
+        public static readonly DependencyProperty<int> HealthProperty =
+            DependencyProperty.Register<int>("Health", typeof(HealthComponent));
 
-        public uint Health => AttachedObject.GetValue(HealthProperty);
+        public int Health => AttachedObject.GetValue(HealthProperty);
 
-        public uint MaxHealth => AttachedObject.GetValue(MaxHealthProperty);
+        public int MaxHealth => AttachedObject.GetValue(MaxHealthProperty);
 
         public HealthComponent(string name = "health")
             : base(name)
         {
         }
 
-        public void SetHealth(uint value) =>
+        public void SetHealth(int value) =>
             AttachedObject.SetLocalValue(HealthProperty, value);
 
-        public void SetMaxHealth(uint value) =>
+        public void SetMaxHealth(int value) =>
             AttachedObject.SetLocalValue(MaxHealthProperty, value);
     }
 }

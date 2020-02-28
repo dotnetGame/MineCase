@@ -31,8 +31,8 @@ namespace MineCase.Server.Game.Entities
         public async override Task OnActivateAsync()
         {
             await base.OnActivateAsync();
-            this.SetLocalValue(HealthComponent.MaxHealthProperty, 20u);
-            this.SetLocalValue(FoodComponent.MaxFoodProperty, 20u);
+            this.SetLocalValue(HealthComponent.MaxHealthProperty, 20);
+            this.SetLocalValue(FoodComponent.MaxFoodProperty, 20);
             this.SetLocalValue(HealthComponent.HealthProperty, GetValue(HealthComponent.MaxHealthProperty));
             this.SetLocalValue(FoodComponent.FoodProperty, GetValue(FoodComponent.MaxFoodProperty));
         }

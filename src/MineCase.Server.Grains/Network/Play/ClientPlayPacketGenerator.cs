@@ -267,7 +267,7 @@ namespace MineCase.Server.Network.Play
         }
 
         // TODO update params for 1.15.2
-        public Task JoinGame(uint eid, GameMode gameMode, Dimension dimension, Difficulty difficulty, byte maxPlayers, string levelType, bool reducedDebugInfo)
+        public Task JoinGame(uint eid, GameMode gameMode, Dimension dimension, Difficulty difficulty, byte maxPlayers, uint viewDistance, string levelType, bool reducedDebugInfo)
         {
             return SendPacket(new JoinGame
             {
@@ -275,9 +275,11 @@ namespace MineCase.Server.Network.Play
                 GameMode = ToByte(gameMode),
                 Dimension = (int)dimension,
                 HashedSeed = 0, // FIXME
-                LevelType = levelType,
                 MaxPlayers = maxPlayers,
-                ReducedDebugInfo = reducedDebugInfo
+                LevelType = levelType,
+                ViewDistance = viewDistance,
+                ReducedDebugInfo = reducedDebugInfo,
+                EnableRespawnScreen = true,
             });
         }
 
@@ -335,7 +337,7 @@ namespace MineCase.Server.Network.Play
             });
         }
 
-        public Task UpdateHealth(uint health, uint maxHealth, uint food, uint maxFood, float foodSaturation)
+        public Task UpdateHealth(int health, int maxHealth, int food, int maxFood, float foodSaturation)
         {
             return SendPacket(new UpdateHealth
             {
@@ -541,6 +543,40 @@ namespace MineCase.Server.Network.Play
                 WindowId = windowId,
                 Property = PropertyToShort(),
                 Value = value
+            });
+        }
+
+        public Task EntityTeleport(uint entityId, Vector3 position, byte pitch, byte yaw, bool onGround)
+        {
+            return SendPacket(new EntityTeleport
+            {
+                EID = entityId,
+                X = position.X,
+                Y = position.Y,
+                Z = position.Z,
+                Pitch = pitch,
+                Yaw = yaw,
+                OnGround = onGround,
+            });
+        }
+
+        public Task Respawn(Dimension dimension, long hashseed, GameMode gameMode, string levelType)
+        {
+            return SendPacket(new Respawn
+            {
+                Dimension = (int)dimension,
+                HashedSeed = hashseed,
+                Gamemode = ToByte(gameMode),
+                LevelType = levelType,
+            });
+        }
+
+        public Task UpdateViewPosition(int chunkX, int chunkZ)
+        {
+            return SendPacket(new UpdateViewPosition
+            {
+                ChunkX = chunkX,
+                ChunkZ = chunkZ,
             });
         }
 

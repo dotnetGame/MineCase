@@ -28,8 +28,8 @@ namespace MineCase.Server.World.Decoration.Plants
 
         public static bool IsSoil(BlockState state)
         {
-            if (state == BlockStates.Dirt() ||
-                state == BlockStates.GrassBlock())
+            if (state.IsId(BlockId.Dirt) ||
+                state.IsId(BlockId.GrassBlock))
             {
                 return true;
             }

@@ -32,8 +32,8 @@ namespace MineCase.Engine
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyMetadata{T}"/> class.
         /// </summary>
-        /// <param name="defaultValue">默认值</param>
-        /// <param name="propertyChangedHandler">属性更改处理器</param>
+        /// <param name="defaultValue">默认值.</param>
+        /// <param name="propertyChangedHandler">属性更改处理器.</param>
         public PropertyMetadata(T defaultValue, EventHandler<PropertyChangedEventArgs<T>> propertyChangedHandler = null)
         {
             _defaultValue = defaultValue;

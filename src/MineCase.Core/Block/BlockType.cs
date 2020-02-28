@@ -726,6 +726,21 @@ namespace MineCase.Block
         }
     }
 
+    // New enums
+    public enum GrassBlockSnowy : uint
+    {
+        True = 0,
+        False = 1,
+    }
+
+    public enum OakLogAxis : uint
+    {
+        X = 0,
+        Y = 1,
+        Z = 2,
+    }
+
+    // Old enums
     public enum WoodPlankType : uint
     {
         Oak = 0,
@@ -779,14 +794,22 @@ namespace MineCase.Block
     [Flags]
     public enum FluidType : uint
     {
-        Level1 = 0,
-        Level2 = 1,
-        Level3 = 2,
-        Level4 = 3,
-        Level5 = 4,
-        Level6 = 5,
-        Level7 = 6,
-        Level8 = 7,
+        Level0 = 0,
+        Level1 = 1,
+        Level2 = 2,
+        Level3 = 3,
+        Level4 = 4,
+        Level5 = 5,
+        Level6 = 6,
+        Level7 = 7,
+        Level8 = 8,
+        Level9 = 9,
+        Level10 = 10,
+        Level11 = 11,
+        Level12 = 12,
+        Level13 = 13,
+        Level14 = 14,
+        Level15 = 15,
 
         // 0x8 bit field : If set, this liquid is "falling" and only spreads downward
         FallingFlag = 0x8

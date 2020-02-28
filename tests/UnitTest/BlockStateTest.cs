@@ -28,12 +28,12 @@ namespace MineCase.UnitTest
         [Fact]
         public void IsIdTest()
         {
-            BlockState state1 = BlockStates.Stone(StoneType.Diorite);
+            BlockState state1 = BlockStates.Diorite();
             BlockState state2 = BlockStates.Leaves(LeaveType.Birch);
             BlockState state3 = BlockStates.Wood(WoodType.Birch);
             BlockState state4 = BlockStates.Wood(WoodType.Oak);
 
-            Assert.True(state1.IsId(BlockId.Stone));
+            Assert.True(state1.IsId(BlockId.Diorite));
 
             // Assert.True(state2.IsId(BlockId.Leaves));
             // Assert.True(state3.IsId(BlockId.Wood));

@@ -188,6 +188,7 @@ namespace MineCase.Server.Network.Play
 
         private Task DispatchPacket(ServerboundPositionAndLook packet)
         {
+            // TODO: check if player movement is valid
             AttachedObject.SetLocalValue(EntityWorldPositionComponent.EntityWorldPositionProperty, new EntityWorldPos((float)packet.X, (float)packet.FeetY, (float)packet.Z));
             AttachedObject.SetLocalValue(EntityLookComponent.PitchProperty, packet.Pitch);
             AttachedObject.SetLocalValue(EntityLookComponent.YawProperty, packet.Yaw);
@@ -203,6 +204,7 @@ namespace MineCase.Server.Network.Play
 
         private Task DispatchPacket(PlayerPosition packet)
         {
+            // TODO: check if player movement is valid
             AttachedObject.SetLocalValue(EntityWorldPositionComponent.EntityWorldPositionProperty, new EntityWorldPos((float)packet.X, (float)packet.FeetY, (float)packet.Z));
             AttachedObject.SetLocalValue(EntityOnGroundComponent.IsOnGroundProperty, packet.OnGround);
             return Task.CompletedTask;

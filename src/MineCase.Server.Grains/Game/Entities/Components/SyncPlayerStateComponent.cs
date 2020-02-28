@@ -60,6 +60,7 @@ namespace MineCase.Server.Game.Entities.Components
             AttachedObject.RegisterPropertyChangedHandler(EntityLookComponent.HeadYawProperty, OnEntityHeadYawChanged);
             AttachedObject.RegisterPropertyChangedHandler(EntityLookComponent.PitchProperty, OnEntityPitchChanged);
             AttachedObject.RegisterPropertyChangedHandler(EntityLookComponent.YawProperty, OnEntityYawChanged);
+            AttachedObject.RegisterPropertyChangedHandler(HealthComponent.HealthProperty, OnEntityHealthChanged);
         }
 
         private ChunkEventBroadcastComponent _broadcastComponent;
@@ -101,9 +102,22 @@ namespace MineCase.Server.Game.Entities.Components
 
         private void OnEntityWorldPositionChanged(object sender, PropertyChangedEventArgs<EntityWorldPos> e)
         {
+            var generator = AttachedObject.GetComponent<ClientboundPacketComponent>().GetGenerator();
+
+            // Update Collider
             var pos = e.NewValue;
             var box = new Cuboid(new Point3d(pos.X, pos.Z, pos.Y), new Size(0.6f, 0.6f, 1.75f));
             AttachedObject.SetLocalValue(ColliderComponent.ColliderShapeProperty, box);
+
+            // Check if we need to send UpdateViewPosition packet. If the player walk cross chunk borders, send it.
+            var oldChunkPos = e.OldValue.ToChunkWorldPos();
+            var newChunkPos = e.NewValue.ToChunkWorldPos();
+            if (oldChunkPos != newChunkPos)
+            {
+                generator.UpdateViewPosition(newChunkPos.X, newChunkPos.Z);
+            }
+
+            // Broadcast to trackers
             _broadcastComponent = _broadcastComponent ?? AttachedObject.GetComponent<ChunkEventBroadcastComponent>();
             _broadcastComponent.GetGenerator(AttachedObject)
                 .EntityRelativeMove(
@@ -112,6 +126,18 @@ namespace MineCase.Server.Game.Entities.Components
                 GetDelta(e.OldValue.Y, e.NewValue.Y),
                 GetDelta(e.OldValue.Z, e.NewValue.Z),
                 AttachedObject.GetValue(EntityOnGroundComponent.IsOnGroundProperty));
+        }
+
+        private void OnEntityHealthChanged(object sender, PropertyChangedEventArgs<int> e)
+        {
+            var generator = AttachedObject.GetComponent<ClientboundPacketComponent>().GetGenerator();
+            var healthComponent = AttachedObject.GetComponent<HealthComponent>();
+            var foodComponent = AttachedObject.GetComponent<FoodComponent>();
+            generator.UpdateHealth(healthComponent.Health, healthComponent.MaxHealth, foodComponent.Food, foodComponent.MaxFood, foodComponent.FoodSaturation);
+            if (healthComponent.Health < 0)
+            {
+                AttachedObject.SetLocalValue(DeathComponent.IsDeathProperty, true);
+            }
         }
 
         private static short GetDelta(float before, float after)

@@ -104,13 +104,13 @@ namespace MineCase.Algorithm.World.Biomes
                 BlockStates.Gravel(),
                 genSettings.GravelSize);
             _graniteGen = new MinableGenerator(
-                BlockStates.Stone(StoneType.Granite),
+                BlockStates.Granite(),
                 genSettings.GraniteSize);
             _dioriteGen = new MinableGenerator(
-                BlockStates.Stone(StoneType.Diorite),
+                BlockStates.Diorite(),
                 genSettings.DioriteSize);
             _andesiteGen = new MinableGenerator(
-                BlockStates.Stone(StoneType.Andesite),
+                BlockStates.Andesite(),
                 genSettings.AndesiteSize);
             _coalGen = new MinableGenerator(
                 BlockStates.CoalOre(),

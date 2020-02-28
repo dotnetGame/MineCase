@@ -15,30 +15,84 @@ namespace MineCase.Block
             };
         }
 
-        public static BlockState Stone(StoneType type = StoneType.Stone)
+        public static BlockState Stone()
         {
             return new BlockState
             {
                 Id = (uint)BlockId.Stone,
-                MetaValue = (uint)type
+                MetaValue = 0,
             };
         }
 
-        public static BlockState GrassBlock()
+        public static BlockState Granite()
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.Granite,
+                MetaValue = 0,
+            };
+        }
+
+        public static BlockState PolishedGranite()
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.PolishedGranite,
+                MetaValue = 0,
+            };
+        }
+
+        public static BlockState Diorite()
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.Diorite,
+                MetaValue = 0,
+            };
+        }
+
+        public static BlockState PolishedDiorite()
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.PolishedDiorite,
+                MetaValue = 0,
+            };
+        }
+
+        public static BlockState Andesite()
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.Andesite,
+                MetaValue = 0,
+            };
+        }
+
+        public static BlockState PolishedAndesite()
+        {
+            return new BlockState
+            {
+                Id = (uint)BlockId.PolishedAndesite,
+                MetaValue = 0,
+            };
+        }
+
+        public static BlockState GrassBlock(GrassBlockSnowy snowy = GrassBlockSnowy.False)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.GrassBlock,
-                MetaValue = 0
+                MetaValue = (uint)snowy
             };
         }
 
-        public static BlockState Dirt(DirtType type = DirtType.Dirt)
+        public static BlockState Dirt()
         {
             return new BlockState
             {
                 Id = (uint)BlockId.Dirt,
-                MetaValue = (uint)type
+                MetaValue = 0,
             };
         }
 
@@ -78,7 +132,7 @@ namespace MineCase.Block
             };
         }
 
-        public static BlockState Water(FluidType type = FluidType.FallingFlag)
+        public static BlockState Water(FluidType type = FluidType.Level0)
         {
             return new BlockState
             {
@@ -87,42 +141,33 @@ namespace MineCase.Block
             };
         }
 
-        [ObsoleteAttribute]
-        public static BlockState StationaryWater(FluidType type = FluidType.FallingFlag)
-        {
-            return new BlockState
-            {
-                Id = (uint)BlockId.Water,
-                MetaValue = (uint)type
-            };
-        }
-
-        public static BlockState Lava(FluidType type = FluidType.FallingFlag)
+        public static BlockState Lava(FluidType type = FluidType.Level0)
         {
             return new BlockState
             {
                 Id = (uint)BlockId.Lava,
                 MetaValue = (uint)type
-            };
-        }
-
-        [ObsoleteAttribute]
-        public static BlockState StationaryLava(FluidType type = FluidType.FallingFlag)
-        {
-            return new BlockState
-            {
-                Id = (uint)BlockId.Lava,
-                MetaValue = 0
             };
         }
 
         public static BlockState Sand(SandType type = SandType.Sand)
         {
-            return new BlockState
+            if (type == SandType.Sand)
             {
-                Id = (uint)BlockId.Sand,
-                MetaValue = (uint)type
-            };
+                return new BlockState
+                {
+                    Id = (uint)BlockId.Sand,
+                    MetaValue = 0
+                };
+            }
+            else
+            {
+                return new BlockState
+                {
+                    Id = (uint)BlockId.RedSand,
+                    MetaValue = 0
+                };
+            }
         }
 
         public static BlockState Gravel()

@@ -47,9 +47,9 @@ namespace MineCase.Server.World.Decoration.Biomes
             var oreGenerator = GrainFactory.GetGrain<IMinableGenerator>(0);
             await oreGenerator.Generate(world, chunkWorldPos, BlockStates.Dirt(), settings.DirtCount, settings.DirtSize, settings.DirtMinHeight, settings.DirtMaxHeight);
             await oreGenerator.Generate(world, chunkWorldPos, BlockStates.Gravel(), settings.GravelCount, settings.GravelSize, settings.GravelMinHeight, settings.GravelMaxHeight);
-            await oreGenerator.Generate(world, chunkWorldPos, BlockStates.Stone(StoneType.Granite), settings.GraniteCount, settings.GraniteSize, settings.GraniteMinHeight, settings.GraniteMaxHeight);
-            await oreGenerator.Generate(world, chunkWorldPos, BlockStates.Stone(StoneType.Diorite), settings.DioriteCount, settings.DioriteSize, settings.DioriteMinHeight, settings.DioriteMaxHeight);
-            await oreGenerator.Generate(world, chunkWorldPos, BlockStates.Stone(StoneType.Andesite), settings.AndesiteCount, settings.AndesiteSize, settings.AndesiteMinHeight, settings.AndesiteMaxHeight);
+            await oreGenerator.Generate(world, chunkWorldPos, BlockStates.Granite(), settings.GraniteCount, settings.GraniteSize, settings.GraniteMinHeight, settings.GraniteMaxHeight);
+            await oreGenerator.Generate(world, chunkWorldPos, BlockStates.Diorite(), settings.DioriteCount, settings.DioriteSize, settings.DioriteMinHeight, settings.DioriteMaxHeight);
+            await oreGenerator.Generate(world, chunkWorldPos, BlockStates.Andesite(), settings.AndesiteCount, settings.AndesiteSize, settings.AndesiteMinHeight, settings.AndesiteMaxHeight);
 
             await oreGenerator.Generate(world, chunkWorldPos, BlockStates.CoalOre(), settings.CoalCount, settings.CoalSize, settings.CoalMinHeight, settings.CoalMaxHeight);
             await oreGenerator.Generate(world, chunkWorldPos, BlockStates.IronOre(), settings.IronCount, settings.IronSize, settings.IronMinHeight, settings.IronMaxHeight);

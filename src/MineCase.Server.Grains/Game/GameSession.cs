@@ -10,6 +10,7 @@ using MineCase.Engine;
 using MineCase.Protocol.Play;
 using MineCase.Server.Components;
 using MineCase.Server.Game.Entities;
+using MineCase.Server.Game.Entities.Components;
 using MineCase.Server.Network.Play;
 using MineCase.Server.Persistence.Components;
 using MineCase.Server.Settings;
@@ -66,12 +67,14 @@ namespace MineCase.Server.Game
             };
 
             await user.JoinGame();
+            var player = await user.GetPlayer();
             await generator.JoinGame(
-                await (await user.GetPlayer()).GetEntityId(),
+                await player.GetEntityId(),
                 await user.GetGameMode(),
                 Dimension.Overworld,
                 Difficulty.Easy,
                 (byte)settings.MaxPlayers,
+                await player.GetViewDistance(),
                 LevelTypes.Default,
                 false);
             await user.NotifyLoggedIn();

@@ -33,7 +33,7 @@ namespace MineCase.Server.Game.Entities
         public async override Task OnActivateAsync()
         {
             await base.OnActivateAsync();
-            this.SetLocalValue(HealthComponent.MaxHealthProperty, 20u);
+            this.SetLocalValue(HealthComponent.MaxHealthProperty, 20);
             this.SetLocalValue(HealthComponent.HealthProperty, GetValue(HealthComponent.MaxHealthProperty));
             this.SetLocalValue(EntityOnGroundComponent.IsOnGroundProperty, true);
         }

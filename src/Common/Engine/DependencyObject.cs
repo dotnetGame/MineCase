@@ -167,11 +167,11 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 注册属性变更处理器
+        /// 注册属性变更处理器.
         /// </summary>
-        /// <typeparam name="T">值类型</typeparam>
-        /// <param name="property">依赖属性</param>
-        /// <param name="handler">处理器</param>
+        /// <typeparam name="T">值类型.</typeparam>
+        /// <param name="property">依赖属性.</param>
+        /// <param name="handler">处理器.</param>
         public void RegisterPropertyChangedHandler<T>(DependencyProperty<T> property, EventHandler<PropertyChangedEventArgs<T>> handler)
         {
             if (_propertyChangedHandlers.TryGetValue(property, out var newHandler))
@@ -182,11 +182,11 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 删除属性变更处理器
+        /// 删除属性变更处理器.
         /// </summary>
-        /// <typeparam name="T">值类型</typeparam>
-        /// <param name="property">依赖属性</param>
-        /// <param name="handler">处理器</param>
+        /// <typeparam name="T">值类型.</typeparam>
+        /// <param name="property">依赖属性.</param>
+        /// <param name="handler">处理器.</param>
         public void RemovePropertyChangedHandler<T>(DependencyProperty<T> property, EventHandler<PropertyChangedEventArgs<T>> handler)
         {
             if (_propertyChangedHandlers.TryGetValue(property, out var newHandler))
