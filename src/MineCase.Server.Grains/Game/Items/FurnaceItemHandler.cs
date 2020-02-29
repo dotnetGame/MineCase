@@ -27,7 +27,7 @@ namespace MineCase.Server.Game.Items
         protected override async Task<BlockState> ConvertToBlock(IEntity entity, IGrainFactory grainFactory, IWorld world, BlockWorldPos position, Slot slot)
         {
             var facing = ChestBlockHandler.PlayerYawToFacing(await entity.GetYaw());
-            return BlockStates.Furnace(facing);
+            return BlockStates.Furnace((FurnaceFacingType)facing, FurnaceLitType.False);
         }
     }
 }

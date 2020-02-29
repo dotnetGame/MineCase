@@ -24,8 +24,8 @@ namespace MineCase.Server.World.Decoration.Plants
         public async override Task OnActivateAsync()
         {
             await base.OnActivateAsync();
-            _wood = BlockStates.Wood(WoodType.Jungle);
-            _leaves = BlockStates.Leaves(LeaveType.Jungle);
+            _wood = BlockStates.JungleLog();
+            _leaves = BlockStates.JungleLeaves(JungleLeavesDistanceType.Distance1, JungleLeavesPersistentType.False);
         }
 
         public override async Task GenerateSingle(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos)
@@ -83,8 +83,8 @@ namespace MineCase.Server.World.Decoration.Plants
 
                         if (y > 0)
                         {
-                            await PlaceVine(world, random, blockpos.West(), VineType.East);
-                            await PlaceVine(world, random, blockpos.North(), VineType.South);
+                            await PlaceVine(world, random, blockpos.West(), new VineType { East = VineEastType.True });
+                            await PlaceVine(world, random, blockpos.North(), new VineType { South = VineSouthType.True });
                         }
                     }
 
@@ -98,8 +98,8 @@ namespace MineCase.Server.World.Decoration.Plants
 
                             if (y > 0)
                             {
-                                await PlaceVine(world, random, blockpos1.East(), VineType.West);
-                                await PlaceVine(world, random, blockpos1.North(), VineType.South);
+                                await PlaceVine(world, random, blockpos1.East(), new VineType { West = VineWestType.True });
+                                await PlaceVine(world, random, blockpos1.North(), new VineType { South = VineSouthType.True });
                             }
                         }
 
@@ -111,8 +111,8 @@ namespace MineCase.Server.World.Decoration.Plants
 
                             if (y > 0)
                             {
-                                await PlaceVine(world, random, blockpos2.East(), VineType.West);
-                                await PlaceVine(world, random, blockpos2.South(), VineType.North);
+                                await PlaceVine(world, random, blockpos2.East(), new VineType { West = VineWestType.True });
+                                await PlaceVine(world, random, blockpos2.South(), new VineType { North = VineNorthType.True });
                             }
                         }
 
@@ -124,8 +124,8 @@ namespace MineCase.Server.World.Decoration.Plants
 
                             if (y > 0)
                             {
-                                await PlaceVine(world, random, blockpos3.West(), VineType.East);
-                                await PlaceVine(world, random, blockpos3.South(), VineType.North);
+                                await PlaceVine(world, random, blockpos3.West(), new VineType { East = VineEastType.True });
+                                await PlaceVine(world, random, blockpos3.South(), new VineType { North = VineNorthType.True });
                             }
                         }
                     }
@@ -150,7 +150,7 @@ namespace MineCase.Server.World.Decoration.Plants
             var block = await world.GetBlockStateUnsafe(this.GrainFactory, pos);
             if (random.Next(3) > 0 && block.IsAir())
             {
-                await world.SetBlockStateUnsafe(this.GrainFactory, pos, BlockStates.Vines(vineType));
+                await world.SetBlockStateUnsafe(this.GrainFactory, pos, BlockStates.Vine(vineType.East, vineType.North, vineType.South, vineType.Up, vineType.West));
             }
         }
     }

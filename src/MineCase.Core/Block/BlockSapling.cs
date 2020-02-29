@@ -21,7 +21,7 @@ namespace MineCase.Block
             IsBlockContainer = false;
             BlockSoundType = null;
             BlockParticleGravity = 1.0f;
-            BlockState = BlockStates.Sapling();
+            BlockState = BlockStates.OakSapling();
             UnlocalizedName = "sapling";
         }
 
