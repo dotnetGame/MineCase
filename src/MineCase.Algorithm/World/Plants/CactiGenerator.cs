@@ -77,7 +77,7 @@ namespace MineCase.Algorithm.World.Plants
                     {
                         for (int y = 0; y < height; ++y)
                         {
-                            chunk[chunkPos.X, chunkPos.Y + y, chunkPos.Z] = BlockStates.Cactus(CactusType.Interval15);
+                            chunk[chunkPos.X, chunkPos.Y + y, chunkPos.Z] = BlockStates.Cactus(CactusAgeType.Age15);
                         }
                     }
                 }

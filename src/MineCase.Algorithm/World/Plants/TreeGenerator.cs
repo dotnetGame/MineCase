@@ -27,18 +27,18 @@ namespace MineCase.Algorithm.World.Plants
             _treeType = treeType;
             if (treeType == PlantsType.Oak)
             {
-                _wood = BlockStates.Wood(WoodType.Oak);
-                _leaves = BlockStates.Leaves(LeaveType.Oak);
+                _wood = BlockStates.OakLog();
+                _leaves = BlockStates.OakLeaves(OakLeavesDistanceType.Distance1, OakLeavesPersistentType.False);
             }
             else if (treeType == PlantsType.Spruce)
             {
-                _wood = BlockStates.Wood(WoodType.Spruce);
-                _leaves = BlockStates.Leaves(LeaveType.Spruce);
+                _wood = BlockStates.SpruceLog();
+                _leaves = BlockStates.SpruceLeaves(SpruceLeavesDistanceType.Distance1, SpruceLeavesPersistentType.False);
             }
             else if (treeType == PlantsType.Birch)
             {
-                _wood = BlockStates.Wood(WoodType.Birch);
-                _leaves = BlockStates.Leaves(LeaveType.Birch);
+                _wood = BlockStates.BirchLog();
+                _leaves = BlockStates.BirchLeaves(BirchLeavesDistanceType.Distance1, BirchLeavesPersistentType.False);
             }
         }
 
@@ -73,8 +73,7 @@ namespace MineCase.Algorithm.World.Plants
                             BlockChunkPos chunkPos = pos.ToBlockChunkPos();
                             BlockState state = chunk[chunkPos.X, chunkPos.Y, chunkPos.Z];
                             if (!state.IsAir() &&
-                                state.IsSameId(BlockStates.Leaves()) &&
-                                state.IsSameId(BlockStates.Leaves2()))
+                                state.IsLeaves())
                             {
                                 result = false;
                             }
@@ -133,8 +132,8 @@ namespace MineCase.Algorithm.World.Plants
                                         BlockState block = chunk[chunkBlockPos.X, chunkBlockPos.Y, chunkBlockPos.Z];
 
                                         if (block.IsAir()
-                                            || block.IsSameId(BlockStates.Leaves())
-                                            || block.IsSameId(BlockStates.Vines()))
+                                            || block.IsLeaves()
+                                            || block.IsId(BlockId.Vine))
                                         {
                                             chunk[chunkBlockPos.X, chunkBlockPos.Y, chunkBlockPos.Z] = _leaves;
                                         }
@@ -151,8 +150,8 @@ namespace MineCase.Algorithm.World.Plants
                             BlockState upBlock = chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z];
 
                             if (upBlock.IsAir()
-                                            || upBlock.IsSameId(BlockStates.Leaves())
-                                            || upBlock.IsSameId(BlockStates.Vines()))
+                                            || upBlock.IsLeaves()
+                                            || upBlock.IsId(BlockId.Vine))
                             {
                                 chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z] = _wood;
                             }
@@ -162,22 +161,22 @@ namespace MineCase.Algorithm.World.Plants
                             {
                                 if (random.Next(3) > 0 && chunk[chunkUpPos.X - 1, chunkUpPos.Y, chunkUpPos.Z].IsAir())
                                 {
-                                    chunk[chunkUpPos.X - 1, chunkUpPos.Y, chunkUpPos.Z] = BlockStates.Vines(VineType.East);
+                                    chunk[chunkUpPos.X - 1, chunkUpPos.Y, chunkUpPos.Z] = BlockStates.Vine(new VineType { East = VineEastType.True });
                                 }
 
                                 if (random.Next(3) > 0 && chunk[chunkUpPos.X + 1, chunkUpPos.Y, chunkUpPos.Z].IsAir())
                                 {
-                                    chunk[chunkUpPos.X + 1, chunkUpPos.Y, chunkUpPos.Z] = BlockStates.Vines(VineType.West);
+                                    chunk[chunkUpPos.X + 1, chunkUpPos.Y, chunkUpPos.Z] = BlockStates.Vine(new VineType { West = VineWestType.True });
                                 }
 
                                 if (random.Next(3) > 0 && chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z - 1].IsAir())
                                 {
-                                    chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z - 1] = BlockStates.Vines(VineType.South);
+                                    chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z - 1] = BlockStates.Vine(new VineType { South = VineSouthType.True });
                                 }
 
                                 if (random.Next(3) > 0 && chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z + 1].IsAir())
                                 {
-                                    chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z + 1] = BlockStates.Vines(VineType.North);
+                                    chunk[chunkUpPos.X, chunkUpPos.Y, chunkUpPos.Z + 1] = BlockStates.Vine(new VineType { North = VineNorthType.True });
                                 }
                             }
 
@@ -201,22 +200,22 @@ namespace MineCase.Algorithm.World.Plants
                                         {
                                             if (random.Next(4) == 0 && chunk[x - 1, y, z].IsAir())
                                             {
-                                                chunk[x - 1, y, z] = BlockStates.Vines(VineType.East);
+                                                chunk[x - 1, y, z] = BlockStates.Vine(new VineType { East = VineEastType.True });
                                             }
 
                                             if (random.Next(4) == 0 && chunk[x + 1, y, z].IsAir())
                                             {
-                                                chunk[x + 1, y, z] = BlockStates.Vines(VineType.West);
+                                                chunk[x + 1, y, z] = BlockStates.Vine(new VineType { West = VineWestType.True });
                                             }
 
                                             if (random.Next(4) == 0 && chunk[x, y, z - 1].IsAir())
                                             {
-                                                chunk[x, y, z - 1] = BlockStates.Vines(VineType.South);
+                                                chunk[x, y, z - 1] = BlockStates.Vine(new VineType { South = VineSouthType.True });
                                             }
 
                                             if (random.Next(4) == 0 && chunk[x, y, z + 1].IsAir())
                                             {
-                                                chunk[x, y, z + 1] = BlockStates.Vines(VineType.North);
+                                                chunk[x, y, z + 1] = BlockStates.Vine(new VineType { North = VineNorthType.True });
                                             }
                                         }
                                     }

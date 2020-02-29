@@ -24,7 +24,7 @@ namespace MineCase.Algorithm.World.Plants
             if (chunk[x, y, z].IsAir() &&
                 chunk[x, y - 1, z] == BlockStates.GrassBlock())
             {
-                chunk[x, y, z] = BlockStates.Grass(GrassType.TallGrass);
+                chunk[x, y, z] = BlockStates.Grass();
             }
         }
     }

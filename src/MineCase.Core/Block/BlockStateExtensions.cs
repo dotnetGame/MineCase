@@ -60,12 +60,28 @@ namespace MineCase.Block
 
         public static bool IsLeaves(this BlockState state)
         {
-            return state.IsSameId(BlockStates.Leaves()); // || state.IsSameId(BlockStates.Leaves2());
+            return state.IsId(BlockId.AcaciaLeaves)
+                || state.IsId(BlockId.BirchLeaves)
+                || state.IsId(BlockId.DarkOakLeaves)
+                || state.IsId(BlockId.JungleLeaves)
+                || state.IsId(BlockId.OakLeaves)
+                || state.IsId(BlockId.JungleLeaves);
         }
 
         public static bool IsWood(this BlockState state)
         {
-            return state.IsSameId(BlockStates.Wood()); // || state.IsSameId(BlockStates.Wood2());
+            return state.IsId(BlockId.AcaciaLog)
+                || state.IsId(BlockId.BirchLog)
+                || state.IsId(BlockId.DarkOakLog)
+                || state.IsId(BlockId.JungleLog)
+                || state.IsId(BlockId.OakLog)
+                || state.IsId(BlockId.SpruceLog)
+                || state.IsId(BlockId.StrippedAcaciaLog)
+                || state.IsId(BlockId.StrippedBirchLog)
+                || state.IsId(BlockId.StrippedDarkOakLog)
+                || state.IsId(BlockId.StrippedJungleLog)
+                || state.IsId(BlockId.StrippedOakLog)
+                || state.IsId(BlockId.StrippedSpruceLog);
         }
 
         public static bool CanMobStand(this BlockState state)

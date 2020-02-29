@@ -31,7 +31,7 @@ namespace MineCase.Server.World.Decoration.Plants
             if (curBlock.IsAir() &&
                 downBlock == BlockStates.GrassBlock())
             {
-                await SetBlock(world, chunkWorldPos, pos, BlockStates.Grass(GrassType.TallGrass));
+                await SetBlock(world, chunkWorldPos, pos, BlockStates.Grass());
             }
         }
     }

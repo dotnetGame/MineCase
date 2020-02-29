@@ -226,7 +226,7 @@ namespace MineCase.Server.Game.BlockEntities.Components
         async Task IHandle<SpawnBlockEntity>.Handle(SpawnBlockEntity message)
         {
             State.IsCooking = (await AttachedObject.World.GetBlockState(GrainFactory, AttachedObject.Position))
-                .IsSameId(BlockStates.BurningFurnace());
+                .IsId(BlockId.BlastFurnace);
             MarkDirty();
         }
 

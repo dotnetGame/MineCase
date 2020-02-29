@@ -16,8 +16,8 @@ namespace MineCase.UnitTest
         {
             BlockState state1 = BlockStates.Dirt();
             BlockState state2 = BlockStates.Dirt();
-            BlockState state3 = BlockStates.Wood(WoodType.Birch);
-            BlockState state4 = BlockStates.Wood(WoodType.Oak);
+            BlockState state3 = BlockStates.BirchLog();
+            BlockState state4 = BlockStates.OakLog();
 
             Assert.True(state1 == state2);
             Assert.False(state1 == state3);
@@ -29,9 +29,9 @@ namespace MineCase.UnitTest
         public void IsIdTest()
         {
             BlockState state1 = BlockStates.Diorite();
-            BlockState state2 = BlockStates.Leaves(LeaveType.Birch);
-            BlockState state3 = BlockStates.Wood(WoodType.Birch);
-            BlockState state4 = BlockStates.Wood(WoodType.Oak);
+            BlockState state2 = BlockStates.BirchLeaves(BirchLeavesDistanceType.Distance1, BirchLeavesPersistentType.False);
+            BlockState state3 = BlockStates.BirchLog();
+            BlockState state4 = BlockStates.OakLog();
 
             Assert.True(state1.IsId(BlockId.Diorite));
 

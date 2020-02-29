@@ -49,8 +49,8 @@ namespace MineCase.Server.World.Decoration.Plants
         {
             if (type == PlantsType.DoubleTallgrass)
             {
-                await world.SetBlockStateUnsafe(this.GrainFactory, pos, BlockStates.Grass(GrassType.TallGrass));
-                await world.SetBlockStateUnsafe(this.GrainFactory, pos.Up(), BlockStates.Grass(GrassType.TallGrass));
+                await world.SetBlockStateUnsafe(this.GrainFactory, pos, BlockStates.TallGrass(TallGrassHalfType.Lower));
+                await world.SetBlockStateUnsafe(this.GrainFactory, pos.Up(), BlockStates.TallGrass(TallGrassHalfType.Upper));
             }
         }
 

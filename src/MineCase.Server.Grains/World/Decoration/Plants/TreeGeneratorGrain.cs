@@ -36,18 +36,18 @@ namespace MineCase.Server.World.Decoration.Plants
             _treeType = _generatorSettings.PlantType;
             if (_generatorSettings.PlantType == PlantsType.Oak)
             {
-                _wood = BlockStates.Wood(WoodType.Oak);
-                _leaves = BlockStates.Leaves(LeaveType.Oak);
+                _wood = BlockStates.OakLog();
+                _leaves = BlockStates.OakLeaves(OakLeavesDistanceType.Distance1, OakLeavesPersistentType.False);
             }
             else if (_generatorSettings.PlantType == PlantsType.Spruce)
             {
-                _wood = BlockStates.Wood(WoodType.Spruce);
-                _leaves = BlockStates.Leaves(LeaveType.Spruce);
+                _wood = BlockStates.SpruceLog();
+                _leaves = BlockStates.SpruceLeaves(SpruceLeavesDistanceType.Distance1, SpruceLeavesPersistentType.False);
             }
             else if (_generatorSettings.PlantType == PlantsType.Birch)
             {
-                _wood = BlockStates.Wood(WoodType.Birch);
-                _leaves = BlockStates.Leaves(LeaveType.Birch);
+                _wood = BlockStates.BirchLog();
+                _leaves = BlockStates.BirchLeaves(BirchLeavesDistanceType.Distance1, BirchLeavesPersistentType.False);
             }
         }
 
@@ -90,8 +90,7 @@ namespace MineCase.Server.World.Decoration.Plants
                             var checkPos = new BlockWorldPos(x, y, z);
                             BlockState state = await GetBlock(world, chunkWorldPos, checkPos);
                             if (!state.IsAir() &&
-                                !state.IsSameId(BlockStates.Leaves()) &&
-                                !state.IsSameId(BlockStates.Leaves2()))
+                                !state.IsLeaves())
                             {
                                 result = false;
                             }
@@ -148,8 +147,8 @@ namespace MineCase.Server.World.Decoration.Plants
                                         BlockState block = await GetBlock(world, chunkWorldPos, blockpos);
 
                                         if (block.IsAir()
-                                            || block.IsSameId(BlockStates.Leaves())
-                                            || block.IsSameId(BlockStates.Vines()))
+                                            || block.IsLeaves()
+                                            || block.IsId(BlockId.Vine))
                                         {
                                             await SetBlock(world, chunkWorldPos, blockpos, _leaves);
                                         }
@@ -165,8 +164,8 @@ namespace MineCase.Server.World.Decoration.Plants
                             BlockState upBlock = await GetBlock(world, chunkWorldPos, upPos);
 
                             if (upBlock.IsAir()
-                                            || upBlock.IsSameId(BlockStates.Leaves())
-                                            || upBlock.IsSameId(BlockStates.Vines()))
+                                            || upBlock.IsLeaves()
+                                            || upBlock.IsId(BlockId.Vine))
                             {
                                 await SetBlock(world, chunkWorldPos, upPos, _wood);
                             }
@@ -174,13 +173,13 @@ namespace MineCase.Server.World.Decoration.Plants
                             // 生成藤蔓
                             if (_vines && y > 0)
                             {
-                                await RandomSetIfAir(world, chunkWorldPos, upPos.X - 1, upPos.Y, upPos.Z, BlockStates.Vines(VineType.East), random, 0.666f);
+                                await RandomSetIfAir(world, chunkWorldPos, upPos.X - 1, upPos.Y, upPos.Z, BlockStates.Vine(new VineType { East = VineEastType.True }), random, 0.666f);
 
-                                await RandomSetIfAir(world, chunkWorldPos, upPos.X + 1, upPos.Y, upPos.Z, BlockStates.Vines(VineType.West), random, 0.666f);
+                                await RandomSetIfAir(world, chunkWorldPos, upPos.X + 1, upPos.Y, upPos.Z, BlockStates.Vine(new VineType { West = VineWestType.True }), random, 0.666f);
 
-                                await RandomSetIfAir(world, chunkWorldPos, upPos.X, upPos.Y, upPos.Z - 1, BlockStates.Vines(VineType.South), random, 0.666f);
+                                await RandomSetIfAir(world, chunkWorldPos, upPos.X, upPos.Y, upPos.Z - 1, BlockStates.Vine(new VineType { South = VineSouthType.True }), random, 0.666f);
 
-                                await RandomSetIfAir(world, chunkWorldPos, upPos.X, upPos.Y, upPos.Z + 1, BlockStates.Vines(VineType.North), random, 0.666f);
+                                await RandomSetIfAir(world, chunkWorldPos, upPos.X, upPos.Y, upPos.Z + 1, BlockStates.Vine(new VineType { North = VineNorthType.True }), random, 0.666f);
                             }
 
                             ++upPos.Y;
@@ -200,13 +199,13 @@ namespace MineCase.Server.World.Decoration.Plants
                                     {
                                         if ((await GetBlock(world, chunkWorldPos, new BlockWorldPos(x, y, z))).IsLeaves())
                                         {
-                                            await RandomSetIfAir(world, chunkWorldPos, x - 1, y, z, BlockStates.Vines(VineType.East), random, 0.25f);
+                                            await RandomSetIfAir(world, chunkWorldPos, x - 1, y, z, BlockStates.Vine(new VineType { East = VineEastType.True }), random, 0.25f);
 
-                                            await RandomSetIfAir(world, chunkWorldPos, x + 1, y, z, BlockStates.Vines(VineType.West), random, 0.25f);
+                                            await RandomSetIfAir(world, chunkWorldPos, x + 1, y, z, BlockStates.Vine(new VineType { West = VineWestType.True }), random, 0.25f);
 
-                                            await RandomSetIfAir(world, chunkWorldPos, x, y, z - 1, BlockStates.Vines(VineType.South), random, 0.25f);
+                                            await RandomSetIfAir(world, chunkWorldPos, x, y, z - 1, BlockStates.Vine(new VineType { South = VineSouthType.True }), random, 0.25f);
 
-                                            await RandomSetIfAir(world, chunkWorldPos, x, y, z + 1, BlockStates.Vines(VineType.North), random, 0.25f);
+                                            await RandomSetIfAir(world, chunkWorldPos, x, y, z + 1, BlockStates.Vine(new VineType { North = VineNorthType.True }), random, 0.25f);
                                         }
                                     }
                                 }

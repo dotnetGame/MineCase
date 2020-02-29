@@ -21,8 +21,8 @@ namespace MineCase.Server.World.Decoration.Plants
         public async override Task OnActivateAsync()
         {
             await base.OnActivateAsync();
-            _wood = BlockStates.Wood2(Wood2Type.Acacia);
-            _leaves = BlockStates.Leaves2(Leave2Type.Acacia);
+            _wood = BlockStates.AcaciaLog();
+            _leaves = BlockStates.AcaciaLeaves(AcaciaLeavesDistanceType.Distance1, AcaciaLeavesPersistentType.False);
         }
 
         public async override Task GenerateSingle(IWorld world, ChunkWorldPos chunkWorldPos, BlockWorldPos pos)

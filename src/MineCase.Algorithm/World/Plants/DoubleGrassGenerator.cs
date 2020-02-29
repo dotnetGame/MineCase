@@ -30,8 +30,8 @@ namespace MineCase.Algorithm.World.Plants
                     blockpos.Y < 254 &&
                     CanGrassGrow(_grassType, chunk, chunkpos))
                 {
-                    chunk[chunkpos.X, chunkpos.Y, chunkpos.Z] = BlockStates.LargeFlowers(LargeFlowerType.DoubleTallgrass);
-                    chunk[chunkpos.X, chunkpos.Y + 1, chunkpos.Z] = BlockStates.LargeFlowers(LargeFlowerType.TopHalfFlag);
+                    chunk[chunkpos.X, chunkpos.Y, chunkpos.Z] = BlockStates.TallGrass(TallGrassHalfType.Lower);
+                    chunk[chunkpos.X, chunkpos.Y + 1, chunkpos.Z] = BlockStates.TallGrass(TallGrassHalfType.Upper);
                 }
             }
         }

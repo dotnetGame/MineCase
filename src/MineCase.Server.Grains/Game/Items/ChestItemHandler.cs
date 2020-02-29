@@ -59,7 +59,7 @@ namespace MineCase.Server.Game.Items
                     break;
             }
 
-            return BlockStates.Chest(facing);
+            return BlockStates.Chest((ChestFacingType)facing, ChestTypeType.Single, ChestWaterloggedType.False);
         }
     }
 }
