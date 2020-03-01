@@ -22,7 +22,7 @@ namespace MineCase.UnitTest
             Assert.True(state1 == state2);
             Assert.False(state1 == state3);
             Assert.False(state3.IsSameId(state2));
-            Assert.True(state3.IsSameId(state4));
+            Assert.False(state3.IsSameId(state4));
         }
 
         [Fact]

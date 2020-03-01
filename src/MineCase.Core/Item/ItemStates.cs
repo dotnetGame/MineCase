@@ -33,11 +33,11 @@ namespace MineCase.Item
             };
         }
 
-        public static ItemState FlintandSteel()
+        public static ItemState FlintAndSteel()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.FlintandSteel,
+                Id = (uint)ItemId.FlintAndSteel,
                 MetaValue = 0
             };
         }
@@ -361,7 +361,7 @@ namespace MineCase.Item
         {
             return new ItemState
             {
-                Id = (uint)ItemId.Seeds,
+                Id = (uint)ItemId.WheatSeeds,
                 MetaValue = 0
             };
         }
@@ -384,29 +384,29 @@ namespace MineCase.Item
             };
         }
 
-        public static ItemState LeatherCap()
+        public static ItemState LeatherHelmet()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.LeatherCap,
+                Id = (uint)ItemId.LeatherHelmet,
                 MetaValue = 0
             };
         }
 
-        public static ItemState LeatherTunic()
+        public static ItemState LeatherChestplate()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.LeatherTunic,
+                Id = (uint)ItemId.LeatherChestplate,
                 MetaValue = 0
             };
         }
 
-        public static ItemState LeatherPants()
+        public static ItemState LeatherLeggings()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.LeatherPants,
+                Id = (uint)ItemId.LeatherLeggings,
                 MetaValue = 0
             };
         }
@@ -420,38 +420,38 @@ namespace MineCase.Item
             };
         }
 
-        public static ItemState ChainHelmet()
+        public static ItemState ChainmailHelmet()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.ChainHelmet,
+                Id = (uint)ItemId.ChainmailHelmet,
                 MetaValue = 0
             };
         }
 
-        public static ItemState ChainChestplate()
+        public static ItemState ChainmailChestplate()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.ChainChestplate,
+                Id = (uint)ItemId.ChainmailChestplate,
                 MetaValue = 0
             };
         }
 
-        public static ItemState ChainLeggings()
+        public static ItemState ChainmailLeggings()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.ChainLeggings,
+                Id = (uint)ItemId.ChainmailLeggings,
                 MetaValue = 0
             };
         }
 
-        public static ItemState ChainBoots()
+        public static ItemState ChainmailBoots()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.ChainBoots,
+                Id = (uint)ItemId.ChainmailBoots,
                 MetaValue = 0
             };
         }
@@ -573,11 +573,11 @@ namespace MineCase.Item
             };
         }
 
-        public static ItemState RawPorkchop()
+        public static ItemState Porkchop()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.RawPorkchop,
+                Id = (uint)ItemId.Porkchop,
                 MetaValue = 0
             };
         }
@@ -613,7 +613,7 @@ namespace MineCase.Item
         {
             return new ItemState
             {
-                Id = (uint)ItemId.Sign,
+                Id = (uint)ItemId.OakSign, // TODO: more kinds of signs
                 MetaValue = 0
             };
         }
@@ -703,7 +703,7 @@ namespace MineCase.Item
         {
             return new ItemState
             {
-                Id = (uint)ItemId.Boat,
+                Id = (uint)ItemId.OakBoat, // TODO: more kinds of boats
                 MetaValue = 0
             };
         }
@@ -717,11 +717,11 @@ namespace MineCase.Item
             };
         }
 
-        public static ItemState Milk()
+        public static ItemState MilkBucket()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.Milk,
+                Id = (uint)ItemId.MilkBucket,
                 MetaValue = 0
             };
         }
@@ -771,29 +771,29 @@ namespace MineCase.Item
             };
         }
 
-        public static ItemState Slimeball()
+        public static ItemState SlimeBall()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.Slimeball,
+                Id = (uint)ItemId.SlimeBall,
                 MetaValue = 0
             };
         }
 
-        public static ItemState MinecartwithChest()
+        public static ItemState ChestMinecart()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.MinecartwithChest,
+                Id = (uint)ItemId.ChestMinecart,
                 MetaValue = 0
             };
         }
 
-        public static ItemState MinecartwithFurnace()
+        public static ItemState FurnaceMinecart()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.MinecartwithFurnace,
+                Id = (uint)ItemId.FurnaceMinecart,
                 MetaValue = 0
             };
         }
@@ -847,7 +847,7 @@ namespace MineCase.Item
         {
             return new ItemState
             {
-                Id = (uint)ItemId.RawFish,
+                Id = (uint)ItemId.Salmon, // TODO: more kinds of fish
                 MetaValue = (uint)type
             };
         }
@@ -856,7 +856,7 @@ namespace MineCase.Item
         {
             return new ItemState
             {
-                Id = (uint)ItemId.CookedFish,
+                Id = (uint)ItemId.CookedSalmon, // TODO: more kinds of cooked fish
                 MetaValue = (uint)type
             };
         }
@@ -865,7 +865,7 @@ namespace MineCase.Item
         {
             return new ItemState
             {
-                Id = (uint)ItemId.Dye,
+                Id = (uint)ItemId.WhiteDye, // TODO: more kinds of dye
                 MetaValue = (uint)type
             };
         }
@@ -897,20 +897,20 @@ namespace MineCase.Item
             };
         }
 
-        public static ItemState Bed()
+        public static ItemState WhiteBed()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.Bed,
+                Id = (uint)ItemId.WhiteBed,
                 MetaValue = 0
             };
         }
 
-        public static ItemState RedstoneRepeater()
+        public static ItemState Repeater()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.RedstoneRepeater,
+                Id = (uint)ItemId.Repeater,
                 MetaValue = 0
             };
         }
@@ -969,29 +969,29 @@ namespace MineCase.Item
             };
         }
 
-        public static ItemState RawBeef()
+        public static ItemState Beef()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.RawBeef,
+                Id = (uint)ItemId.Beef,
                 MetaValue = 0
             };
         }
 
-        public static ItemState Steak()
+        public static ItemState CookedBeef()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.Steak,
+                Id = (uint)ItemId.CookedBeef,
                 MetaValue = 0
             };
         }
 
-        public static ItemState RawChicken()
+        public static ItemState Chicken()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.RawChicken,
+                Id = (uint)ItemId.Chicken,
                 MetaValue = 0
             };
         }
@@ -1147,20 +1147,20 @@ namespace MineCase.Item
             };
         }
 
-        public static ItemState EyeofEnder()
+        public static ItemState EnderEye()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.EyeofEnder,
+                Id = (uint)ItemId.EnderEye,
                 MetaValue = 0
             };
         }
 
-        public static ItemState GlisteringMelon()
+        public static ItemState GlisteringMelonSlice()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.GlisteringMelon,
+                Id = (uint)ItemId.GlisteringMelonSlice,
                 MetaValue = 0
             };
         }
@@ -1169,16 +1169,16 @@ namespace MineCase.Item
         {
             return new ItemState
             {
-                Id = (uint)ItemId.SpawnEgg,
+                Id = (uint)ItemId.PigSpawnEgg, // TODO: more kinds og spawn egg
                 MetaValue = 0
             };
         }
 
-        public static ItemState BottleEnchanting()
+        public static ItemState ExperienceBottle()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.BottleEnchanting,
+                Id = (uint)ItemId.ExperienceBottle,
                 MetaValue = 0
             };
         }
@@ -1196,7 +1196,7 @@ namespace MineCase.Item
         {
             return new ItemState
             {
-                Id = (uint)ItemId.BookandQuill,
+                Id = (uint)ItemId.Book, // TODO: 这个行为是否正确
                 MetaValue = 0
             };
         }
@@ -1273,11 +1273,11 @@ namespace MineCase.Item
             };
         }
 
-        public static ItemState EmptyMap()
+        public static ItemState FilledMap()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.EmptyMap,
+                Id = (uint)ItemId.FilledMap,
                 MetaValue = 0
             };
         }
@@ -1295,16 +1295,16 @@ namespace MineCase.Item
         {
             return new ItemState
             {
-                Id = (uint)ItemId.Mobhead,
+                Id = (uint)ItemId.PlayerHead, // TODO: more kinds of mobhead
                 MetaValue = (uint)type
             };
         }
 
-        public static ItemState CarrotonaStick()
+        public static ItemState CarrotOnAStick()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.CarrotonaStick,
+                Id = (uint)ItemId.CarrotOnAStick,
                 MetaValue = 0
             };
         }
@@ -1354,11 +1354,11 @@ namespace MineCase.Item
             };
         }
 
-        public static ItemState RedstoneComparator()
+        public static ItemState Comparator()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.RedstoneComparator,
+                Id = (uint)ItemId.Comparator,
                 MetaValue = 0
             };
         }
@@ -1372,29 +1372,29 @@ namespace MineCase.Item
             };
         }
 
-        public static ItemState NetherQuartz()
+        public static ItemState NetherQuartzOre()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.NetherQuartz,
+                Id = (uint)ItemId.NetherQuartzOre,
                 MetaValue = 0
             };
         }
 
-        public static ItemState MinecartwithTNT()
+        public static ItemState TntMinecart()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.MinecartwithTNT,
+                Id = (uint)ItemId.TntMinecart,
                 MetaValue = 0
             };
         }
 
-        public static ItemState MinecartwithHopper()
+        public static ItemState HopperMinecart()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.MinecartwithHopper,
+                Id = (uint)ItemId.HopperMinecart,
                 MetaValue = 0
             };
         }
@@ -1417,11 +1417,11 @@ namespace MineCase.Item
             };
         }
 
-        public static ItemState RawRabbit()
+        public static ItemState Rabbit()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.RawRabbit,
+                Id = (uint)ItemId.Rabbit,
                 MetaValue = 0
             };
         }
@@ -1516,20 +1516,20 @@ namespace MineCase.Item
             };
         }
 
-        public static ItemState MinecartwithCommandBlock()
+        public static ItemState CommandBlockMinecart()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.MinecartwithCommandBlock,
+                Id = (uint)ItemId.CommandBlockMinecart,
                 MetaValue = 0
             };
         }
 
-        public static ItemState RawMutton()
+        public static ItemState Mutton()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.RawMutton,
+                Id = (uint)ItemId.Mutton,
                 MetaValue = 0
             };
         }
@@ -1543,11 +1543,12 @@ namespace MineCase.Item
             };
         }
 
+        // TODO: more banners
         public static ItemState Banner()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.Banner,
+                Id = (uint)ItemId.WhiteBanner,
                 MetaValue = 0
             };
         }
@@ -1759,11 +1760,11 @@ namespace MineCase.Item
             };
         }
 
-        public static ItemState TotemofUndying()
+        public static ItemState TotemOfUndying()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.TotemofUndying,
+                Id = (uint)ItemId.TotemOfUndying,
                 MetaValue = 0
             };
         }
@@ -1786,110 +1787,110 @@ namespace MineCase.Item
             };
         }
 
-        public static ItemState Disc13()
+        public static ItemState MusicDisc13()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.Disc13,
+                Id = (uint)ItemId.MusicDisc13,
                 MetaValue = 0
             };
         }
 
-        public static ItemState CatDisc()
+        public static ItemState MusicDiscCat()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.CatDisc,
+                Id = (uint)ItemId.MusicDiscCat,
                 MetaValue = 0
             };
         }
 
-        public static ItemState BlocksDisc()
+        public static ItemState MusicDiscBlocks()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.BlocksDisc,
+                Id = (uint)ItemId.MusicDiscBlocks,
                 MetaValue = 0
             };
         }
 
-        public static ItemState ChirpDisc()
+        public static ItemState MusicDiscChirp()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.ChirpDisc,
+                Id = (uint)ItemId.MusicDiscChirp,
                 MetaValue = 0
             };
         }
 
-        public static ItemState FarDisc()
+        public static ItemState MusicDiscFar()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.FarDisc,
+                Id = (uint)ItemId.MusicDiscFar,
                 MetaValue = 0
             };
         }
 
-        public static ItemState MallDisc()
+        public static ItemState MusicDiscMall()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.MallDisc,
+                Id = (uint)ItemId.MusicDiscMall,
                 MetaValue = 0
             };
         }
 
-        public static ItemState MellohiDisc()
+        public static ItemState MusicDiscMellohi()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.MellohiDisc,
+                Id = (uint)ItemId.MusicDiscMellohi,
                 MetaValue = 0
             };
         }
 
-        public static ItemState StalDisc()
+        public static ItemState MusicDiscStal()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.StalDisc,
+                Id = (uint)ItemId.MusicDiscStal,
                 MetaValue = 0
             };
         }
 
-        public static ItemState StradDisc()
+        public static ItemState MusicDiscStrad()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.StradDisc,
+                Id = (uint)ItemId.MusicDiscStrad,
                 MetaValue = 0
             };
         }
 
-        public static ItemState WardDisc()
+        public static ItemState MusicDiscWard()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.WardDisc,
+                Id = (uint)ItemId.MusicDiscWard,
                 MetaValue = 0
             };
         }
 
-        public static ItemState Disc11()
+        public static ItemState MusicDisc11()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.Disc11,
+                Id = (uint)ItemId.MusicDisc11,
                 MetaValue = 0
             };
         }
 
-        public static ItemState WaitDisc()
+        public static ItemState MusicDiscWait()
         {
             return new ItemState
             {
-                Id = (uint)ItemId.WaitDisc,
+                Id = (uint)ItemId.MusicDiscWait,
                 MetaValue = 0
             };
         }
