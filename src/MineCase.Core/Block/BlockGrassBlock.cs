@@ -21,16 +21,8 @@ namespace MineCase.Block
             IsBlockContainer = false;
             BlockSoundType = null;
             BlockParticleGravity = 1.0f;
-            BlockState = BlockStates.GrassBlock();
-            UnlocalizedName = "grass";
-        }
-
-        public override ItemState BlockBrokenItem(ItemState hand, bool silktouch)
-        {
-            if (silktouch)
-                return new ItemState { Id = (uint)BlockId.GrassBlock, MetaValue = 0 };
-            else
-                return new ItemState { Id = (uint)BlockId.Dirt, MetaValue = 0 };
+            BaseBlockState = new BlockState { Id = (uint)BlockId.Grass, MetaValue = 0 };
+            Name = "grass";
         }
     }
 }

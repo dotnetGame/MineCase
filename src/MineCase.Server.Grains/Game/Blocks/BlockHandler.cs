@@ -72,6 +72,8 @@ namespace MineCase.Server.Game.Blocks
 
         public virtual Slot DropBlock(ItemState item, BlockState blockState)
         {
+            // TODO: Wait for loot table
+            /*
             Block.Block blockObject = Block.Block.FromBlockState(blockState);
             switch ((BlockId)blockState.Id)
             {
@@ -82,6 +84,8 @@ namespace MineCase.Server.Game.Blocks
                     ItemState dropItem = blockObject.BlockBrokenItem(item, false);
                     return new Slot { BlockId = (short)dropItem.Id, ItemCount = 1 };
             }
+            */
+            return Slot.Empty;
         }
     }
 

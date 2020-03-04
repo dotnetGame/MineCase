@@ -21,16 +21,8 @@ namespace MineCase.Block
             IsBlockContainer = false;
             BlockSoundType = null;
             BlockParticleGravity = 1.0f;
-            BlockState = BlockStates.Cobblestone();
-            UnlocalizedName = "cobblestone";
-        }
-
-        public override ItemState BlockBrokenItem(ItemState hand, bool silktouch)
-        {
-            if (hand.IsPickaxe())
-                return new ItemState { Id = (uint)BlockId.Cobblestone, MetaValue = 0 };
-            else
-                return new ItemState { Id = (uint)BlockId.Air, MetaValue = 0 };
+            BaseBlockState = new BlockState { Id = (uint)BlockId.Cobblestone, MetaValue = 0 };
+            Name = "cobblestone";
         }
     }
 }

@@ -29,11 +29,11 @@ namespace MineCase.Server.Network.Login
 
                 if (await user.GetProtocolVersion() > MineCase.Protocol.Protocol.Version)
                 {
-                    await SendLoginDisconnect("{\"text\":\"Outdated server!I'm still on 1.12\"}");
+                    await SendLoginDisconnect($"{{\"text\":\"Outdated server!I'm still on {Protocol.Protocol.VersionName}\"}}");
                 }
                 else if (await user.GetProtocolVersion() < MineCase.Protocol.Protocol.Version)
                 {
-                    await SendLoginDisconnect("{\"text\":\"Outdated client!Please use 1.12\"}");
+                    await SendLoginDisconnect($"{{\"text\":\"Outdated client!Please use {Protocol.Protocol.VersionName}\"}}");
                 }
                 else
                 {
@@ -53,11 +53,11 @@ namespace MineCase.Server.Network.Login
 
                 if (await nonAuthenticatedUser.GetProtocolVersion() > MineCase.Protocol.Protocol.Version)
                 {
-                    await SendLoginDisconnect("{\"text\":\"Outdated server!I'm still on 1.12\"}");
+                    await SendLoginDisconnect($"{{\"text\":\"Outdated server!I'm still on {Protocol.Protocol.VersionName}\"}}");
                 }
                 else if (await nonAuthenticatedUser.GetProtocolVersion() < MineCase.Protocol.Protocol.Version)
                 {
-                    await SendLoginDisconnect("{\"text\":\"Outdated client!Please use 1.12\"}");
+                    await SendLoginDisconnect($"{{\"text\":\"Outdated client!Please use {Protocol.Protocol.VersionName}\"}}");
                 }
                 else
                 {

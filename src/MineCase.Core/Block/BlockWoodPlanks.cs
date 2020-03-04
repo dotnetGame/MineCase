@@ -21,14 +21,8 @@ namespace MineCase.Block
             IsBlockContainer = false;
             BlockSoundType = null;
             BlockParticleGravity = 1.0f;
-            BlockState = BlockStates.OakPlanks();
-            UnlocalizedName = "planks";
-        }
-
-        // FIXME: drop WoodPlanks
-        public override ItemState BlockBrokenItem(ItemState hand, bool silktouch)
-        {
-            return new ItemState { Id = (uint)BlockId.Air, MetaValue = BlockState.MetaValue };
+            BaseBlockState = BlockStates.OakPlanks();
+            Name = "planks";
         }
     }
 }
