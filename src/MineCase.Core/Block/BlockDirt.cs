@@ -21,13 +21,8 @@ namespace MineCase.Block
             IsBlockContainer = false;
             BlockSoundType = null;
             BlockParticleGravity = 1.0f;
-            BlockState = BlockStates.Dirt();
-            UnlocalizedName = "dirt";
-        }
-
-        public override ItemState BlockBrokenItem(ItemState hand, bool silktouch)
-        {
-            return new ItemState { Id = (uint)BlockId.Dirt, MetaValue = 0 };
+            BaseBlockState = new BlockState { Id = (uint)BlockId.Dirt, MetaValue = 0 };
+            Name = "dirt";
         }
     }
 }
