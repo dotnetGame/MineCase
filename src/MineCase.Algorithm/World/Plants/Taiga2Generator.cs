@@ -24,8 +24,10 @@ namespace MineCase.Algorithm.World.Plants
         {
             _minTreeHeight = treeHeight;
             _vines = vines;
-            _wood = BlockStates.Wood(WoodType.Spruce);
-            _leaves = BlockStates.Leaves(LeaveType.Spruce);
+            _wood = BlockStates.SpruceLog();
+
+            // TODO distance should use the distance to the nearest log
+            _leaves = BlockStates.SpruceLeaves(SpruceLeavesDistanceType.Distance1, SpruceLeavesPersistentType.False);
         }
 
         public override void Generate(IWorld world, IGrainFactory grainFactory, ChunkColumnCompactStorage chunk, Biome biome, Random random, BlockWorldPos pos)
@@ -108,7 +110,7 @@ namespace MineCase.Algorithm.World.Plants
 
                                         if (state.IsAir()
                                             || state.IsLeaves()
-                                            || state.IsSameId(BlockStates.Vines()))
+                                            || state.IsId(BlockId.Vine))
                                         {
                                             chunk[blockpos.X, blockpos.Y, blockpos.Z] = _leaves;
                                         }
@@ -140,7 +142,7 @@ namespace MineCase.Algorithm.World.Plants
                             BlockChunkPos upN = new BlockWorldPos(pos.X, pos.Y + y, pos.Z).ToBlockChunkPos();
                             state = chunk[upN.X, upN.Y, upN.Z];
 
-                            if (state.IsAir() || state.IsSameId(BlockStates.Leaves()) || state.IsSameId(BlockStates.Leaves2()))
+                            if (state.IsAir() || state.IsLeaves())
                             {
                                 chunk[upN.X, upN.Y, upN.Z] = _wood;
                             }

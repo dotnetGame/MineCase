@@ -30,8 +30,8 @@ namespace MineCase.Algorithm.World.Plants
                     blockpos.Y < 254 &&
                     CanFlowerGrow(_flowerType, chunk, chunkpos))
                 {
-                    chunk[chunkpos.X, chunkpos.Y, chunkpos.Z] = BlockStates.LargeFlowers(LargeFlowerType.Sunflower);
-                    chunk[chunkpos.X, chunkpos.Y + 1, chunkpos.Z] = BlockStates.LargeFlowers(LargeFlowerType.TopHalfFlag);
+                    chunk[chunkpos.X, chunkpos.Y, chunkpos.Z] = BlockStates.Sunflower(SunflowerHalfType.Lower);
+                    chunk[chunkpos.X, chunkpos.Y + 1, chunkpos.Z] = BlockStates.Sunflower(SunflowerHalfType.Upper);
                 }
             }
         }

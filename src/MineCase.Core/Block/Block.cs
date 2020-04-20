@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MineCase.Block.State;
 using MineCase.Item;
 
 namespace MineCase.Block
 {
     public abstract class Block
     {
+        public Material.Material Material { get; set; }
+
         /** Is it a full block */
         public bool FullBlock { get; set; }
 
@@ -43,60 +46,16 @@ namespace MineCase.Block
 
         public float BlockParticleGravity { get; set; }
 
-        public BlockState BlockState { get; set; }
+        public String Name { get; set; }
 
-        public String UnlocalizedName { get; set; }
-
-        public abstract ItemState BlockBrokenItem(ItemState hand, bool silktouch);
+        public BlockState BaseBlockState { get; set; }
 
         public static Block FromBlockState(BlockState blockState)
         {
-            if (blockState == BlockStates.Air())
-            {
-                return new BlockAir();
-            }
-            else if (blockState.IsId(BlockId.Stone))
-            {
-                var stone = new BlockStone();
-                stone.BlockState = blockState;
-                return stone;
-            }
-            else if (blockState == BlockStates.GrassBlock())
-            {
-                return new BlockGrassBlock();
-            }
-            else if (blockState == BlockStates.Dirt())
-            {
-                return new BlockDirt();
-            }
-            else if (blockState == BlockStates.Cobblestone())
-            {
-                return new BlockCobblestone();
-            }
-            else if (blockState.IsId(BlockId.OakPlanks))
-            {
-                var planks = new BlockWoodPlanks();
-                planks.BlockState = blockState;
-                return planks;
-            }
-            else if (blockState.IsId(BlockId.OakSapling))
-            {
-                var planks = new BlockSapling();
-                planks.BlockState = blockState;
-                return planks;
-            }
-            else if (blockState == BlockStates.Bedrock())
-            {
-                return new BlockBedrock();
-            }
-            else if (blockState == BlockStates.Water())
-            {
-                return new BlockWater();
-            }
+            if (!Blocks.IntToBlock.ContainsKey((int)blockState.Id))
+                return Blocks.Air;
             else
-            {
-                return new BlockAir();
-            }
+                return Blocks.IntToBlock[(int)blockState.Id];
         }
     }
 }

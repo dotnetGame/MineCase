@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MineCase.Block.State;
 using MineCase.Item;
 
 namespace MineCase.Block
@@ -9,6 +10,7 @@ namespace MineCase.Block
     {
         public BlockAir()
         {
+            Material = MineCase.Block.Material.Materials.Air;
             FullBlock = true;
             LightOpacity = 0;
             Translucent = false;
@@ -21,13 +23,8 @@ namespace MineCase.Block
             IsBlockContainer = false;
             BlockSoundType = null;
             BlockParticleGravity = 1.0f;
-            BlockState = BlockStates.Air();
-            UnlocalizedName = "air";
-        }
-
-        public override ItemState BlockBrokenItem(ItemState hand, bool silktouch)
-        {
-            return new ItemState { Id = (uint)BlockId.Air, MetaValue = 0 };
+            Name = "air";
+            BaseBlockState = new BlockState { Id = (uint)BlockId.Air, MetaValue = 0 };
         }
     }
 }

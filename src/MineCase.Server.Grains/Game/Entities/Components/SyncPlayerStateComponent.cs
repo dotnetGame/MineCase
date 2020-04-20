@@ -33,6 +33,10 @@ namespace MineCase.Server.Game.Entities.Components
             var lookComponent = AttachedObject.GetComponent<EntityLookComponent>();
             await generator.PositionAndLook(position.X, position.Y, position.Z, lookComponent.Yaw, lookComponent.Pitch, 0, AttachedObject.GetComponent<TeleportComponent>().StartNew());
 
+            // Update view position
+            var chunkPos = position.ToChunkWorldPos();
+            await generator.UpdateViewPosition(chunkPos.X, chunkPos.Z);
+
             // Health
             var healthComponent = AttachedObject.GetComponent<HealthComponent>();
             var foodComponent = AttachedObject.GetComponent<FoodComponent>();

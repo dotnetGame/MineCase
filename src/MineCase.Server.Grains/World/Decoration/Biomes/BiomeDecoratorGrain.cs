@@ -56,7 +56,7 @@ namespace MineCase.Server.World.Decoration.Biomes
             await oreGenerator.Generate(world, chunkWorldPos, BlockStates.GoldOre(), settings.GoldCount, settings.GoldSize, settings.GoldMinHeight, settings.GoldMaxHeight);
             await oreGenerator.Generate(world, chunkWorldPos, BlockStates.DiamondOre(), settings.DiamondCount, settings.DiamondSize, settings.DiamondMinHeight, settings.DiamondMaxHeight);
             await oreGenerator.Generate(world, chunkWorldPos, BlockStates.RedstoneOre(), settings.RedstoneCount, settings.RedstoneSize, settings.RedstoneMinHeight, settings.RedstoneMaxHeight);
-            await oreGenerator.Generate(world, chunkWorldPos, BlockStates.LapisLazuliOre(), settings.LapisCount, settings.LapisSize, settings.LapisCenterHeight - settings.LapisSpread, settings.LapisCenterHeight + settings.LapisSpread);
+            await oreGenerator.Generate(world, chunkWorldPos, BlockStates.LapisOre(), settings.LapisCount, settings.LapisSize, settings.LapisCenterHeight - settings.LapisSpread, settings.LapisCenterHeight + settings.LapisSpread);
         }
 
         public virtual Task Decorate(IWorld world, ChunkWorldPos chunkWorldPos, GeneratorSettings settings)

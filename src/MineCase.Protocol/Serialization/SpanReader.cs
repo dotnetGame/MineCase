@@ -193,8 +193,8 @@ namespace MineCase.Serialization
             return new Position
             {
                 X = SignBy26(value >> 38),
-                Y = SignBy12((value >> 26) & 0xFFF),
-                Z = SignBy26(value << 38 >> 38)
+                Y = SignBy12(value & 0xFFF),
+                Z = SignBy26(value << 26 >> 38)
             };
         }
 

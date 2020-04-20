@@ -129,7 +129,7 @@ namespace MineCase.Algorithm.World.Biomes
                 BlockStates.DiamondOre(),
                 genSettings.DiamondSize);
             _lapisGen = new MinableGenerator(
-                BlockStates.LapisLazuliOre(),
+                BlockStates.LapisOre(),
                 genSettings.LapisSize);
 
             _treesPerChunk = 0; // mc 0

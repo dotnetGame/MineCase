@@ -36,8 +36,8 @@ namespace MineCase.Server.World.Decoration.Plants
             _treeType = _generatorSettings.PlantType;
             if (_generatorSettings.PlantType == PlantsType.Spruce)
             {
-                _wood = BlockStates.Wood(WoodType.Spruce);
-                _leaves = BlockStates.Leaves(LeaveType.Spruce);
+                _wood = BlockStates.SpruceLog();
+                _leaves = BlockStates.SpruceLeaves(SpruceLeavesDistanceType.Distance1, SpruceLeavesPersistentType.False);
             }
         }
 
@@ -126,7 +126,7 @@ namespace MineCase.Server.World.Decoration.Plants
 
                                         if (state.IsAir()
                                             || state.IsLeaves()
-                                            || state.IsSameId(BlockStates.Vines()))
+                                            || state.IsId(BlockId.Vine))
                                         {
                                             await SetBlock(world, chunkWorldPos, new BlockWorldPos(x, y, z), _leaves);
                                         }
@@ -158,7 +158,7 @@ namespace MineCase.Server.World.Decoration.Plants
                             BlockWorldPos upN = new BlockWorldPos(pos.X, pos.Y + y, pos.Z);
                             state = await GetBlock(world, chunkWorldPos, upN);
 
-                            if (state.IsAir() || state.IsSameId(BlockStates.Leaves()) || state.IsSameId(BlockStates.Leaves2()))
+                            if (state.IsAir() || state.IsLeaves())
                             {
                                 await SetBlock(world, chunkWorldPos, upN, _wood);
                             }

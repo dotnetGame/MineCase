@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MineCase.Block.State;
 using MineCase.Item;
 
 namespace MineCase.Block
 {
     public class BlockSapling : Block
     {
-        public BlockSapling()
+        public static IntegerProperty StageProperty = new IntegerProperty("stage", 2);
+
+        public BlockSapling(string name = "sapling")
         {
             FullBlock = false;
             LightOpacity = 0;
@@ -21,14 +24,7 @@ namespace MineCase.Block
             IsBlockContainer = false;
             BlockSoundType = null;
             BlockParticleGravity = 1.0f;
-            BlockState = BlockStates.Sapling();
-            UnlocalizedName = "sapling";
-        }
-
-        // FIXME the broken item is not correct
-        public override ItemState BlockBrokenItem(ItemState hand, bool silktouch)
-        {
-            return new ItemState { Id = (uint)BlockId.OakSapling, MetaValue = BlockState.MetaValue };
+            Name = name;
         }
     }
 }
