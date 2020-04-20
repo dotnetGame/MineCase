@@ -134,8 +134,8 @@ namespace MineCase.Serialization
             Debug.Assert(IsValueInRangeInclusive(position.Z, -33554432, 33554431), "position Z value not in range.");
 
             var value = (ulong)((uint)position.X & 0x3FFFFFF) << 38;
-            value |= (ulong)((uint)position.Y & 0xFFF) << 26;
-            value |= (ulong)((uint)position.Z & 0x3FFFFFF);
+            value |= (ulong)((uint)position.Y & 0xFFF);
+            value |= (ulong)((uint)position.Z & 0x3FFFFFF) << 12;
             bw.WriteAsUnsignedLong(value);
         }
 
