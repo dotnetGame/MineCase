@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>net5.0</TargetFrameworks>
     <RootNamespace>MineCase.Server</RootNamespace>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <CodeAnalysisRuleSet>../../build/Analyzers.ruleset</CodeAnalysisRuleSet>
@@ -9,21 +9,6 @@
     <Configurations>Debug;Release;Appveyor;TravisCI</Configurations>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TravisCI|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Appveyor|AnyCPU'">
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -39,13 +24,13 @@
     <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.2" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.3.2" />
-    <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="3.1.0">
+    <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="3.2.0-rc2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Orleans.Core" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Orleans.OrleansRuntime" Version="3.1.0" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Orleans.Core" Version="3.2.0-rc2" />
+    <PackageReference Include="Microsoft.Orleans.OrleansRuntime" Version="3.2.0-rc2" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.164" PrivateAssets="All" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.10.2" />

@@ -14,7 +14,7 @@ namespace MineCase.Server.Components
         public static readonly DependencyProperty<string> AddressByPartitionKeyProperty =
             DependencyProperty.Register("AddressByPartitionKey", typeof(AddressByPartitionKeyComponent), new PropertyMetadata<string>(string.Empty, OnAddressByPartitionKeyChanged));
 
-        public event EventHandler<(string oldKey, string newKey)> KeyChanged;
+        public event EventHandler<(string OldKey, string NewKey)> KeyChanged;
 
         public AddressByPartitionKeyComponent(string name = "addressByPartitionKey")
             : base(name)

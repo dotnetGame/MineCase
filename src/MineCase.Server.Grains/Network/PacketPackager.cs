@@ -18,7 +18,7 @@ namespace MineCase.Server.Network
             _memoryStreamMgr = memoryStreamMgr;
         }
 
-        public Task<(uint packetId, byte[] data)> PreparePacket(ISerializablePacket packet)
+        public Task<(uint PacketId, byte[] Data)> PreparePacket(ISerializablePacket packet)
         {
             using (var stream = _memoryStreamMgr.GetStream())
             {

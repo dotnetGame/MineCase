@@ -35,12 +35,12 @@ namespace MineCase.Server.Game.Entities.Components
                 else
                 {
                     var heldItem = await AttachedObject.GetComponent<HeldItemComponent>().GetHeldItem();
-                    if (!heldItem.slot.IsEmpty)
+                    if (!heldItem.Slot.IsEmpty)
                     {
-                        var itemHandler = ItemHandler.Create(new ItemState { Id = (uint)heldItem.slot.BlockId, MetaValue = 0 });
+                        var itemHandler = ItemHandler.Create(new ItemState { Id = (uint)heldItem.Slot.BlockId, MetaValue = 0 });
                         if (itemHandler.IsPlaceable)
                         {
-                            await itemHandler.PlaceBy(AttachedObject, GrainFactory, world, location, heldItem.slot, face, cursorPosition);
+                            await itemHandler.PlaceBy(AttachedObject, GrainFactory, world, location, heldItem.Slot, face, cursorPosition);
                         }
                     }
                 }

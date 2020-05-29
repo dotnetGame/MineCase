@@ -718,7 +718,7 @@ namespace MineCase.Block
             }
         }
 
-        public static (uint id, uint meta) ParseBlockStateId(uint value)
+        public static (uint Id, uint Meta) ParseBlockStateId(uint value)
         {
             var id = BlockType.BaseBlockIdTable[value];
             var meta = value - id;

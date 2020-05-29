@@ -335,7 +335,7 @@ namespace MineCase.Server.Game.Entities.Components
             }
         }
 
-        public static (float, float) VectorToYawAndPitch(Vector3 from, Vector3 to)
+        public static (float Yaw, float Pitch) VectorToYawAndPitch(Vector3 from, Vector3 to)
         {
             Vector3 v = to - from;
             v = Vector3.Normalize(v);

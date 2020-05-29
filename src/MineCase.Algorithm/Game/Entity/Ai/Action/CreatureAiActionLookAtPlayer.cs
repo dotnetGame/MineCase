@@ -42,7 +42,7 @@ namespace MineCase.Server.World.EntitySpawner.Ai.Action
             */
         }
 
-        public static (byte, byte) VectorToYawAndPitch(Vector3 from, Vector3 to)
+        public static (byte Yaw, byte Pitch) VectorToYawAndPitch(Vector3 from, Vector3 to)
         {
             Vector3 v = to - from;
             v = Vector3.Normalize(v);

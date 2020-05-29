@@ -24,7 +24,7 @@ namespace MineCase.Server.Network
             if (_sinks.Any())
             {
                 var preparedPacket = await _packetPackager.PreparePacket(packet);
-                await SendPacket(preparedPacket.packetId, preparedPacket.data.AsImmutable());
+                await SendPacket(preparedPacket.PacketId, preparedPacket.Data.AsImmutable());
             }
         }
 
@@ -39,7 +39,7 @@ namespace MineCase.Server.Network
             if (_sinks.Any())
             {
                 var preparedPacket = await _packetPackager.PreparePacket(packet);
-                await SendPacket(preparedPacket.packetId, preparedPacket.data.AsImmutable(), except);
+                await SendPacket(preparedPacket.PacketId, preparedPacket.Data.AsImmutable(), except);
             }
         }
 

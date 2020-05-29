@@ -37,13 +37,13 @@ namespace MineCase.Server.Game.Entities.Components
             AttachedObject.QueueOperation(TryUnsubscribe);
         }
 
-        private void AddressByPartitionKeyChanged(object sender, (string oldKey, string newKey) e)
+        private void AddressByPartitionKeyChanged(object sender, (string OldKey, string NewKey) e)
         {
             AttachedObject.QueueOperation(async () =>
             {
                 var shape = ColliderShape;
-                if (!string.IsNullOrEmpty(e.oldKey))
-                    await GrainFactory.GetGrain<ICollectableFinder>(e.oldKey).UnregisterCollider(AttachedObject);
+                if (!string.IsNullOrEmpty(e.OldKey))
+                    await GrainFactory.GetGrain<ICollectableFinder>(e.OldKey).UnregisterCollider(AttachedObject);
                 await TrySubscribe();
             });
         }

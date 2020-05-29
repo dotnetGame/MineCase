@@ -92,7 +92,7 @@ namespace MineCase.Server.Game.Windows
             return slotIndex;
         }
 
-        protected (SlotArea slotArea, int slotIndex) GlobalSlotIndexToLocal(int slotIndex)
+        protected (SlotArea SlotArea, int SlotIndex) GlobalSlotIndexToLocal(int slotIndex)
         {
             for (int i = 0; i < SlotAreas.Count; i++)
             {
@@ -141,7 +141,7 @@ namespace MineCase.Server.Game.Windows
 
                 case ClickAction.DoubleClick:
                     var slot = GlobalSlotIndexToLocal(slotIndex);
-                    await slot.slotArea.Click(player, SlotAreas, slotIndex, slot.slotIndex, clickAction, clickedItem);
+                    await slot.SlotArea.Click(player, SlotAreas, slotIndex, slot.SlotIndex, clickAction, clickedItem);
                     break;
                 default:
                     break;
@@ -193,13 +193,13 @@ namespace MineCase.Server.Game.Windows
         public Task<Slot> GetSlot(IPlayer player, int slotIndex)
         {
             var area = GlobalSlotIndexToLocal(slotIndex);
-            return area.slotArea.GetSlot(player, area.slotIndex);
+            return area.SlotArea.GetSlot(player, area.SlotIndex);
         }
 
         public Task SetSlot(IPlayer player, int slotIndex, Slot item)
         {
             var area = GlobalSlotIndexToLocal(slotIndex);
-            return area.slotArea.SetSlot(player, area.slotIndex, item);
+            return area.SlotArea.SetSlot(player, area.SlotIndex, item);
         }
 
         public async Task Destroy()

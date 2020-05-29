@@ -22,7 +22,7 @@ namespace MineCase.Server.Game.Blocks
         {
         }
 
-        public static readonly (int x, int z)[] CrossCoords = new[]
+        public static readonly (int X, int Z)[] CrossCoords = new[]
         {
             (-1, 0), (0, -1), (1, 0), (0, 1)
         };
@@ -32,7 +32,7 @@ namespace MineCase.Server.Game.Blocks
             bool hasNeighbor = false;
             foreach (var crossCoord in CrossCoords)
             {
-                var blockState = await world.GetBlockState(grainFactory, position.X + crossCoord.x, position.Y, position.Z + crossCoord.z);
+                var blockState = await world.GetBlockState(grainFactory, position.X + crossCoord.X, position.Y, position.Z + crossCoord.Z);
                 if (blockState.Id != (uint)BlockId) continue;
 
                 if (hasNeighbor) return false;
@@ -41,7 +41,7 @@ namespace MineCase.Server.Game.Blocks
                 // 再检查隔壁的隔壁是不是箱子
                 foreach (var crossCoord2 in CrossCoords)
                 {
-                    var blockState2 = await world.GetBlockState(grainFactory, position.X + crossCoord.x + crossCoord2.x, position.Y, position.Z + crossCoord.z + crossCoord2.z);
+                    var blockState2 = await world.GetBlockState(grainFactory, position.X + crossCoord.X + crossCoord2.X, position.Y, position.Z + crossCoord.Z + crossCoord2.Z);
                     if (blockState2.Id == (uint)BlockId) return false;
                 }
             }
@@ -79,7 +79,7 @@ namespace MineCase.Server.Game.Blocks
             BlockWorldPos? neighborPosition = null;
             foreach (var crossCoord in CrossCoords)
             {
-                var neighborPos = new BlockWorldPos(position.X + crossCoord.x, position.Y, position.Z + crossCoord.z);
+                var neighborPos = new BlockWorldPos(position.X + crossCoord.X, position.Y, position.Z + crossCoord.Z);
                 var neighborState = await world.GetBlockState(grainFactory, neighborPos);
                 if (neighborState.Id == (uint)BlockId)
                 {

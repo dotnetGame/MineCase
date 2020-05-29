@@ -45,7 +45,7 @@ namespace MineCase.Server.Network
         public async Task SendPacket(ISerializablePacket packet)
         {
             var prepared = await _packetPackager.PreparePacket(packet);
-            await SendPacket(prepared.packetId, prepared.data.AsImmutable());
+            await SendPacket(prepared.PacketId, prepared.Data.AsImmutable());
         }
 
         public Task SendPacket(uint packetId, Immutable<byte[]> data)

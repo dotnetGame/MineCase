@@ -16,8 +16,8 @@ namespace MineCase.Server.World
         public override Task OnActivateAsync()
         {
             var keys = this.GetWorldAndChunkWorldPos();
-            World = GrainFactory.GetGrain<IWorld>(keys.worldKey);
-            ChunkWorldPos = keys.chunkWorldPos;
+            World = GrainFactory.GetGrain<IWorld>(keys.WorldKey);
+            ChunkWorldPos = keys.ChunkWorldPos;
             return base.OnActivateAsync();
         }
     }

@@ -4,12 +4,12 @@ using System.Numerics;
 namespace MineCase.Algorithm.Noise
 {
     /// <summary>
-    /// Implementation for Improved Perlin Noise (http://mrl.nyu.edu/~perlin/noise/)
+    /// Implementation for Improved Perlin Noise (http://mrl.nyu.edu/~perlin/noise/).
     /// </summary>
     public class PerlinNoise : INoise
     {
         /// <summary>
-        /// Permutation
+        /// Permutation.
         /// </summary>
         private readonly byte[] _p = new byte[512];
 
@@ -30,36 +30,36 @@ namespace MineCase.Algorithm.Noise
             var ycoord = Split(y);
             var zcoord = Split(z);
 
-            var u = Fade(xcoord.remainder);
-            var v = Fade(ycoord.remainder);
-            var w = Fade(zcoord.remainder);
+            var u = Fade(xcoord.Remainder);
+            var v = Fade(ycoord.Remainder);
+            var w = Fade(zcoord.Remainder);
 
-            int a = _p[xcoord.integer];
-            int b = _p[xcoord.integer + 1];
-            int aa = _p[a + ycoord.integer];
-            int ab = _p[a + ycoord.integer + 1];
-            int ba = _p[b + ycoord.integer];
-            int bb = _p[b + ycoord.integer + 1];
+            int a = _p[xcoord.Integer];
+            int b = _p[xcoord.Integer + 1];
+            int aa = _p[a + ycoord.Integer];
+            int ab = _p[a + ycoord.Integer + 1];
+            int ba = _p[b + ycoord.Integer];
+            int bb = _p[b + ycoord.Integer + 1];
 
-            int aaa = _p[aa + zcoord.integer];
-            int aba = _p[ab + zcoord.integer];
-            int aab = _p[aa + zcoord.integer + 1];
-            int abb = _p[ab + zcoord.integer + 1];
-            int baa = _p[ba + zcoord.integer];
-            int bba = _p[bb + zcoord.integer];
-            int bab = _p[ba + zcoord.integer + 1];
-            int bbb = _p[bb + zcoord.integer + 1];
+            int aaa = _p[aa + zcoord.Integer];
+            int aba = _p[ab + zcoord.Integer];
+            int aab = _p[aa + zcoord.Integer + 1];
+            int abb = _p[ab + zcoord.Integer + 1];
+            int baa = _p[ba + zcoord.Integer];
+            int bba = _p[bb + zcoord.Integer];
+            int bab = _p[ba + zcoord.Integer + 1];
+            int bbb = _p[bb + zcoord.Integer + 1];
 
             var xa = new Vector4(
-                Grad(aaa, xcoord.remainder, ycoord.remainder, zcoord.remainder),
-                Grad(aba, xcoord.remainder, ycoord.remainder - 1, zcoord.remainder),
-                Grad(aab, xcoord.remainder, ycoord.remainder, zcoord.remainder - 1),
-                Grad(abb, xcoord.remainder, ycoord.remainder - 1, zcoord.remainder - 1));
+                Grad(aaa, xcoord.Remainder, ycoord.Remainder, zcoord.Remainder),
+                Grad(aba, xcoord.Remainder, ycoord.Remainder - 1, zcoord.Remainder),
+                Grad(aab, xcoord.Remainder, ycoord.Remainder, zcoord.Remainder - 1),
+                Grad(abb, xcoord.Remainder, ycoord.Remainder - 1, zcoord.Remainder - 1));
             var xb = new Vector4(
-                Grad(baa, xcoord.remainder - 1, ycoord.remainder, zcoord.remainder),
-                Grad(bba, xcoord.remainder - 1, ycoord.remainder - 1, zcoord.remainder),
-                Grad(bab, xcoord.remainder - 1, ycoord.remainder, zcoord.remainder - 1),
-                Grad(bbb, xcoord.remainder - 1, ycoord.remainder - 1, zcoord.remainder - 1));
+                Grad(baa, xcoord.Remainder - 1, ycoord.Remainder, zcoord.Remainder),
+                Grad(bba, xcoord.Remainder - 1, ycoord.Remainder - 1, zcoord.Remainder),
+                Grad(bab, xcoord.Remainder - 1, ycoord.Remainder, zcoord.Remainder - 1),
+                Grad(bbb, xcoord.Remainder - 1, ycoord.Remainder - 1, zcoord.Remainder - 1));
             var xl = Vector4.Lerp(xa, xb, u);
             var ya = new Vector2(xl.X, xl.Z);
             var yb = new Vector2(xl.Y, xl.W);
@@ -78,45 +78,45 @@ namespace MineCase.Algorithm.Noise
             {
                 var xOffset = offset.X + x * scale.X;
                 var xcoord = Split(xOffset);
-                var u = Fade(xcoord.remainder);
+                var u = Fade(xcoord.Remainder);
 
-                int a = _p[xcoord.integer];
-                int b = _p[xcoord.integer + 1];
+                int a = _p[xcoord.Integer];
+                int b = _p[xcoord.Integer + 1];
                 for (int y = 0; y < yExtent; y++)
                 {
                     var yOffset = offset.Y + y * scale.Y;
                     var ycoord = Split(yOffset);
-                    var v = Fade(ycoord.remainder);
+                    var v = Fade(ycoord.Remainder);
 
-                    int aa = _p[a + ycoord.integer];
-                    int ab = _p[a + ycoord.integer + 1];
-                    int ba = _p[b + ycoord.integer];
-                    int bb = _p[b + ycoord.integer + 1];
+                    int aa = _p[a + ycoord.Integer];
+                    int ab = _p[a + ycoord.Integer + 1];
+                    int ba = _p[b + ycoord.Integer];
+                    int bb = _p[b + ycoord.Integer + 1];
                     for (int z = 0; z < zExtent; z++)
                     {
                         var zOffset = offset.Z + z * scale.Z;
                         var zcoord = Split(zOffset);
-                        var w = Fade(zcoord.remainder);
+                        var w = Fade(zcoord.Remainder);
 
-                        int aaa = _p[aa + zcoord.integer];
-                        int aba = _p[ab + zcoord.integer];
-                        int aab = _p[aa + zcoord.integer + 1];
-                        int abb = _p[ab + zcoord.integer + 1];
-                        int baa = _p[ba + zcoord.integer];
-                        int bba = _p[bb + zcoord.integer];
-                        int bab = _p[ba + zcoord.integer + 1];
-                        int bbb = _p[bb + zcoord.integer + 1];
+                        int aaa = _p[aa + zcoord.Integer];
+                        int aba = _p[ab + zcoord.Integer];
+                        int aab = _p[aa + zcoord.Integer + 1];
+                        int abb = _p[ab + zcoord.Integer + 1];
+                        int baa = _p[ba + zcoord.Integer];
+                        int bba = _p[bb + zcoord.Integer];
+                        int bab = _p[ba + zcoord.Integer + 1];
+                        int bbb = _p[bb + zcoord.Integer + 1];
 
                         var xa = new Vector4(
-                            Grad(aaa, xcoord.remainder, ycoord.remainder, zcoord.remainder),
-                            Grad(aba, xcoord.remainder, ycoord.remainder - 1, zcoord.remainder),
-                            Grad(aab, xcoord.remainder, ycoord.remainder, zcoord.remainder - 1),
-                            Grad(abb, xcoord.remainder, ycoord.remainder - 1, zcoord.remainder - 1));
+                            Grad(aaa, xcoord.Remainder, ycoord.Remainder, zcoord.Remainder),
+                            Grad(aba, xcoord.Remainder, ycoord.Remainder - 1, zcoord.Remainder),
+                            Grad(aab, xcoord.Remainder, ycoord.Remainder, zcoord.Remainder - 1),
+                            Grad(abb, xcoord.Remainder, ycoord.Remainder - 1, zcoord.Remainder - 1));
                         var xb = new Vector4(
-                            Grad(baa, xcoord.remainder - 1, ycoord.remainder, zcoord.remainder),
-                            Grad(bba, xcoord.remainder - 1, ycoord.remainder - 1, zcoord.remainder),
-                            Grad(bab, xcoord.remainder - 1, ycoord.remainder, zcoord.remainder - 1),
-                            Grad(bbb, xcoord.remainder - 1, ycoord.remainder - 1, zcoord.remainder - 1));
+                            Grad(baa, xcoord.Remainder - 1, ycoord.Remainder, zcoord.Remainder),
+                            Grad(bba, xcoord.Remainder - 1, ycoord.Remainder - 1, zcoord.Remainder),
+                            Grad(bab, xcoord.Remainder - 1, ycoord.Remainder, zcoord.Remainder - 1),
+                            Grad(bbb, xcoord.Remainder - 1, ycoord.Remainder - 1, zcoord.Remainder - 1));
                         var xl = Vector4.Lerp(xa, xb, u);
                         var ya = new Vector2(xl.X, xl.Z);
                         var yb = new Vector2(xl.Y, xl.W);
@@ -138,45 +138,45 @@ namespace MineCase.Algorithm.Noise
             {
                 var xOffset = offset.X + x * scale.X;
                 var xcoord = Split(xOffset);
-                var u = Fade(xcoord.remainder);
+                var u = Fade(xcoord.Remainder);
 
-                int a = _p[xcoord.integer];
-                int b = _p[xcoord.integer + 1];
+                int a = _p[xcoord.Integer];
+                int b = _p[xcoord.Integer + 1];
                 for (int y = 0; y < yExtent; y++)
                 {
                     var yOffset = offset.Y + y * scale.Y;
                     var ycoord = Split(yOffset);
-                    var v = Fade(ycoord.remainder);
+                    var v = Fade(ycoord.Remainder);
 
-                    int aa = _p[a + ycoord.integer];
-                    int ab = _p[a + ycoord.integer + 1];
-                    int ba = _p[b + ycoord.integer];
-                    int bb = _p[b + ycoord.integer + 1];
+                    int aa = _p[a + ycoord.Integer];
+                    int ab = _p[a + ycoord.Integer + 1];
+                    int ba = _p[b + ycoord.Integer];
+                    int bb = _p[b + ycoord.Integer + 1];
                     for (int z = 0; z < zExtent; z++)
                     {
                         var zOffset = offset.Z + z * scale.Z;
                         var zcoord = Split(zOffset);
-                        var w = Fade(zcoord.remainder);
+                        var w = Fade(zcoord.Remainder);
 
-                        int aaa = _p[aa + zcoord.integer];
-                        int aba = _p[ab + zcoord.integer];
-                        int aab = _p[aa + zcoord.integer + 1];
-                        int abb = _p[ab + zcoord.integer + 1];
-                        int baa = _p[ba + zcoord.integer];
-                        int bba = _p[bb + zcoord.integer];
-                        int bab = _p[ba + zcoord.integer + 1];
-                        int bbb = _p[bb + zcoord.integer + 1];
+                        int aaa = _p[aa + zcoord.Integer];
+                        int aba = _p[ab + zcoord.Integer];
+                        int aab = _p[aa + zcoord.Integer + 1];
+                        int abb = _p[ab + zcoord.Integer + 1];
+                        int baa = _p[ba + zcoord.Integer];
+                        int bba = _p[bb + zcoord.Integer];
+                        int bab = _p[ba + zcoord.Integer + 1];
+                        int bbb = _p[bb + zcoord.Integer + 1];
 
                         var xa = new Vector4(
-                            Grad(aaa, xcoord.remainder, ycoord.remainder, zcoord.remainder),
-                            Grad(aba, xcoord.remainder, ycoord.remainder - 1, zcoord.remainder),
-                            Grad(aab, xcoord.remainder, ycoord.remainder, zcoord.remainder - 1),
-                            Grad(abb, xcoord.remainder, ycoord.remainder - 1, zcoord.remainder - 1));
+                            Grad(aaa, xcoord.Remainder, ycoord.Remainder, zcoord.Remainder),
+                            Grad(aba, xcoord.Remainder, ycoord.Remainder - 1, zcoord.Remainder),
+                            Grad(aab, xcoord.Remainder, ycoord.Remainder, zcoord.Remainder - 1),
+                            Grad(abb, xcoord.Remainder, ycoord.Remainder - 1, zcoord.Remainder - 1));
                         var xb = new Vector4(
-                            Grad(baa, xcoord.remainder - 1, ycoord.remainder, zcoord.remainder),
-                            Grad(bba, xcoord.remainder - 1, ycoord.remainder - 1, zcoord.remainder),
-                            Grad(bab, xcoord.remainder - 1, ycoord.remainder, zcoord.remainder - 1),
-                            Grad(bbb, xcoord.remainder - 1, ycoord.remainder - 1, zcoord.remainder - 1));
+                            Grad(baa, xcoord.Remainder - 1, ycoord.Remainder, zcoord.Remainder),
+                            Grad(bba, xcoord.Remainder - 1, ycoord.Remainder - 1, zcoord.Remainder),
+                            Grad(bab, xcoord.Remainder - 1, ycoord.Remainder, zcoord.Remainder - 1),
+                            Grad(bbb, xcoord.Remainder - 1, ycoord.Remainder - 1, zcoord.Remainder - 1));
                         var xl = Vector4.Lerp(xa, xb, u);
                         var ya = new Vector2(xl.X, xl.Z);
                         var yb = new Vector2(xl.Y, xl.W);
@@ -188,7 +188,7 @@ namespace MineCase.Algorithm.Noise
             }
         }
 
-        private static (int integer, float remainder) Split(float value)
+        private static (int Integer, float Remainder) Split(float value)
         {
             value = value % 256;
             if (value < 0) value += 256;

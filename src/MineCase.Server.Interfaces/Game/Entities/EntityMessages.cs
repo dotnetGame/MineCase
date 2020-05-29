@@ -53,7 +53,7 @@ namespace MineCase.Server.Game.Entities.Components
     }
 
     [Immutable]
-    public sealed class AskHeldItem : IEntityMessage<(int index, Slot slot)>
+    public sealed class AskHeldItem : IEntityMessage<(int Index, Slot Slot)>
     {
         public static readonly AskHeldItem Default = new AskHeldItem();
     }

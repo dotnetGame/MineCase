@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>net5.0</TargetFrameworks>
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
     <Configurations>Debug;Release;Appveyor;TravisCI</Configurations>
@@ -38,11 +38,11 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Orleans.Client" Version="3.1.0" />
-    <PackageReference Include="Orleans.Providers.MongoDB" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Orleans.Client" Version="3.2.0-rc2" />
+    <PackageReference Include="Orleans.Providers.MongoDB" Version="3.1.7" />
     <PackageReference Include="Polly" Version="7.2.0" />
     <PackageReference Include="sharpcompress" Version="0.24.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0006" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-rc0001" />
   </ItemGroup>
 
   <ItemGroup>

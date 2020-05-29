@@ -38,7 +38,7 @@ namespace MineCase.Server.Game.Windows
         public Task UseItem(IPlayer player, int slotIndex)
         {
             var slotArea = GlobalSlotIndexToLocal(slotIndex);
-            return slotArea.slotArea.TryUseItem(player, slotArea.slotIndex);
+            return slotArea.SlotArea.TryUseItem(player, slotArea.SlotIndex);
         }
 
         public Task<Slot> GetHotbarItem(IPlayer player, int slotIndex)

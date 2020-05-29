@@ -6,7 +6,7 @@ using MineCase.Engine;
 
 namespace MineCase.Server.Game.Entities.Components
 {
-    internal class StandaloneHeldItemComponent : Component<EntityGrain>, IHandle<SetHeldItemIndex>, IHandle<AskHeldItem, (int index, Slot slot)>, IHandle<SetHeldItem>
+    internal class StandaloneHeldItemComponent : Component<EntityGrain>, IHandle<SetHeldItemIndex>, IHandle<AskHeldItem, (int Index, Slot Slot)>, IHandle<SetHeldItem>
     {
         public static readonly DependencyProperty<Slot> HeldItemProperty =
             DependencyProperty.Register("HeldItem", typeof(StandaloneHeldItemComponent), new PropertyMetadata<Slot>(Slot.Empty));
@@ -26,7 +26,7 @@ namespace MineCase.Server.Game.Entities.Components
             return Task.CompletedTask;
         }
 
-        Task<(int index, Slot slot)> IHandle<AskHeldItem, (int index, Slot slot)>.Handle(AskHeldItem message)
+        Task<(int Index, Slot Slot)> IHandle<AskHeldItem, (int Index, Slot Slot)>.Handle(AskHeldItem message)
         {
             return Task.FromResult((0, HeldItem));
         }

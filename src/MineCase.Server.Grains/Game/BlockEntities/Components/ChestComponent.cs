@@ -88,13 +88,13 @@ namespace MineCase.Server.Game.BlockEntities.Components
             if (NeighborEntity == null)
                 return AttachedObject.AsReference<IBlockEntity>();
 
-            async Task<(IBlockEntity entity, BlockWorldPos position)> GetPosition(IBlockEntity entity) =>
+            async Task<(IBlockEntity Entity, BlockWorldPos Position)> GetPosition(IBlockEntity entity) =>
                 (entity, await entity.GetPosition());
 
             // 按 X, Z 排序取最小
             return (from e in await Task.WhenAll(new[] { GetPosition(AttachedObject.AsReference<IBlockEntity>()), GetPosition(NeighborEntity) })
-                    orderby e.position.X, e.position.Z
-                    select e.entity).First();
+                    orderby e.Position.X, e.Position.Z
+                    select e.Entity).First();
         }
     }
 }

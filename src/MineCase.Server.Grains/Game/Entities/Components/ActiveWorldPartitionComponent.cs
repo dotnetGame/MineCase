@@ -27,14 +27,14 @@ namespace MineCase.Server.Game.Entities.Components
                 .KeyChanged -= ActiveWorldPartitionComponent_KeyChanged;
         }
 
-        private void ActiveWorldPartitionComponent_KeyChanged(object sender, (string oldKey, string newKey) e)
+        private void ActiveWorldPartitionComponent_KeyChanged(object sender, (string OldKey, string NewKey) e)
         {
             AttachedObject.QueueOperation(async () =>
             {
-                if (!string.IsNullOrEmpty(e.oldKey))
-                    await GrainFactory.GetGrain<IWorldPartition>(e.oldKey).Leave(AttachedObject);
-                if (!string.IsNullOrEmpty(e.newKey))
-                    await GrainFactory.GetGrain<IWorldPartition>(e.newKey).Enter(AttachedObject);
+                if (!string.IsNullOrEmpty(e.OldKey))
+                    await GrainFactory.GetGrain<IWorldPartition>(e.OldKey).Leave(AttachedObject);
+                if (!string.IsNullOrEmpty(e.NewKey))
+                    await GrainFactory.GetGrain<IWorldPartition>(e.NewKey).Enter(AttachedObject);
             });
         }
     }
