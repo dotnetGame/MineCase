@@ -1,110 +1,75 @@
-﻿using Microsoft.Extensions.Configuration;
-using Orleans.Hosting;
-using Orleans.Runtime.Configuration;
-using System;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Autofac.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using MineCase.Serialization.Serializers;
 using Orleans;
-using Orleans.Configuration;
 using Orleans.ApplicationParts;
+using Orleans.Configuration;
+using Orleans.Hosting;
 
 namespace MineCase.Server
 {
     partial class Program
     {
-        private static readonly ManualResetEvent _exitEvent = new ManualResetEvent(false);
-        private static ISiloHost _siloHost;
-        private static Assembly[] _assemblies;
-
-        public static IConfiguration Configuration { get; private set; }
-
         static async Task Main(string[] args)
         {
+            var createShardKey = false;
             Serializers.RegisterAll();
 
-            var configBuilder = new ConfigurationBuilder();
-            ConfigureAppConfiguration(configBuilder);
-            Configuration = configBuilder.Build();
-
-            var createShardKey = false;
-
-            SelectAssemblies();
-            var builder = new SiloHostBuilder()
+            var hostBuilder = new HostBuilder()
+                .UseServiceProviderFactory(x => new AutofacServiceProviderFactory(ConfigureAutofac))
+                .ConfigureAppConfiguration(ConfigureAppConfiguration)
+                .ConfigureServices(ConfigureServices)
                 .ConfigureLogging(ConfigureLogging)
-                .Configure<ClusterOptions>(options =>
+                .UseConsoleLifetime()
+                .UseOrleans((Microsoft.Extensions.Hosting.HostBuilderContext context, ISiloBuilder builder) =>
                 {
-                    options.ClusterId = "dev";
-                    options.ServiceId = "MineCaseService";
-                })
-                .Configure<SchedulingOptions>(options =>
-                {
-                    options.AllowCallChainReentrancy = true;
-                    options.PerformDeadlockDetection = true;
-                })
-                .ConfigureEndpoints(siloPort: 11111, gatewayPort: 30000)
-                .UseMongoDBClient(Configuration.GetSection("persistenceOptions")["connectionString"])
-                .AddSimpleMessageStreamProvider("JobsProvider")
-                .AddSimpleMessageStreamProvider("TransientProvider")
-                .UseMongoDBReminders(options =>
-                {
-                    options.DatabaseName = Configuration.GetSection("persistenceOptions")["databaseName"];
-                    options.CreateShardKeyForCosmos = createShardKey;
-                })
-                .UseMongoDBClustering(c =>
-                {
-                    c.DatabaseName = Configuration.GetSection("persistenceOptions")["databaseName"];
-                    c.CreateShardKeyForCosmos = createShardKey;
-                    // c.UseJsonFormat = true;
-                })
-                .ConfigureApplicationParts(ConfigureApplicationParts)
-                .UseDashboard(options => { })
-                .UseServiceProviderFactory(ConfigureServices);
+                    builder.Configure<ClusterOptions>(options =>
+                    {
+                        options.ClusterId = "dev";
+                        options.ServiceId = "MineCaseService";
+                    })
+                    .Configure<SchedulingOptions>(options =>
+                    {
+                        options.AllowCallChainReentrancy = true;
+                        options.PerformDeadlockDetection = true;
+                    })
+                    .ConfigureEndpoints(siloPort: 11111, gatewayPort: 30000)
+                    .UseMongoDBClient(context.Configuration.GetSection("persistenceOptions")["connectionString"])
+                    .AddSimpleMessageStreamProvider("JobsProvider")
+                    .AddSimpleMessageStreamProvider("TransientProvider")
+                    .UseMongoDBReminders(options =>
+                    {
+                        options.DatabaseName = context.Configuration.GetSection("persistenceOptions")["databaseName"];
+                        options.CreateShardKeyForCosmos = createShardKey;
+                    })
+                    .UseMongoDBClustering(c =>
+                    {
+                        c.DatabaseName = context.Configuration.GetSection("persistenceOptions")["databaseName"];
+                        c.CreateShardKeyForCosmos = createShardKey;
+                        // c.UseJsonFormat = true;
+                    })
+                    .ConfigureApplicationParts(ConfigureApplicationParts)
+                    .UseDashboard(options => { })
+                    .AddMongoDBGrainStorageAsDefault(c => c.Configure(options =>
+                    {
+                        options.DatabaseName = context.Configuration.GetSection("persistenceOptions")["databaseName"];
+                        options.CreateShardKeyForCosmos = createShardKey;
+                    }))
+                    .AddMongoDBGrainStorage("PubSubStore", options =>
+                    {
+                        options.DatabaseName = context.Configuration.GetSection("persistenceOptions")["databaseName"];
+                        options.CreateShardKeyForCosmos = createShardKey;
+                    });
+                });
 
-            MongoDBSiloExtensions.AddMongoDBGrainStorageAsDefault(builder, options => {
-                options.DatabaseName = Configuration.GetSection("persistenceOptions")["databaseName"];
-                options.CreateShardKeyForCosmos = createShardKey;
-            });
-
-            MongoDBSiloExtensions.AddMongoDBGrainStorage(builder, "PubSubStore", options => {
-                options.DatabaseName = Configuration.GetSection("persistenceOptions")["databaseName"];
-                options.CreateShardKeyForCosmos = createShardKey;
-            });
-
-            // ConfigureApplicationParts(builder);
-            _siloHost = builder.Build();
-            await StartAsync();
-            Console.WriteLine("Press Ctrl+C to terminate...");
-            Console.CancelKeyPress += (s, e) => _exitEvent.Set();
-            _exitEvent.WaitOne();
-            Console.WriteLine("Stopping...");
-            await _siloHost.StopAsync();
-            await _siloHost.Stopped;
-            Console.WriteLine("Stopped.");
+            var host = hostBuilder.Build();
+            Serializers.RegisterAll(host.Services);
+            await host.RunAsync();
         }
-
-        private static async Task StartAsync()
-        {
-            Serializers.RegisterAll(_siloHost.Services);
-            await _siloHost.StartAsync();
-        }
-        
-        /*
-        private static ClusterConfiguration LoadClusterConfiguration()
-        {
-            var cluster = new ClusterConfiguration();
-            cluster.LoadFromFile("OrleansConfiguration.dev.xml");
-            cluster.RegisterDashboard();
-            cluster.AddMongoDBStorageProvider();
-            return cluster;
-        }
-        */
 
         private static void ConfigureApplicationParts(IApplicationPartManager parts)
         {
-            //foreach (var assembly in _assemblies)
-            //    parts.AddApplicationPart(assembly);
             parts.AddFromApplicationBaseDirectory().WithReferences();
         }
     }

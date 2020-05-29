@@ -12,6 +12,7 @@ using Polly;
 using Orleans.Configuration;
 using Orleans.ApplicationParts;
 using Orleans.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace MineCase.Gateway
 {
@@ -25,6 +26,11 @@ namespace MineCase.Gateway
 
         static void Main(string[] args)
         {
+            //var hostBulder = new HostBuilder()
+            //    .ConfigureServices(ConfigureServices)
+            //    .ConfigureLogging(ConfigureLogging)
+            //    .UseOrleans()
+
             Console.CancelKeyPress += (s, e) => _exitEvent.Set();
             Configuration = LoadConfiguration();
             Startup();

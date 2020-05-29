@@ -20,9 +20,9 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="5.1.2" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.4" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="1.3.2" />
     <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="3.2.0-rc2">
       <PrivateAssets>all</PrivateAssets>
