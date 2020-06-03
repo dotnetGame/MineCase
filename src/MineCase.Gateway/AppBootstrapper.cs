@@ -13,6 +13,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Linq;
+using Orleans;
 
 namespace MineCase.Gateway
 {
@@ -22,6 +23,23 @@ namespace MineCase.Gateway
         {
             services.AddLogging();
             services.AddSingleton<ConnectionRouter>();
+            services.AddSingleton<IPacketCompress, PacketCompress>();
+            services.AddTransient<ClientSession>();
+            services.AddHostedService<ConnectionRouter>();
+            services.AddOrleansMultiClient(builder =>
+            {
+                builder.AddClient(options =>
+                {
+                    options.ClusterId = "dev";
+                    options.ServiceId = "MineCaseService";
+                    options.Configure = c =>
+                    {
+                        c.UseLocalhostClustering(gatewayPort: 30000);
+                    };
+                    options.SetServiceAssembly(SelectAssemblies());
+                });
+            });
+
             ConfigureObjectPools(services);
         }
 
@@ -49,12 +67,12 @@ namespace MineCase.Gateway
             loggingBuilder.AddConsole();
         }
 
-        private static void SelectAssemblies()
+        private static Assembly[] SelectAssemblies()
         {
             var assemblies = new List<Assembly>();
             assemblies
                 .AddInterfaces();
-            _assemblies = assemblies.ToArray();
+            return assemblies.ToArray();
         }
     }
 }

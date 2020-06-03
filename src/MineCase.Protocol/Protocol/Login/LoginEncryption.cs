@@ -7,6 +7,7 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Login
 {
     [Packet(0x01)]
+    [GenerateSerializer]
     public sealed class EncryptionRequest : ISerializablePacket
     {
         [SerializeAs(DataType.String)]

@@ -19,7 +19,7 @@ namespace MineCase.Gateway.Network
     {
         private readonly TcpClient _tcpClient;
         private Stream _remoteStream;
-        private readonly IGrainFactory _grainFactory;
+        private readonly IOrleansClient _grainFactory;
         private volatile bool _useCompression = false;
         private readonly Guid _sessionId;
         private readonly OutcomingPacketObserver _outcomingPacketObserver;
@@ -27,16 +27,18 @@ namespace MineCase.Gateway.Network
         private readonly ActionBlock<object> _outcomingPacketDispatcher;
         private readonly ObjectPool<UncompressedPacket> _uncompressedPacketObjectPool;
         private readonly IBufferPool<byte> _bufferPool;
+        private readonly IPacketCompress _packetCompress;
 
         private readonly object _useCompressionPacket = new object();
         private uint _compressThreshold;
 
-        public ClientSession(TcpClient tcpClient, IGrainFactory grainFactory, IBufferPool<byte> bufferPool, ObjectPool<UncompressedPacket> uncompressedPacketObjectPool)
+        public ClientSession(TcpClient tcpClient, IOrleansClient grainFactory, IBufferPool<byte> bufferPool, ObjectPool<UncompressedPacket> uncompressedPacketObjectPool, IPacketCompress packetCompress)
         {
             _sessionId = Guid.NewGuid();
             _tcpClient = tcpClient;
             _grainFactory = grainFactory;
             _bufferPool = bufferPool;
+            _packetCompress = packetCompress;
             _uncompressedPacketObjectPool = uncompressedPacketObjectPool;
             _outcomingPacketObserver = new OutcomingPacketObserver(this);
             _outcomingPacketDispatcher = new ActionBlock<object>(SendOutcomingPacket);
@@ -57,7 +59,7 @@ namespace MineCase.Gateway.Network
                     {
                         await DispatchIncomingPacket();
                         // renew subscribe, 10 sec
-                        if(DateTime.Now > expiredTime)
+                        if (DateTime.Now > expiredTime)
                         {
                             await _grainFactory.GetGrain<IClientboundPacketSink>(_sessionId).Subscribe(_clientboundPacketObserverRef);
                             expiredTime = DateTime.Now + TimeSpan.FromSeconds(10);
@@ -83,24 +85,18 @@ namespace MineCase.Gateway.Network
         {
             using (var bufferScope = _bufferPool.CreateScope())
             {
-                var packet = _uncompressedPacketObjectPool.Get();
-                try
+                UncompressedPacket packet;
+                if (_useCompression)
                 {
-                    if (_useCompression)
-                    {
-                        var compressedPacket = await CompressedPacket.DeserializeAsync(_remoteStream, null);
-                        packet = PacketCompress.Decompress(compressedPacket, bufferScope, _compressThreshold, packet);
-                    }
-                    else
-                    {
-                        packet = await UncompressedPacket.DeserializeAsync(_remoteStream, bufferScope, packet);
-                    }
-                    await DispatchIncomingPacket(packet);
+                    var compressedPacket = await CompressedPacket.DeserializeAsync(_remoteStream, null);
+                    packet = _packetCompress.Decompress(compressedPacket, _compressThreshold);
                 }
-                finally
+                else
                 {
-                    _uncompressedPacketObjectPool.Return(packet);
+                    packet = await UncompressedPacket.DeserializeAsync(_remoteStream, bufferScope);
                 }
+
+                await DispatchIncomingPacket(packet);
             }
         }
 
@@ -121,7 +117,7 @@ namespace MineCase.Gateway.Network
                 {
                     if (_useCompression)
                     {
-                        var newPacket = PacketCompress.Compress(packet, bufferScope, _compressThreshold);
+                        var newPacket = _packetCompress.Compress(packet, _compressThreshold);
                         await newPacket.SerializeAsync(_remoteStream);
                     }
                     else

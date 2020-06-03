@@ -18,85 +18,15 @@ namespace MineCase.Gateway
 {
     partial class Program
     {
-        public static IConfiguration Configuration { get; private set; }
-
-        private static IClusterClient _clusterClient;
-        private static readonly ManualResetEvent _exitEvent = new ManualResetEvent(false);
-        private static Assembly[] _assemblies;
-
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            //var hostBulder = new HostBuilder()
-            //    .ConfigureServices(ConfigureServices)
-            //    .ConfigureLogging(ConfigureLogging)
-            //    .UseOrleans()
+            var hostBuilder = new HostBuilder()
+                .ConfigureServices(ConfigureServices)
+                .ConfigureLogging(ConfigureLogging)
+                .UseConsoleLifetime();
 
-            Console.CancelKeyPress += (s, e) => _exitEvent.Set();
-            Configuration = LoadConfiguration();
-            Startup();
-            _exitEvent.WaitOne();
-            _clusterClient?.Dispose();
-        }
-
-        private static void ConfigureApplicationParts(IApplicationPartManager parts)
-        {
-            //foreach (var assembly in _assemblies)
-            //    parts.AddApplicationPart(assembly);
-            parts.AddFromApplicationBaseDirectory().WithReferences();
-        }
-
-        private static async void Startup()
-        {
-            ILogger logger = null;
-
-            var retryPolicy = Policy.Handle<OrleansException>()
-                .WaitAndRetryForeverAsync(
-                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                    (ex, timeSpan) => logger?.LogError($"Cluster connection failed. Next retry: {timeSpan.TotalSeconds} secs later."));
-            await retryPolicy.ExecuteAsync(async () =>
-            {
-                _clusterClient?.Dispose();
-                SelectAssemblies();
-                var builder = new ClientBuilder()
-                    .Configure<ClusterOptions>(options =>
-                    {
-                        options.ClusterId = "dev";
-                        options.ServiceId = "MineCaseService";
-                    })
-                    .Configure<SchedulingOptions>(options =>
-                    {
-                        options.AllowCallChainReentrancy = true;
-                        options.PerformDeadlockDetection = true;
-                    })
-                    .ConfigureServices(ConfigureServices)
-                    .ConfigureLogging(ConfigureLogging)
-                    .ConfigureApplicationParts(ConfigureApplicationParts)
-                    .AddSimpleMessageStreamProvider("JobsProvider")
-                    .AddSimpleMessageStreamProvider("TransientProvider")
-                    .UseMongoDBClient(Configuration.GetSection("persistenceOptions")["connectionString"])
-                    .UseMongoDBClustering(options=>
-                    {
-                        options.DatabaseName = Configuration.GetSection("persistenceOptions")["databaseName"];
-                    });
-                
-                // ConfigureApplicationParts(builder);
-                _clusterClient = builder.Build();
-
-                var serviceProvider = _clusterClient.ServiceProvider;
-                logger = _clusterClient.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
-
-                await Connect(logger);
-            });
-
-            var connectionRouter = _clusterClient.ServiceProvider.GetRequiredService<ConnectionRouter>();
-            await connectionRouter.Startup(default(CancellationToken));
-        }
-
-        private static async Task Connect(ILogger logger)
-        {
-            logger.LogInformation("Connecting to cluster...");
-            await _clusterClient.Connect();
-            logger.LogInformation("Connected to cluster.");
+            var host = hostBuilder.Build();
+            await host.RunAsync();
         }
     }
 }

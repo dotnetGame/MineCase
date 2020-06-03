@@ -1,35 +1,33 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
 using MineCase.Buffers;
 using MineCase.Protocol;
 using MineCase.Server.Settings;
 using Orleans;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace MineCase.Gateway.Network
 {
-    class ConnectionRouter
+    class ConnectionRouter : IHostedService
     {
-        private readonly IGrainFactory _grainFactory;
+        private readonly IOrleansClient _grainFactory;
         private readonly ILogger _logger;
-        private readonly IBufferPool<byte> _bufferPool;
-        private readonly ObjectPool<UncompressedPacket> _uncompressedPacketObjectPool;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ConnectionRouter(IGrainFactory grainFactory, ILoggerFactory loggerFactory, IBufferPool<byte> bufferPool, ObjectPool<UncompressedPacket> uncompressedPacketObjectPool)
+        public ConnectionRouter(IOrleansClient grainFactory, ILogger<ConnectionRouter> logger, IServiceProvider serviceProvider)
         {
             _grainFactory = grainFactory;
-            _logger = loggerFactory.CreateLogger<ConnectionRouter>();
-            _bufferPool = bufferPool;
-            _uncompressedPacketObjectPool = uncompressedPacketObjectPool;
+            _logger = logger;
+            _serviceProvider = serviceProvider;
         }
 
-        public async Task Startup(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             try
             {
@@ -53,12 +51,17 @@ namespace MineCase.Gateway.Network
             }
         }
 
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
         private async void DispatchIncomingClient(TcpClient tcpClient, CancellationToken cancellationToken)
         {
             try
             {
                 _logger.LogInformation($"Incoming connection from {tcpClient.Client.RemoteEndPoint}.");
-                using (var session = new ClientSession(tcpClient, _grainFactory, _bufferPool, _uncompressedPacketObjectPool))
+                using (var session = ActivatorUtilities.CreateInstance<ClientSession>(_serviceProvider, tcpClient))
                 {
                     await session.Startup(cancellationToken);
                 }
