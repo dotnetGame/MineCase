@@ -32,6 +32,9 @@
 
   <ItemGroup>
     <Folder Include="Game\Entities\" />
+    <Folder Include="Advancements\" />
+    <Folder Include="Potion\" />
+    <Folder Include="Entity\" />
   </ItemGroup>
 
 </Project>

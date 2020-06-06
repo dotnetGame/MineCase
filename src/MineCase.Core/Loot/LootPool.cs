@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MineCase.Command
+namespace MineCase.Loot
 {
-    public class Node
+    public class LootPool
     {
     }
 }

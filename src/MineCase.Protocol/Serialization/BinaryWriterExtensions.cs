@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using MineCase.Command;
 using MineCase.Nbt;
 using MineCase.Nbt.Serialization;
 using MineCase.Nbt.Tags;
@@ -163,6 +164,34 @@ namespace MineCase.Serialization
             bw.WriteAsByte(index);
             bw.WriteAsByte((byte)type);
             return bw;
+        }
+
+        public static void WriteAsCommandNode(this BinaryWriter bw, CommandNode node)
+        {
+            bw.WriteAsByte(node.Flags);
+            bw.WriteAsVarInt((uint)node.ChildrenCount, out _);
+
+            foreach (var eachChild in node.Children)
+            {
+                bw.WriteAsVarInt((uint)eachChild, out _);
+            }
+
+            if (node.HasRedirect)
+                bw.WriteAsVarInt((uint)node.RedirectNode, out _);
+
+            if (node.Type == CommandNodeType.Argument || node.Type == CommandNodeType.Literal)
+                bw.WriteAsString(node.Name);
+
+            if (node.Type == CommandNodeType.Argument)
+            {
+                bw.WriteAsString(node.Parser);
+
+                // TODO: properties
+            }
+
+            // TODO: use writeAsIdentifier
+            if (node.HasSuggestionsType)
+                bw.WriteAsString(node.SuggestionsType);
         }
     }
 

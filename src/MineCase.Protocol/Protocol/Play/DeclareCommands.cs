@@ -17,7 +17,7 @@ namespace MineCase.Protocol.Play
         public uint Count;
 
         [SerializeAs(DataType.Array)]
-        public Node[] Nodes;
+        public CommandNode[] Nodes;
 
         [SerializeAs(DataType.VarInt)]
         public uint RootIndex;
