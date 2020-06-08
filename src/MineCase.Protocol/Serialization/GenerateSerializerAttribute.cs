@@ -8,9 +8,9 @@ namespace MineCase.Serialization
 {
     public enum GenerateSerializerMethods
     {
-        Serialize,
-        Deserialize,
-        Both
+        Serialize = 0,
+        Deserialize = 1,
+        Both = 2
     }
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]

@@ -8,7 +8,7 @@ namespace MineCase.Protocol.Login
 {
     [Packet(0x01)]
     [GenerateSerializer]
-    public sealed class EncryptionRequest : ISerializablePacket
+    public sealed partial class EncryptionRequest : ISerializablePacket
     {
         [SerializeAs(DataType.String)]
         public string ServerID;
@@ -41,15 +41,6 @@ namespace MineCase.Protocol.Login
                 VerifyTokenLength = verifyTokenLength,
                 VerifyToken = verifyToken
             };
-        }
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsString(ServerID);
-            bw.WriteAsVarInt(PublicKeyLength, out _);
-            bw.WriteAsByteArray(PublicKey);
-            bw.WriteAsVarInt(VerifyTokenLength, out _);
-            bw.WriteAsByteArray(VerifyToken);
         }
     }
 

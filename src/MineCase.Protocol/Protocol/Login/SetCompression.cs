@@ -6,9 +6,6 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Login
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x03)]
     public sealed class SetCompression : ISerializablePacket
     {

@@ -6,9 +6,6 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x00)]
     public sealed class SpawnObject : ISerializablePacket
     {

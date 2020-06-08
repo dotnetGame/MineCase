@@ -7,9 +7,6 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Play
 {
     // In 1.12, it is PlayerListItem. Now it is PlayerInfo
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x34)]
     public sealed class PlayerInfo<TAction> : ISerializablePacket
         where TAction : PlayerInfoAction

@@ -6,9 +6,6 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x36)]
     public sealed class ClientboundPositionAndLook : ISerializablePacket
     {
@@ -45,9 +42,6 @@ namespace MineCase.Protocol.Play
         }
     }
 
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x12)]
     public sealed class ServerboundPositionAndLook
     {

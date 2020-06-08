@@ -11,9 +11,6 @@ namespace MineCase.Protocol.Play
         Off = 1
     }
 
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x2A)]
     public sealed class ServerboundAnimation
     {

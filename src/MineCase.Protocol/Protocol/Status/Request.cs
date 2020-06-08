@@ -6,9 +6,6 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Status
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x00)]
     public sealed class Request : ISerializablePacket
     {
@@ -24,9 +21,6 @@ namespace MineCase.Protocol.Status
         }
     }
 
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x00)]
     public sealed class Response : ISerializablePacket
     {

@@ -7,9 +7,6 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Play
 {
     // FIXME : 1.15.2 does not have this packet
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x26)]
     public sealed class EntityRelativeMove : ISerializablePacket
     {

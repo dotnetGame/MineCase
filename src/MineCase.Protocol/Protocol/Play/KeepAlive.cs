@@ -6,9 +6,6 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x0F)]
     public sealed class ServerboundKeepAlive
     {
@@ -24,9 +21,6 @@ namespace MineCase.Protocol.Play
         }
     }
 
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x21)]
     public sealed class ClientboundKeepAlive : ISerializablePacket
     {

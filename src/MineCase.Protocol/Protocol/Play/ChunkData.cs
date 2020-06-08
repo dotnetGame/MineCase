@@ -9,9 +9,6 @@ using MineCase.World;
 
 namespace MineCase.Protocol.Play
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x22)]
     public sealed class ChunkData : ISerializablePacket
     {
@@ -99,9 +96,6 @@ namespace MineCase.Protocol.Play
         }
     }
 
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     public sealed class ChunkSection : ISerializablePacket
     {
         [SerializeAs(DataType.Short)]

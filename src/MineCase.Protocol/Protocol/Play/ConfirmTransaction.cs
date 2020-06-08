@@ -6,9 +6,6 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x06)]
     public sealed class ServerboundConfirmTransaction
     {
@@ -32,9 +29,6 @@ namespace MineCase.Protocol.Play
         }
     }
 
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x11)]
     public sealed class ClientboundConfirmTransaction : ISerializablePacket
     {

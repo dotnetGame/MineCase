@@ -6,9 +6,6 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Login
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x00)]
     public sealed class LoginStart : ISerializablePacket
     {
@@ -29,9 +26,6 @@ namespace MineCase.Protocol.Login
         }
     }
 
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x00)]
     public sealed class LoginDisconnect : ISerializablePacket
     {
@@ -52,9 +46,6 @@ namespace MineCase.Protocol.Login
         }
     }
 
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x02)]
     public sealed class LoginSuccess : ISerializablePacket
     {
