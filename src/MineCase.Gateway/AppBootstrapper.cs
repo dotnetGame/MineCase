@@ -34,7 +34,12 @@ namespace MineCase.Gateway
                     options.ServiceId = "MineCaseService";
                     options.Configure = c =>
                     {
-                        c.UseLocalhostClustering(gatewayPort: 30000);
+                        // c.UseLocalhostClustering(gatewayPort: 30000);
+                        c.UseMongoDBClient(Configuration.GetSection("persistenceOptions")["connectionString"]);
+                        c.UseMongoDBClustering(options =>
+                        {
+                            options.DatabaseName = Configuration.GetSection("persistenceOptions")["databaseName"];
+                        });
                     };
                     options.SetServiceAssembly(SelectAssemblies());
                 });

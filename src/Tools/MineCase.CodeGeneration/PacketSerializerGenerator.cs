@@ -48,7 +48,7 @@ using MineCase.Serialization;
 
 " + codeWriter.ToString(), Encoding.UTF8);
 
-            File.WriteAllText(@"D:\Work\Repository\MineCase\src\MineCase.Protocol\obj\packet.g.cs", source.ToString());
+            // File.WriteAllText(@"D:\packet.g.cs", source.ToString());
             context.AddSource("packet.g.cs", source);
         }
 

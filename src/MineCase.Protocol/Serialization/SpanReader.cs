@@ -126,6 +126,7 @@ namespace MineCase.Serialization
         public bool ReadAsBoolean()
         {
             var value = Convert.ToBoolean(_span[0]);
+            Advance(sizeof(bool));
             return value;
         }
 

@@ -116,9 +116,13 @@ namespace MineCase.Server.User
 
         public async Task Kick()
         {
-            State.SpawnPosition = await _player.GetPosition();
-            MarkDirty();
-            await _player.Tell(DestroyEntity.Default);
+            if (_player != null)
+            {
+                State.SpawnPosition = await _player.GetPosition();
+                MarkDirty();
+                await _player.Tell(DestroyEntity.Default);
+            }
+
             var game = await GetGameSession();
             await game.LeaveGame(this);
             await _sink.Close();
