@@ -8,8 +8,9 @@ namespace MineCase.Protocol.Play
 {
     // In 1.12, it is PlayerListItem. Now it is PlayerInfo
     [Packet(0x34)]
-    public sealed class PlayerInfo<TAction> : ISerializablePacket
-        where TAction : PlayerInfoAction
+    [GenerateSerializer]
+    public sealed partial class PlayerInfo<TAction> : IPacket
+        where TAction : PlayerInfoAction, new()
     {
         [SerializeAs(DataType.VarInt)]
         public uint Action;
@@ -17,22 +18,19 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.VarInt)]
         public uint NumberOfPlayers;
 
-        [SerializeAs(DataType.Array)]
+        [SerializeAs(DataType.Array, ArrayLengthMember = nameof(NumberOfPlayers))]
         public TAction[] Players;
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsVarInt(Action, out _);
-            bw.WriteAsVarInt(NumberOfPlayers, out _);
-            if (NumberOfPlayers != 0)
-                bw.WriteAsArray(Players);
-        }
     }
 
-    public abstract class PlayerInfoAction : ISerializablePacket
+    public abstract partial class PlayerInfoAction : IPacket
     {
         [SerializeAs(DataType.UUID)]
         public Guid UUID;
+
+        public virtual void Deserialize(ref SpanReader br)
+        {
+            UUID = br.ReadAsUUID();
+        }
 
         public virtual void Serialize(BinaryWriter bw)
         {
@@ -40,7 +38,7 @@ namespace MineCase.Protocol.Play
         }
     }
 
-    public sealed class PlayerInfoAddPlayerAction : PlayerInfoAction
+    public sealed partial class PlayerInfoAddPlayerAction : PlayerInfoAction
     {
         [SerializeAs(DataType.String)]
         public string Name;
@@ -59,6 +57,11 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.Chat)]
         public string DisplayName;
+
+        public override void Deserialize(ref SpanReader br)
+        {
+            base.Deserialize(ref br);
+        }
 
         public override void Serialize(BinaryWriter bw)
         {

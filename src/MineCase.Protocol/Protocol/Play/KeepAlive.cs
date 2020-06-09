@@ -7,29 +7,18 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Play
 {
     [Packet(0x0F)]
-    public sealed class ServerboundKeepAlive
+    [GenerateSerializer]
+    public sealed partial class ServerboundKeepAlive : IPacket
     {
         [SerializeAs(DataType.Long)]
         public long KeepAliveId;
-
-        public static ServerboundKeepAlive Deserialize(ref SpanReader br)
-        {
-            return new ServerboundKeepAlive
-            {
-                KeepAliveId = br.ReadAsLong()
-            };
-        }
     }
 
     [Packet(0x21)]
-    public sealed class ClientboundKeepAlive : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class ClientboundKeepAlive : IPacket
     {
         [SerializeAs(DataType.Long)]
         public long KeepAliveId;
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsLong(KeepAliveId);
-        }
     }
 }

@@ -7,7 +7,8 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Play
 {
     [Packet(0x00)]
-    public sealed class SpawnObject : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class SpawnObject : IPacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint EID;
@@ -28,10 +29,10 @@ namespace MineCase.Protocol.Play
         public double Z;
 
         [SerializeAs(DataType.Angle)]
-        public byte Pitch;
+        public Angle Pitch;
 
         [SerializeAs(DataType.Angle)]
-        public byte Yaw;
+        public Angle Yaw;
 
         [SerializeAs(DataType.Int)]
         public int Data;
@@ -44,21 +45,5 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.Short)]
         public short VelocityZ;
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsVarInt(EID, out _);
-            bw.WriteAsUUID(ObjectUUID);
-            bw.WriteAsVarInt(Type, out _);
-            bw.WriteAsDouble(X);
-            bw.WriteAsDouble(Y);
-            bw.WriteAsDouble(Z);
-            bw.WriteAsByte(Pitch);
-            bw.WriteAsByte(Yaw);
-            bw.WriteAsInt(Data);
-            bw.WriteAsShort(VelocityX);
-            bw.WriteAsShort(VelocityY);
-            bw.WriteAsShort(VelocityZ);
-        }
     }
 }

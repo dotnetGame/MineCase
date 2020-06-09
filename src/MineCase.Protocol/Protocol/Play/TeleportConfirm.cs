@@ -7,17 +7,10 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Play
 {
     [Packet(0x00)]
-    public sealed class TeleportConfirm
+    [GenerateSerializer]
+    public sealed partial class TeleportConfirm : IPacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint TeleportId;
-
-        public static TeleportConfirm Deserialize(ref SpanReader br)
-        {
-            return new TeleportConfirm
-            {
-                TeleportId = br.ReadAsVarInt(out _)
-            };
-        }
     }
 }

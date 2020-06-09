@@ -8,7 +8,8 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Play
 {
     [Packet(0x2C)]
-    public sealed class PlayerBlockPlacement
+    [GenerateSerializer]
+    public sealed partial class PlayerBlockPlacement : IPacket
     {
         [SerializeAs(DataType.Position)]
         public Position Location;
@@ -27,18 +28,5 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.Float)]
         public float CursorPositionZ;
-
-        public static PlayerBlockPlacement Deserialize(ref SpanReader br)
-        {
-            return new PlayerBlockPlacement
-            {
-                Location = br.ReadAsPosition(),
-                Face = (PlayerDiggingFace)br.ReadAsVarInt(out _),
-                Hand = (Hand)br.ReadAsVarInt(out _),
-                CursorPositionX = br.ReadAsFloat(),
-                CursorPositionY = br.ReadAsFloat(),
-                CursorPositionZ = br.ReadAsFloat()
-            };
-        }
     }
 }

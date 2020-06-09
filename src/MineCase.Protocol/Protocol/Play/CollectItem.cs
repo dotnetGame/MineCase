@@ -7,7 +7,8 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Play
 {
     [Packet(0x56)]
-    public sealed class CollectItem : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class CollectItem : IPacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint CollectedEntityId;
@@ -17,12 +18,5 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.VarInt)]
         public uint PickupItemCount;
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsVarInt(CollectedEntityId, out _);
-            bw.WriteAsVarInt(CollectorEntityId, out _);
-            bw.WriteAsVarInt(PickupItemCount, out _);
-        }
     }
 }

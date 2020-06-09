@@ -8,7 +8,8 @@ namespace MineCase.Protocol.Play
 {
     // FIXME : 1.15.2 does not have this packet
     [Packet(0x10)]
-    public sealed class PlayerLook
+    [GenerateSerializer]
+    public sealed partial class PlayerLook : IPacket
     {
         [SerializeAs(DataType.Float)]
         public float Yaw;
@@ -18,15 +19,5 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.Boolean)]
         public bool OnGround;
-
-        public static PlayerLook Deserialize(ref SpanReader br)
-        {
-            return new PlayerLook
-            {
-                Yaw = br.ReadAsFloat(),
-                Pitch = br.ReadAsFloat(),
-                OnGround = br.ReadAsBoolean()
-            };
-        }
     }
 }

@@ -42,7 +42,7 @@ namespace MineCase.Server.Network
             return Task.CompletedTask;
         }
 
-        public async Task SendPacket(ISerializablePacket packet)
+        public async Task SendPacket(IPacket packet)
         {
             var prepared = await _packetPackager.PreparePacket(packet);
             await SendPacket(prepared.PacketId, prepared.Data.AsImmutable());

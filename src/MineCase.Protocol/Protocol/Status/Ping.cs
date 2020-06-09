@@ -7,42 +7,18 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Status
 {
     [Packet(0x01)]
-    public sealed class Ping : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class Ping : IPacket
     {
         [SerializeAs(DataType.Long)]
         public long Payload;
-
-        public static Ping Deserialize(ref SpanReader br)
-        {
-            return new Ping
-            {
-                Payload = br.ReadAsLong(),
-            };
-        }
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsLong(Payload);
-        }
     }
 
     [Packet(0x01)]
-    public sealed class Pong : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class Pong : IPacket
     {
         [SerializeAs(DataType.Long)]
         public long Payload;
-
-        public static Pong Deserialize(ref SpanReader br)
-        {
-            return new Pong
-            {
-                Payload = br.ReadAsLong(),
-            };
-        }
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsLong(Payload);
-        }
     }
 }

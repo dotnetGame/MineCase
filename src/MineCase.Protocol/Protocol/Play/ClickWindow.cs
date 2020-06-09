@@ -7,7 +7,8 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Play
 {
     [Packet(0x09)]
-    public sealed class ClickWindow
+    [GenerateSerializer]
+    public sealed partial class ClickWindow : IPacket
     {
         [SerializeAs(DataType.Byte)]
         public byte WindowId;
@@ -26,18 +27,5 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.Slot)]
         public Slot ClickedItem;
-
-        public static ClickWindow Deserialize(ref SpanReader br)
-        {
-            return new ClickWindow
-            {
-                WindowId = br.ReadAsByte(),
-                Slot = br.ReadAsShort(),
-                Button = br.ReadAsByte(),
-                ActionNumber = br.ReadAsShort(),
-                Mode = br.ReadAsVarInt(out _),
-                ClickedItem = br.ReadAsSlot()
-            };
-        }
     }
 }

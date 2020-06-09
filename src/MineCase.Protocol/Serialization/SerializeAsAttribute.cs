@@ -28,6 +28,8 @@ namespace MineCase.Serialization
         ByteArray,
         IntArray,
         NbtArray,
+        VarIntArray,
+        SlotArray,
         Array
     }
 
@@ -35,6 +37,8 @@ namespace MineCase.Serialization
     public sealed class SerializeAsAttribute : Attribute
     {
         public DataType DataType { get; }
+
+        public string ArrayLengthMember { get; set; }
 
         public SerializeAsAttribute(DataType dataType)
         {

@@ -7,18 +7,13 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Play
 {
     [Packet(0x0C)]
-    public sealed class BlockChange : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class BlockChange : IPacket
     {
         [SerializeAs(DataType.Position)]
         public Position Location;
 
         [SerializeAs(DataType.VarInt)]
         public uint BlockId;
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsPosition(Location);
-            bw.WriteAsVarInt(BlockId, out _);
-        }
     }
 }

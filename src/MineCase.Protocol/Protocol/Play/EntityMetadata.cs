@@ -7,13 +7,18 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Play
 {
     [Packet(0x44)]
-    public sealed class EntityMetadata : ISerializablePacket
+    public sealed class EntityMetadata : IPacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint EntityId;
 
         [SerializeAs(DataType.ByteArray)]
         public byte[] Metadata;
+
+        public void Deserialize(ref SpanReader br)
+        {
+            throw new NotImplementedException();
+        }
 
         public void Serialize(BinaryWriter bw)
         {

@@ -29,7 +29,8 @@ namespace MineCase.Protocol.Play
     }
 
     [Packet(0x1A)]
-    public sealed class PlayerDigging
+    [GenerateSerializer]
+    public sealed partial class PlayerDigging : IPacket
     {
         [SerializeAs(DataType.VarInt)]
         public PlayerDiggingStatus Status;
@@ -39,15 +40,5 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.Byte)]
         public PlayerDiggingFace Face;
-
-        public static PlayerDigging Deserialize(ref SpanReader br)
-        {
-            return new PlayerDigging
-            {
-                Status = (PlayerDiggingStatus)br.ReadAsVarInt(out _),
-                Location = br.ReadAsPosition(),
-                Face = (PlayerDiggingFace)br.ReadAsByte()
-            };
-        }
     }
 }

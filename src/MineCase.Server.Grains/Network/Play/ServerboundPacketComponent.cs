@@ -60,87 +60,87 @@ namespace MineCase.Server.Network.Play
             {
                 // Teleport Confirm
                 case 0x00:
-                    task = DispatchPacket(TeleportConfirm.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<TeleportConfirm>(ref br));
                     break;
 
                 // Chat Message
                 case 0x03:
-                    task = DispatchPacket(ServerboundChatMessage.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<ServerboundChatMessage>(ref br));
                     break;
 
                 // Client Settings
                 case 0x05:
-                    task = DispatchPacket(ClientSettings.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<ClientSettings>(ref br));
                     break;
 
                 // Plugin Message
                 case 0x0B:
-                    task = DispatchPacket(ServerboundPluginMessage.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<ServerboundPluginMessage>(ref br));
                     break;
 
                 // Keep Alive
                 case 0x0F:
-                    task = DispatchPacket(ServerboundKeepAlive.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<ServerboundKeepAlive>(ref br));
                     break;
 
                 // Player On Ground
                 case 0x0D:
-                    task = DispatchPacket(PlayerOnGround.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<PlayerOnGround>(ref br));
                     break;
 
                 // Player Position
                 case 0x11:
-                    task = DispatchPacket(PlayerPosition.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<PlayerPosition>(ref br));
                     break;
 
                 // Position And Look (In new wiki, it is Player Position And Rotation)
                 case 0x12:
-                    task = DispatchPacket(ServerboundPositionAndLook.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<ServerboundPositionAndLook>(ref br));
                     break;
 
                 // Player Look (In new wiki, it is Player Rotation)
                 case 0x13:
-                    task = DispatchPacket(PlayerLook.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<PlayerLook>(ref br));
                     break;
 
                 // Player Digging
                 case 0x1A:
-                    task = DispatchPacket(PlayerDigging.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<PlayerDigging>(ref br));
                     break;
 
                 // Entity Action
                 case 0x1B:
-                    task = DispatchPacket(EntityAction.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<EntityAction>(ref br));
                     break;
 
                 // Held Item Change
                 case 0x23:
-                    task = DispatchPacket(ServerboundHeldItemChange.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<ServerboundHeldItemChange>(ref br));
                     break;
 
                 // Animation
                 case 0x2A:
-                    task = DispatchPacket(ServerboundAnimation.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<ServerboundAnimation>(ref br));
                     break;
 
                 // Player Block Placement
                 case 0x2C:
-                    task = DispatchPacket(PlayerBlockPlacement.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<PlayerBlockPlacement>(ref br));
                     break;
 
                 // Use Item
                 case 0x2D:
-                    task = DispatchPacket(UseItem.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<UseItem>(ref br));
                     break;
 
                 // Click Window
                 case 0x09:
-                    task = DispatchPacket(ClickWindow.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<ClickWindow>(ref br));
                     break;
 
                 // Close Window
                 case 0x0A:
-                    task = DispatchPacket(ServerboundCloseWindow.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<ServerboundCloseWindow>(ref br));
                     break;
                 default:
                     Logger.LogWarning($"Unrecognizable packet id: 0x{packet.PacketId:X2}.");

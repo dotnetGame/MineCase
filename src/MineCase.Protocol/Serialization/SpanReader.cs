@@ -8,6 +8,7 @@ using System.Text;
 using MineCase.Nbt;
 using MineCase.Nbt.Serialization;
 using MineCase.Nbt.Tags;
+using MineCase.Protocol;
 
 namespace MineCase.Serialization
 {
@@ -27,6 +28,12 @@ namespace MineCase.Serialization
         public SpanReader(ReadOnlySpan<byte> span)
         {
             _span = span;
+        }
+
+        public Chat ReadAsChat()
+        {
+            string str = ReadAsString();
+            return Chat.Parse(str);
         }
 
         public uint ReadAsVarInt(out int bytesRead)
@@ -49,6 +56,17 @@ namespace MineCase.Serialization
             bytesRead = numRead;
             Advance(numRead);
             return result;
+        }
+
+        public Angle ReadAsAngle()
+        {
+            return new Angle(ReadAsByte());
+        }
+
+        public Guid ReadAsUUID()
+        {
+            var bytes = ReadBytes(16);
+            return new Guid(bytes);
         }
 
         public unsafe string ReadAsString()
@@ -161,6 +179,28 @@ namespace MineCase.Serialization
             return ret;
         }
 
+        public uint[] ReadAsVarIntArray(int length)
+        {
+            var array = new uint[length];
+            var subReader = new SpanReader(_span);
+            for (int i = 0; i < array.Length; i++)
+                array[i] = subReader.ReadAsVarInt(out _);
+
+            _span = subReader._span;
+            return array;
+        }
+
+        public Slot[] ReadAsSlotArray(int length)
+        {
+            var array = new Slot[length];
+            var subReader = new SpanReader(_span);
+            for (int i = 0; i < array.Length; i++)
+                array[i] = subReader.ReadAsSlot();
+
+            _span = subReader._span;
+            return array;
+        }
+
         public NbtCompound ReadAsNbtTag()
         {
             NbtCompound nbt;
@@ -231,6 +271,22 @@ namespace MineCase.Serialization
             }
 
             return slot;
+        }
+
+        public T[] ReadAsArray<T>(int count)
+            where T : IPacket, new()
+        {
+            var array = new T[count];
+            var subReader = new SpanReader(_span);
+            for (int i = 0; i < array.Length; i++)
+            {
+                var item = new T();
+                item.Deserialize(ref subReader);
+                array[i] = item;
+            }
+
+            _span = subReader._span;
+            return array;
         }
 
         private ReadOnlySpan<byte> ReadBytes(int length)

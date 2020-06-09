@@ -19,7 +19,7 @@ namespace MineCase.Server.Network
             _packetPackager = packetPackager;
         }
 
-        public async Task SendPacket(ISerializablePacket packet)
+        public async Task SendPacket(IPacket packet)
         {
             if (_sinks.Any())
             {
@@ -34,7 +34,7 @@ namespace MineCase.Server.Network
                                 select sink.SendPacket(packetId, data));
         }
 
-        public async Task SendPacket(ISerializablePacket packet, IPacketSink except)
+        public async Task SendPacket(IPacket packet, IPacketSink except)
         {
             if (_sinks.Any())
             {

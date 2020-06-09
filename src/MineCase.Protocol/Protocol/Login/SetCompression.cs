@@ -7,22 +7,10 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Login
 {
     [Packet(0x03)]
-    public sealed class SetCompression : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class SetCompression : IPacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint Threshold;
-
-        public static SetCompression Deserialize(ref SpanReader br)
-        {
-            return new SetCompression
-            {
-                Threshold = br.ReadAsVarInt(out _),
-            };
-        }
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsVarInt(Threshold, out _);
-        }
     }
 }

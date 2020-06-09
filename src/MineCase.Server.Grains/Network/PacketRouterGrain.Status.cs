@@ -23,11 +23,11 @@ namespace MineCase.Server.Network
             {
                 // Request
                 case 0x00:
-                    return DispatchPacket(Request.Deserialize(ref br));
+                    return DispatchPacket(PacketDeserializer.Deserialize<Request>(ref br));
 
                 // Ping
                 case 0x01:
-                    return DispatchPacket(Ping.Deserialize(ref br));
+                    return DispatchPacket(PacketDeserializer.Deserialize<Ping>(ref br));
                 default:
                     throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X2}.");
             }

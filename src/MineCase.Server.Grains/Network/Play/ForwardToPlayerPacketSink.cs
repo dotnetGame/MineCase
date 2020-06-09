@@ -20,7 +20,7 @@ namespace MineCase.Server.Network.Play
             _packetPackager = packetPackager;
         }
 
-        public async Task SendPacket(ISerializablePacket packet)
+        public async Task SendPacket(IPacket packet)
         {
             var package = await _packetPackager.PreparePacket(packet);
             await SendPacket(package.PacketId, package.Data.AsImmutable());

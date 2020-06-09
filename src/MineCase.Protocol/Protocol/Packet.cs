@@ -104,8 +104,10 @@ namespace MineCase.Protocol
         }
     }
 
-    public interface ISerializablePacket
+    public interface IPacket
     {
         void Serialize(BinaryWriter bw);
+
+        void Deserialize(ref SpanReader br);
     }
 }

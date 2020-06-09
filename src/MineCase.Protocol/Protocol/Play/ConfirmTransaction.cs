@@ -7,7 +7,8 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Play
 {
     [Packet(0x06)]
-    public sealed class ServerboundConfirmTransaction
+    [GenerateSerializer]
+    public sealed partial class ServerboundConfirmTransaction : IPacket
     {
         [SerializeAs(DataType.Byte)]
         public byte WindowId;
@@ -17,20 +18,11 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.Boolean)]
         public bool Accepted;
-
-        public static ServerboundConfirmTransaction Deserialize(ref SpanReader br)
-        {
-            return new ServerboundConfirmTransaction
-            {
-                WindowId = br.ReadAsByte(),
-                ActionNumber = br.ReadAsShort(),
-                Accepted = br.ReadAsBoolean()
-            };
-        }
     }
 
     [Packet(0x11)]
-    public sealed class ClientboundConfirmTransaction : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class ClientboundConfirmTransaction : IPacket
     {
         [SerializeAs(DataType.Byte)]
         public byte WindowId;
@@ -40,12 +32,5 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.Boolean)]
         public bool Accepted;
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsByte(WindowId);
-            bw.WriteAsShort(ActionNumber);
-            bw.WriteAsBoolean(Accepted);
-        }
     }
 }

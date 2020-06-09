@@ -8,7 +8,7 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Play
 {
     [Packet(0x12)]
-    public sealed class DeclareCommands : ISerializablePacket
+    public sealed class DeclareCommands : IPacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint Count;
@@ -25,12 +25,9 @@ namespace MineCase.Protocol.Play
             bw.WriteAsVarInt(Count, out _);
         }
 
-        public static DeclareCommands Deserialize(ref SpanReader br)
+        public void Deserialize(ref SpanReader br)
         {
-            return new DeclareCommands
-            {
-                Count = br.ReadAsVarInt(out _),
-            };
+            Count = br.ReadAsVarInt(out _);
         }
     }
 }

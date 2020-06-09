@@ -7,7 +7,7 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Play
 {
     [Packet(0x0A)]
-    public sealed class UseEntity
+    public sealed class UseEntity : IPacket
     {
         [SerializeAs(DataType.VarInt)]
         public int Target;
@@ -27,26 +27,27 @@ namespace MineCase.Protocol.Play
         [SerializeAs(DataType.VarInt)]
         public int? Hand;
 
-        public static UseEntity Deserialize(ref SpanReader br)
+        public void Deserialize(ref SpanReader br)
         {
-            var packet = new UseEntity
-            {
-                Target = (int)br.ReadAsVarInt(out _),
-                Type = (int)br.ReadAsVarInt(out _)
-            };
+            Target = (int)br.ReadAsVarInt(out _);
+            Type = (int)br.ReadAsVarInt(out _);
 
             // Only if Type is interact at
-            if (packet.Type == 2)
+            if (Type == 2)
             {
-                packet.TargetX = br.ReadAsFloat();
-                packet.TargetY = br.ReadAsFloat();
-                packet.TargetZ = br.ReadAsFloat();
+                TargetX = br.ReadAsFloat();
+                TargetY = br.ReadAsFloat();
+                TargetZ = br.ReadAsFloat();
             }
 
             // Only if Type is interact or interact at
-            if (packet.Type == 0 || packet.Type == 2)
-                packet.Hand = (int)br.ReadAsVarInt(out _);
-            return packet;
+            if (Type == 0 || Type == 2)
+                Hand = (int)br.ReadAsVarInt(out _);
+        }
+
+        public void Serialize(BinaryWriter bw)
+        {
+            throw new NotImplementedException();
         }
     }
 }

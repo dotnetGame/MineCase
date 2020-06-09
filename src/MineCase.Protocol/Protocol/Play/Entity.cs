@@ -8,14 +8,10 @@ namespace MineCase.Protocol.Play
 {
     // FIXME: 1.15.2 no longer has this packet
     [Packet(0x25)]
-    public sealed class Entity : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class Entity : IPacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint EID;
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsVarInt(EID, out _);
-        }
     }
 }

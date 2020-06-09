@@ -7,21 +7,13 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Play
 {
     [Packet(0x0A)]
-    public sealed class ServerboundPluginMessage
+    [GenerateSerializer]
+    public sealed partial class ServerboundPluginMessage : IPacket
     {
         [SerializeAs(DataType.String)]
         public string Channel;
 
         [SerializeAs(DataType.ByteArray)]
         public byte[] Data;
-
-        public static ServerboundPluginMessage Deserialize(ref SpanReader br)
-        {
-            return new ServerboundPluginMessage
-            {
-                Channel = br.ReadAsString(),
-                Data = br.ReadAsByteArray()
-            };
-        }
     }
 }

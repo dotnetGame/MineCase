@@ -7,7 +7,7 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Play
 {
     [Packet(0x2F)]
-    public sealed class OpenWindow : ISerializablePacket
+    public sealed class OpenWindow : IPacket
     {
         [SerializeAs(DataType.Byte)]
         public byte WindowId;
@@ -23,6 +23,11 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.Byte)]
         public byte? EntityId;
+
+        public void Deserialize(ref SpanReader br)
+        {
+            throw new NotImplementedException();
+        }
 
         public void Serialize(BinaryWriter bw)
         {

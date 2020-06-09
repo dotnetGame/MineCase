@@ -7,8 +7,8 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Handshaking
 {
     [Packet(0x00)]
-    [GenerateSerializer(Methods = GenerateSerializerMethods.Both)]
-    public sealed partial class Handshake : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class Handshake : IPacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint ProtocolVersion;
@@ -21,16 +21,5 @@ namespace MineCase.Protocol.Handshaking
 
         [SerializeAs(DataType.VarInt)]
         public uint NextState;
-
-        public static Handshake Deserialize(ref SpanReader br)
-        {
-            return new Handshake
-            {
-                ProtocolVersion = br.ReadAsVarInt(out _),
-                ServerAddress = br.ReadAsString(),
-                ServerPort = br.ReadAsUnsignedShort(),
-                NextState = br.ReadAsVarInt(out _)
-            };
-        }
     }
 }

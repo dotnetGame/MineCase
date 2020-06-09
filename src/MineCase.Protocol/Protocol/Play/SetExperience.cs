@@ -7,7 +7,8 @@ using MineCase.Serialization;
 namespace MineCase.Protocol.Play
 {
     [Packet(0x48)]
-    public sealed class SetExperience : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class SetExperience : IPacket
     {
         [SerializeAs(DataType.Float)]
         public float ExperienceBar;
@@ -17,12 +18,5 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.VarInt)]
         public uint TotalExperience;
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsFloat(ExperienceBar);
-            bw.WriteAsVarInt(Level, out _);
-            bw.WriteAsVarInt(TotalExperience, out _);
-        }
     }
 }
