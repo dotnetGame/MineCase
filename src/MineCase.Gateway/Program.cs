@@ -18,11 +18,10 @@ namespace MineCase.Gateway
 {
     partial class Program
     {
-        public static IConfiguration Configuration { get; private set; }
         static async Task Main(string[] args)
         {
-            Configuration = LoadConfiguration();
             var hostBuilder = new HostBuilder()
+                .ConfigureAppConfiguration(ConfigureAppConfiguration)
                 .ConfigureServices(ConfigureServices)
                 .ConfigureLogging(ConfigureLogging)
                 .UseConsoleLifetime();

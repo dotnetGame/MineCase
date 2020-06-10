@@ -14,12 +14,13 @@ using System.Reflection;
 using System.Text;
 using System.Linq;
 using Orleans;
+using Microsoft.Extensions.Hosting;
 
 namespace MineCase.Gateway
 {
     partial class Program
     {
-        private static void ConfigureServices(IServiceCollection services)
+        private static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
             services.AddLogging();
             services.AddSingleton<ConnectionRouter>();
@@ -35,10 +36,10 @@ namespace MineCase.Gateway
                     options.Configure = c =>
                     {
                         // c.UseLocalhostClustering(gatewayPort: 30000);
-                        c.UseMongoDBClient(Configuration.GetSection("persistenceOptions")["connectionString"]);
+                        c.UseMongoDBClient(context.Configuration.GetSection("persistenceOptions")["connectionString"]);
                         c.UseMongoDBClustering(options =>
                         {
-                            options.DatabaseName = Configuration.GetSection("persistenceOptions")["databaseName"];
+                            options.DatabaseName = context.Configuration.GetSection("persistenceOptions")["databaseName"];
                         });
                     };
                     options.SetServiceAssembly(SelectAssemblies());
@@ -59,12 +60,10 @@ namespace MineCase.Gateway
             services.AddSingleton<IBufferPool<byte>>(s => new BufferPool<byte>(ArrayPool<byte>.Shared));
         }
 
-        private static IConfiguration LoadConfiguration()
+        private static void ConfigureAppConfiguration(HostBuilderContext context, IConfigurationBuilder builder)
         {
-            var configurationBuilder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+            builder.SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("config.json", false, false);
-            return configurationBuilder.Build();
         }
 
         private static void ConfigureLogging(ILoggingBuilder loggingBuilder)
