@@ -10,6 +10,8 @@ namespace MineCase.Protocol
 
         public const string VersionName = "1.15.2";
 
+        public const uint SetCompressionPacketId = 0x03;
+
         public static void ValidatePacketLength(uint length)
         {
             if (length > 16 * 1024)

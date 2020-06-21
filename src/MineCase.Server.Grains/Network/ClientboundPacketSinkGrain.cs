@@ -69,11 +69,5 @@ namespace MineCase.Server.Network
             DeactivateOnIdle();
             return Task.CompletedTask;
         }
-
-        public Task NotifyUseCompression(uint threshold)
-        {
-            _subsManager.Notify(n => n.UseCompression(threshold));
-            return Task.CompletedTask;
-        }
     }
 }

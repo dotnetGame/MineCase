@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.ObjectPool;
 using MineCase.Buffers;
 using MineCase.Protocol;
+using MineCase.Serialization;
 using MineCase.Server.Game;
 using MineCase.Server.Network;
 using Orleans;
@@ -29,7 +30,6 @@ namespace MineCase.Gateway.Network
         private readonly IBufferPool<byte> _bufferPool;
         private readonly IPacketCompress _packetCompress;
 
-        private readonly object _useCompressionPacket = new object();
         private uint _compressThreshold;
 
         public ClientSession(TcpClient tcpClient, IOrleansClient grainFactory, IBufferPool<byte> bufferPool, ObjectPool<UncompressedPacket> uncompressedPacketObjectPool, IPacketCompress packetCompress)
@@ -107,10 +107,6 @@ namespace MineCase.Gateway.Network
                 _tcpClient.Client.Shutdown(SocketShutdown.Send);
                 _outcomingPacketDispatcher.Complete();
             }
-            else if (packetOrCommand == _useCompressionPacket)
-            {
-                _useCompression = true;
-            }
             else if (packetOrCommand is UncompressedPacket packet)
             {
                 using (var bufferScope = _bufferPool.CreateScope())
@@ -124,8 +120,20 @@ namespace MineCase.Gateway.Network
                     {
                         await packet.SerializeAsync(_remoteStream);
                     }
+
+                    if (!_useCompression && packet.PacketId == Protocol.Protocol.SetCompressionPacketId)
+                    {
+                        _compressThreshold = GetCompressionThreshold(packet);
+                        _useCompression = true;
+                    }
                 }
             }
+        }
+
+        private static uint GetCompressionThreshold(UncompressedPacket packet)
+        {
+            var br = new SpanReader(packet.Data);
+            return br.ReadAsVarInt(out _);
         }
 
         private async Task DispatchIncomingPacket(UncompressedPacket packet)
@@ -164,12 +172,6 @@ namespace MineCase.Gateway.Network
             public void ReceivePacket(UncompressedPacket packet)
             {
                 _session.DispatchOutcomingPacket(packet);
-            }
-
-            public void UseCompression(uint threshold)
-            {
-                _session._compressThreshold = threshold;
-                _session.DispatchOutcomingPacket(_session._useCompressionPacket);
             }
         }
 

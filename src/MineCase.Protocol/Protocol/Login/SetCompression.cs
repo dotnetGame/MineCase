@@ -6,7 +6,7 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Login
 {
-    [Packet(0x03)]
+    [Packet(Protocol.SetCompressionPacketId)]
     [GenerateSerializer]
     public sealed partial class SetCompression : IPacket
     {
