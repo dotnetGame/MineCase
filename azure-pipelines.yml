@@ -44,12 +44,12 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: 'Publish'
     inputs:
-      command: publish
+      command: 'publish'
+      publishWebProjects: false
       projects: |
-        src/MineCase.Server//MineCase.Server.csproj
-        src/MineCase.Gateway//MineCase.Gateway.csproj
+        src/MineCase.Server/MineCase.Server.csproj
+        src/MineCase.Gateway/MineCase.Gateway.csproj
       arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-      zipAfterPublish: True
 
   - task: PublishBuildArtifacts@1
     inputs:
