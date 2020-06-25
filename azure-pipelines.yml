@@ -1,0 +1,57 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+    - '*'
+
+jobs:
+- job: Linux
+  timeoutInMinutes: 0
+  pool:
+    vmImage: 'ubuntu-18.04'
+
+  variables:
+    buildConfiguration: 'Release'
+
+  steps:
+  - checkout: self
+    submodules: true
+
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core SDK'
+    inputs:
+      version: '5.0.100-preview.4.20258.7' 
+      includePreviewVersions: true # Required for preview versions
+
+  - task: DotNetCoreCLI@2
+    displayName: Build
+    inputs:
+      command: build
+      projects: '**/*.csproj'
+      arguments: '--configuration $(buildConfiguration)'
+
+  - task: DotNetCoreCLI@2
+    displayName: Test
+    inputs:
+      command: test
+      projects: 'tests/**/*.csproj'
+      arguments: '--configuration $(buildConfiguration)'
+    
+  - task: DotNetCoreCLI@2
+    displayName: 'Publish'
+    inputs:
+      command: publish
+      projects: |
+        src/MineCase.Server//MineCase.Server.csproj
+        src/MineCase.Gateway//MineCase.Gateway.csproj
+      arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+      zipAfterPublish: True
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: $(Build.ArtifactStagingDirectory)
+      artifactName: MineCase
