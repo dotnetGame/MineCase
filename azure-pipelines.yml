@@ -30,15 +30,17 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: Build
     inputs:
-      command: build
-      projects: '**/*.csproj'
+      command: 'build'
+      projects: |
+        src/MineCase.sln
+        tests/MineCase.Tests.sln
       arguments: '--configuration $(buildConfiguration)'
 
   - task: DotNetCoreCLI@2
     displayName: Test
     inputs:
-      command: test
-      projects: 'tests/**/*.csproj'
+      command: 'test'
+      projects: 'tests/MineCase.Tests.sln'
       arguments: '--configuration $(buildConfiguration)'
     
   - task: DotNetCoreCLI@2
