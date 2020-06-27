@@ -6,11 +6,9 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x15)]
-    public sealed class WindowProperty : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class WindowProperty : IPacket
     {
         [SerializeAs(DataType.Byte)]
         public byte WindowId;
@@ -20,12 +18,5 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.Short)]
         public short Value;
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsByte(WindowId);
-            bw.WriteAsShort(Property);
-            bw.WriteAsShort(Value);
-        }
     }
 }

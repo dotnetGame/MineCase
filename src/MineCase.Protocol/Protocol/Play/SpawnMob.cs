@@ -6,11 +6,9 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x03)]
-    public sealed class SpawnMob : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class SpawnMob : IPacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint EID;
@@ -31,13 +29,13 @@ namespace MineCase.Protocol.Play
         public double Z;
 
         [SerializeAs(DataType.Angle)]
-        public byte Pitch;
+        public Angle Pitch;
 
         [SerializeAs(DataType.Angle)]
-        public byte Yaw;
+        public Angle Yaw;
 
         [SerializeAs(DataType.Angle)]
-        public byte HeadPitch;
+        public Angle HeadPitch;
 
         [SerializeAs(DataType.Short)]
         public short VelocityX;
@@ -50,22 +48,5 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.ByteArray)]
         public byte[] Metadata;
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsVarInt(EID, out _);
-            bw.WriteAsUUID(EntityUUID);
-            bw.WriteAsByte(Type);
-            bw.WriteAsDouble(X);
-            bw.WriteAsDouble(Y);
-            bw.WriteAsDouble(Z);
-            bw.WriteAsByte(Yaw);
-            bw.WriteAsByte(Pitch);
-            bw.WriteAsByte(HeadPitch);
-            bw.WriteAsShort(VelocityX);
-            bw.WriteAsShort(VelocityY);
-            bw.WriteAsShort(VelocityZ);
-            bw.WriteAsByteArray(Metadata);
-        }
     }
 }

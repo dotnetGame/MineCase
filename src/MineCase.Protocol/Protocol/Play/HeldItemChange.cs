@@ -6,21 +6,11 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x23)]
-    public sealed class ServerboundHeldItemChange
+    [GenerateSerializer]
+    public sealed partial class ServerboundHeldItemChange : IPacket
     {
         [SerializeAs(DataType.Short)]
         public short Slot;
-
-        public static ServerboundHeldItemChange Deserialize(ref SpanReader br)
-        {
-            return new ServerboundHeldItemChange
-            {
-                Slot = br.ReadAsShort()
-            };
-        }
     }
 }

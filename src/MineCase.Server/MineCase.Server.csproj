@@ -2,52 +2,30 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
-    <Configurations>Debug;Release;Appveyor;TravisCI</Configurations>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Appveyor|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TravisCI|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="5.1.2" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Orleans.Server" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Orleans.Server" Version="3.2.0-rc2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-    <PackageReference Include="Orleans.Providers.MongoDB" Version="3.1.1" />
-    <PackageReference Include="OrleansDashboard" Version="3.0.8" />
+    <PackageReference Include="Orleans.Providers.MongoDB" Version="3.1.7" />
+    <PackageReference Include="OrleansDashboard" Version="3.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update=".dockerignore">
       <DependentUpon>Dockerfile</DependentUpon>
-    </None>
-    <None Update="OrleansConfiguration.dev.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
@@ -60,7 +38,6 @@
     <None Remove="banned-players.json" />
     <None Remove="config.json" />
     <None Remove="ops.json" />
-    <None Remove="OrleansConfiguration.docker.xml" />
     <None Remove="server.json" />
     <None Remove="whitelist.json" />
   </ItemGroup>
@@ -85,9 +62,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ops.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="OrleansConfiguration.docker.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="server.json">

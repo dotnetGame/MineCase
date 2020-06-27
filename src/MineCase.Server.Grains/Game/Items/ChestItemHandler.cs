@@ -32,7 +32,7 @@ namespace MineCase.Server.Game.Items
             for (int i = 0; i < ChestBlockHandler.CrossCoords.Length; i++)
             {
                 var crossCoord = ChestBlockHandler.CrossCoords[i];
-                var blockState = await world.GetBlockState(grainFactory, position.X + crossCoord.x, position.Y, position.Z + crossCoord.z);
+                var blockState = await world.GetBlockState(grainFactory, position.X + crossCoord.X, position.Y, position.Z + crossCoord.Z);
                 if (blockState.Id == (uint)BlockId.Chest)
                 {
                     neighborIdx = i;

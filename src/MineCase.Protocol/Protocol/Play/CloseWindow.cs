@@ -6,36 +6,19 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x0A)]
-    public sealed class ServerboundCloseWindow
+    [GenerateSerializer]
+    public sealed partial class ServerboundCloseWindow : IPacket
     {
         [SerializeAs(DataType.Byte)]
         public byte WindowId;
-
-        public static ServerboundCloseWindow Deserialize(ref SpanReader br)
-        {
-            return new ServerboundCloseWindow
-            {
-                WindowId = br.ReadAsByte()
-            };
-        }
     }
 
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x14)]
-    public sealed class ClientboundCloseWindow : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class ClientboundCloseWindow : IPacket
     {
         [SerializeAs(DataType.Byte)]
         public byte WindowId;
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsByte(WindowId);
-        }
     }
 }

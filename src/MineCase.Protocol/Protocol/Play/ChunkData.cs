@@ -9,11 +9,8 @@ using MineCase.World;
 
 namespace MineCase.Protocol.Play
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x22)]
-    public sealed class ChunkData : ISerializablePacket
+    public sealed class ChunkData : IPacket
     {
         [SerializeAs(DataType.Int)]
         public int ChunkX;
@@ -72,6 +69,11 @@ namespace MineCase.Protocol.Play
             return result;
         }
 
+        public void Deserialize(ref SpanReader br)
+        {
+            throw new NotSupportedException();
+        }
+
         public void Serialize(BinaryWriter bw)
         {
             bw.WriteAsInt(ChunkX);
@@ -99,10 +101,7 @@ namespace MineCase.Protocol.Play
         }
     }
 
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
-    public sealed class ChunkSection : ISerializablePacket
+    public sealed class ChunkSection : IPacket
     {
         [SerializeAs(DataType.Short)]
         public short BlockCount;
@@ -153,6 +152,11 @@ namespace MineCase.Protocol.Play
                 dataArray[i] = br.ReadAsUnsignedLong();
             result.DataArray = dataArray;
             return result;
+        }
+
+        public void Deserialize(ref SpanReader br)
+        {
+            throw new NotImplementedException();
         }
 
         public void Serialize(BinaryWriter bw)

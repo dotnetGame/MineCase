@@ -6,11 +6,9 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x49)]
-    public sealed class UpdateHealth : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class UpdateHealth : IPacket
     {
         [SerializeAs(DataType.Float)]
         public float Health;
@@ -20,12 +18,5 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.Float)]
         public float FoodSaturation;
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsFloat(Health);
-            bw.WriteAsVarInt(Food, out _);
-            bw.WriteAsFloat(FoodSaturation);
-        }
     }
 }

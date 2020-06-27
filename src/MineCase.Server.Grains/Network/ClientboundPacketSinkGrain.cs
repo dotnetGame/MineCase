@@ -42,10 +42,10 @@ namespace MineCase.Server.Network
             return Task.CompletedTask;
         }
 
-        public async Task SendPacket(ISerializablePacket packet)
+        public async Task SendPacket(IPacket packet)
         {
             var prepared = await _packetPackager.PreparePacket(packet);
-            await SendPacket(prepared.packetId, prepared.data.AsImmutable());
+            await SendPacket(prepared.PacketId, prepared.Data.AsImmutable());
         }
 
         public Task SendPacket(uint packetId, Immutable<byte[]> data)
@@ -67,12 +67,6 @@ namespace MineCase.Server.Network
             _subsManager.Notify(n => n.OnClosed());
             _subsManager.Clear();
             DeactivateOnIdle();
-            return Task.CompletedTask;
-        }
-
-        public Task NotifyUseCompression(uint threshold)
-        {
-            _subsManager.Notify(n => n.UseCompression(threshold));
             return Task.CompletedTask;
         }
     }

@@ -6,11 +6,9 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x57)]
-    public sealed class EntityTeleport : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class EntityTeleport : IPacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint EID;
@@ -25,23 +23,12 @@ namespace MineCase.Protocol.Play
         public double Z;
 
         [SerializeAs(DataType.Angle)]
-        public byte Yaw;
+        public Angle Yaw;
 
         [SerializeAs(DataType.Angle)]
-        public byte Pitch;
+        public Angle Pitch;
 
         [SerializeAs(DataType.Boolean)]
         public bool OnGround;
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsVarInt(EID, out _);
-            bw.WriteAsDouble(X);
-            bw.WriteAsDouble(Y);
-            bw.WriteAsDouble(Z);
-            bw.WriteAsAngle(Yaw);
-            bw.WriteAsAngle(Pitch);
-            bw.WriteAsBoolean(OnGround);
-        }
     }
 }

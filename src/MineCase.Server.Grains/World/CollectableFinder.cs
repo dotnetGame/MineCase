@@ -22,22 +22,22 @@ namespace MineCase.Server.World
     [Reentrant]
     internal class CollectableFinder : AddressByPartitionGrain, ICollectableFinder
     {
-        public static readonly (int x, int z)[] CrossCoords = new[]
+        public static readonly (int X, int Z)[] CrossCoords = new[]
         {
             (0, 0), (-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1)
         };
 
-        private List<(Cuboid box, ICollectableFinder finder)> _neighborFinders;
+        private List<(Cuboid Box, ICollectableFinder Finder)> _neighborFinders;
 
         private StateHolder State => GetValue(StateComponent<StateHolder>.StateProperty);
 
         public override async Task OnActivateAsync()
         {
             await base.OnActivateAsync();
-            _neighborFinders = new List<(Cuboid box, ICollectableFinder finder)>();
+            _neighborFinders = new List<(Cuboid Box, ICollectableFinder Finder)>();
             foreach (var crossCoord in CrossCoords)
             {
-                var newPos = new ChunkWorldPos(ChunkWorldPos.X + crossCoord.x, ChunkWorldPos.Z + crossCoord.z);
+                var newPos = new ChunkWorldPos(ChunkWorldPos.X + crossCoord.X, ChunkWorldPos.Z + crossCoord.Z);
                 var shape = new Cuboid(new Point3d(newPos.X * 16, newPos.Z * 16, 0), new Size(16, 16, 256));
                 _neighborFinders.Add((shape, GrainFactory.GetPartitionGrain<ICollectableFinder>(World, newPos)));
             }
@@ -71,8 +71,8 @@ namespace MineCase.Server.World
         private async Task Collision(IDependencyObject entity, Shape colliderShape)
         {
             var result = new HashSet<IDependencyObject>((await Task.WhenAll(from finder in _neighborFinders
-                                                                            where colliderShape.CollideWith(finder.box)
-                                                                            select finder.finder.CollisionInChunk(colliderShape)))
+                                                                            where colliderShape.CollideWith(finder.Box)
+                                                                            select finder.Finder.CollisionInChunk(colliderShape)))
                                                                             .SelectMany(o => o));
             result.Remove(entity);
             if (result.Count != 0)

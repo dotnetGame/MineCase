@@ -7,11 +7,9 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x17)]
-    public sealed class SetSlot : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class SetSlot : IPacket
     {
         [SerializeAs(DataType.Byte)]
         public byte WindowId;
@@ -21,12 +19,5 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.Slot)]
         public Slot SlotData;
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsByte(WindowId);
-            bw.WriteAsShort(Slot);
-            bw.WriteAsSlot(SlotData);
-        }
     }
 }

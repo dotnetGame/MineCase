@@ -13,15 +13,39 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Linq;
+using Orleans;
+using Microsoft.Extensions.Hosting;
 
 namespace MineCase.Gateway
 {
     partial class Program
     {
-        private static void ConfigureServices(IServiceCollection services)
+        private static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
             services.AddLogging();
             services.AddSingleton<ConnectionRouter>();
+            services.AddSingleton<IPacketCompress, PacketCompress>();
+            services.AddTransient<ClientSession>();
+            services.AddHostedService<ConnectionRouter>();
+            services.AddOrleansMultiClient(builder =>
+            {
+                builder.AddClient(options =>
+                {
+                    options.ClusterId = "dev";
+                    options.ServiceId = "MineCaseService";
+                    options.Configure = c =>
+                    {
+                        // c.UseLocalhostClustering(gatewayPort: 30000);
+                        c.UseMongoDBClient(context.Configuration.GetSection("persistenceOptions")["connectionString"]);
+                        c.UseMongoDBClustering(options =>
+                        {
+                            options.DatabaseName = context.Configuration.GetSection("persistenceOptions")["databaseName"];
+                        });
+                    };
+                    options.SetServiceAssembly(SelectAssemblies());
+                });
+            });
+
             ConfigureObjectPools(services);
         }
 
@@ -36,12 +60,10 @@ namespace MineCase.Gateway
             services.AddSingleton<IBufferPool<byte>>(s => new BufferPool<byte>(ArrayPool<byte>.Shared));
         }
 
-        private static IConfiguration LoadConfiguration()
+        private static void ConfigureAppConfiguration(HostBuilderContext context, IConfigurationBuilder builder)
         {
-            var configurationBuilder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+            builder.SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("config.json", false, false);
-            return configurationBuilder.Build();
         }
 
         private static void ConfigureLogging(ILoggingBuilder loggingBuilder)
@@ -49,12 +71,12 @@ namespace MineCase.Gateway
             loggingBuilder.AddConsole();
         }
 
-        private static void SelectAssemblies()
+        private static Assembly[] SelectAssemblies()
         {
             var assemblies = new List<Assembly>();
             assemblies
                 .AddInterfaces();
-            _assemblies = assemblies.ToArray();
+            return assemblies.ToArray();
         }
     }
 }

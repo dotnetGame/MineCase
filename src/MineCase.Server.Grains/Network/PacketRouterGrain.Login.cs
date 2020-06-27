@@ -25,12 +25,12 @@ namespace MineCase.Server.Network
             {
                 // Login Start
                 case 0x00:
-                    task = DispatchPacket(LoginStart.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<LoginStart>(ref br));
                     break;
 
                 // Encryption Response
                 case 0x01:
-                    task = DispatchPacket(EncryptionResponse.Deserialize(ref br));
+                    task = DispatchPacket(PacketDeserializer.Deserialize<EncryptionResponse>(ref br));
                     break;
                 default:
                     throw new InvalidDataException($"Unrecognizable packet id: 0x{packet.PacketId:X2}.");

@@ -172,9 +172,9 @@ namespace MineCase.Server.Game.Entities.Components
             AttachedObject.GetComponent<SlotContainerComponent>().SlotChanged += InventorySlotChanged;
         }
 
-        private void InventorySlotChanged(object sender, (int index, Slot slot) e)
+        private void InventorySlotChanged(object sender, (int Index, Slot Slot) e)
         {
-            AttachedObject.QueueOperation(() => _user.SetInventorySlot(e.index, e.slot));
+            AttachedObject.QueueOperation(() => _user.SetInventorySlot(e.Index, e.Slot));
         }
     }
 }

@@ -14,7 +14,7 @@ namespace MineCase.Server.Game.Entities.Components
 
         private readonly int _slotsCount;
 
-        public event EventHandler<(int index, Slot slot)> SlotChanged;
+        public event EventHandler<(int Index, Slot Slot)> SlotChanged;
 
         public SlotContainerComponent(int slotsCount, string name = "slotContainer")
             : base(name)

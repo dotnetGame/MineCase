@@ -12,22 +12,18 @@ using Autofac.Extensions.DependencyInjection;
 using Microsoft.IO;
 using Autofac;
 using MineCase.Server.Settings;
+using Microsoft.Extensions.Hosting;
 
 namespace MineCase.Server
 {
     partial class Program
     {
-        private static IServiceProvider ConfigureServices(IServiceCollection services)
+        private static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
             services.AddOptions();
             services.AddLogging();
             services.AddSingleton<RecyclableMemoryStreamManager>();
-            services.Configure<PersistenceOptions>(Configuration.GetSection("persistenceOptions"));
-
-            var container = new ContainerBuilder();
-            container.Populate(services);
-            container.RegisterAssemblyModules(_assemblies);
-            return new AutofacServiceProvider(container.Build());
+            services.Configure<PersistenceOptions>(context.Configuration.GetSection("persistenceOptions"));
         }
 
         private static void ConfigureAppConfiguration(IConfigurationBuilder configurationBuilder)
@@ -36,14 +32,14 @@ namespace MineCase.Server
                 .AddJsonFile("config.json", false, false);
         }
 
-        private static void SelectAssemblies()
+        private static void ConfigureAutofac(ContainerBuilder builder)
         {
             var assemblies = new List<Assembly>();
             assemblies
                 .AddEngine()
                 .AddInterfaces()
                 .AddGrains();
-            _assemblies = assemblies.ToArray();
+            builder.RegisterAssemblyModules(assemblies.ToArray());
         }
 
         private static void ConfigureLogging(ILoggingBuilder loggingBuilder)

@@ -9,9 +9,6 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     public class UncompressedPacket
     {
         [SerializeAs(DataType.VarInt)]
@@ -54,9 +51,6 @@ namespace MineCase.Protocol
         }
     }
 
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     public class CompressedPacket
     {
         [SerializeAs(DataType.VarInt)]
@@ -110,8 +104,10 @@ namespace MineCase.Protocol
         }
     }
 
-    public interface ISerializablePacket
+    public interface IPacket
     {
         void Serialize(BinaryWriter bw);
+
+        void Deserialize(ref SpanReader br);
     }
 }

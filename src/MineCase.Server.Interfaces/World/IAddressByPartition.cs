@@ -36,7 +36,7 @@ namespace MineCase.Server.World
             return new ChunkWorldPos(int.Parse(key[1]), int.Parse(key[2]));
         }
 
-        public static (string worldKey, ChunkWorldPos chunkWorldPos) GetWorldAndChunkWorldPos(this IAddressByPartition addressByPartition)
+        public static (string WorldKey, ChunkWorldPos ChunkWorldPos) GetWorldAndChunkWorldPos(this IAddressByPartition addressByPartition)
         {
             var key = addressByPartition.GetPrimaryKeyString().Split(',');
             return (key[0], new ChunkWorldPos(int.Parse(key[1]), int.Parse(key[2])));

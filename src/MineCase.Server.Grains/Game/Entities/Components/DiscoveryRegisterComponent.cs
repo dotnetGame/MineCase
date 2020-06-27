@@ -30,12 +30,12 @@ namespace MineCase.Server.Game.Entities.Components
             AttachedObject.QueueOperation(TryUnsubscribe);
         }
 
-        private void AddressByPartitionKeyChanged(object sender, (string oldKey, string newKey) e)
+        private void AddressByPartitionKeyChanged(object sender, (string OldKey, string NewKey) e)
         {
             AttachedObject.QueueOperation(async () =>
             {
-                if (!string.IsNullOrEmpty(e.oldKey))
-                    await GrainFactory.GetGrain<IWorldPartition>(e.oldKey).UnsubscribeDiscovery(AttachedObject);
+                if (!string.IsNullOrEmpty(e.OldKey))
+                    await GrainFactory.GetGrain<IWorldPartition>(e.OldKey).UnsubscribeDiscovery(AttachedObject);
                 await TrySubscribe();
             });
         }

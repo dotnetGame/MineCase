@@ -99,7 +99,7 @@ namespace MineCase.Server.World
             return (BiomeId)State.Storage.Biomes[((y / 4) * 4 + z / 4) * 4 + x / 4];
         }
 
-        public static readonly (int x, int z)[] CrossCoords = new[]
+        public static readonly (int X, int Z)[] CrossCoords = new[]
         {
             (-1, 0), (0, -1), (1, 0), (0, 1)
         };
@@ -148,8 +148,8 @@ namespace MineCase.Server.World
                 await Task.WhenAll(CrossCoords.Select(crossCoord =>
                 {
                     var neighborPos = blockWorldPos;
-                    neighborPos.X += crossCoord.x;
-                    neighborPos.Z += crossCoord.z;
+                    neighborPos.X += crossCoord.X;
+                    neighborPos.Z += crossCoord.Z;
                     var chunk = neighborPos.ToChunkWorldPos();
                     var blockChunkPos = neighborPos.ToBlockChunkPos();
                     return GrainFactory.GetPartitionGrain<IChunkColumn>(World, chunk).OnBlockNeighborChanged(

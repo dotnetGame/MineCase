@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Buffers.Binary;
 using System.IO;
 using System.IO.Pipelines;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-
 using MineCase.Nbt;
 using MineCase.Nbt.Serialization;
 using MineCase.Nbt.Tags;
+using MineCase.Protocol;
 
 namespace MineCase.Serialization
 {
@@ -28,6 +28,12 @@ namespace MineCase.Serialization
         public SpanReader(ReadOnlySpan<byte> span)
         {
             _span = span;
+        }
+
+        public Chat ReadAsChat()
+        {
+            string str = ReadAsString();
+            return Chat.Parse(str);
         }
 
         public uint ReadAsVarInt(out int bytesRead)
@@ -52,85 +58,95 @@ namespace MineCase.Serialization
             return result;
         }
 
+        public Angle ReadAsAngle()
+        {
+            return new Angle(ReadAsByte());
+        }
+
+        public Guid ReadAsUUID()
+        {
+            var bytes = ReadBytes(16);
+            return new Guid(bytes);
+        }
+
         public unsafe string ReadAsString()
         {
             var len = ReadAsVarInt(out _);
             var bytes = ReadBytes((int)len);
-            return Encoding.UTF8.GetString((byte*)Unsafe.AsPointer(ref MemoryMarshal.GetReference(bytes)), bytes.Length);
+            return Encoding.UTF8.GetString(bytes);
         }
 
         public ushort ReadAsUnsignedShort()
         {
-            var value = _span.ReadBigEndian<ushort>();
+            var value = BinaryPrimitives.ReadUInt16BigEndian(_span);
             Advance(sizeof(ushort));
             return value;
         }
 
         public uint ReadAsUnsignedInt()
         {
-            var value = _span.ReadBigEndian<uint>();
+            var value = BinaryPrimitives.ReadUInt32BigEndian(_span);
             Advance(sizeof(uint));
             return value;
         }
 
         public ulong ReadAsUnsignedLong()
         {
-            var value = _span.ReadBigEndian<ulong>();
+            var value = BinaryPrimitives.ReadUInt64BigEndian(_span);
             Advance(sizeof(ulong));
             return value;
         }
 
         public int ReadAsInt()
         {
-            var value = _span.ReadBigEndian<int>();
+            var value = BinaryPrimitives.ReadInt32BigEndian(_span);
             Advance(sizeof(int));
             return value;
         }
 
         public long ReadAsLong()
         {
-            var value = _span.ReadBigEndian<long>();
+            var value = BinaryPrimitives.ReadInt64BigEndian(_span);
             Advance(sizeof(long));
             return value;
         }
 
         public byte PeekAsByte()
         {
-            var value = _span.ReadBigEndian<byte>();
-            return value;
+            return _span[0];
         }
 
         public byte ReadAsByte()
         {
-            var value = _span.ReadBigEndian<byte>();
+            var value = _span[0];
             Advance(sizeof(byte));
             return value;
         }
 
         public bool ReadAsBoolean()
         {
-            var value = _span.ReadBigEndian<bool>();
+            var value = Convert.ToBoolean(_span[0]);
             Advance(sizeof(bool));
             return value;
         }
 
         public short ReadAsShort()
         {
-            var value = _span.ReadBigEndian<short>();
+            var value = BinaryPrimitives.ReadInt16BigEndian(_span);
             Advance(sizeof(short));
             return value;
         }
 
         public float ReadAsFloat()
         {
-            var value = _span.ReadBigEndian<float>();
+            var value = BinaryPrimitives.ReadSingleBigEndian(_span);
             Advance(sizeof(float));
             return value;
         }
 
         public double ReadAsDouble()
         {
-            var value = _span.ReadBigEndian<double>();
+            var value = BinaryPrimitives.ReadDoubleBigEndian(_span);
             Advance(sizeof(double));
             return value;
         }
@@ -150,13 +166,40 @@ namespace MineCase.Serialization
 
         public int[] ReadAsIntArray(int length)
         {
+            var expectedLen = length * sizeof(int);
+            if (expectedLen > _span.Length)
+                throw new IndexOutOfRangeException();
+
             int[] ret = new int[length];
             for (int i = 0; i < length; ++i)
             {
-                ret[i] = ReadAsInt();
+                ret[i] = BinaryPrimitives.ReadInt32BigEndian(_span);
+                Advance(sizeof(int));
             }
 
             return ret;
+        }
+
+        public uint[] ReadAsVarIntArray(int length)
+        {
+            var array = new uint[length];
+            var subReader = new SpanReader(_span);
+            for (int i = 0; i < array.Length; i++)
+                array[i] = subReader.ReadAsVarInt(out _);
+
+            _span = subReader._span;
+            return array;
+        }
+
+        public Slot[] ReadAsSlotArray(int length)
+        {
+            var array = new Slot[length];
+            var subReader = new SpanReader(_span);
+            for (int i = 0; i < array.Length; i++)
+                array[i] = subReader.ReadAsSlot();
+
+            _span = subReader._span;
+            return array;
         }
 
         public NbtCompound ReadAsNbtTag()
@@ -188,8 +231,7 @@ namespace MineCase.Serialization
 
         public Position ReadAsPosition()
         {
-            var value = _span.ReadBigEndian<ulong>();
-            Advance(sizeof(ulong));
+            var value = ReadAsUnsignedLong();
             return new Position
             {
                 X = SignBy26(value >> 38),
@@ -230,6 +272,22 @@ namespace MineCase.Serialization
             }
 
             return slot;
+        }
+
+        public T[] ReadAsArray<T>(int count)
+            where T : IPacket, new()
+        {
+            var array = new T[count];
+            var subReader = new SpanReader(_span);
+            for (int i = 0; i < array.Length; i++)
+            {
+                var item = new T();
+                item.Deserialize(ref subReader);
+                array[i] = item;
+            }
+
+            _span = subReader._span;
+            return array;
         }
 
         private ReadOnlySpan<byte> ReadBytes(int length)

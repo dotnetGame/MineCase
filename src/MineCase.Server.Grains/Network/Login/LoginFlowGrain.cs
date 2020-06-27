@@ -113,7 +113,6 @@ namespace MineCase.Server.Network.Login
         {
             var sink = GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey());
             await sink.SendPacket(new SetCompression { Threshold = CompressPacketThreshold });
-            await sink.NotifyUseCompression(CompressPacketThreshold);
         }
 
         private async Task SendLoginSuccess(string userName, Guid uuid)

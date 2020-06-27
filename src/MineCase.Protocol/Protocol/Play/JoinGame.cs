@@ -6,11 +6,9 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x26)]
-    public class JoinGame : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class JoinGame : IPacket
     {
         [SerializeAs(DataType.Int)]
         public int EID;
@@ -38,18 +36,5 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.Boolean)]
         public bool EnableRespawnScreen;
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsInt(EID);
-            bw.WriteAsByte(GameMode);
-            bw.WriteAsInt(Dimension);
-            bw.WriteAsLong(HashedSeed);
-            bw.WriteAsByte(MaxPlayers);
-            bw.WriteAsString(LevelType);
-            bw.WriteAsVarInt(ViewDistance, out _);
-            bw.WriteAsBoolean(ReducedDebugInfo);
-            bw.WriteAsBoolean(EnableRespawnScreen);
-        }
     }
 }

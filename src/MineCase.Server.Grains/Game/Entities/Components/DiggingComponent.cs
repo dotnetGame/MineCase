@@ -59,7 +59,7 @@ namespace MineCase.Server.Game.Entities.Components
             if (_diggingBlock != null)
             {
                 var heldItem = await AttachedObject.Ask(new AskHeldItem());
-                var itemHandler = ItemHandler.Create(new ItemState { Id = (uint)heldItem.slot.BlockId, MetaValue = 0 });
+                var itemHandler = ItemHandler.Create(new ItemState { Id = (uint)heldItem.Slot.BlockId, MetaValue = 0 });
 
                 var world = AttachedObject.GetWorld();
                 var usedTick = (await world.GetAge()) - _diggingStartTick;

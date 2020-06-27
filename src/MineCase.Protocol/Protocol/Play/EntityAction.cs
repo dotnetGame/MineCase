@@ -20,7 +20,8 @@ namespace MineCase.Protocol.Play
     }
 
     [Packet(0x1B)]
-    public sealed class EntityAction
+    [GenerateSerializer]
+    public sealed partial class EntityAction : IPacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint EntityId;
@@ -30,15 +31,5 @@ namespace MineCase.Protocol.Play
 
         [SerializeAs(DataType.VarInt)]
         public uint JumpBoost;
-
-        public static EntityAction Deserialize(ref SpanReader br)
-        {
-            return new EntityAction
-            {
-                EntityId = br.ReadAsVarInt(out _),
-                ActionId = (ActionId)br.ReadAsVarInt(out _),
-                JumpBoost = br.ReadAsVarInt(out _)
-            };
-        }
     }
 }

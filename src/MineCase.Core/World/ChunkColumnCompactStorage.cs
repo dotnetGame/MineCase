@@ -143,13 +143,13 @@ namespace MineCase.World
                     if (y < 0 || y > 255)
                         return BlockStates.Air();
                     var offset = GetOffset(x, y, z);
-                    var toRead = Math.Min(_bitsPerBlock, 64 - offset.bitOffset);
-                    var value = Storage[offset.indexOffset] >> offset.bitOffset;
+                    var toRead = Math.Min(_bitsPerBlock, 64 - offset.BitOffset);
+                    var value = Storage[offset.IndexOffset] >> offset.BitOffset;
                     var rest = _bitsPerBlock - toRead;
                     if (rest > 0)
-                        value |= (Storage[offset.indexOffset + 1] & ((1u << rest) - 1)) << toRead;
+                        value |= (Storage[offset.IndexOffset + 1] & ((1u << rest) - 1)) << toRead;
                     var blockState = BlockType.ParseBlockStateId((uint)(value & BlockMask));
-                    return new BlockState { Id = blockState.id, MetaValue = blockState.meta };
+                    return new BlockState { Id = blockState.Id, MetaValue = blockState.Meta };
                 }
 
                 set
@@ -158,17 +158,17 @@ namespace MineCase.World
                         throw new IndexOutOfRangeException("Axis y out of range");
                     var stgValue = (ulong)((value.Id + value.MetaValue) & BlockMask);
                     var offset = GetOffset(x, y, z);
-                    var tmpValue = Storage[offset.indexOffset];
-                    var mask = BlockMask << offset.bitOffset;
-                    var toWrite = Math.Min(_bitsPerBlock, 64 - offset.bitOffset);
-                    Storage[offset.indexOffset] = (tmpValue & ~mask) | (stgValue << offset.bitOffset);
+                    var tmpValue = Storage[offset.IndexOffset];
+                    var mask = BlockMask << offset.BitOffset;
+                    var toWrite = Math.Min(_bitsPerBlock, 64 - offset.BitOffset);
+                    Storage[offset.IndexOffset] = (tmpValue & ~mask) | (stgValue << offset.BitOffset);
                     var rest = _bitsPerBlock - toWrite;
                     if (rest > 0)
                     {
                         mask = (1u << rest) - 1;
-                        tmpValue = Storage[offset.indexOffset + 1];
+                        tmpValue = Storage[offset.IndexOffset + 1];
                         stgValue >>= toWrite;
-                        Storage[offset.indexOffset + 1] = (tmpValue & ~mask) | (stgValue & mask);
+                        Storage[offset.IndexOffset + 1] = (tmpValue & ~mask) | (stgValue & mask);
                     }
                 }
             }
@@ -183,7 +183,7 @@ namespace MineCase.World
                 Storage = new ulong[ChunkConstants.BlocksInSection * _bitsPerBlock / 64];
             }
 
-            private static (int indexOffset, int bitOffset) GetOffset(int x, int y, int z)
+            private static (int IndexOffset, int BitOffset) GetOffset(int x, int y, int z)
             {
                 var index = GetBlockSerialIndex(x, y, z) * _bitsPerBlock;
                 return (index / 64, index % 64);

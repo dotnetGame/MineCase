@@ -281,11 +281,11 @@ namespace MineCase.Server.Game.Windows.SlotAreas
             foreach (var eachSlotIndex in dragSlotPath)
             {
                 var localSlot = GlobalSlotIndexToLocal(slotAreas, eachSlotIndex);
-                var eachSlot = await localSlot.slotArea.GetSlot(player, localSlot.slotIndex);
+                var eachSlot = await localSlot.SlotArea.GetSlot(player, localSlot.SlotIndex);
 
                 slot.ItemCount = (byte)Math.Min(MaxStackCount, eachSlot.ItemCount + averageNum);
 
-                await localSlot.slotArea.SetSlot(player, localSlot.slotIndex, slot);
+                await localSlot.SlotArea.SetSlot(player, localSlot.SlotIndex, slot);
 
                 if (eachSlot.IsEmpty)
                 {
@@ -337,11 +337,11 @@ namespace MineCase.Server.Game.Windows.SlotAreas
             foreach (var eachSlotIndex in dragSlotPath)
             {
                 var localSlot = GlobalSlotIndexToLocal(slotAreas, eachSlotIndex);
-                var eachSlot = await localSlot.slotArea.GetSlot(player, localSlot.slotIndex);
+                var eachSlot = await localSlot.SlotArea.GetSlot(player, localSlot.SlotIndex);
 
                 slot.ItemCount = (byte)Math.Min(MaxStackCount, eachSlot.ItemCount + averageNum);
 
-                await localSlot.slotArea.SetSlot(player, localSlot.slotIndex, slot);
+                await localSlot.SlotArea.SetSlot(player, localSlot.SlotIndex, slot);
 
                 if (eachSlot.IsEmpty)
                 {
@@ -419,7 +419,7 @@ namespace MineCase.Server.Game.Windows.SlotAreas
         }
 
         // TODO merge method in games/windows/WindowGrain.cs
-        protected (SlotArea slotArea, int slotIndex) GlobalSlotIndexToLocal(List<SlotArea> slotAreas, int slotIndex)
+        protected (SlotArea SlotArea, int SlotIndex) GlobalSlotIndexToLocal(List<SlotArea> slotAreas, int slotIndex)
         {
             for (int i = 0; i < slotAreas.Count; i++)
             {

@@ -11,21 +11,11 @@ namespace MineCase.Protocol.Play
         Off = 1
     }
 
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x2A)]
-    public sealed class ServerboundAnimation
+    [GenerateSerializer]
+    public sealed partial class ServerboundAnimation : IPacket
     {
         [SerializeAs(DataType.VarInt)]
         public Hand Hand;
-
-        public static ServerboundAnimation Deserialize(ref SpanReader br)
-        {
-            return new ServerboundAnimation
-            {
-                Hand = (Hand)br.ReadAsVarInt(out _)
-            };
-        }
     }
 }

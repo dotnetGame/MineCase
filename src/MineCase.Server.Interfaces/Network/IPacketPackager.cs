@@ -8,6 +8,6 @@ namespace MineCase.Server.Network
 {
     public interface IPacketPackager
     {
-        Task<(uint packetId, byte[] data)> PreparePacket(ISerializablePacket packet);
+        Task<(uint PacketId, byte[] Data)> PreparePacket(IPacket packet);
     }
 }

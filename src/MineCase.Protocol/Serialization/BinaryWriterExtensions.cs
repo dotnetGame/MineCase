@@ -43,9 +43,19 @@ namespace MineCase.Serialization
         public static void WriteAsIntArray(this BinaryWriter bw, int[] value)
         {
             foreach (var eachInt in value)
-            {
                 bw.WriteAsInt(eachInt);
-            }
+        }
+
+        public static void WriteAsVarIntArray(this BinaryWriter bw, uint[] value)
+        {
+            foreach (var eachInt in value)
+                bw.WriteAsVarInt(eachInt, out _);
+        }
+
+        public static void WriteAsSlotArray(this BinaryWriter bw, Slot[] value)
+        {
+            foreach (var slot in value)
+                bw.WriteAsSlot(slot);
         }
 
         public static void WriteAsString(this BinaryWriter bw, string value)
@@ -108,7 +118,7 @@ namespace MineCase.Serialization
         }
 
         public static void WriteAsArray<T>(this BinaryWriter bw, IReadOnlyList<T> array)
-            where T : ISerializablePacket
+            where T : IPacket
         {
             foreach (var item in array)
                 item.Serialize(bw);

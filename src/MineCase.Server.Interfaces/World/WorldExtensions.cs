@@ -46,11 +46,11 @@ namespace MineCase.Server.World
         {
             var xOffset = MakeRelativeBlockOffset(x);
             var zOffset = MakeRelativeBlockOffset(z);
-            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.chunk, zOffset.chunk));
+            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.Chunk, zOffset.Chunk));
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockState(
-                xOffset.block,
+                xOffset.Block,
                 y,
-                zOffset.block);
+                zOffset.Block);
         }
 
         /// <summary>
@@ -125,11 +125,11 @@ namespace MineCase.Server.World
         {
             var xOffset = MakeRelativeBlockOffset(x);
             var zOffset = MakeRelativeBlockOffset(z);
-            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.chunk, zOffset.chunk));
+            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.Chunk, zOffset.Chunk));
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).SetBlockState(
-                xOffset.block,
+                xOffset.Block,
                 y,
-                zOffset.block,
+                zOffset.Block,
                 state);
         }
 
@@ -205,12 +205,12 @@ namespace MineCase.Server.World
         {
             var xOffset = MakeRelativeBlockOffset(pos.X);
             var zOffset = MakeRelativeBlockOffset(pos.Z);
-            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.chunk, zOffset.chunk));
+            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.Chunk, zOffset.Chunk));
             var chunk = grainFactory.GetGrain<IChunkColumn>(chunkColumnKey);
             int y;
             for (y = 255; y >= 0; --y)
             {
-                if (!(await chunk.GetBlockState(xOffset.block, y, zOffset.block)).IsAir())
+                if (!(await chunk.GetBlockState(xOffset.Block, y, zOffset.Block)).IsAir())
                 {
                     break;
                 }
@@ -219,7 +219,7 @@ namespace MineCase.Server.World
             return y + 1;
         }
 
-        public static (int chunk, int block) MakeRelativeBlockOffset(int value)
+        public static (int Chunk, int Block) MakeRelativeBlockOffset(int value)
         {
             var chunk = value / ChunkConstants.BlockEdgeWidthInSection;
             var block = value % ChunkConstants.BlockEdgeWidthInSection;
@@ -245,11 +245,11 @@ namespace MineCase.Server.World
         {
             var xOffset = MakeRelativeBlockOffset(x);
             var zOffset = MakeRelativeBlockOffset(z);
-            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.chunk, zOffset.chunk));
+            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.Chunk, zOffset.Chunk));
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockEntity(
-                xOffset.block,
+                xOffset.Block,
                 y,
-                zOffset.block);
+                zOffset.Block);
         }
 
         /// <summary>
@@ -263,11 +263,11 @@ namespace MineCase.Server.World
         {
             var xOffset = MakeRelativeBlockOffset(pos.X);
             var zOffset = MakeRelativeBlockOffset(pos.Z);
-            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.chunk, zOffset.chunk));
+            var chunkColumnKey = world.MakeAddressByPartitionKey(new ChunkWorldPos(xOffset.Chunk, zOffset.Chunk));
             return grainFactory.GetGrain<IChunkColumn>(chunkColumnKey).GetBlockEntity(
-                xOffset.block,
+                xOffset.Block,
                 pos.Y,
-                zOffset.block);
+                zOffset.Block);
         }
     }
 }

@@ -19,12 +19,12 @@ namespace MineCase.Server.Network
             _packetPackager = packetPackager;
         }
 
-        public async Task SendPacket(ISerializablePacket packet)
+        public async Task SendPacket(IPacket packet)
         {
             if (_sinks.Any())
             {
                 var preparedPacket = await _packetPackager.PreparePacket(packet);
-                await SendPacket(preparedPacket.packetId, preparedPacket.data.AsImmutable());
+                await SendPacket(preparedPacket.PacketId, preparedPacket.Data.AsImmutable());
             }
         }
 
@@ -34,12 +34,12 @@ namespace MineCase.Server.Network
                                 select sink.SendPacket(packetId, data));
         }
 
-        public async Task SendPacket(ISerializablePacket packet, IPacketSink except)
+        public async Task SendPacket(IPacket packet, IPacketSink except)
         {
             if (_sinks.Any())
             {
                 var preparedPacket = await _packetPackager.PreparePacket(packet);
-                await SendPacket(preparedPacket.packetId, preparedPacket.data.AsImmutable(), except);
+                await SendPacket(preparedPacket.PacketId, preparedPacket.Data.AsImmutable(), except);
             }
         }
 

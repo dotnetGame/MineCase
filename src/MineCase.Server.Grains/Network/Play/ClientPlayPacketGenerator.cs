@@ -588,7 +588,7 @@ namespace MineCase.Server.Network.Play
                 return BroadcastSink.SendPacket(packetId, data.AsImmutable(), _except);
         }
 
-        public Task SendPacket(ISerializablePacket packet)
+        public Task SendPacket(IPacket packet)
         {
             if (Sink != null)
                 return Sink.SendPacket(packet);

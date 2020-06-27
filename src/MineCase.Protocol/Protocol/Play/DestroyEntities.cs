@@ -6,23 +6,14 @@ using MineCase.Serialization;
 
 namespace MineCase.Protocol.Play
 {
-#if !NET46
-    [Orleans.Concurrency.Immutable]
-#endif
     [Packet(0x38)]
-    public sealed class DestroyEntities : ISerializablePacket
+    [GenerateSerializer]
+    public sealed partial class DestroyEntities : IPacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint Count;
 
-        [SerializeAs(DataType.Array)]
+        [SerializeAs(DataType.VarIntArray, ArrayLengthMember = nameof(Count))]
         public uint[] EntityIds;
-
-        public void Serialize(BinaryWriter bw)
-        {
-            bw.WriteAsVarInt(Count, out _);
-            foreach (var eid in EntityIds)
-                bw.WriteAsVarInt(eid, out _);
-        }
     }
 }
