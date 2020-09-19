@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MineCase.Serialization.Serializers;
@@ -34,7 +35,7 @@ namespace MineCase.Server
                         options.AllowCallChainReentrancy = true;
                         options.PerformDeadlockDetection = true;
                     })
-                    .ConfigureEndpoints(siloPort: 11111, gatewayPort: 30000)
+                    .ConfigureEndpoints(siloPort: Int32.Parse(context.Configuration.GetSection("endpoints")["siloPort"]), gatewayPort: Int32.Parse(context.Configuration.GetSection("endpoints")["gatewayPort"]))
                     .UseMongoDBClient(context.Configuration.GetSection("persistenceOptions")["connectionString"])
                     .AddSimpleMessageStreamProvider("JobsProvider")
                     .AddSimpleMessageStreamProvider("TransientProvider")

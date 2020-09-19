@@ -8,7 +8,7 @@ namespace MineCase.Protocol.Play
 {
     [Packet(0x03)]
     [GenerateSerializer]
-    public sealed partial class SpawnMob : IPacket
+    public sealed partial class SpawnLivingEntity : IPacket
     {
         [SerializeAs(DataType.VarInt)]
         public uint EID;

@@ -58,9 +58,9 @@ namespace MineCase.Server.Network.Play
             });
         }
 
-        public Task SpawnMob(uint entityId, Guid uuid, byte entityType, Vector3 position, float pitch, float yaw, Game.Entities.EntityMetadata.Entity metadata)
+        public Task SpawnLivingEntity(uint entityId, Guid uuid, byte entityType, Vector3 position, float pitch, float yaw, Game.Entities.EntityMetadata.Entity metadata)
         {
-            return SendPacket(CreateSpawnMob(entityId, uuid, entityType, position, pitch, yaw, metadata, bw =>
+            return SendPacket(CreateSpawnLivingEntity(entityId, uuid, entityType, position, pitch, yaw, metadata, bw =>
                  {
                      WriteEntityMetadata(bw, metadata);
                  }));
@@ -241,7 +241,7 @@ namespace MineCase.Server.Network.Play
             }
         }
 
-        private static SpawnMob CreateSpawnMob<T>(uint entityId, Guid uuid, byte entityType, Vector3 position, float pitch, float yaw, T metadata, Action<BinaryWriter> action)
+        private static SpawnLivingEntity CreateSpawnLivingEntity<T>(uint entityId, Guid uuid, byte entityType, Vector3 position, float pitch, float yaw, T metadata, Action<BinaryWriter> action)
         {
             using (var stream = new MemoryStream())
             {
@@ -251,7 +251,7 @@ namespace MineCase.Server.Network.Play
                     bw.WriteAsByte(0xFF);
                 }
 
-                return new SpawnMob
+                return new SpawnLivingEntity
                 {
                     EID = entityId,
                     EntityUUID = uuid,
