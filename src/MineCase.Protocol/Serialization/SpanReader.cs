@@ -36,6 +36,23 @@ namespace MineCase.Serialization
             return Chat.Parse(str);
         }
 
+        public string ReadAsIdentifier()
+        {
+            string str = ReadAsString();
+            return str;
+        }
+
+        public string[] ReadAsIdentifierArray(int length)
+        {
+            var array = new string[length];
+            var subReader = new SpanReader(_span);
+            for (int i = 0; i < array.Length; i++)
+                array[i] = subReader.ReadAsIdentifier();
+
+            _span = subReader._span;
+            return array;
+        }
+
         public uint ReadAsVarInt(out int bytesRead)
         {
             int numRead = 0;
@@ -202,7 +219,7 @@ namespace MineCase.Serialization
             return array;
         }
 
-        public NbtCompound ReadAsNbtTag()
+        public NbtCompound ReadAsNBTTag()
         {
             NbtCompound nbt;
             using (MemoryStream ms = new MemoryStream(_span.ToArray()))
@@ -218,12 +235,12 @@ namespace MineCase.Serialization
             return nbt;
         }
 
-        public NbtCompound[] ReadAsNbtTagArray(int length)
+        public NbtCompound[] ReadAsNBTTagArray(int length)
         {
             NbtCompound[] ret = new NbtCompound[length];
             for (int i = 0; i < length; ++i)
             {
-                ret[i] = ReadAsNbtTag();
+                ret[i] = ReadAsNBTTag();
             }
 
             return ret;

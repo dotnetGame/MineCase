@@ -50,6 +50,12 @@ namespace MineCase.Serialization
             return Chat.Parse(str);
         }
 
+        public static string ReadAsIdentifier(this BinaryReader br)
+        {
+            string str = br.ReadAsString();
+            return str;
+        }
+
         public static short ReadAsShort(this BinaryReader br) =>
             (short)br.ReadAsUnsignedShort();
 

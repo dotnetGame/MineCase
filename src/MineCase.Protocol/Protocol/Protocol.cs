@@ -6,9 +6,9 @@ namespace MineCase.Protocol
 {
     public static class Protocol
     {
-        public const uint Version = 578;
+        public const uint Version = 756;
 
-        public const string VersionName = "1.15.2";
+        public const string VersionName = "1.17.1";
 
         public const uint SetCompressionPacketId = 0x03;
 

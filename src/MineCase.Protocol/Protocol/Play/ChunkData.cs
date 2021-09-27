@@ -50,7 +50,7 @@ namespace MineCase.Protocol.Play
                 ChunkZ = br.ReadAsInt(),
                 FullChunk = br.ReadAsBoolean(),
                 PrimaryBitMask = br.ReadAsVarInt(out _),
-                Heightmaps = br.ReadAsNbtTag(),
+                Heightmaps = br.ReadAsNBTTag(),
             };
 
             var hasBioms = result.FullChunk;
@@ -65,7 +65,7 @@ namespace MineCase.Protocol.Play
             result.Data = data.ToArray();
 
             result.NumberOfBlockEntities = br.ReadAsVarInt(out _);
-            result.BlockEntities = br.ReadAsNbtTagArray((int)result.NumberOfBlockEntities);
+            result.BlockEntities = br.ReadAsNBTTagArray((int)result.NumberOfBlockEntities);
             return result;
         }
 
@@ -80,7 +80,7 @@ namespace MineCase.Protocol.Play
             bw.WriteAsInt(ChunkZ);
             bw.WriteAsBoolean(FullChunk);
             bw.WriteAsVarInt(PrimaryBitMask, out _);
-            bw.WriteAsNbtTag(Heightmaps);
+            bw.WriteAsNBTTag(Heightmaps);
             if (FullChunk && Biomes != null)
                 bw.WriteAsIntArray(Biomes);
 
@@ -97,7 +97,7 @@ namespace MineCase.Protocol.Play
             }
 
             bw.WriteAsVarInt(NumberOfBlockEntities, out _);
-            bw.WriteAsNbtTagArray(BlockEntities);
+            bw.WriteAsNBTTagArray(BlockEntities);
         }
     }
 

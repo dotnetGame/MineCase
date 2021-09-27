@@ -25,11 +25,13 @@ namespace MineCase.Serialization
         Position,
         Angle,
         UUID,
+        Identifier,
         ByteArray,
         IntArray,
         NbtArray,
         VarIntArray,
         SlotArray,
+        IdentifierArray,
         Array
     }
 

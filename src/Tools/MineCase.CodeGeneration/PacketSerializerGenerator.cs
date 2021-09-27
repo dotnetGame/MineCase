@@ -104,6 +104,8 @@ using MineCase.Serialization;
                             DataType.Double => $"WriteAsDouble({field.Symbol.Name})",
                             DataType.EntityMetadata => throw new NotSupportedException(),
                             DataType.Float => $"WriteAsFloat({field.Symbol.Name})",
+                            DataType.Identifier => $"WriteAsIdentifier({field.Symbol.Name})",
+                            DataType.IdentifierArray => $"WriteAsIdentifierArray({field.Symbol.Name})",
                             DataType.Int => $"WriteAsInt({OptionalEnumCastFrom(field.Symbol.Type, "int")}{field.Symbol.Name})",
                             DataType.IntArray => $"WriteAsIntArray({field.Symbol.Name})",
                             DataType.Long => $"WriteAsLong({OptionalEnumCastFrom(field.Symbol.Type, "long")}{field.Symbol.Name})",
@@ -151,6 +153,8 @@ using MineCase.Serialization;
                             DataType.Double => $"ReadAsDouble()",
                             DataType.EntityMetadata => throw new NotSupportedException(),
                             DataType.Float => $"ReadAsFloat()",
+                            DataType.Identifier => $"ReadAsIdentifier()",
+                            DataType.IdentifierArray => $"ReadAsIdentifierArray({GetArrayLengthMember(field.Arguments)})",
                             DataType.Int => $"ReadAsInt()",
                             DataType.IntArray => $"ReadAsIntArray({GetArrayLengthMember(field.Arguments)})",
                             DataType.Long => $"ReadAsLong()",
@@ -247,11 +251,13 @@ using MineCase.Serialization;
             Position,
             Angle,
             UUID,
+            Identifier,
             ByteArray,
             IntArray,
             NbtArray,
             VarIntArray,
             SlotArray,
+            IdentifierArray,
             Array
         }
     }

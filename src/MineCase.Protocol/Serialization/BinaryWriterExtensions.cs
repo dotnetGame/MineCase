@@ -70,6 +70,19 @@ namespace MineCase.Serialization
             bw.WriteAsString(value.ToString());
         }
 
+        public static void WriteAsIdentifier(this BinaryWriter bw, string value)
+        {
+            bw.WriteAsString(value);
+        }
+
+        public static void WriteAsIdentifierArray(this BinaryWriter bw, string[] data)
+        {
+            for (int i = 0; i < data.Length; ++i)
+            {
+                bw.WriteAsIdentifier(data[i]);
+            }
+        }
+
         public static void WriteAsShort(this BinaryWriter bw, short value)
         {
             bw.Write(((ushort)value).ToBigEndian());
@@ -124,16 +137,16 @@ namespace MineCase.Serialization
                 item.Serialize(bw);
         }
 
-        public static void WriteAsNbtTag(this BinaryWriter bw, NbtCompound value)
+        public static void WriteAsNBTTag(this BinaryWriter bw, NbtCompound value)
         {
             NbtTagSerializer.SerializeTag(value, bw);
         }
 
-        public static void WriteAsNbtTagArray(this BinaryWriter bw, NbtCompound[] data)
+        public static void WriteAsNBTTagArray(this BinaryWriter bw, NbtCompound[] data)
         {
             for (int i = 0; i < data.Length; ++i)
             {
-                bw.WriteAsNbtTag(data[i]);
+                bw.WriteAsNBTTag(data[i]);
             }
         }
 

@@ -272,14 +272,21 @@ namespace MineCase.Server.Network.Play
             return SendPacket(new JoinGame
             {
                 EID = (int)eid,
+                IsHardcore = false,
                 GameMode = ToByte(gameMode),
-                Dimension = (int)dimension,
+                PreviousGameMode = ToByte(gameMode),
+                WorldCount = 1,
+                WorldNames = new string[] { levelType.ToString() },
+                DimensionCodec = null,
+                Dimension = null,
+                WorldName = "overworld",
                 HashedSeed = 0, // FIXME
                 MaxPlayers = maxPlayers,
-                LevelType = levelType,
                 ViewDistance = viewDistance,
                 ReducedDebugInfo = reducedDebugInfo,
                 EnableRespawnScreen = true,
+                IsDebug = true,
+                IsFlat = false
             });
         }
 

@@ -26,8 +26,8 @@ namespace MineCase.Protocol.Login
     [GenerateSerializer]
     public sealed partial class LoginSuccess : IPacket
     {
-        [SerializeAs(DataType.String)]
-        public string UUID;
+        [SerializeAs(DataType.UUID)]
+        public Guid UUID;
 
         [SerializeAs(DataType.String)]
         public string Username;

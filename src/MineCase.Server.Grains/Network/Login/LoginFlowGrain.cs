@@ -122,7 +122,7 @@ namespace MineCase.Server.Network.Login
             await sink.SendPacket(new LoginSuccess
             {
                 Username = userName,
-                UUID = uuid.ToString()
+                UUID = uuid
             });
         }
 
