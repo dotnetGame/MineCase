@@ -14,7 +14,7 @@ namespace MineCase.CodeGeneration
     [Generator]
     public class PacketSerializerGenerator : ISourceGenerator
     {
-        public void Execute(SourceGeneratorContext context)
+        public void Execute(GeneratorExecutionContext context)
         {
             if (!(context.SyntaxReceiver is SyntaxReceiver receiver))
                 return;
@@ -200,7 +200,7 @@ using MineCase.Serialization;
             return string.Empty;
         }
 
-        public void Initialize(InitializationContext context)
+        public void Initialize(GeneratorInitializationContext context)
         {
             context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
         }

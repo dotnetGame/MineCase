@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Collections.Extensions;
 using MineCase.Engine.Data;
 #if ECS_SERVER
 using Orleans;
@@ -14,7 +15,7 @@ using Orleans;
 namespace MineCase.Engine
 {
     /// <summary>
-    /// 依赖对象
+    /// 依赖对象.
     /// </summary>
     public abstract partial class DependencyObject
         :
@@ -41,10 +42,10 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 获取组件
+        /// 获取组件.
         /// </summary>
-        /// <typeparam name="T">组件类型</typeparam>
-        /// <returns>组件</returns>
+        /// <typeparam name="T">组件类型.</typeparam>
+        /// <returns>组件.</returns>
 #if ECS_SERVER
         public
 #else
@@ -74,9 +75,9 @@ namespace MineCase.Engine
 #endif
 
         /// <summary>
-        /// 设置组件
+        /// 设置组件.
         /// </summary>
-        /// <param name="component">组件</param>
+        /// <param name="component">组件.</param>
         public void SetComponent(Component component)
         {
             var name = component.Name;
@@ -96,9 +97,9 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 清除组件
+        /// 清除组件.
         /// </summary>
-        /// <typeparam name="T">组件类型</typeparam>
+        /// <typeparam name="T">组件类型.</typeparam>
         public void ClearComponent<T>()
             where T : Component
         {
@@ -117,7 +118,7 @@ namespace MineCase.Engine
         private DependencyValueStorage _valueStorage;
 
         /// <summary>
-        /// 获取值存储
+        /// 获取值存储.
         /// </summary>
         public IDependencyValueStorage ValueStorage => _valueStorage;
 
@@ -126,11 +127,11 @@ namespace MineCase.Engine
         private Delegate _anyPropertyChangedHandler;
 
         /// <summary>
-        /// 获取值
+        /// 获取值.
         /// </summary>
-        /// <typeparam name="T">值类型</typeparam>
-        /// <param name="property">依赖属性</param>
-        /// <returns>值</returns>
+        /// <typeparam name="T">值类型.</typeparam>
+        /// <param name="property">依赖属性.</param>
+        /// <returns>值.</returns>
         public T GetValue<T>(DependencyProperty<T> property)
         {
             T value;
@@ -141,11 +142,11 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 设置当前值
+        /// 设置当前值.
         /// </summary>
-        /// <typeparam name="T">值类型</typeparam>
-        /// <param name="property">依赖属性</param>
-        /// <param name="value">值</param>
+        /// <typeparam name="T">值类型.</typeparam>
+        /// <param name="property">依赖属性.</param>
+        /// <param name="value">值.</param>
         public void SetCurrentValue<T>(DependencyProperty<T> property, T value)
         {
             IEffectiveValue<T> eValue;
@@ -199,10 +200,10 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 注册属性变更处理器
+        /// 注册属性变更处理器.
         /// </summary>
-        /// <param name="property">依赖属性</param>
-        /// <param name="handler">处理器</param>
+        /// <param name="property">依赖属性.</param>
+        /// <param name="handler">处理器.</param>
         public void RegisterPropertyChangedHandler(DependencyProperty property, EventHandler<PropertyChangedEventArgs> handler)
         {
             if (_propertyChangedHandlersGen.TryGetValue(property, out var newHandler))
@@ -213,10 +214,10 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 删除属性变更处理器
+        /// 删除属性变更处理器.
         /// </summary>
-        /// <param name="property">依赖属性</param>
-        /// <param name="handler">处理器</param>
+        /// <param name="property">依赖属性.</param>
+        /// <param name="handler">处理器.</param>
         public void RemovePropertyChangedHandler(DependencyProperty property, EventHandler<PropertyChangedEventArgs> handler)
         {
             if (_propertyChangedHandlersGen.TryGetValue(property, out var newHandler))
@@ -229,18 +230,18 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 注册任意属性变更处理器
+        /// 注册任意属性变更处理器.
         /// </summary>
-        /// <param name="handler">处理器</param>
+        /// <param name="handler">处理器.</param>
         public void RegisterAnyPropertyChangedHandler(EventHandler<PropertyChangedEventArgs> handler)
         {
             _anyPropertyChangedHandler = Delegate.Combine(_anyPropertyChangedHandler, handler);
         }
 
         /// <summary>
-        /// 删除任意属性变更处理器
+        /// 删除任意属性变更处理器.
         /// </summary>
-        /// <param name="handler">处理器</param>
+        /// <param name="handler">处理器.</param>
         public void RemoveAnyPropertyChangedHandler(EventHandler<PropertyChangedEventArgs> handler)
         {
             _anyPropertyChangedHandler = Delegate.Remove(_anyPropertyChangedHandler, handler);
@@ -261,10 +262,10 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 依赖属性发生变更时
+        /// 依赖属性发生变更时.
         /// </summary>
-        /// <typeparam name="T">值类型</typeparam>
-        /// <param name="args">参数</param>
+        /// <typeparam name="T">值类型.</typeparam>
+        /// <param name="args">参数.</param>
         public virtual void OnDependencyPropertyChanged<T>(PropertyChangedEventArgs<T> args)
         {
         }
@@ -373,10 +374,10 @@ namespace MineCase.Engine
         }
 
         /// <summary>
-        /// 告知
+        /// 告知.
         /// </summary>
-        /// <typeparam name="T">消息类型</typeparam>
-        /// <param name="message">消息</param>
+        /// <typeparam name="T">消息类型.</typeparam>
+        /// <param name="message">消息.</param>
         public
 #if ECS_SERVER
         Task

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
     <DebugType>full</DebugType>
@@ -32,15 +32,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.4" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.4" />
-    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="3.1.4" />
-    <PackageReference Include="Microsoft.Orleans.Client" Version="3.2.0-rc2" />
-    <PackageReference Include="Orleans.MultiClient" Version="3.1.7" />
-    <PackageReference Include="Orleans.Providers.MongoDB" Version="3.1.7" />
-    <PackageReference Include="Polly" Version="7.2.0" />
-    <PackageReference Include="sharpcompress" Version="0.25.1" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-rc0001" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="5.0.10" />
+    <PackageReference Include="Microsoft.Orleans.Client" Version="3.5.0" />
+    <PackageReference Include="Orleans.MultiClient" Version="3.3.0" />
+    <PackageReference Include="Orleans.Providers.MongoDB" Version="3.3.1" />
+    <PackageReference Include="Polly" Version="7.2.2" />
+    <PackageReference Include="sharpcompress" Version="0.29.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
   </ItemGroup>
 
   <ItemGroup>
