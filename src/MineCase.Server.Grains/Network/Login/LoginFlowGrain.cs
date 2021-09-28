@@ -23,6 +23,9 @@ namespace MineCase.Server.Network.Login
         {
             var settingsGrain = GrainFactory.GetGrain<IServerSettings>(0);
             var settings = await settingsGrain.GetSettings();
+
+            var server = GrainFactory.GetGrain<IMinecraftServer>("");
+
             if (settings.OnlineMode)
             {
                 // TODO auth and compression
@@ -63,6 +66,11 @@ namespace MineCase.Server.Network.Login
                 else
                 {
                     // TODO refuse him if server is full
+                    if (await server.UserFull())
+                    {
+                        await SendLoginDisconnect("{\"text\":\" Server is full!!!\"}");
+                    }
+
                     var user = await nonAuthenticatedUser.GetUser();
 
                     await SendSetCompression();
@@ -75,8 +83,7 @@ namespace MineCase.Server.Network.Login
                     await user.SetPacketRouter(packetRouter);
                     await packetRouter.BindToUser(user);
 
-                    var game = GrainFactory.GetGrain<IMinecraftServer>("");
-                    await game.JoinGame(user);
+                    await server.JoinGame(user);
                 }
             }
         }

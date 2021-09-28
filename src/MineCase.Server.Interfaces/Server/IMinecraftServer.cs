@@ -19,5 +19,7 @@ namespace MineCase.Server.Server
         Task SendChatMessage(IUser sender, IUser receiver, String messages);
 
         Task<int> UserNumber();
+
+        Task<bool> UserFull();
     }
 }

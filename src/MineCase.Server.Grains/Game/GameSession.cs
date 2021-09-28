@@ -28,7 +28,6 @@ namespace MineCase.Server.Game
         private IWorld _world;
         private FixedUpdateComponent _fixedUpdate;
         private readonly Dictionary<IUser, UserContext> _users = new Dictionary<IUser, UserContext>();
-
         private ILogger _logger;
 
         public override async Task OnActivateAsync()
