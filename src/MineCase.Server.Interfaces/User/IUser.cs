@@ -26,8 +26,6 @@ namespace MineCase.Server.User
 
         Task<IWorld> GetWorld();
 
-        Task<IGameSession> GetGameSession();
-
         Task<IPlayer> GetPlayer();
 
         Task Kick();

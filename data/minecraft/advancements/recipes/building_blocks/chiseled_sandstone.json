@@ -6,12 +6,14 @@
     ]
   },
   "criteria": {
-    "has_stone_slab": {
+    "has_sandstone_slab": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:sandstone_slab"
+            "items": [
+              "minecraft:sandstone_slab"
+            ]
           }
         ]
       }
@@ -25,7 +27,7 @@
   },
   "requirements": [
     [
-      "has_stone_slab",
+      "has_sandstone_slab",
       "has_the_recipe"
     ]
   ]

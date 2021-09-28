@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:dried_kelp"
+            "items": [
+              "minecraft:dried_kelp"
+            ]
           }
         ]
       }

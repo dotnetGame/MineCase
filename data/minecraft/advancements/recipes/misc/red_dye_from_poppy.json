@@ -6,12 +6,14 @@
     ]
   },
   "criteria": {
-    "has_red_flower": {
+    "has_poppy": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:poppy"
+            "items": [
+              "minecraft:poppy"
+            ]
           }
         ]
       }
@@ -25,7 +27,7 @@
   },
   "requirements": [
     [
-      "has_red_flower",
+      "has_poppy",
       "has_the_recipe"
     ]
   ]

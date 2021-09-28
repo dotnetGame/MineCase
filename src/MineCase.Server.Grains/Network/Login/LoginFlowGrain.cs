@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MineCase.Protocol.Login;
 using MineCase.Server.Game;
+using MineCase.Server.Server;
 using MineCase.Server.Settings;
 using MineCase.Server.User;
 using Orleans;
@@ -63,8 +64,6 @@ namespace MineCase.Server.Network.Login
                 {
                     // TODO refuse him if server is full
                     var user = await nonAuthenticatedUser.GetUser();
-                    var world = await user.GetWorld();
-                    var gameSession = GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());
 
                     await SendSetCompression();
 
@@ -76,7 +75,7 @@ namespace MineCase.Server.Network.Login
                     await user.SetPacketRouter(packetRouter);
                     await packetRouter.BindToUser(user);
 
-                    var game = GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());
+                    var game = GrainFactory.GetGrain<IMinecraftServer>("");
                     await game.JoinGame(user);
                 }
             }

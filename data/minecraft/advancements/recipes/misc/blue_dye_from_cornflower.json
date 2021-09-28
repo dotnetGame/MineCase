@@ -6,12 +6,14 @@
     ]
   },
   "criteria": {
-    "has_blue_flower": {
+    "has_cornflower": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:cornflower"
+            "items": [
+              "minecraft:cornflower"
+            ]
           }
         ]
       }
@@ -25,7 +27,7 @@
   },
   "requirements": [
     [
-      "has_blue_flower",
+      "has_cornflower",
       "has_the_recipe"
     ]
   ]

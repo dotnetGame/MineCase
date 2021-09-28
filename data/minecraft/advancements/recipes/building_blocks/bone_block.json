@@ -6,12 +6,14 @@
     ]
   },
   "criteria": {
-    "has_bonemeal": {
+    "has_bone_meal": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:bone_meal"
+            "items": [
+              "minecraft:bone_meal"
+            ]
           }
         ]
       }
@@ -25,7 +27,7 @@
   },
   "requirements": [
     [
-      "has_bonemeal",
+      "has_bone_meal",
       "has_the_recipe"
     ]
   ]

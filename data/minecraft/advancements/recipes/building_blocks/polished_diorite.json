@@ -6,12 +6,14 @@
     ]
   },
   "criteria": {
-    "has_stone": {
+    "has_diorite": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:diorite"
+            "items": [
+              "minecraft:diorite"
+            ]
           }
         ]
       }
@@ -25,7 +27,7 @@
   },
   "requirements": [
     [
-      "has_stone",
+      "has_diorite",
       "has_the_recipe"
     ]
   ]

@@ -20,7 +20,9 @@
       "trigger": "minecraft:used_totem",
       "conditions": {
         "item": {
-          "item": "minecraft:totem_of_undying"
+          "items": [
+            "minecraft:totem_of_undying"
+          ]
         }
       }
     }

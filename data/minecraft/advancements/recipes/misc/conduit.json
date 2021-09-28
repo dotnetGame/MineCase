@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:heart_of_the_sea"
+            "items": [
+              "minecraft:heart_of_the_sea"
+            ]
           }
         ]
       }
@@ -21,7 +23,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:nautilus_shell"
+            "items": [
+              "minecraft:nautilus_shell"
+            ]
           }
         ]
       }

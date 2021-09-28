@@ -6,12 +6,14 @@
     ]
   },
   "criteria": {
-    "has_black_flower": {
+    "has_wither_rose": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:wither_rose"
+            "items": [
+              "minecraft:wither_rose"
+            ]
           }
         ]
       }
@@ -25,7 +27,7 @@
   },
   "requirements": [
     [
-      "has_black_flower",
+      "has_wither_rose",
       "has_the_recipe"
     ]
   ]

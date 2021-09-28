@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:honey_block"
+            "items": [
+              "minecraft:honey_block"
+            ]
           }
         ]
       }

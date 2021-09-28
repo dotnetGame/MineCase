@@ -6,12 +6,14 @@
     ]
   },
   "criteria": {
-    "has_white_flower": {
+    "has_lily_of_the_valley": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:lily_of_the_valley"
+            "items": [
+              "minecraft:lily_of_the_valley"
+            ]
           }
         ]
       }
@@ -25,7 +27,7 @@
   },
   "requirements": [
     [
-      "has_white_flower",
+      "has_lily_of_the_valley",
       "has_the_recipe"
     ]
   ]

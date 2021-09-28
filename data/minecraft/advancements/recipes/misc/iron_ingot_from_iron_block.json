@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:iron_block"
+            "items": [
+              "minecraft:iron_block"
+            ]
           }
         ]
       }

@@ -6,12 +6,14 @@
     ]
   },
   "criteria": {
-    "has_red_flower": {
+    "has_allium": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:allium"
+            "items": [
+              "minecraft:allium"
+            ]
           }
         ]
       }
@@ -25,7 +27,7 @@
   },
   "requirements": [
     [
-      "has_red_flower",
+      "has_allium",
       "has_the_recipe"
     ]
   ]

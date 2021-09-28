@@ -2,10 +2,18 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "rolls": 1,
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": 2.0,
+              "add": false
+            }
+          ],
           "name": "minecraft:seagrass"
         }
       ],
@@ -13,7 +21,9 @@
         {
           "condition": "minecraft:match_tool",
           "predicate": {
-            "item": "minecraft:shears"
+            "items": [
+              "minecraft:shears"
+            ]
           }
         }
       ]

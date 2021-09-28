@@ -6,12 +6,14 @@
     ]
   },
   "criteria": {
-    "has_birch_planks": {
+    "has_planks": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:birch_planks"
+            "items": [
+              "minecraft:birch_planks"
+            ]
           }
         ]
       }
@@ -25,7 +27,7 @@
   },
   "requirements": [
     [
-      "has_birch_planks",
+      "has_planks",
       "has_the_recipe"
     ]
   ]

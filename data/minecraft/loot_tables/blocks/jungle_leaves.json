@@ -2,7 +2,8 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "rolls": 1,
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:alternatives",
@@ -16,7 +17,9 @@
                     {
                       "condition": "minecraft:match_tool",
                       "predicate": {
-                        "item": "minecraft:shears"
+                        "items": [
+                          "minecraft:shears"
+                        ]
                       }
                     },
                     {
@@ -62,7 +65,8 @@
       ]
     },
     {
-      "rolls": 1,
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
@@ -83,10 +87,11 @@
             {
               "function": "minecraft:set_count",
               "count": {
+                "type": "minecraft:uniform",
                 "min": 1.0,
-                "max": 2.0,
-                "type": "minecraft:uniform"
-              }
+                "max": 2.0
+              },
+              "add": false
             },
             {
               "function": "minecraft:explosion_decay"
@@ -104,7 +109,9 @@
               {
                 "condition": "minecraft:match_tool",
                 "predicate": {
-                  "item": "minecraft:shears"
+                  "items": [
+                    "minecraft:shears"
+                  ]
                 }
               },
               {

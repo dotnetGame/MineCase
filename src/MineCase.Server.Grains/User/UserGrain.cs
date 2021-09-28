@@ -15,6 +15,7 @@ using MineCase.Server.Network;
 using MineCase.Server.Network.Play;
 using MineCase.Server.Persistence;
 using MineCase.Server.Persistence.Components;
+using MineCase.Server.Server;
 using MineCase.Server.Settings;
 using MineCase.Server.World;
 using MineCase.World;
@@ -76,12 +77,6 @@ namespace MineCase.Server.User
             return Task.FromResult(_sink);
         }
 
-        public async Task<IGameSession> GetGameSession()
-        {
-            var world = await GetWorld();
-            return GrainFactory.GetGrain<IGameSession>(world.GetPrimaryKeyString());
-        }
-
         public Task<IWorld> GetWorld() => Task.FromResult(State.World);
 
         public Task<GameMode> GetGameMode() => Task.FromResult(State.GameMode);
@@ -123,7 +118,7 @@ namespace MineCase.Server.User
                 await _player.Tell(DestroyEntity.Default);
             }
 
-            var game = await GetGameSession();
+            var game = GrainFactory.GetGrain<IMinecraftServer>("");
             await game.LeaveGame(this);
             await _sink.Close();
             _sink = null;

@@ -6,12 +6,14 @@
     ]
   },
   "criteria": {
-    "has_dark_oak_planks": {
+    "has_planks": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:dark_oak_planks"
+            "items": [
+              "minecraft:dark_oak_planks"
+            ]
           }
         ]
       }
@@ -25,7 +27,7 @@
   },
   "requirements": [
     [
-      "has_dark_oak_planks",
+      "has_planks",
       "has_the_recipe"
     ]
   ]

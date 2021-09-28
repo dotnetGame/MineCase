@@ -6,12 +6,14 @@
     ]
   },
   "criteria": {
-    "has_lapis": {
+    "has_lapis_lazuli": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:lapis_lazuli"
+            "items": [
+              "minecraft:lapis_lazuli"
+            ]
           }
         ]
       }
@@ -25,7 +27,7 @@
   },
   "requirements": [
     [
-      "has_lapis",
+      "has_lapis_lazuli",
       "has_the_recipe"
     ]
   ]

@@ -6,12 +6,14 @@
     ]
   },
   "criteria": {
-    "has_nether_bricks": {
+    "has_red_nether_bricks": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:red_nether_bricks"
+            "items": [
+              "minecraft:red_nether_bricks"
+            ]
           }
         ]
       }
@@ -25,7 +27,7 @@
   },
   "requirements": [
     [
-      "has_nether_bricks",
+      "has_red_nether_bricks",
       "has_the_recipe"
     ]
   ]

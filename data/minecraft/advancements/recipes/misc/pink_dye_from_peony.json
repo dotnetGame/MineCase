@@ -6,12 +6,14 @@
     ]
   },
   "criteria": {
-    "has_double_plant": {
+    "has_peony": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:peony"
+            "items": [
+              "minecraft:peony"
+            ]
           }
         ]
       }
@@ -25,7 +27,7 @@
   },
   "requirements": [
     [
-      "has_double_plant",
+      "has_peony",
       "has_the_recipe"
     ]
   ]

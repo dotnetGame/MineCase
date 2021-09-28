@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:brown_terracotta"
+            "items": [
+              "minecraft:brown_terracotta"
+            ]
           }
         ]
       }

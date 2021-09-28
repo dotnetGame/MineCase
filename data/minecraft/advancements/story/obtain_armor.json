@@ -22,7 +22,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:iron_helmet"
+            "items": [
+              "minecraft:iron_helmet"
+            ]
           }
         ]
       }
@@ -32,7 +34,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:iron_chestplate"
+            "items": [
+              "minecraft:iron_chestplate"
+            ]
           }
         ]
       }
@@ -42,7 +46,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:iron_leggings"
+            "items": [
+              "minecraft:iron_leggings"
+            ]
           }
         ]
       }
@@ -52,7 +58,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:iron_boots"
+            "items": [
+              "minecraft:iron_boots"
+            ]
           }
         ]
       }

@@ -8,7 +8,13 @@ namespace MineCase.Resources
 {
     public class ResourceKey<T>
     {
-        private readonly ResourceLocation _registryName;
-        private readonly ResourceLocation _location;
+        private ResourceLocation _registryName;
+        private ResourceLocation _location;
+
+        public ResourceKey(ResourceLocation name, ResourceLocation location)
+        {
+            _registryName = name;
+            _location = location;
+        }
     }
 }

@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:tripwire_hook"
+            "items": [
+              "minecraft:tripwire_hook"
+            ]
           }
         ]
       }

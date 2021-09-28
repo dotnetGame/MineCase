@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:wither_skeleton_skull"
+            "items": [
+              "minecraft:wither_skeleton_skull"
+            ]
           }
         ]
       }

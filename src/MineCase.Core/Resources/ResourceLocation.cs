@@ -39,6 +39,11 @@ namespace MineCase.Resources
         {
         }
 
+        public override string ToString()
+        {
+            return _namespace + ":" + _path;
+        }
+
         public static ResourceLocation Of(string space, char path)
         {
             return new ResourceLocation(Decompose(space, path));

@@ -11,17 +11,21 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:white_carpet"
+            "items": [
+              "minecraft:white_carpet"
+            ]
           }
         ]
       }
     },
-    "has_oramge_dye": {
+    "has_orange_dye": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:orange_dye"
+            "items": [
+              "minecraft:orange_dye"
+            ]
           }
         ]
       }
@@ -36,7 +40,7 @@
   "requirements": [
     [
       "has_white_carpet",
-      "has_oramge_dye",
+      "has_orange_dye",
       "has_the_recipe"
     ]
   ]

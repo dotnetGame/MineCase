@@ -24,12 +24,24 @@
       "trigger": "minecraft:killed_by_crossbow",
       "conditions": {
         "victims": [
-          {
-            "type": "minecraft:phantom"
-          },
-          {
-            "type": "minecraft:phantom"
-          }
+          [
+            {
+              "condition": "minecraft:entity_properties",
+              "predicate": {
+                "type": "minecraft:phantom"
+              },
+              "entity": "this"
+            }
+          ],
+          [
+            {
+              "condition": "minecraft:entity_properties",
+              "predicate": {
+                "type": "minecraft:phantom"
+              },
+              "entity": "this"
+            }
+          ]
         ]
       }
     }

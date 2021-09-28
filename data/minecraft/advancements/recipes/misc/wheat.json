@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:hay_block"
+            "items": [
+              "minecraft:hay_block"
+            ]
           }
         ]
       }

@@ -21,9 +21,15 @@
       "trigger": "minecraft:channeled_lightning",
       "conditions": {
         "victims": [
-          {
-            "type": "minecraft:villager"
-          }
+          [
+            {
+              "condition": "minecraft:entity_properties",
+              "predicate": {
+                "type": "minecraft:villager"
+              },
+              "entity": "this"
+            }
+          ]
         ]
       }
     }

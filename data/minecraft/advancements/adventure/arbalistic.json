@@ -23,7 +23,6 @@
     "arbalistic": {
       "trigger": "minecraft:killed_by_crossbow",
       "conditions": {
-        "victims": [],
         "unique_entity_types": 5
       }
     }

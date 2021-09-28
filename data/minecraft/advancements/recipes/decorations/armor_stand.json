@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:smooth_stone_slab"
+            "items": [
+              "minecraft:smooth_stone_slab"
+            ]
           }
         ]
       }

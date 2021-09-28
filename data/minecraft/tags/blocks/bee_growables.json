@@ -2,6 +2,8 @@
   "replace": false,
   "values": [
     "#minecraft:crops",
-    "minecraft:sweet_berry_bush"
+    "minecraft:sweet_berry_bush",
+    "minecraft:cave_vines",
+    "minecraft:cave_vines_plant"
   ]
 }

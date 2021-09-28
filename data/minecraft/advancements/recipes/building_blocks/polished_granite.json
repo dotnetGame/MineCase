@@ -6,12 +6,14 @@
     ]
   },
   "criteria": {
-    "has_stone": {
+    "has_granite": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:granite"
+            "items": [
+              "minecraft:granite"
+            ]
           }
         ]
       }
@@ -25,7 +27,7 @@
   },
   "requirements": [
     [
-      "has_stone",
+      "has_granite",
       "has_the_recipe"
     ]
   ]

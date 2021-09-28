@@ -6,12 +6,14 @@
     ]
   },
   "criteria": {
-    "has_yellow_flower": {
+    "has_dandelion": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:dandelion"
+            "items": [
+              "minecraft:dandelion"
+            ]
           }
         ]
       }
@@ -25,7 +27,7 @@
   },
   "requirements": [
     [
-      "has_yellow_flower",
+      "has_dandelion",
       "has_the_recipe"
     ]
   ]

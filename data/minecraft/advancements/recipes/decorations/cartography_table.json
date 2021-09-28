@@ -6,12 +6,14 @@
     ]
   },
   "criteria": {
-    "has_string": {
+    "has_paper": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:string"
+            "items": [
+              "minecraft:paper"
+            ]
           }
         ]
       }
@@ -25,7 +27,7 @@
   },
   "requirements": [
     [
-      "has_string",
+      "has_paper",
       "has_the_recipe"
     ]
   ]

@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:glass_pane"
+            "items": [
+              "minecraft:glass_pane"
+            ]
           }
         ]
       }
@@ -21,7 +23,9 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:orange_dye"
+            "items": [
+              "minecraft:orange_dye"
+            ]
           }
         ]
       }

@@ -2,7 +2,8 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "rolls": 1,
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
@@ -10,10 +11,11 @@
             {
               "function": "minecraft:set_count",
               "count": {
-                "n": 3,
-                "p": 0.53333336,
-                "type": "minecraft:binomial"
-              }
+                "type": "minecraft:binomial",
+                "n": 3.0,
+                "p": 0.53333336
+              },
+              "add": false
             }
           ],
           "name": "minecraft:melon_seeds"
