@@ -18,8 +18,8 @@ namespace MineCase.Protocol.Login
     [GenerateSerializer]
     public sealed partial class LoginDisconnect : IPacket
     {
-        [SerializeAs(DataType.String)]
-        public string Reason;
+        [SerializeAs(DataType.Chat)]
+        public Chat Reason;
     }
 
     [Packet(0x02)]

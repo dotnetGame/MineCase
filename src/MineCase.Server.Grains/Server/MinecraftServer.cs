@@ -170,6 +170,11 @@ namespace MineCase.Server.Server
             return Task.FromResult(_users.Count);
         }
 
+        public Task<bool> UserFull()
+        {
+            throw new NotImplementedException();
+        }
+
         private class UserContext
         {
             public ClientPlayPacketGenerator Generator { get; set; }

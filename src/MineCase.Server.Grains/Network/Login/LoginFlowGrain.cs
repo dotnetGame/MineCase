@@ -137,7 +137,7 @@ namespace MineCase.Server.Network.Login
             var sink = GrainFactory.GetGrain<IClientboundPacketSink>(this.GetPrimaryKey());
             await sink.SendPacket(new LoginDisconnect
             {
-                Reason = reason
+                Reason = new Chat(new StringComponent(reason))
             });
         }
 
