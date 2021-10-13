@@ -24,7 +24,7 @@ namespace MineCase.Server.Network.Login
             var settingsGrain = GrainFactory.GetGrain<IServerSettings>(0);
             var settings = await settingsGrain.GetSettings();
 
-            var server = GrainFactory.GetGrain<IMinecraftServer>("");
+            var server = GrainFactory.GetGrain<IMinecraftServer>("minecraft");
 
             if (settings.OnlineMode)
             {
