@@ -11,7 +11,7 @@ MineCase
 The project is designed to create a high-performance, distributed `Minecraft` server with virtual actor provided by Orleans distributed framework. 
 Different chunks are managed on different servers so that more players can join in and play in the same world. This makes minecraft servers more scalable.
 Servers like Anarchy servers can allow more players to join in without waiting in queue by using distributed server.
-It written in `C#` with `.NET Core 3.1` env and based on `orleans` framework to work with released [1.15.2 protocol](https://www.minecraft.net/en-us/article/minecraft-java-edition-1-15-2). The [website](https://wiki.vg/) describes the Minecraft protocol clearly.
+It written in `C#` with `.NET 6` env and based on `orleans` framework to work with released [1.15.2 protocol](https://www.minecraft.net/en-us/article/minecraft-java-edition-1-15-2) (1.17.1 protocol is in progress). The [website](https://wiki.vg/) describes the Minecraft protocol clearly.
 
 **MineCase is under refactoring, so branch refactor may not work.**
 
@@ -20,11 +20,11 @@ It written in `C#` with `.NET Core 3.1` env and based on `orleans` framework to 
 ![Screenshots](screenshots/1.jpg)
 
 ## Run Requirements
-* [.Net Core 3.1](https://www.microsoft.com/net/download)
+* [.Net 6](https://www.microsoft.com/net/download)
 * [MongoDB](https://www.mongodb.com/download-center/community)
 
 ## Install (Build From Source)
-* 1 . Download and install a `.NET Core sdk` from this [page](https://www.microsoft.com/net/download).
+* 1 . Download and install a `.NET sdk` from this [page](https://www.microsoft.com/net/download).
 * 2 . Download and install a `MongoDB` from this [page](https://www.mongodb.com/download-center?jmp=nav#community).
 * 3 . Download a `MineCase` archive from the [github page](https://github.com/dotnetGame/MineCase/archive/master.zip)  (or **clone:**)
 	
@@ -52,9 +52,9 @@ None
 
 Wooden Pickaxe backers:
 
-* [![https://www.patreon.com/acid_chicken](https://i.loli.net/2020/02/19/qoR9anvrkNLtSY8.png)](https://www.patreon.com/acid_chicken) Acid Chicken
-* [![https://www.patreon.com/user/creators?u=4934636](https://i.loli.net/2020/02/19/KCRsaH4JTSIow29.png)](https://www.patreon.com/user/creators?u=4934636) Balajanovski
-* [![https://www.patreon.com/Gongo/creators](https://i.loli.net/2020/02/22/gH68tvU4S2JrOPL.png)](https://www.patreon.com/Gongo/creators) Gongo
+* Acid Chicken
+* Balajanovski
+* Gongo
 
 ## Get Involved
 

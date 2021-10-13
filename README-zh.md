@@ -9,22 +9,22 @@ MineCase
 
 `MineCase` 是一个跨平台、分布式的 `Minecraft` 服务器。
 
-本项目使用 `.NET Core` 编写，基于 [orleans](https://github.com/dotnet/orleans) 框架。它通过 Actor 模型将各个模块分离开来，从而构建一个高效的分布式系统。
+本项目使用 `.NET 6` 编写，基于 [orleans](https://github.com/dotnet/orleans) 框架。它通过 Actor 模型将各个模块分离开来，从而构建一个高效的分布式系统。
 
 不同的区块由不同的服务器管理，所有的玩家都可以在同一个世界进行游戏，这位minecraft服务器带来了更多的拓展性。
 
-目前仅支持 `Minecraft`  [1.15.2](https://www.minecraft.net/en-us/article/minecraft-java-edition-1-15-2)的版本。
+目前仅支持 `Minecraft`  [1.15.2](https://www.minecraft.net/en-us/article/minecraft-java-edition-1-15-2)的版本。（正在升级到1.17.1协议）
 
 ![Screenshots](screenshots/1.jpg)
 
 ## 运行需要
-* [.Net Core 3.1](https://www.microsoft.com/net/download)
+* [.Net 6](https://www.microsoft.com/net/download)
 * [MongoDB](https://www.mongodb.com/download-center/community)
 
 ## 安装
 
 ## 从源码编译安装
-* 1 . 下载并安装 [.NET Core sdk](https://www.microsoft.com/net/download)。
+* 1 . 下载并安装 [.NET sdk](https://www.microsoft.com/net/download)。
 * 2 . 下载并安装 [MongoDB](https://www.mongodb.com/download-center?jmp=nav#community)。
 * 3 . 从 [github page](https://github.com/dotnetGame/MineCase/archive/master.zip) 下载`MineCase`(或者使用 **clone:** 指令)。
 	```bash
@@ -41,9 +41,9 @@ MineCase
 ![https://github.com/sunnycase](https://i.loli.net/2020/02/19/QWGu4759qeUam8c.png)![https://github.com/jstzwj](https://i.loli.net/2020/02/19/kSqmT7cFfp5Qi4L.png)![https://github.com/akemimadoka](https://i.loli.net/2020/02/19/s2GmUF7SwqzC9ER.png)![https://github.com/Alinshans](https://i.loli.net/2020/02/19/yt9DE4LT1RkweQb.png)![https://github.com/ray-cast](https://i.loli.net/2020/02/19/r42VmKzjlpaQPCc.png)![https://github.com/Melonpi](https://i.loli.net/2020/02/19/KcW4pes71AR5bqH.png)![https://github.com/zaoqi](https://i.loli.net/2020/02/19/15ByH8UoICESudh.png)
 
 ## 特别感谢
-* ![https://www.patreon.com/acid_chicken](https://i.loli.net/2020/02/19/qoR9anvrkNLtSY8.png) Acid Chicken
-* ![https://www.patreon.com/user/creators?u=4934636](https://i.loli.net/2020/02/19/KCRsaH4JTSIow29.png) Balajanovski
-* [![https://www.patreon.com/Gongo/creators](https://i.loli.net/2020/02/22/gH68tvU4S2JrOPL.png)](https://www.patreon.com/Gongo/creators) Gongo
+* Acid Chicken
+* Balajanovski
+* Gongo
 
 ## 参与开发
 
@@ -83,7 +83,6 @@ MineCase
 	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
-
 
 
 

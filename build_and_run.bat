@@ -2,6 +2,7 @@
 where mongo
 IF %ERRORLEVEL% NEQ 0 (
     echo "mongo command is not available, please make sure mongodb is installed and added to the system path."
+    pause
     exit /b 1
 )
 
