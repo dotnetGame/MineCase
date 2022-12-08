@@ -31,7 +31,7 @@
     <PackageReference Include="Microsoft.Orleans.Core" Version="3.2.0-rc2" />
     <PackageReference Include="Microsoft.Orleans.OrleansRuntime" Version="3.2.0-rc2" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.164" PrivateAssets="All" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.10.2" />
     <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.1" />
